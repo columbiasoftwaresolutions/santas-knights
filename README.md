@@ -33,6 +33,8 @@ The Armored League hosts live events where fighters compete in 60+ lbs of authen
 2. Build a training management system with XP-based gamification for fighters and instructors.
 3. Launch the Santa's Letters gifting portal as a high-impact, audience-facing feature.
 
+**Sites & brands.** **Santa's Knights, Inc.** is the 501(c)(3) nonprofit / parent org; **Gladiators NYC** is its wholly-owned combat program/team brand; **Letters to Santa** is the nonprofit's charitable gift drive. We build **one primary site — `santasknights.org`** — that hosts both the Gladiators program and Letters to Santa, with `gladiators.nyc` redirecting into it. See [REQUIREMENTS.md](./docs/REQUIREMENTS.md#site-architecture--brand-split) for the full feature split.
+
 ---
 
 ## Tech Stack
@@ -45,7 +47,7 @@ The Armored League hosts live events where fighters compete in 60+ lbs of authen
 | File Storage | Supabase Storage — letter images, waiver PDFs |
 | Deployment | Vercel (frontend) + Supabase Cloud (backend) |
 | Version Control | GitHub — CI/CD to Vercel |
-| External | Amazon (redirect only — no API integration), Eventbrite (ticket link) |
+| External (redirect only) | Amazon (gifts), Eventbrite (tickets), external donation processor (Donate), external store (Shop/Armory) — no on-site payments or e-commerce |
 
 ---
 

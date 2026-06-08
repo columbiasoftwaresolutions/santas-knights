@@ -45,12 +45,14 @@ To track engagement cleanly, public-facing changes that *will* appear on the new
 | **Beta (new stack)** | New platform build + QA, gated behind auth/password | **`noindex`, `robots: disallow`** |
 | **Preview (Vercel)** | Per-PR preview deployments | `noindex` |
 
-**Separate domains** — The Armored League and Santa's Knights live on different domains, so each gets its own beta subdomain and its own cutover:
+**Primary hub + redirect** — `santasknights.org` is the single main site (hosting both the Gladiators program and Letters to Santa). `gladiators.nyc` redirects into it.
 
-| Property | Production (Wix) | Beta (new stack) |
-| --- | --- | --- |
-| The Armored League | `<armored-league-domain>` *(TBD)* | `beta.<armored-league-domain>` |
-| Santa's Knights / Letters | `<santas-knights-domain>` *(TBD)* | `beta.<santas-knights-domain>` |
+| Domain | Role | Production (Wix) | Beta (new stack) |
+| --- | --- | --- | --- |
+| `santasknights.org` | Primary site | Live | `beta.santasknights.org` |
+| `gladiators.nyc` | Redirects → Gladiators section of primary | Live (currently standalone) | n/a — set up 301s at cutover |
+
+> At cutover, `gladiators.nyc` URLs need **301 redirects mapped to their new Santa's Knights paths** (preserve the existing Gladiators SEO/links and any ad destinations). Coordinate this mapping with Nicolas.
 
 > Beta **must stay `noindex`** until cutover so it never competes with the live Wix site in search or cannibalizes ad landing pages. Confirm `robots.txt` + `X-Robots-Tag` before sharing any beta link.
 

@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+/*
+  Design tokens — mirror of DESIGN.md.
+  Tailwind v4 reads these `--color-*`, `--font-*`, `--radius-*` vars and
+  generates matching utilities (bg-paper, text-ink, font-serif, rounded-pill, …).
+*/
+@theme {
+  /* Santa's Knights — warm wrapper */
+  --color-paper: #f7f0e3;
+  --color-paper-raised: #fbf6ec;
+  --color-card: #ffffff;
+  --color-ink: #221d17;
+  --color-muted: #6c6256;
+  --color-red: #9e2536;
+  --color-red-deep: #741726;
+  --color-green: #2e5e45;
+  --color-green-soft: #e7efe8;
+  --color-gold: #c2912f;
+  --color-gold-soft: #f0e2c2;
+  --color-line: #e4d8c4;
+
+  /* Gladiators NYC — steel sub-brand */
+  --color-steel: #16171a;
+  --color-glad-red: #c2331f;
+  --color-glad-amber: #c98a3a;
+  --color-bone: #e8e2d4;
+
+  /* Type — families come from next/font (see app/layout.tsx) */
+  --font-sans: var(--font-hanken), system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, serif;
+
+  /* Radii */
+  --radius-card: 22px;
+  --radius-card-lg: 26px;
+  --radius-pill: 999px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+  }
+}
