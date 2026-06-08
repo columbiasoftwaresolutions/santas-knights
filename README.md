@@ -4,6 +4,8 @@ A modern, owned technology stack for **The Armored League** — New York City's 
 
 Built by [Columbia Software Solutions](https://columbiasoftwaresolutions.com) · Fall 2026 · PRD v1.0
 
+🔗 **Live (beta):** https://santas-knights.vercel.app/ — _internal beta on Vercel; not the public production site._
+
 ---
 
 ## Table of Contents

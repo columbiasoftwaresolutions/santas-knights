@@ -30,6 +30,7 @@ Add a row to the table for the relevant month. Keep entries one line where possi
 | 2026-06-08 | Site architecture decision: santasknights.org is the primary hub for both Gladiators & Letters to Santa; gladiators.nyc redirects in. README/REQUIREMENTS/ROLLOUT updated; docs moved to docs/ | Beta | Infra | None yet — informs redirect/SEO plan at cutover | CSS | Affects future 301 mapping (coordinate w/ Nicolas) |
 | 2026-06-08 | Add DESIGN.md (Stitch design-md format) derived from the home mock | Beta | Infra | None — internal | CSS | Design tokens / brand spec |
 | 2026-06-08 | Scaffold Next.js 16 + Tailwind v4 app; build Santa's Knights homepage (9 sections, component library, tokens wired to theme) | Beta | Feature | None — beta, noindex, not public | CSS | First app code; build passes, verified locally |
+| 2026-06-08 | Add Vercel beta deploy link to README.md and CLAUDE.md | Beta | Infra | None — internal doc link | CSS | https://santas-knights.vercel.app/ |
 | _e.g._ 2026-06-XX | _Consolidate social/stream links on Links page_ | Both | Content | _SEO: neutral · Ads: none · Analytics: track click-through delta · UX: fewer dead links_ | Nicolas | _Baseline recorded first; mirror on Wix, then build on new site_ |
 
 <!--

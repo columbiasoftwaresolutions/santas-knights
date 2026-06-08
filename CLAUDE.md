@@ -6,6 +6,8 @@ Guidance for Claude Code when working in this repository.
 
 The Armored League platform — a Next.js + Supabase rebuild replacing a legacy Wix site, plus a training tracker (XP gamification) and the Santa's Knights / Santa's Letters gifting portal. Built by Columbia Software Solutions.
 
+**Deploy (beta):** https://santas-knights.vercel.app/ — internal Vercel beta, auto-deploys from `main`. Not the public production site; keep `noindex` until cutover (see ROLLOUT.md).
+
 Read these before substantial work:
 - **[README.md](./README.md)** — scope, tech stack, phases, data model, setup, admin tasks.
 - **[ROLLOUT.md](./docs/ROLLOUT.md)** — build-≠-cutover strategy, two-track rollout, public cutover checklist.
