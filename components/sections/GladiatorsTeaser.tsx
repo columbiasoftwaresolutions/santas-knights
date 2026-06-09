@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Placeholder } from "@/components/ui/Placeholder";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { gladiatorsMeta, GLADIATORS_HREF } from "@/content/site";
 
 /**
@@ -16,21 +16,18 @@ export function GladiatorsTeaser() {
     >
       <Container className="relative grid items-center gap-8 py-16 md:grid-cols-[1.05fr_0.95fr] md:gap-[50px]">
         <div>
-          <Eyebrow className="text-glad-amber">The flagship program</Eyebrow>
-          <h2 className="mt-3.5 font-sans text-[clamp(34px,4.6vw,60px)] font-black uppercase leading-[0.98] tracking-[-0.02em] text-white">
-            Gladiators NYC
-          </h2>
-          <p className="mt-[18px] mb-7 max-w-[42ch] text-[17px] text-[#b7b1a4]">
-            Step into the oldest and premiere league, school, and team of armored combat in New York
-            City, full-contact, steel weapons, real armor. Taught free, led by the founder of the
-            sport in NYC.
-          </p>
-          <div className="mb-7 flex flex-wrap gap-[26px]">
+          <SectionHeading
+            tone="onDark"
+            size="displaySteel"
+            eyebrow="The flagship program"
+            title="Gladiators NYC"
+            intro="Step into the oldest and premiere league, school, and team of armored combat in New York City, full-contact, steel weapons, real armor. Taught free, led by the founder of the sport in NYC."
+            introClassName="max-w-[42ch] text-[17px]"
+          />
+          <div className="mt-7 mb-7 flex flex-wrap gap-[26px]">
             {gladiatorsMeta.map((item) => (
               <div key={item.value} className="text-sm text-[#8d8779]">
-                <b className="mb-0.5 block text-[18px] font-extrabold text-[#e8e2d4]">
-                  {item.value}
-                </b>
+                <b className="mb-0.5 block text-[18px] font-extrabold text-[#e8e2d4]">{item.value}</b>
                 {item.label}
               </div>
             ))}
@@ -39,7 +36,7 @@ export function GladiatorsTeaser() {
             <Button href={GLADIATORS_HREF} variant="steel" arrow>
               Enter Gladiators NYC
             </Button>
-            <Button href={`${GLADIATORS_HREF}`} variant="bone">
+            <Button href={GLADIATORS_HREF} variant="bone">
               See the classes
             </Button>
           </div>

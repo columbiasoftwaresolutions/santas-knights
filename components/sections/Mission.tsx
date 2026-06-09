@@ -3,10 +3,10 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 
 export function Mission() {
   return (
-    <section id="about" className="py-[74px]">
+    <section id="about" className="py-section">
       <Container className="max-w-[1000px]">
         <Eyebrow className="mb-6">Our mission</Eyebrow>
-        <q className="block font-serif text-[clamp(26px,3.4vw,40px)] font-medium leading-[1.3] tracking-[-0.01em] [quotes:none]">
+        <q className="block font-serif text-quote font-medium leading-[1.3] tracking-[-0.01em] [quotes:none]">
           We create{" "}
           <b className="font-semibold italic text-red">positive outcomes</b> in people&apos;s lives
           through uplifting training and purpose, transcending background, income, and zip code, and

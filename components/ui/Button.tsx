@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
+import { Arrow } from "@/components/ui/Arrow";
 
 export type ButtonVariant =
   | "red"
@@ -13,7 +14,7 @@ export type ButtonVariant =
   | "bone"; // Gladiators
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  red: "bg-red text-white shadow-[0_10px_24px_-10px_rgba(178,58,46,0.6)] hover:bg-red-deep",
+  red: "bg-red text-white shadow-cta hover:bg-red-deep",
   ink: "bg-ink text-paper hover:bg-black",
   ghost: "bg-transparent text-ink border-ink hover:bg-ink hover:text-paper",
   green: "bg-green text-white hover:bg-[#244c38]",
@@ -49,11 +50,7 @@ export function Button(props: AsLink | AsButton) {
   const content = (
     <>
       {children}
-      {arrow && (
-        <span aria-hidden className="transition-transform duration-200 group-hover:translate-x-[3px]">
-          →
-        </span>
-      )}
+      {arrow && <Arrow />}
     </>
   );
 

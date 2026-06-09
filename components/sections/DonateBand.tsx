@@ -10,7 +10,7 @@ export function DonateBand() {
     >
       <Container className="relative flex flex-wrap items-center justify-between gap-[30px] py-14">
         <div>
-          <h2 className="max-w-[20ch] text-[clamp(28px,3.6vw,44px)]">Your gift keeps it free.</h2>
+          <h2 className="max-w-[20ch] text-h2-band">Your gift keeps it free.</h2>
           <p className="mt-2.5 max-w-[40ch] opacity-90">
             Every donation is tax-deductible and goes straight to free training, armor, and
             community programs.
