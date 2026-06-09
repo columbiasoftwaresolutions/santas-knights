@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { Placeholder } from "@/components/ui/Placeholder";
+import { Photo } from "@/components/ui/Photo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { links } from "@/content/site";
 
@@ -40,8 +40,11 @@ export function Hero() {
         </div>
 
         <div className="relative">
-          <Placeholder
-            label="PHOTO: community class, all ages training together, warm & joyful"
+          <Photo
+            src="/images/hero-community.jpg"
+            alt="Santa's Knights members of all ages together in armor"
+            priority
+            sizes="(min-width: 768px) 45vw, 100vw"
             className="aspect-4/5 rounded-[20px]"
           />
           <div className="absolute bottom-[30px] left-3.5 max-w-[230px] rounded-[18px] border border-line bg-card p-[18px_22px] shadow-card md:-left-6">

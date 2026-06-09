@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { Placeholder } from "@/components/ui/Placeholder";
+import { Photo } from "@/components/ui/Photo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { gladiatorsMeta, GLADIATORS_HREF } from "@/content/site";
 
@@ -42,9 +42,10 @@ export function GladiatorsTeaser() {
           </div>
         </div>
 
-        <Placeholder
-          dark
-          label="PHOTO: full armored combat, two fighters clashing, intense"
+        <Photo
+          src="/images/combat-helmet.jpg"
+          alt="Steel helmet and gauntlet from full-contact armored combat"
+          sizes="(min-width: 768px) 45vw, 100vw"
           className="aspect-[5/4] rounded-2xl"
         />
       </Container>

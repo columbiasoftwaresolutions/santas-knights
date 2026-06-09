@@ -26,3 +26,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# asset-library/ is committed (raw source assets, organized by category).
+# Selected, web-optimized images live in /public/images.
+# Keep source zips out of git — extract into asset-library/ instead.
+*.zip

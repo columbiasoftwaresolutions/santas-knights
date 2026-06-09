@@ -49,6 +49,9 @@ export const pillars: {
   body: string;
   cta: string;
   href: string;
+  /** Real photo if available; otherwise `photo` is used as a Placeholder label. */
+  image?: string;
+  imageAlt?: string;
   photo: string;
 }[] = [
   {
@@ -58,6 +61,8 @@ export const pillars: {
     body: "Our flagship program: full-contact armored combat with steel weapons and armor, the oldest and premiere league of its kind in NYC. Bootcamp, fundamentals, women's and veterans' classes. All free.",
     cta: "Enter the arena",
     href: GLADIATORS_HREF,
+    image: "/images/gladiators-sparring.jpg",
+    imageAlt: "Gladiators NYC fighters sparring in full armor",
     photo: "PHOTO: armored fighter, steel weapon, dramatic",
   },
   {
@@ -77,7 +82,15 @@ export const gladiatorsMeta: { value: string; label: string }[] = [
   { value: "$0", label: "Always free to train" },
 ];
 
-export const pressLogos = ["The Guardian", "Men's Journal", "Yahoo News", "NY Post", "History"];
+export const pressLogos: { name: string; src: string }[] = [
+  { name: "The Guardian", src: "/images/press/the-guardian.png" },
+  { name: "Men's Journal", src: "/images/press/mens-journal.jpg" },
+  { name: "Yahoo News", src: "/images/press/yahoo-news.jpg" },
+  { name: "Business Insider", src: "/images/press/business-insider.jpg" },
+  { name: "New York Magazine", src: "/images/press/new-york-magazine.jpg" },
+  { name: "Gizmodo", src: "/images/press/gizmodo.jpg" },
+  { name: "ABC News", src: "/images/press/abc-news.jpg" },
+];
 
 export const footerColumns: { heading: string; links: { label: string; href: string }[] }[] = [
   {

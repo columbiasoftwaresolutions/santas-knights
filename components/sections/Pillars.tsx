@@ -2,6 +2,7 @@ import { cn } from "@/lib/cn";
 import { Arrow } from "@/components/ui/Arrow";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
+import { Photo } from "@/components/ui/Photo";
 import { Placeholder } from "@/components/ui/Placeholder";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { pillars } from "@/content/site";
@@ -31,7 +32,16 @@ export function Pillars() {
         <div className="grid gap-[22px] md:grid-cols-2">
           {pillars.map((pillar) => (
             <Card key={pillar.title} href={pillar.href} hover className="group flex flex-col overflow-hidden">
-              <Placeholder label={pillar.photo} className="aspect-[16/10]" />
+              {pillar.image ? (
+                <Photo
+                  src={pillar.image}
+                  alt={pillar.imageAlt ?? pillar.title}
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  className="aspect-[16/10]"
+                />
+              ) : (
+                <Placeholder label={pillar.photo} className="aspect-[16/10]" />
+              )}
               <div className="px-[30px] pt-[30px] pb-8">
                 <span
                   className={cn(
