@@ -11,18 +11,18 @@ import { DonateBand } from "@/components/sections/DonateBand";
 import {
   aboutStory,
   founder,
+  letters,
   links,
-  missionStatement,
   org,
   programs,
   values,
-  GLADIATORS_HREF,
+  TRAINING_HREF,
 } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "About · Santa's Knights",
   description:
-    "Santa's Knights is a 501(c)(3) nonprofit founded by Air Force veteran Damion DiGrazia, bringing free martial arts, fitness, and community to Harlem. Home of Gladiators NYC.",
+    "Santa's Knights is a Harlem 501(c)(3) nonprofit founded by Air Force veteran Damion DiGrazia. We answer kids' letters to Santa every December and teach free martial arts and fitness all year.",
 };
 
 export default function AboutPage() {
@@ -32,13 +32,14 @@ export default function AboutPage() {
         eyebrow="About Santa's Knights"
         title={
           <>
-            Strength, purpose, and belonging, <em className="font-serif font-medium italic text-red">given away</em> for free.
+            What Santa&apos;s Knights is, and{" "}
+            <em className="font-serif font-medium italic text-red">why</em>.
           </>
         }
-        intro="We're a Harlem-based 501(c)(3) nonprofit bringing free martial arts, fitness, and community to everyone, and the home of Gladiators NYC, the city's oldest armored combat league."
+        intro="We're a 501(c)(3) nonprofit in Harlem. We answer kids' letters to Santa every December, and teach martial arts and fitness for free all year. Damion DiGrazia started it, and still runs it."
       >
-        <Button href={GLADIATORS_HREF} variant="red" arrow>
-          Find a free class
+        <Button href={links.adoptLetter} variant="red" arrow>
+          See Santa&apos;s Letters
         </Button>
         <Button href={links.getInvolved} variant="ghost">
           Get involved
@@ -58,7 +59,7 @@ export default function AboutPage() {
             through exposure and lifestyle enhancement.
           </q>
           <div className="mt-[22px] flex items-center gap-3 text-[15px] font-semibold text-muted before:h-0.5 before:w-[34px] before:bg-gold before:content-['']">
-            {org.legalName} · 501(c)(3) nonprofit · {org.trademark}
+            {org.legalName} · a registered 501(c)(3) nonprofit
           </div>
         </Container>
       </section>
@@ -69,13 +70,13 @@ export default function AboutPage() {
           <div className="md:sticky md:top-[110px]">
             <SectionHeading
               eyebrow="Our story"
-              title="How a fighting sport became a free program for Harlem"
-              intro="What started as a niche combat club grew into a nonprofit built on one belief: the things that change a life shouldn't depend on what you can pay."
+              title="It started with a letter."
+              intro="Two threads run through the organization: the giving Damion grew up doing, and the training he built as an adult. Here's how they ended up under one roof."
               introClassName="max-w-[42ch]"
             />
             <Photo
-              src="/images/gladiators-sparring.jpg"
-              alt="Gladiators NYC fighters sparring in full armor"
+              src="/images/hero-community.jpg"
+              alt="Santa's Knights members and families together"
               sizes="(min-width: 768px) 45vw, 100vw"
               className="mt-7 aspect-4/5 rounded-[20px]"
             />
@@ -104,20 +105,20 @@ export default function AboutPage() {
           <div className="relative">
             <Photo
               src="/images/headshot.png"
-              alt={`${founder.name}, founder of Santa's Knights and Gladiators NYC`}
+              alt={`${founder.name}, founder of Santa's Knights`}
               sizes="(min-width: 768px) 32vw, 100vw"
               className="aspect-4/5 rounded-[20px]"
             />
             <div className="absolute -bottom-5 left-4 max-w-[230px] rounded-[18px] border border-line bg-card p-[16px_20px] shadow-card md:-right-6 md:left-auto">
-              <div className="text-[15px] font-extrabold text-ink">U.S. Air Force veteran</div>
+              <div className="text-[15px] font-extrabold text-ink">Air Force veteran</div>
               <div className="mt-0.5 text-[13.5px] font-semibold text-muted">
-                Columbia &amp; Harvard · ex-Morgan Stanley · founder of armored combat in NYC
+                Columbia &amp; Harvard · left Wall Street to build this
               </div>
             </div>
           </div>
           <div>
             <SectionHeading
-              eyebrow="Meet the founder"
+              eyebrow="The founder"
               title={founder.name}
               intro={founder.role}
               introClassName="font-semibold text-ink"
@@ -139,13 +140,48 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* Values */}
+      {/* Santa's Letters */}
       <section className="bg-paper-raised border-y border-line py-section">
+        <Container>
+          <div className="relative grid items-center gap-8 overflow-hidden rounded-card-lg bg-green bg-[linear-gradient(160deg,var(--color-green),#22483540)] p-[34px] text-[#eef4ef] md:grid-cols-[1.05fr_0.95fr] md:gap-[46px] md:p-[50px]">
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -top-[30px] -right-5 text-[200px] leading-none text-white/[0.06]"
+            >
+              ✶
+            </span>
+            <div className="relative">
+              <SectionHeading
+                tone="onColor"
+                size="band"
+                eyebrow="Santa's Letters"
+                title="The program at the heart of it"
+                intro={letters.intro}
+                introClassName="max-w-[44ch]"
+              />
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button href={links.adoptLetter} variant="cream">
+                  How it works
+                </Button>
+                <Button href={links.getInvolved} variant="clear">
+                  Help out
+                </Button>
+              </div>
+            </div>
+            <p className="relative font-serif text-[19px] italic leading-[1.5] text-[#eef4ef]/95">
+              {letters.origin}
+            </p>
+          </div>
+        </Container>
+      </section>
+
+      {/* Values */}
+      <section className="py-section">
         <Container>
           <SectionHeading
             className="max-w-[640px]"
             eyebrow="What we stand for"
-            title="The values behind every free class"
+            title="Four things we don't bend on"
           />
           <div className="mt-10 grid gap-[22px] sm:grid-cols-2">
             {values.map((value) => (
@@ -163,36 +199,35 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* Programs */}
-      <section className="py-section">
-        <Container>
+      {/* Training — overview, lives on its own site */}
+      <section className="bg-paper-raised border-y border-line py-section">
+        <Container className="grid items-center gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-[54px]">
           <SectionHeading
-            className="max-w-[680px]"
-            eyebrow="Free programs"
-            title="Classes for every age and level"
-            intro="All taught free at the Manhattanville Community Center in Harlem. Gladiators NYC is our flagship combat program; the full steel experience lives on its own site."
-            introClassName="max-w-[52ch]"
+            eyebrow="The training side"
+            title="Gladiators NYC"
+            intro="The other half of what we do: full-contact armored combat and fitness, taught free in Harlem. Damion started it in 2013, and it's the oldest league of its kind in the city. The schedule and booking live on its own site."
+            introClassName="max-w-[46ch]"
           />
-          <div className="mt-10 grid gap-[18px] md:grid-cols-3">
-            {programs.map((program) => (
-              <Card key={program.name} className="flex flex-col p-[26px]">
-                <span className="self-start rounded-pill bg-green-soft px-3 py-1 text-[12px] font-bold uppercase tracking-[0.08em] text-green">
-                  {program.audience}
-                </span>
-                <h3 className="mt-3.5 text-[20px] font-extrabold tracking-[-0.02em]">
+          <div>
+            <div className="flex flex-wrap gap-2.5">
+              {programs.map((program) => (
+                <span
+                  key={program.name}
+                  className="rounded-pill border border-line bg-card px-4 py-2 text-[14.5px] font-semibold text-ink"
+                >
                   {program.name}
-                </h3>
-                <p className="mt-2 text-[15.5px] text-muted">{program.body}</p>
-              </Card>
-            ))}
-          </div>
-          <div className="mt-9 flex flex-wrap gap-3">
-            <Button href={GLADIATORS_HREF} variant="red" arrow>
-              Enter Gladiators NYC
-            </Button>
-            <Button href={links.contact} variant="ghost">
-              Ask about the schedule
-            </Button>
+                  <span className="ml-2 text-[13px] font-normal text-muted">{program.audience}</span>
+                </span>
+              ))}
+            </div>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Button href={TRAINING_HREF} variant="red" arrow>
+                Go to the training site
+              </Button>
+              <Button href={links.contact} variant="ghost">
+                Ask us a question
+              </Button>
+            </div>
           </div>
         </Container>
       </section>

@@ -24,8 +24,8 @@ export function Pillars() {
         <SectionHeading
           className="mb-[34px]"
           eyebrow="What we do"
-          title="One mission, two ways to take part."
-          intro="Train for free with our flagship combat program, or help power the work through giving and the holiday gift drive."
+          title="Two things, out of one gym in Harlem."
+          intro="Santa's Letters answers kids' wishes every December. The training runs all year. Both are free to the people who use them."
           introClassName="max-w-[48ch]"
         />
 

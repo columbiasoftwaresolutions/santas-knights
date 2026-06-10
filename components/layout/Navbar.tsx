@@ -28,7 +28,7 @@ export function Navbar() {
 
         <div className="ml-auto flex items-center gap-3">
           <Button href={GLADIATORS_HREF} variant="ghost" className="px-5 py-[11px] text-[15px]">
-            Gladiators NYC ↗
+            Training ↗
           </Button>
           <Button href={links.donate} variant="red" className="px-[22px] py-[11px] text-[15px]">
             Donate

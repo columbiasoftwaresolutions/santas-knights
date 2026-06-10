@@ -10,10 +10,10 @@ export function DonateBand() {
     >
       <Container className="relative flex flex-wrap items-center justify-between gap-[30px] py-14">
         <div>
-          <h2 className="max-w-[20ch] text-h2-band">Your gift keeps it free.</h2>
-          <p className="mt-2.5 max-w-[40ch] opacity-90">
-            Every donation is tax-deductible and goes straight to free training, armor, and
-            community programs.
+          <h2 className="max-w-[20ch] text-h2-band">Your gift is what makes it free.</h2>
+          <p className="mt-2.5 max-w-[42ch] opacity-90">
+            Donations pay for the holiday gifts, the classes, and the events. All of it is
+            tax-deductible, and all of it goes to the work.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">

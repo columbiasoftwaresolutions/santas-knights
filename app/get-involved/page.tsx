@@ -7,18 +7,12 @@ import { Photo } from "@/components/ui/Photo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { NewsletterForm } from "@/components/sections/NewsletterForm";
 import { PageHero } from "@/components/sections/PageHero";
-import {
-  links,
-  volunteerRoles,
-  waysToGive,
-  waysToHelp,
-  GLADIATORS_HREF,
-} from "@/content/site";
+import { links, volunteerRoles, waysToGive, waysToHelp } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Get Involved · Santa's Knights",
   description:
-    "Train, volunteer, or give. Every class is free for participants, funded by donors and volunteers. Find your way to support free martial arts and community in Harlem.",
+    "Adopt a kid's letter to Santa, volunteer, or donate. Santa's Knights is a Harlem 501(c)(3); everything we run is free to the people we serve and paid for by people who chip in.",
 };
 
 /** Accent classes per "way to help" card, keeping color roles consistent. */
@@ -35,13 +29,13 @@ export default function GetInvolvedPage() {
         eyebrow="Get involved"
         title={
           <>
-            It takes a community to keep it <em className="font-serif font-medium italic text-red">free</em>.
+            Ways to <em className="font-serif font-medium italic text-red">help out</em>.
           </>
         }
-        intro="There's a place for everyone here, on the mat, behind the scenes, or behind a donation. Here's how you can be part of it."
+        intro="The most direct thing you can do is adopt a kid's letter at Christmas. There's plenty else too: volunteering through the year, donating, or coming to train yourself."
       >
-        <Button href={GLADIATORS_HREF} variant="red" arrow>
-          Train for free
+        <Button href={links.adoptLetter} variant="red" arrow>
+          Adopt a letter
         </Button>
         <Button href="#volunteer" variant="ghost">
           Volunteer
@@ -90,8 +84,8 @@ export default function GetInvolvedPage() {
           <div className="md:sticky md:top-[110px]">
             <SectionHeading
               eyebrow="Volunteer"
-              title="Bring whatever you've got"
-              intro="You don't need to be a fighter to make this work. Coaches, organizers, marketers, and holiday elves all keep the program running, and most of it can fit around a regular schedule."
+              title="You don't have to fight to be useful"
+              intro="People sort the holiday letters, run the gift event, keep the books, handle the social accounts, and coach classes. Pick what fits. Most of it works around a job."
               introClassName="max-w-[44ch]"
             />
             <div className="mt-7 flex flex-wrap gap-3">
@@ -106,7 +100,7 @@ export default function GetInvolvedPage() {
               <span aria-hidden className="text-green">
                 ♥
               </span>
-              No experience required for most roles, just reliability and heart.
+              Most roles ask for time, not experience.
             </p>
           </div>
 
@@ -145,17 +139,17 @@ export default function GetInvolvedPage() {
               <SectionHeading
                 tone="onColor"
                 size="band"
-                eyebrow="A seasonal way to give"
-                title="Letters to Santa"
-                intro="Each year, Harlem's kids write to Santa, and our community helps make their holidays brighter. Adopt a letter and grant a wish, give a gift, or volunteer as one of Santa's Elves at the celebration."
+                eyebrow="Santa's Letters"
+                title="Adopt a letter this December"
+                intro="Pick a kid's wish off the pile and send the gift they asked for. We keep the child's details private the whole way through. You just make sure the present shows up."
                 introClassName="max-w-[42ch]"
               />
               <div className="mt-6 flex flex-wrap gap-3">
-                <Button href={links.lettersLearnMore} variant="cream">
-                  Learn how it works
+                <Button href={links.adoptLetter} variant="cream">
+                  How it works
                 </Button>
-                <Button href={links.volunteer} variant="clear">
-                  Become an Elf
+                <Button href={links.contact} variant="clear">
+                  Help sort letters
                 </Button>
               </div>
             </div>
@@ -175,8 +169,8 @@ export default function GetInvolvedPage() {
           <SectionHeading
             className="max-w-[640px]"
             eyebrow="Donate"
-            title="Your gift keeps every class at $0"
-            intro="Santa's Knights is a 501(c)(3), so every donation is tax-deductible and goes straight to free training, armor, and community programs."
+            title="Where your money goes"
+            intro="We're a 501(c)(3), so every gift is tax-deductible. It pays for the holiday presents, the free classes, and the events that keep the neighborhood showing up."
             introClassName="max-w-[52ch]"
           />
           <div className="mt-10 grid gap-[18px] md:grid-cols-3">
@@ -202,8 +196,8 @@ export default function GetInvolvedPage() {
             <SectionHeading
               eyebrow="Stay in the loop"
               eyebrowClassName="text-gold"
-              title="Class schedules, news & ways to help"
-              intro="One short email when there's something worth knowing, no spam, ever."
+              title="News, and ways to help"
+              intro="A short email when there's something worth passing on, like the letter drive opening. We don't send much."
             />
             <NewsletterForm />
           </Card>

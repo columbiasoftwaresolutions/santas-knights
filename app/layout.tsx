@@ -21,9 +21,9 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Santa's Knights · Free martial arts, fitness & community in Harlem",
+  title: "Santa's Knights · A Harlem nonprofit & the Santa's Letters program",
   description:
-    "Santa's Knights is a 501(c)(3) nonprofit bringing free martial arts, fitness, and community to Harlem and beyond. Home of Gladiators NYC and the Letters to Santa gift drive.",
+    "Santa's Knights is a Harlem 501(c)(3) nonprofit. We answer kids' letters to Santa every December and teach free martial arts and fitness all year. Founded by Damion DiGrazia.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

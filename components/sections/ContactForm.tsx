@@ -22,10 +22,10 @@ export function ContactForm() {
         <div aria-hidden className="text-[34px] text-green">
           ♔
         </div>
-        <h3 className="mt-2 text-h3 text-green">Thanks, we&apos;ll be in touch</h3>
+        <h3 className="mt-2 text-h3 text-green">Got it, thanks</h3>
         <p className="mx-auto mt-2 max-w-[42ch] text-muted">
-          Your message is on its way. We usually reply within a few days. In a hurry? Email us
-          directly at{" "}
+          Your message is on its way. We usually write back within a few days. If you need us sooner,
+          email{" "}
           <a href={`mailto:${org.email}`} className="font-semibold text-green underline">
             {org.email}
           </a>
@@ -70,7 +70,7 @@ export function ContactForm() {
         <label htmlFor="reason" className={labelBase}>
           I&apos;m reaching out about
         </label>
-        <select id="reason" name="reason" defaultValue="classes" className={fieldBase}>
+        <select id="reason" name="reason" defaultValue="letters" className={fieldBase}>
           {contactReasons.map((reason) => (
             <option key={reason.value} value={reason.value}>
               {reason.label}

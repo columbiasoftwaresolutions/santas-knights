@@ -15,15 +15,15 @@ export function GetInvolved() {
             as="h3"
             size="h3"
             eyebrow="Get involved"
-            title="Volunteer or join the crew"
-            intro="Coach, help out on community days, or step onto the mat and train. There's a place for everyone, and no experience is needed to start."
+            title="Lend a hand"
+            intro="Adopt a letter, sort the holiday mail, help run the gift event, or coach a class. Most of it takes no experience, just some time."
           />
           <div className="mt-[22px] flex flex-wrap gap-3">
-            <Button href={links.volunteer} variant="ink">
-              Volunteer with us
+            <Button href={links.getInvolved} variant="ink">
+              Ways to help
             </Button>
-            <Button href={links.findClass} variant="ghost">
-              Find a class
+            <Button href={links.adoptLetter} variant="ghost">
+              Adopt a letter
             </Button>
           </div>
         </Card>

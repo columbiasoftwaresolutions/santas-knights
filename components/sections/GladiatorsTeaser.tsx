@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Photo } from "@/components/ui/Photo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { gladiatorsMeta, GLADIATORS_HREF } from "@/content/site";
+import { gladiatorsMeta, links, GLADIATORS_HREF } from "@/content/site";
 
 /**
  * Tonal bridge into the Gladiators NYC "steel world". This is only a teaser —
@@ -19,10 +19,10 @@ export function GladiatorsTeaser() {
           <SectionHeading
             tone="onDark"
             size="displaySteel"
-            eyebrow="The flagship program"
+            eyebrow="The training side"
             title="Gladiators NYC"
-            intro="Step into the oldest and premiere league, school, and team of armored combat in New York City, full-contact, steel weapons, real armor. Taught free, led by the founder of the sport in NYC."
-            introClassName="max-w-[42ch] text-[17px]"
+            intro="Full-contact armored combat with steel weapons and real armor, taught free in Harlem. It's the oldest league of its kind in the city, and Damion started it. The schedule and booking live on its own site."
+            introClassName="max-w-[44ch] text-[17px]"
           />
           <div className="mt-7 mb-7 flex flex-wrap gap-[26px]">
             {gladiatorsMeta.map((item) => (
@@ -34,10 +34,10 @@ export function GladiatorsTeaser() {
           </div>
           <div className="flex flex-wrap items-center gap-3.5">
             <Button href={GLADIATORS_HREF} variant="steel" arrow>
-              Enter Gladiators NYC
+              Go to the training site
             </Button>
-            <Button href={GLADIATORS_HREF} variant="bone">
-              See the classes
+            <Button href={links.about} variant="bone">
+              More about the org
             </Button>
           </div>
         </div>

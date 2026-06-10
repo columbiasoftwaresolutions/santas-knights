@@ -15,8 +15,8 @@ export default function HomePage() {
       <ImpactStrip />
       <Mission />
       <Pillars />
-      <GladiatorsTeaser />
       <LettersToSanta />
+      <GladiatorsTeaser />
       <GetInvolved />
       <Press />
       <DonateBand />

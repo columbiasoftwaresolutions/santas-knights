@@ -9,14 +9,13 @@ export function Footer() {
         <div className="mb-[42px] grid grid-cols-1 gap-9 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           <div>
             <Brand className="mb-3.5 text-white" />
-            <p className="max-w-[34ch] text-[15px] text-[#a89d8b]">
-              Free martial arts, fitness, and community for everyone, changing lives through
-              training, purpose, and service.
+            <p className="max-w-[36ch] text-[15px] text-[#a89d8b]">
+              A Harlem nonprofit. We answer kids&apos; letters to Santa each December, and teach free
+              martial arts and fitness the rest of the year.
             </p>
             <p className="mt-4 max-w-[42ch] text-[13px] leading-relaxed text-[#8a8071]">
               Santa&apos;s Knights, Inc. is a registered 501(c)(3) nonprofit. Gladiators NYC is its
-              flagship free martial arts &amp; fitness program, wholly owned and operated by
-              Santa&apos;s Knights.
+              free training program; the schedule and class booking live on the training site.
             </p>
           </div>
 

@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ContactForm } from "@/components/sections/ContactForm";
 import { PageHero } from "@/components/sections/PageHero";
-import { faqs, links, org, socials, GLADIATORS_HREF } from "@/content/site";
+import { faqs, links, org, socials } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Contact · Santa's Knights",
@@ -38,10 +38,10 @@ export default function ContactPage() {
         eyebrow="Contact"
         title={
           <>
-            Come train, or just <em className="font-serif font-medium italic text-red">say hello</em>.
+            Get in <em className="font-serif font-medium italic text-red">touch</em>.
           </>
         }
-        intro="Questions about classes, volunteering, donating, or Letters to Santa? Send a message, give us a call, or stop by the gym in Harlem."
+        intro="Adopting a letter, volunteering, donating, or asking about training? Send a message, give us a call, or stop by in Harlem."
       />
 
       {/* Form + details */}
@@ -51,8 +51,8 @@ export default function ContactPage() {
             <SectionHeading
               className="mb-8"
               eyebrow="Send a message"
-              title="Tell us how we can help"
-              intro="We read everything that comes in. No question is too small, especially if you've never trained before."
+              title="Drop us a line"
+              intro="We read everything that comes in and usually write back within a few days. If it's about Santa's Letters, say so and we'll get you the details."
               introClassName="max-w-[46ch]"
             />
             <ContactForm />
@@ -80,10 +80,10 @@ export default function ContactPage() {
                   {org.email}
                 </a>
               </DetailRow>
-              <DetailRow label="Training days">
-                Three days a week in Harlem
+              <DetailRow label="Training schedule">
+                On the training site
                 <span className="mt-1 block text-[14px] font-normal text-muted">
-                  Message us for the current class schedule.
+                  Classes run several days a week. The current schedule and booking live there.
                 </span>
               </DetailRow>
             </div>
@@ -121,7 +121,7 @@ export default function ContactPage() {
             <SectionHeading
               eyebrow="Find us"
               title="Manhattanville Community Center, Harlem"
-              intro="Our home base sits at 530 West 133rd Street, right in the heart of Manhattanville."
+              intro="We're at 530 West 133rd Street, between Broadway and Amsterdam."
               introClassName="max-w-[46ch]"
             />
             <Button href={mapLink} variant="ghost" className="px-5 py-3 text-[15px]">
@@ -147,12 +147,12 @@ export default function ContactPage() {
             <SectionHeading
               eyebrow="Before you ask"
               title="Common questions"
-              intro="Still unsure about something? Send a message above, we're happy to help."
+              intro="If it's not here, send a message above and we'll sort it out."
               introClassName="max-w-[40ch]"
             />
             <div className="mt-7 flex flex-wrap gap-3">
-              <Button href={GLADIATORS_HREF} variant="red" arrow>
-                Find a class
+              <Button href={links.adoptLetter} variant="red" arrow>
+                Santa&apos;s Letters
               </Button>
               <Button href={links.getInvolved} variant="ghost">
                 Get involved
