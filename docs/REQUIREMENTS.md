@@ -14,22 +14,27 @@ See also: [README.md](../README.md) (overview/data model), [ROLLOUT.md](./ROLLOU
 - Role-based access: `public`, `participant`, `instructor`, `admin`. Roles on the `users` record, enforced via RLS.
 - Mobile-first responsive design.
 - New stack built in a **`noindex` beta** environment; public cutover is a separate, Nicolas-coordinated event (see ROLLOUT.md).
-- **One primary site: `santasknights.org`** is the info hub for both the Gladiators program and Letters to Santa. **`gladiators.nyc` redirects into it** (see Site Architecture below).
-- `SUPABASE_SERVICE_ROLE_KEY` server-only.
+- **Marketing context:** as a nonprofit, the org has a **~$10k/month Google Ads grant** and a marketing lead to optimize campaigns. SEO/landing-page quality and a clean cutover matter — the live Wix site must not be undercut in search before cutover. Discovery today is heavily **Instagram-driven**.
+- **This site = `santasknights.org`** — the Santa's Knights nonprofit as a whole **plus the Letters to Santa program.** **Gladiators NYC (`gladiators.nyc`) is a separate, linked site** carrying training/classes, booking + waiver, armor rentals, and the XP tracker (see Site Architecture below). Linked but distinct: separate codebases, separate deployments, separate cutovers.
+- `SUPABASE_SECRET_KEY` server-only.
 
 ---
 
 ## Site Architecture & Brand Split
 
-**Santa's Knights, Inc.** is the 501(c)(3) nonprofit / parent org. **Gladiators NYC** is its wholly-owned combat program/team brand. The classes *are* the Gladiators program, delivered free by the nonprofit. **Letters to Santa** is the nonprofit's charitable gift drive.
+**Santa's Knights, Inc.** is the 501(c)(3) nonprofit / parent org. **Gladiators NYC** is its combat program/team brand. The classes *are* the Gladiators program, delivered free by the nonprofit. **Letters to Santa** is the nonprofit's charitable gift drive.
 
-**Decision:** build **one site (`santasknights.org`)** that hosts everything, holding two brand tones — Santa's Knights as the warm charitable wrapper, the Gladiators section keeping its gritty combat identity. **`gladiators.nyc` redirects to the Gladiators section** of the main site (no separate Gladiators site is built).
+**Decision (updated):** build **two distinct but linked sites**, not one:
 
-| Area | Brand | Features (high level) |
-| --- | --- | --- |
-| **Nonprofit / shared** | Santa's Knights | Home, About/Mission, Donate, Membership/Get Involved, Contact, Links, newsletter, auth |
-| **Combat program** | Gladiators NYC | Training/Classes, booking + waiver, Team/Fighters, Media/Gallery, Events/Tickets, Shop/Armory |
-| **Charity drive** | Santa's Knights | Letters to Santa info, submission portal, swipe/donor UI |
+1. **`santasknights.org` — this site/repo.** The Santa's Knights nonprofit as a whole **plus the Letters to Santa program.** Warm, charitable brand tone. Scope: nonprofit/shared info pages + the Letters to Santa info and submission/swipe portal.
+2. **`gladiators.nyc` — separate site.** The Gladiators NYC combat program: training/classes, **booking + waiver, armor inventory & rentals, instructor check-in, the XP/gamification tracker,** team/fighters, media, events, shop/armory. Gritty combat identity.
+
+The two **cross-link** (Santa's Knights links out to Gladiators for training; Gladiators links back to the nonprofit, Donate, and Letters to Santa) but are **separate codebases, deployments, and cutovers** (see ROLLOUT.md). `gladiators.nyc` is **not** a redirect into this site — it is its own site.
+
+| Site | Brand | Features (high level) | Stages here |
+| --- | --- | --- | --- |
+| **`santasknights.org`** *(this repo)* | Santa's Knights | Home, About/Mission, Donate, Membership/Get Involved, Contact, Links, Sponsors, newsletter, auth · **Letters to Santa** info + submission portal + swipe/donor UI | Stage 1 (nonprofit pages) + Stage 3 |
+| **`gladiators.nyc`** *(separate site)* | Gladiators NYC | Training/Classes, Team/Fighters, Media/Gallery, Events/Tickets, Shop/Armory · booking + waiver, instructor check-in, XP/gamification, armor inventory & rentals, dashboards, admin config | Stage 1 (Gladiators pages) + Stage 2 |
 
 **Payments stay external** (PRD excludes in-app payments/e-commerce): **Donate** → external donation processor; **Shop/Armory** → existing/external store; **Tickets** → Eventbrite; **Gifts** → Amazon. All redirects, no on-site processing.
 
@@ -50,15 +55,18 @@ See also: [README.md](../README.md) (overview/data model), [ROLLOUT.md](./ROLLOU
 - `[v1]` **Links** — consolidated social/stream links (link-in-bio style).
 - `[v1]` **Sponsors** — logo grid + contact.
 
-### Pages — Gladiators NYC section (combat program)
+### Pages — Gladiators NYC (separate `gladiators.nyc` site)
+> These live on the **separate Gladiators NYC site**, not in this repo. Listed here for engagement completeness; this site only **cross-links out** to them. Stage 2 (below) also belongs to the Gladiators site.
 - `[v1]` **Training ("Armored Up") / Classes** — class catalog (Gladiator Bootcamp, Armored Practice, Women's Medieval Combat, Fundamentals, Veterans program, etc.), all free; booking CTA (booking itself = Stage 2).
 - `[v1]` **Team / Fighters** — roster, competition history, combat identity.
 - `[v1]` **Media / Gallery** — photos, press, highlights.
 - `[v1]` **Events / Tickets** — prominent CTA out to Eventbrite (no embed, avoids CLS).
 - `[v1]` **Shop / Armory** — swords, axes, armor, apparel → links out to **external** store (e-commerce not built here).
-- `[v1]` **`gladiators.nyc` redirect** — domain/links redirect to the Gladiators section of `santasknights.org`.
 
-### Pages — Letters to Santa
+### Cross-link from this site
+- `[v1]` Santa's Knights pages (Home, Get Involved, etc.) link out to `gladiators.nyc` for training/classes; the Gladiators site links back to Donate and Letters to Santa.
+
+### Pages — Letters to Santa *(this site)*
 - `[v1]` **Letters to Santa** — info / landing page explaining the gift drive (submission + swipe portal = Stage 3).
 
 ### Technical
@@ -67,6 +75,7 @@ See also: [README.md](../README.md) (overview/data model), [ROLLOUT.md](./ROLLOU
 - `[v1]` Auth scaffolding in place (accounts not required for public pages, but the system is ready).
 - `[v1]` Vercel deployment with CI/CD from GitHub.
 - `[v1]` Migrate all existing Wix public content.
+- `[v1]` **Historical data import** — participant/attendance data available from the current and previous sites (the existing Wix booking system tracks **basic attendance only**); import what's usable. Damion to provide admin access to current systems.
 - `[v1]` Lighthouse ≥ 90.
 
 ### Out of scope for Stage 1
@@ -75,6 +84,8 @@ Booking flows, dashboards/XP, Santa's Letters.
 ---
 
 ## Stage 2 — Training Tracker & Booking (Weeks 3–7)
+
+> **Site:** this entire stage lives on the **separate `gladiators.nyc` site**, not on `santasknights.org`. Documented here for engagement completeness. (Auth/accounts here are Gladiators-side and distinct from any Santa's Knights / Letters consent records.)
 
 **Objective:** booking + digital waiver, instructor check-in, and a gamified XP system.
 
@@ -86,7 +97,10 @@ Booking flows, dashboards/XP, Santa's Letters.
 - `[v1]` **Immutable signed waiver record** capturing: waiver version, full waiver text at time of signing, participant name, DOB, parent/guardian name (if under 18), timestamp, checkbox consent, typed legal name, IP/device/browser metadata if available, and a generated PDF (or equivalent immutable record). Stored in Supabase Storage.
 - `[v1]` Typed-name e-signature + checkbox consent is acceptable for v1.
 - `[v1]` Re-sign required when waiver text **materially** changes; minor typo fixes do not trigger re-sign.
+- `[v1]` **Media release / photo consent** — separate opt-in for use of participant photos/video in marketing (Instagram, etc.), captured at registration and versioned + stored like the liability waiver. Parent/guardian consent for minors.
 - `[v1]` Waivers never auto-deleted.
+
+  _Volume context: ~67 active participants per cycle, roughly **half new each session** — first-time waiver + media-release signing must be fast and frictionless (checkbox + typed name acceptable; see above). Damion to provide an updated waiver document._
 - `[v1]` Class browsing + registration tied to the participant's account.
 - `[v1]` Class capacity enforced at registration.
 - `[v1]` Active waiver required to register for any class/event.
@@ -148,7 +162,7 @@ Booking flows, dashboards/XP, Santa's Letters.
 
 ## Stage 3 — Santa's Letters / Santa's Knights (Weeks 8–12)
 
-**Objective:** a nationwide, swipe/card-style gifting portal (not a static form). Scale: hundreds of letters/season normal, thousands possible, **Nov–Dec spike**.
+**Objective:** a nationwide, swipe/card-style gifting portal (not a static form). Scale: hundreds of letters/season normal, thousands possible, **Nov–Dec spike**. **Target launch ahead of the Oct–Nov ramp** so it's live for the Christmas season.
 
 **Blockers before start:** gift validation policy.
 
@@ -164,7 +178,8 @@ Booking flows, dashboards/XP, Santa's Letters.
 - `[future]` **AI-assisted letter review** — scan upload for sensitive info (last name, address, phone, school, email, socials) and prompt the parent to redact/confirm before submission. Design the workflow so AI/human review can be layered in as volume grows.
 
 ### 3.2 Swipe UI (Donors / Site Visitors)
-- `[v1]` Swipe/card interface, one letter per card, mobile + desktop.
+- `[v1]` Swipe/card interface, one letter per card, mobile + desktop. **Right-swipe = purchase intent.**
+- `[v1]` **Minimize friction: target ≤2–3 taps/clicks from swipe to a completed Amazon purchase.**
 - `[v1]` Card front shows the **handwritten letter**; engaging flips/opens to the related Amazon Wishlist.
 - `[v1]` Card contents: child's first name + age, short wish note/excerpt, handwritten letter image.
 - `[v1]` "Gift This" opens the Amazon product/wishlist in a **new tab**. **No checkout/payment on-site** — Amazon handles fulfillment; Santa's Knights never receives purchase money.
@@ -190,3 +205,5 @@ In-app payments/e-commerce · native mobile app · live streaming integration ·
 ## Open questions
 
 Tracked in PRD §8 / Damion's notes — minors & guardian flow, final waiver text & retention, class structure/prereqs, full XP values & unlock thresholds, armor inventory count & rental lifecycle & damage policy, Santa's Letters gift price caps & validation & seasonal volume. Plus the **training-video** decisions in §2.4.
+
+**Business/legal (project-level, outside the build):** the team was advised to establish legal protection — contracts, liability coverage, and a business entity — before launch; Damion also stressed protecting the dev team legally. Out of scope for the site itself but flagged here so it isn't lost. The for-profit **Armored League** expansion was discussed as a future opportunity beyond this engagement.

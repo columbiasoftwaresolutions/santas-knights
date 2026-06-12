@@ -1,6 +1,8 @@
-# The Armored League Platform
+# Santa's Knights — Nonprofit & Letters to Santa Platform
 
-A modern, owned technology stack for **The Armored League** — New York City's premier full-contact armored combat promotion. This platform replaces the organization's legacy Wix site and adds a gamified training tracker plus the nationwide **Santa's Letters** (Santa's Knights) gifting portal.
+A modern, owned technology stack for **Santa's Knights, Inc.** — a New York City 501(c)(3) nonprofit — and its nationwide **Letters to Santa** gifting portal. This platform replaces the organization's legacy Wix presence and delivers the swipe-style donor experience that powers the charitable gift drive.
+
+> **Companion site.** The nonprofit's combat program, **Gladiators NYC** (training/classes, booking + waiver, armor rentals, instructor check-in, and the XP/gamification tracker), lives on a **separate, linked site** at `gladiators.nyc`. It is documented in **[docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md)**. Linked but distinct: separate codebase, deployment, and cutover.
 
 Built by [Columbia Software Solutions](https://columbiasoftwaresolutions.com) · Fall 2026 · PRD v1.0
 
@@ -11,6 +13,7 @@ Built by [Columbia Software Solutions](https://columbiasoftwaresolutions.com) ·
 ## Table of Contents
 
 - [Overview](#overview)
+- [Sites & Brands](#sites--brands)
 - [Tech Stack](#tech-stack)
 - [Phases](#phases)
 - [Users & Roles](#users--roles)
@@ -27,15 +30,26 @@ Built by [Columbia Software Solutions](https://columbiasoftwaresolutions.com) ·
 
 ## Overview
 
-The Armored League hosts live events where fighters compete in 60+ lbs of authentic steel armor with real axes, swords, and maces. The organization needs an owned platform to support its growing training program, live events, and the Santa's Letters charitable initiative.
+**Santa's Knights, Inc.** is a 501(c)(3) nonprofit. **Letters to Santa** is its charitable gift drive: families submit a child's handwritten letter, and donors browse and fulfill wishes through a swipe-style portal — all gift fulfillment handled externally via Amazon. The organization needs an owned platform to host its nonprofit presence and run this high-impact, audience-facing program.
 
 **Goals**
 
-1. Replace the existing Wix site with a modern, owned stack (Next.js + Supabase).
-2. Build a training management system with XP-based gamification for fighters and instructors.
-3. Launch the Santa's Letters gifting portal as a high-impact, audience-facing feature.
+1. Replace the existing Wix presence with a modern, owned stack (Next.js + Supabase) for the nonprofit.
+2. Launch the **Letters to Santa** gifting portal as the platform's flagship, audience-facing feature.
+3. Cross-link cleanly to the **Gladiators NYC** companion site (the combat program / training tracker) without merging the two.
 
-**Sites & brands.** **Santa's Knights, Inc.** is the 501(c)(3) nonprofit / parent org; **Gladiators NYC** is its wholly-owned combat program/team brand; **Letters to Santa** is the nonprofit's charitable gift drive. We build **one primary site — `santasknights.org`** — that hosts both the Gladiators program and Letters to Santa, with `gladiators.nyc` redirecting into it. See [REQUIREMENTS.md](./docs/REQUIREMENTS.md#site-architecture--brand-split) for the full feature split.
+---
+
+## Sites & Brands
+
+**Santa's Knights, Inc.** is the 501(c)(3) nonprofit / parent org; **Gladiators NYC** is its combat program/team brand; **Letters to Santa** is the nonprofit's charitable gift drive. We build **two distinct but linked sites:**
+
+| Site | Brand | Scope | Where documented |
+| --- | --- | --- | --- |
+| **`santasknights.org`** *(this repo)* | Santa's Knights | Nonprofit info pages + **Letters to Santa** portal | This README + [REQUIREMENTS.md](./docs/REQUIREMENTS.md) |
+| **`gladiators.nyc`** *(separate site)* | Gladiators NYC | Training/classes, booking + waiver, armor rentals, instructor check-in, XP tracker | [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md) |
+
+The two cross-link but are separate codebases, deployments, and cutovers. `gladiators.nyc` is **not** a redirect into this site — it is its own site. See [REQUIREMENTS.md](./docs/REQUIREMENTS.md#site-architecture--brand-split) for the full feature split.
 
 ---
 
@@ -46,55 +60,44 @@ The Armored League hosts live events where fighters compete in 60+ lbs of authen
 | Frontend | Next.js (App Router), React — SSR/SSG |
 | Backend / DB | Supabase — PostgreSQL with Row Level Security, real-time subscriptions |
 | Auth | Supabase Auth — email/password, role-based access |
-| File Storage | Supabase Storage — letter images, waiver PDFs |
+| File Storage | Supabase Storage — letter images |
 | Deployment | Vercel (frontend) + Supabase Cloud (backend) |
 | Version Control | GitHub — CI/CD to Vercel |
-| External (redirect only) | Amazon (gifts), Eventbrite (tickets), external donation processor (Donate), external store (Shop/Armory) — no on-site payments or e-commerce |
+| External (redirect only) | Amazon (gifts), external donation processor (Donate) — no on-site payments or e-commerce |
 
 ---
 
 ## Phases
 
-The project is delivered across three sequential phases over 10–12 weeks. Each phase builds on the last; **Phases 2 and 3 can run in parallel.**
+The engagement is delivered across three sequential phases over 10–12 weeks. **This site owns Phase 1 (nonprofit pages) and Phase 3 (Letters to Santa).** Phase 2 — the training tracker — belongs to the **Gladiators NYC companion site** (see [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md)).
 
-| Weeks | Phase | Focus | Deliverable |
-| --- | --- | --- | --- |
-| 1–2 | **Phase 1: Website** | Rebuild site on Next.js + Supabase, migrate Wix content | Deployed public site |
-| 3–7 | **Phase 2: Tracker** | Booking + waiver, instructor check-in, XP engine, dashboard | Training management system |
-| 8–12 | **Phase 3: Santa's Letters** | Letter upload portal, swipe UI, Amazon redirect, moderation | Live gifting feature |
+| Weeks | Phase | Site | Focus | Deliverable |
+| --- | --- | --- | --- | --- |
+| 1–2 | **Phase 1: Website** | This site | Rebuild nonprofit site on Next.js + Supabase, migrate Wix content | Deployed public site |
+| 3–7 | **Phase 2: Tracker** | _Gladiators NYC →_ | Booking + waiver, check-in, XP engine, dashboard | _See companion doc_ |
+| 8–12 | **Phase 3: Santa's Letters** | This site | Letter upload portal, swipe UI, Amazon redirect, moderation | Live gifting feature |
 
 ### Phase 1 — Website Modernization
 
-Migrate off Wix onto an owned stack. Establishes routing, auth scaffolding, and the component library that later phases plug into.
+Migrate off Wix onto an owned stack. Establishes routing, auth scaffolding, and the component library/design system later work plugs into.
 
-**Pages:** Home (hero, event CTA, social links, newsletter signup) · Tickets (direct Eventbrite link) · Training ("Armored Up") · Sponsors · Links · Contact (email-routed form)
+**Pages:** Home (mission hero, what we do, Letters to Santa teaser, Donate CTA, social links, newsletter signup) · About / Mission · Donate (external processor) · Membership / Get Involved · Contact (email-routed form) · Links (link-in-bio) · Sponsors · Letters to Santa landing. Cross-links out to `gladiators.nyc` for training/classes.
 
-**Requirements:** Next.js App Router · Supabase for auth/DB/storage · mobile-first responsive design · Vercel CI/CD from GitHub · auth scaffolding ready (accounts not yet required for public pages).
-
-### Phase 2 — Training Tracker & Booking
-
-- **Booking & Waiver** — account registration, one-time digital liability waiver with an immutable signed record, class browsing/registration, capacity enforcement, instructor roster view.
-- **Instructor Check-In** — elevated-role instructors check in participants; check-ins are timestamped, trigger XP awards, and are stored for grant documentation. Veteran status flagged per participant.
-- **XP & Gamification Engine** — participants earn XP for tracked activities along two configurable tracks (Fighter Path, Instructor Path). All XP values, level names, thresholds, and rewards are **admin-editable data, not hardcoded.**
-- **Admin Configuration Panel** — set XP values/thresholds, view participants & attendance, export CSV for grant applications.
-
-> **XP design principle:** XP rewards engagement, consistency, volunteering, and learning. It can make a participant *eligible to request* a privilege (e.g. armor rental, sparring) but must **never auto-grant safety-sensitive access**. Those always require instructor/admin certification.
-
-**Waiver record** must capture: waiver version, full waiver text at time of signing, participant name, DOB, parent/guardian name (if under 18), timestamp, checkbox consent, typed legal name, IP/device/browser metadata if available, and a generated PDF (or equivalent immutable record). Material waiver changes require re-signing; minor typo fixes do not. Signed waivers are never auto-deleted.
+**Requirements:** Next.js App Router · Supabase for auth/DB/storage · mobile-first responsive design · Vercel CI/CD from GitHub · auth scaffolding ready (accounts not yet required for public pages) · migrate existing Wix public content · Lighthouse ≥ 90.
 
 ### Phase 3 — Santa's Letters
 
 A nationwide gifting portal designed around a **swipe/card-style** experience, not a static form.
 
-- **Submission (families)** — a parent/guardian (not the child) submits on behalf of a child: child's first name, age, wish note, and an Amazon product/wishlist link, plus an uploaded photo/scan of the child's handwritten letter. Held in a moderation queue. No account required. Consent to platform terms required.
-- **Swipe UI (visitors)** — donors browse one letter per card. The card front shows the handwritten letter; engaging flips it to the related Amazon Wishlist. "Gift This" opens Amazon in a new tab. **No payment is processed on-site** — fulfillment is between donor, Amazon, and the family.
+- **Submission (families)** — a parent/guardian (not the child) submits on behalf of a child: child's first name, age, wish note, and an Amazon product/wishlist link, plus an uploaded photo/scan of the child's handwritten letter. Held in a moderation queue. No account required. Consent to platform terms required (versioned, with stored acceptance records).
+- **Swipe UI (visitors)** — donors browse one letter per card; **right-swipe = purchase intent.** The card front shows the handwritten letter; engaging flips it to the related Amazon Wishlist. "Gift This" opens Amazon in a new tab. Target **≤2–3 taps/clicks from swipe to a completed purchase**. **No payment is processed on-site** — fulfillment is between donor, Amazon, and the family.
 - **Admin moderation** — pending queue with approve/reject/hide/flag/request-edit; mark letters fulfilled (fulfilled letters leave the active swipe pool); view submitted/approved/fulfilled totals.
 
 > **Privacy:** Donors must never see a child's full name, home address, phone, email, school, social handles, or other identifying details. Gifts must be age-appropriate, legal, and safe — no weapons, adult, or unsafe items. The platform terms protect Santa's Knights from misuse by either side (off-platform contact, scraping, harassment, attempts to identify families).
 >
 > **Future (designed-for, not built in v1):** AI-assisted letter review that scans uploads for sensitive info and prompts the parent to redact before submission. The moderation workflow should be built so AI/human review can be layered in as volume grows.
 
-Designed for **hundreds of letters per season as normal, thousands as possible, with a major Nov–Dec seasonal spike.**
+Designed for **hundreds of letters per season as normal, thousands as possible, with a major Nov–Dec seasonal spike.** Target launch ahead of the Oct–Nov ramp so it's live for the Christmas season.
 
 ---
 
@@ -102,13 +105,13 @@ Designed for **hundreds of letters per season as normal, thousands as possible, 
 
 | Role | Capabilities |
 | --- | --- |
-| **Public Visitor** | Browse site, buy tickets, interact with Santa's Letters swipe UI |
-| **Training Participant** | Register for classes, sign waivers, track personal XP and progress |
-| **Instructor** | Check participants into classes, certify milestones, manage rosters |
-| **Admin** | Configure XP rules, moderate letters, manage user roles, oversee all content |
+| **Public Visitor** | Browse the nonprofit site, interact with the Santa's Letters swipe UI |
+| **Admin** | Moderate letters, manage user roles, oversee all content |
 | **Letter Submitter** | Submit a Santa's Letter on behalf of a child (no account required) |
 
-Roles are stored on the `users` record and enforced via Supabase Row Level Security. Instructor and admin roles are elevated and assigned by an admin.
+Roles are stored on the `users` record and enforced via Supabase Row Level Security. The admin role is elevated and assigned by an admin.
+
+> **Training Participant** and **Instructor** roles belong to the Gladiators NYC companion site — see [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md).
 
 ---
 
@@ -116,7 +119,7 @@ Roles are stored on the `users` record and enforced via Supabase Row Level Secur
 
 ```
                  ┌─────────────────────────┐
-   Public ─────► │   Next.js (App Router)   │ ◄──── Participants / Instructors / Admins
+   Public ─────► │   Next.js (App Router)   │ ◄──── Admins / Moderators
                  │   Vercel (SSR/SSG, CDN)  │
                  └────────────┬─────────────┘
                               │ Supabase JS client
@@ -124,71 +127,35 @@ Roles are stored on the `users` record and enforced via Supabase Row Level Secur
                  │         Supabase          │
                  │  • Postgres + RLS         │
                  │  • Auth (email/password)  │
-                 │  • Storage (PDFs, images) │
+                 │  • Storage (letter images)│
                  │  • Realtime subscriptions │
                  └───────────────────────────┘
 
-   External (redirect only): Eventbrite (tickets) · Amazon (gifting)
+   External (redirect only): Amazon (gifting) · donation processor (Donate)
+   Cross-link out: gladiators.nyc (separate Gladiators NYC site)
 ```
 
 ---
 
 ## Data Model
 
-Core entities (see the PRD for full field lists):
+Core entities for this site (see the PRD for full field lists):
 
 | Table | Key fields |
 | --- | --- |
-| `users` | id, email, role, veteran_status, waiver_signed_at, created_at |
-| `classes` | id, title, type, instructor_id, datetime, capacity |
-| `registrations` | user_id, class_id, created_at |
-| `checkins` | user_id, class_id, instructor_id, checked_in_at |
-| `xp_events` | user_id, event_type, xp_amount, source_id, created_at |
-| `xp_config` | event_type, xp_value, unlock_threshold (admin-editable) |
-| `armor_inventory` | item_id, set_name, item_type, size, condition, status, assigned_to, checkout_time, expected_return, actual_return, damage_notes, repair_notes, photos, admin_notes |
-| `armor_rentals` | user_id, armor_item_id, class_id, rented_at, certified_by |
-| `waivers` | user_id, version, full_text, participant_name, dob, guardian_name, typed_name, consent, ip/device metadata, pdf_url, signed_at |
+| `users` | id, email, role, created_at |
 | `santa_letters` | id, child_name, child_age, wish_note, amazon_url, image_url, status (pending/approved/fulfilled), created_at |
+| `consent_records` | id, type (guardian/donor), version, full_text, accepted_at, metadata |
 
-> Armor is tracked at the **item level**, not just full sets, so individual pieces (size, condition, repair history, photos) can be managed. The rental lifecycle and damage/loss policy are being finalized with the client.
-
-### Reference: v1 XP values & levels
-
-These are **templated defaults**, admin-editable after kickoff.
-
-<details>
-<summary>XP event values</summary>
-
-| Event | XP |
-| --- | --- |
-| Create account / profile | 5 |
-| Sign waiver | 5 |
-| Attend standard class | 10 |
-| Attend veterans / women's / community class | 10 |
-| Attend armor intro or special workshop | 15 |
-| Volunteer at class/event | 15 |
-| Volunteer at major event | 25 |
-| Bring a verified new participant | 10 |
-| Instructor-approved milestone | 25 |
-| Help with setup/breakdown | 10–20 |
-| No-show | 0 |
-
-</details>
-
-<details>
-<summary>Level thresholds (long growth curve)</summary>
-
-Recruit 0 · Trainee 25 · Novice 75 · Squire 150 · Armsman 300 · Knight Candidate 500 · Knight 750 · Veteran Knight 1,250 · Champion 2,000 · Marshal 3,500 · Legend 5,000
-
-</details>
+> The training tracker's data model (classes, registrations, check-ins, XP, armor, waivers) lives on the Gladiators NYC companion site — see [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md#data-model-training-tables).
 
 ---
 
 ## Local Setup
 
-> The repo is currently a clean slate. These steps describe the intended workflow once the Next.js app is scaffolded.
-
 **Prerequisites:** Node.js 18+, npm (or pnpm), a Supabase account, and the [Supabase CLI](https://supabase.com/docs/guides/cli).
+
+> The site runs without Supabase configured — pages render and forms degrade to friendly notices — but letters, contact, newsletter, and admin features need a Supabase project with `supabase/migrations/0001_init.sql` applied.
 
 ```bash
 # 1. Clone
@@ -219,17 +186,21 @@ Create `.env.local` (and a committed `.env.example` with empty placeholders):
 ```bash
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=     # server-only — never expose to the client
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SECRET_KEY=           # server-only — never expose to the client
 
-# External links
-NEXT_PUBLIC_EVENTBRITE_URL=    # Tickets page redirect
+# External links (redirects only — no on-site payments)
+NEXT_PUBLIC_DONATE_URL=        # external donation processor
+NEXT_PUBLIC_PAYPAL_URL=
+NEXT_PUBLIC_VENMO_URL=
+NEXT_PUBLIC_GLADIATORS_URL=    # https://gladiators.nyc once live
 
-# Contact form (email routing)
+# Contact form email routing (optional — messages are always stored in Supabase)
+RESEND_API_KEY=
 CONTACT_EMAIL_TO=
 ```
 
-> The `SUPABASE_SERVICE_ROLE_KEY` bypasses RLS — use it only in server-side code (route handlers / server actions), never in client components.
+> The `SUPABASE_SECRET_KEY` bypasses RLS — use it only in server-side code (route handlers / server actions), never in client components.
 
 ---
 
@@ -252,14 +223,14 @@ supabase db push
 
 | Task | How |
 | --- | --- |
-| **Assign roles** | Set a user's `role` (participant / instructor / admin) in the Supabase dashboard or the admin panel. |
-| **Manage classes** | Create, edit, and cancel class sessions from the admin dashboard. Set type, instructor, datetime, capacity, and prerequisites. |
-| **Configure XP** | Edit `xp_config` values, level thresholds, badge names, and unlock rules — no code change required. |
-| **Certify unlocks** | Armor rental, sparring, and advanced access require explicit instructor/admin certification (XP alone never grants them). |
-| **Track armor** | Manage item-level inventory: status, assignment, checkout/return times, condition, repair notes, photos. |
-| **Export grant data** | Export participant XP, attendance, and veteran status as CSV for grant applications. |
-| **Moderate letters** | Approve / reject / hide / flag / request edits on Santa's Letters; mark fulfilled to remove from the swipe pool. |
+| **Create the first admin** | Supabase dashboard → Authentication → Add user (email + password), then SQL: `update profiles set role = 'admin' where email = '<that email>';` |
+| **Assign roles** | Set a user's `role` (admin) in the Supabase dashboard. |
+| **Moderate letters** | Sign in at `/admin/login` → approve / reject / hide / flag / request edits; mark fulfilled to remove from the swipe pool. |
+| **Review totals** | The `/admin` dashboard shows submitted / awaiting review / live / fulfilled counts. |
+| **Preview the swipe UI** | `/letters/give?demo=1` shows clearly-labeled sample letters before real submissions exist. |
 
+> Combat-program admin tasks (classes, XP config, armor, grant-data export) live on the Gladiators NYC companion site — see [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md#admin-tasks-gladiators-side).
+>
 > Admin training is delivered post-completion as part of handoff.
 
 ---
@@ -274,7 +245,6 @@ Explicitly excluded from this engagement (possible future work):
 - CMS for non-technical content editing
 - Email notification system (stretch goal only)
 - Donor-facing fulfillment confirmation / self-reporting
-- Fighter-vs-fighter matchmaking or event bracket management
 - Amazon API integration (redirect only)
 
 ---
@@ -283,11 +253,11 @@ Explicitly excluded from this engagement (possible future work):
 
 Tracked decisions pending client input (see PRD §8 and Damion's notes):
 
-- **Minors:** Program assumed 18+; if minors are accepted, a parent/guardian co-sign flow is needed.
-- **Waiver:** Final waiver text to be provided before Phase 2. Typed-name e-signature + checkbox consent is acceptable for v1.
-- **Classes:** Class types defined (intro, fitness, weapons, armor intro, sparring, women's, veterans, special events, volunteer shifts). Advanced/armor/sparring/weapons require instructor approval. Cancellations allowed and tracked; no automatic XP penalties or bans in v1.
-- **Armor:** Rental lifecycle and damage/loss policy still being finalized (coordinating with Shan & Amy).
 - **Santa's Letters:** Gift guidelines (max price, validation), expected seasonal volume, and AI-review rollout timing to be confirmed.
+- **Consent:** Final parent/guardian consent and donor terms text to be provided; versioned acceptance records stored.
+- **Cutover:** Public cutover timing coordinated with Nicolas; keep `noindex` until then (see [ROLLOUT.md](./docs/ROLLOUT.md)).
+
+> Combat-program open questions (minors/waiver, classes, armor, training videos) are tracked in [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md#open-questions-gladiators-side).
 
 ---
 

@@ -4,7 +4,9 @@ Guidance for Claude Code when working in this repository.
 
 ## Project
 
-The Armored League platform — a Next.js + Supabase rebuild replacing a legacy Wix site, plus a training tracker (XP gamification) and the Santa's Knights / Santa's Letters gifting portal. Built by Columbia Software Solutions.
+The **Santa's Knights** platform — a Next.js + Supabase rebuild of the **Santa's Knights, Inc.** 501(c)(3) nonprofit site, plus the **Letters to Santa** gifting portal. Built by Columbia Software Solutions.
+
+The nonprofit's combat program, **Gladiators NYC** (training/classes, booking + waiver, armor rentals, instructor check-in, XP/gamification tracker), is a **separate, linked site** at `gladiators.nyc` — **not** built in this repo. Its scope is documented for reference in [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md). Linked but distinct: separate codebase, deployment, and cutover.
 
 **Deploy (beta):** https://santas-knights.vercel.app/ — internal Vercel beta, auto-deploys from `main`. Not the public production site; keep `noindex` until cutover (see ROLLOUT.md).
 
@@ -13,6 +15,7 @@ Read these before substantial work:
 - **[ROLLOUT.md](./docs/ROLLOUT.md)** — build-≠-cutover strategy, two-track rollout, public cutover checklist.
 - **[CHANGELOG.md](./docs/CHANGELOG.md)** — impact-focused log of every change, maintained for Nicolas (SEO/ads/marketing).
 - **[REQUIREMENTS.md](./docs/REQUIREMENTS.md)** — full feature scope by stage; site architecture & brand split.
+- **[docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md)** — reference spec for the separate Gladiators NYC companion site (combat program & training tracker).
 
 ## ⭐ Required: update the CHANGELOG at commit/push time
 
@@ -50,13 +53,12 @@ Then write the git commit. Keep the CHANGELOG entry and the commit message consi
 ## Tech stack & conventions
 
 - **Next.js (App Router)** on Vercel; **Supabase** (Postgres + RLS, Auth, Storage).
-- `SUPABASE_SERVICE_ROLE_KEY` is **server-only** — never import it into client components.
+- `SUPABASE_SECRET_KEY` is **server-only** — never import it into client components.
 - Mobile-first responsive design (audience is heavily social-media-driven).
-- XP values, level names, thresholds, and rewards are **admin-editable data, not hardcoded**.
-- XP can make a participant *eligible to request* a privilege but must **never auto-grant** safety-sensitive access (armor, sparring) — those require instructor/admin certification.
 - Santa's Letters: never expose a child's identifying details publicly; gifts must be age-appropriate, legal, and safe.
+- _Companion-site conventions (Gladiators NYC, [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md)): XP values/levels/thresholds/rewards are admin-editable data, never hardcoded; XP can make a participant eligible to **request** a privilege but never auto-grants safety-sensitive access (armor, sparring) — those require instructor/admin certification._
 
 ## Environments
 
 - New stack stays **`noindex`** on `beta.*` subdomains until a coordinated public cutover — never let beta compete with the live Wix site in search. See ROLLOUT.md.
-- The Armored League and Santa's Knights are on **separate domains** with separate cutovers.
+- Santa's Knights (`santasknights.org`, this repo) and Gladiators NYC (`gladiators.nyc`, companion site) are on **separate domains** with separate codebases and separate cutovers.

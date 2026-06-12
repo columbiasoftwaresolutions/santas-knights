@@ -9,22 +9,25 @@
  * Placeholder hrefs ("#") are intentional until the real destinations exist.
  */
 
-// TODO: point to the dedicated training site once it's live (separate project).
-export const TRAINING_HREF = "#training";
+// Points to the dedicated training site once it's live (separate project).
+export const TRAINING_HREF = process.env.NEXT_PUBLIC_GLADIATORS_URL || "#training";
 // Kept for existing imports; both refer to the training program's destination.
 export const GLADIATORS_HREF = TRAINING_HREF;
 
 export const links = {
-  donate: "/#donate",
-  paypal: "#",
-  venmo: "#",
+  donate: "/donate",
+  paypal: process.env.NEXT_PUBLIC_PAYPAL_URL || "/donate",
+  venmo: process.env.NEXT_PUBLIC_VENMO_URL || "/donate",
   volunteer: "/get-involved",
-  adoptLetter: "/#letters",
-  lettersLearnMore: "/#letters",
+  adoptLetter: "/letters/give",
+  submitLetter: "/letters/submit",
+  lettersLearnMore: "/letters",
   findClass: TRAINING_HREF,
   about: "/about",
   contact: "/contact",
   getInvolved: "/get-involved",
+  sponsors: "/sponsors",
+  linkInBio: "/links",
 } as const;
 
 export const org = {
@@ -43,7 +46,7 @@ export const org = {
 
 export const navLinks: { label: string; href: string; gladiators?: boolean }[] = [
   { label: "About", href: "/about" },
-  { label: "Santa's Letters", href: "/#letters" },
+  { label: "Santa's Letters", href: "/letters" },
   { label: "Get Involved", href: "/get-involved" },
   { label: "Training", href: TRAINING_HREF, gladiators: true },
   { label: "Contact", href: "/contact" },
@@ -77,7 +80,7 @@ export const pillars: {
     title: "Answering kids' letters to Santa",
     body: "Every December we collect letters from kids around Harlem, take off anything that could identify them, and post the wishes so anyone can pick one and send a gift. It's the reason the nonprofit exists.",
     cta: "How it works",
-    href: "/#letters",
+    href: "/letters",
     image: "/images/hero-community.jpg",
     imageAlt: "Santa's Knights members and families together at a community event",
     photo: "PHOTO: kids and volunteers at the holiday gift event",
@@ -143,6 +146,14 @@ export const programs: { name: string; audience: string }[] = [
   { name: "Gladiator Kids", audience: "Children" },
 ];
 
+/**
+ * Sponsor roster for /sponsors. Add `logo` (path under public/) and `href`
+ * as assets/permissions arrive; name-only entries render as text tiles.
+ */
+export const sponsors: { name: string; logo?: string; href?: string }[] = [
+  { name: "Manhattanville Community Center" },
+];
+
 export const pressLogos: { name: string; src: string }[] = [
   { name: "The Guardian", src: "/images/press/the-guardian.png" },
   { name: "Men's Journal", src: "/images/press/mens-journal.jpg" },
@@ -158,10 +169,12 @@ export const footerColumns: { heading: string; links: { label: string; href: str
     heading: "Explore",
     links: [
       { label: "About", href: "/about" },
-      { label: "Santa's Letters", href: "/#letters" },
+      { label: "Santa's Letters", href: "/letters" },
       { label: "Get Involved", href: "/get-involved" },
+      { label: "Sponsors", href: "/sponsors" },
       { label: "Training site", href: TRAINING_HREF },
-      { label: "Donate", href: "/#donate" },
+      { label: "Donate", href: "/donate" },
+      { label: "All our links", href: "/links" },
     ],
   },
   {

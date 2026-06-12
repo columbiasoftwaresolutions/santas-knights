@@ -1,22 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
 import { Button } from "@/components/ui/Button";
 import { contactReasons, org } from "@/content/site";
+import { sendContactMessage, type EngagementState } from "@/app/actions/engagement";
 
 const fieldBase =
   "w-full rounded-[14px] border-[1.5px] border-line bg-white px-[18px] py-[13px] text-[15.5px] text-ink placeholder:text-muted/70 focus:border-red focus:outline-2 focus:outline-offset-1 focus:outline-red";
 const labelBase = "mb-1.5 block text-[13px] font-bold uppercase tracking-[0.1em] text-muted";
 
+const initialState: EngagementState = { ok: false };
+
 /**
- * Contact capture. Submission is a no-op for now — wire to the messaging /
- * email provider when credentials are available (mirrors NewsletterForm).
- * Falls back to a mailto link so the form is never a dead end.
+ * Contact capture. Messages are stored in Supabase (and forwarded by email
+ * when Resend is configured); the error path always offers a mailto so the
+ * form is never a dead end.
  */
 export function ContactForm() {
-  const [sent, setSent] = useState(false);
+  const [state, formAction, pending] = useActionState(sendContactMessage, initialState);
 
-  if (sent) {
+  if (state.ok) {
     return (
       <div className="rounded-card border border-line bg-green-soft p-[34px] text-center">
         <div aria-hidden className="text-[34px] text-green">
@@ -36,14 +39,7 @@ export function ContactForm() {
   }
 
   return (
-    <form
-      className="grid gap-5"
-      onSubmit={(event) => {
-        event.preventDefault();
-        // TODO: POST to messaging/email provider. No-op for now.
-        setSent(true);
-      }}
-    >
+    <form action={formAction} className="grid gap-5">
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className={labelBase}>
@@ -93,9 +89,15 @@ export function ContactForm() {
         />
       </div>
 
+      {state.message && !state.ok && (
+        <p className="rounded-[14px] border border-red/30 bg-red/5 px-[18px] py-[14px] text-[14.5px] font-semibold text-red">
+          {state.message}
+        </p>
+      )}
+
       <div className="flex flex-wrap items-center gap-4">
-        <Button type="submit" variant="red" arrow>
-          Send message
+        <Button type="submit" variant="red" arrow disabled={pending}>
+          {pending ? "Sending…" : "Send message"}
         </Button>
         <span className="text-[13.5px] text-muted">We typically reply within a few days.</span>
       </div>
