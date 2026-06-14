@@ -155,7 +155,7 @@ Core entities for this site (see the PRD for full field lists):
 
 **Prerequisites:** Node.js 18+, npm (or pnpm), a Supabase account, and the [Supabase CLI](https://supabase.com/docs/guides/cli).
 
-> The site runs without Supabase configured — pages render and forms degrade to friendly notices — but letters, contact, newsletter, and admin features need a Supabase project with `supabase/migrations/0001_init.sql` applied.
+> The site runs without Supabase configured — pages render and forms degrade to friendly notices — but letters, contact, newsletter, and admin features need a Supabase project with the database schema (in [CLAUDE.md](./CLAUDE.md#database-schema)) applied.
 
 ```bash
 # 1. Clone
@@ -171,7 +171,7 @@ cp .env.example .env.local
 
 # 4. (Optional) Run Supabase locally
 supabase start          # spins up local Postgres, Auth, Storage
-supabase db reset       # applies migrations + seed data
+# then apply the schema from CLAUDE.md (Database schema) via the SQL editor
 
 # 5. Run the dev server
 npm run dev             # http://localhost:3000
@@ -207,15 +207,12 @@ CONTACT_EMAIL_TO=
 ## Deployment
 
 - **Frontend** deploys to **Vercel** with CI/CD from the GitHub `main` branch. Pull requests get preview deployments.
-- **Backend** runs on **Supabase Cloud**. Database changes are version-controlled as migrations (`supabase/migrations/`) and applied via `supabase db push`.
+- **Backend** runs on **Supabase Cloud**. The schema is documented in [CLAUDE.md](./CLAUDE.md#database-schema) (Database schema) and applied via the Supabase SQL Editor.
 - Set all environment variables in the Vercel project settings (Production + Preview).
 - **Success target:** Lighthouse score ≥ 90 on the public site.
 
-```bash
-# Apply DB migrations to the hosted project
-supabase link --project-ref <project-ref>
-supabase db push
-```
+> Apply the schema to the hosted project from the Supabase dashboard → **SQL
+> Editor** → paste and run the schema in [CLAUDE.md](./CLAUDE.md#database-schema).
 
 ---
 

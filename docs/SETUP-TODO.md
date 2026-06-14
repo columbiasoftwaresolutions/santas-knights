@@ -15,7 +15,8 @@ Two equivalent paths — pick one:
 - **Directly:** supabase.com → New project, then copy keys by hand (step 2).
 
 Either way, finish by applying the schema: open the Supabase project →
-**SQL Editor** → paste and run [`supabase/migrations/0001_init.sql`](../supabase/migrations/0001_init.sql).
+**SQL Editor** → paste and run the schema in
+[`CLAUDE.md`](../CLAUDE.md#database-schema) (Database schema).
 
 ## 2. Environment variables
 

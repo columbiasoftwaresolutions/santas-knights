@@ -94,8 +94,8 @@ export default async function AdminPage({
   if (admin.status === "unconfigured") {
     return (
       <Notice title="Supabase isn't configured">
-        Set the Supabase environment variables and apply the migration in{" "}
-        <code>supabase/migrations/</code> to use the moderation dashboard.
+        Set the Supabase environment variables and apply the database schema
+        (see <code>CLAUDE.md</code>) to use the moderation dashboard.
       </Notice>
     );
   }

@@ -31,3 +31,7 @@ next-env.d.ts
 # Selected, web-optimized images live in /public/images.
 # Keep source zips out of git — extract into asset-library/ instead.
 *.zip
+
+# e2e test artifacts (the e2e/ scripts are committed; their outputs aren't)
+/e2e-screenshots/
+/e2e-assets/
