@@ -9,10 +9,7 @@ const TONE: Record<Tone, string> = {
 };
 
 /**
- * The card surface: rounded-card + border + tone background, with an optional
- * hover lift. Concentrates the surface decision (and its shadow) so it stops
- * being rebuilt — and drifting — at every call site. Padding/layout stay with
- * the caller since they genuinely vary.
+ * Square paper panel used by the poster system.
  */
 type CardProps = {
   tone?: Tone;
@@ -29,7 +26,7 @@ export function Card({
   ...rest
 }: CardProps & ({ href?: undefined } | { href: string })) {
   const classes = cn(
-    "rounded-card border border-line",
+    "border border-line",
     TONE[tone],
     hover &&
       "transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-card",

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/cn";
 
-/** Centered page column: max-width 1220px, 32px gutters (matches DESIGN.md layout). */
+/** Centered page column for the poster system: max-width 1440px, 24/56px gutters. */
 export function Container({
   children,
   className,
@@ -8,5 +8,7 @@ export function Container({
   children: React.ReactNode;
   className?: string;
 }) {
-  return <div className={cn("mx-auto w-full max-w-[1220px] px-8", className)}>{children}</div>;
+  return (
+    <div className={cn("mx-auto w-full max-w-[1440px] px-6 md:px-14", className)}>{children}</div>
+  );
 }

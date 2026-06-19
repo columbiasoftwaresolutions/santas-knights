@@ -24,7 +24,7 @@ const privacyPoints: { title: string; body: string }[] = [
   },
   {
     title: "No contact, either way",
-    body: "Families and donors stay anonymous to each other. Gifts route through Amazon — nobody exchanges addresses with a stranger.",
+    body: "Families and donors stay anonymous to each other. Amazon handles shipping, so addresses are never exchanged.",
   },
   {
     title: "Gifts are vetted",
@@ -100,7 +100,7 @@ export default function LettersLandingPage() {
               size="h3"
               eyebrow="For gift-givers"
               title="Adopt a wish"
-              intro="Flip through the letters one at a time, the way Damion once picked one off a pile. When one gets you, swipe right and buy the gift on Amazon — it ships to us, the child stays anonymous, and you've made a Christmas."
+              intro="Read the letters one at a time. Choose a wish, then buy the gift on Amazon. The child remains anonymous throughout the process."
             />
             <div className="mt-6 flex-1" />
             <div>
@@ -168,7 +168,7 @@ export default function LettersLandingPage() {
       {/* Closing CTA band */}
       <section className="py-section">
         <Container>
-          <div className="relative overflow-hidden rounded-card-lg bg-green bg-[linear-gradient(160deg,var(--color-green),#22483540)] p-[40px] text-center text-[#eef4ef] md:p-[56px]">
+          <div className="relative overflow-hidden rounded-card-lg bg-green bg-[linear-gradient(160deg,var(--color-green),#1f3f2e)] p-[40px] text-center text-[#eef4ef] md:p-[56px]">
             <span
               aria-hidden
               className="pointer-events-none absolute -top-[30px] -right-5 text-[200px] leading-none text-white/[0.06]"
@@ -176,7 +176,7 @@ export default function LettersLandingPage() {
               ✶
             </span>
             <h2 className="mx-auto max-w-[24ch] text-h2-band text-white">
-              One letter. One gift. One very good morning.
+              Adopt one letter, and make a kid&apos;s Christmas morning.
             </h2>
             <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
               <Button href={links.adoptLetter} variant="cream" arrow>

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { SwipeDeck, type SwipeLetter } from "@/components/letters/SwipeDeck";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured, LETTERS_BUCKET } from "@/lib/supabase/config";
@@ -11,10 +10,10 @@ import { links } from "@/content/site";
 export const metadata: Metadata = {
   title: "Adopt a Letter · Santa's Letters · Santa's Knights",
   description:
-    "Read kids' letters to Santa one at a time. When one gets you, gift the wish on Amazon — the child stays anonymous, and you make a Christmas.",
+    "Read kids' letters to Santa one at a time. Choose a wish and buy the gift on Amazon while the child's identity stays private.",
 };
 
-// The pool changes as letters are approved and fulfilled — render per-request.
+// Render per request because approvals and fulfillment change the pool.
 export const dynamic = "force-dynamic";
 
 const SIGNED_URL_TTL_SECONDS = 60 * 60;
@@ -29,11 +28,23 @@ async function getLetters(): Promise<SwipeLetter[] | null> {
   const supabase = createSupabaseAdminClient();
   if (!supabase) return null;
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("public_letters")
-    .select("id, child_first_name, child_age, wish_note, amazon_url, letter_image_path, created_at")
+    .select("id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, created_at")
     .order("created_at", { ascending: true })
     .limit(150);
+
+  let legacy = false;
+  if (error?.message.includes("amazon_urls")) {
+    const legacyQuery = await supabase
+      .from("public_letters")
+      .select("id, child_first_name, child_age, wish_note, amazon_url, letter_image_path, created_at")
+      .order("created_at", { ascending: true })
+      .limit(150);
+    data = legacyQuery.data as typeof data;
+    error = legacyQuery.error;
+    legacy = true;
+  }
   if (error || !data) {
     console.error("Failed to load letters:", error?.message);
     return [];
@@ -55,13 +66,15 @@ async function getLetters(): Promise<SwipeLetter[] | null> {
     childFirstName: row.child_first_name,
     childAge: row.child_age,
     wishNote: row.wish_note,
-    amazonUrl: row.amazon_url,
+    amazonUrls: legacy
+      ? [String((row as typeof row & { amazon_url?: string }).amazon_url ?? "")].filter(Boolean)
+      : row.amazon_urls ?? [],
     imageUrl: row.letter_image_path ? (signedByPath.get(row.letter_image_path) ?? null) : null,
   }));
 }
 
 /**
- * Sample letters for `?demo=1` — lets the team review the swipe experience on
+ * Sample letters for `?demo=1` let the team review the swipe experience on
  * the beta before real submissions exist. Clearly labeled, never mixed with
  * real data, and the beta is noindex so this never reaches search.
  */
@@ -72,7 +85,10 @@ const DEMO_LETTERS: SwipeLetter[] = [
     childAge: 7,
     wishNote:
       "Dear Santa, I have been very good this year. I would love a watercolor paint set so I can paint the park near my building.",
-    amazonUrl: "https://www.amazon.com/s?k=watercolor+paint+set+kids",
+    amazonUrls: [
+      "https://www.amazon.com/s?k=watercolor+paint+set+kids",
+      "https://www.amazon.com/s?k=sketch+pad+kids",
+    ],
     imageUrl: null,
   },
   {
@@ -81,7 +97,7 @@ const DEMO_LETTERS: SwipeLetter[] = [
     childAge: 10,
     wishNote:
       "Hi Santa! My sneakers are too small now. Size 5 please, any color but mostly blue. Thank you and say hi to the reindeer.",
-    amazonUrl: "https://www.amazon.com/s?k=kids+sneakers+size+5",
+    amazonUrls: ["https://www.amazon.com/s?k=kids+sneakers+size+5"],
     imageUrl: null,
   },
   {
@@ -89,7 +105,7 @@ const DEMO_LETTERS: SwipeLetter[] = [
     childFirstName: "Sofia",
     childAge: 5,
     wishNote: "deer santa. a stuffed dog pleese. a big one. i wil name him biscit.",
-    amazonUrl: "https://www.amazon.com/s?k=large+stuffed+dog+plush",
+    amazonUrls: ["https://www.amazon.com/s?k=large+stuffed+dog+plush"],
     imageUrl: null,
   },
 ];
@@ -105,38 +121,40 @@ export default async function GiveLettersPage({
 
   return (
     <>
-      <section className="border-b border-line pt-[46px] pb-[34px]">
-        <Container className="max-w-[820px] text-center">
-          <Eyebrow>Santa&apos;s Letters</Eyebrow>
-          <h1 className="mt-3 text-h2 font-black tracking-[-0.03em]">
+      <section className="border-b border-line bg-paper py-[clamp(64px,8vw,100px)] text-ink">
+        <Container>
+          <h1 className="max-w-[980px] font-display text-[clamp(54px,9vw,128px)] leading-[0.84] font-black tracking-[-0.04em] uppercase">
             Pick a letter off the{" "}
-            <em className="font-serif font-medium italic text-red">pile</em>.
+            <em className="font-serif font-normal normal-case italic text-red">pile</em>.
           </h1>
-          <p className="mx-auto mt-3 max-w-[52ch] text-muted">
+          <p className="mt-8 max-w-[52ch] text-[19px] text-muted">
             One letter at a time, the way it&apos;s always worked. Swipe right (or tap{" "}
-            <strong className="font-bold text-ink">Gift this</strong>) to grant the wish on
+            <strong className="font-bold">Gift this</strong>) to grant the wish on
             Amazon. Swipe left to read the next one.
+          </p>
+          <p className="mt-3 max-w-[46ch] text-[13.5px] font-semibold tracking-[0.04em] text-red uppercase">
+            Suggested gift value: $20–50 per child/person.
           </p>
         </Container>
       </section>
 
-      <section className="py-[46px]">
+      <section className="bg-paper py-[46px] text-ink">
         <Container className="max-w-[640px]">
           {letters === null ? (
             <EmptyState
               title="The letter drive isn't open yet"
-              body="We're getting the system ready for the season. Check back soon — or leave your email on the homepage and we'll tell you the moment letters go up."
+              body="The letter drive is not open yet. Join the email list on the homepage to hear when approved letters are available."
             />
           ) : letters.length === 0 ? (
             <EmptyState
               title="The pile is empty"
-              body="Every posted letter has been adopted — which is the best possible problem. New letters appear as families submit them and we approve them, so check back soon."
+              body="Every approved letter has been adopted. New letters will appear after families submit them and a moderator approves them."
             />
           ) : (
             <>
               {demo && (
-                <p className="mb-6 rounded-[14px] border border-gold bg-gold-soft/60 px-5 py-3 text-center text-[14px] font-bold text-[#6c5418]">
-                  Demo mode — these are sample letters, not real kids.
+                <p className="mb-6 border border-amber bg-gold-soft/60 px-5 py-3 text-center text-[14px] font-bold text-[#6c5418]">
+                  Demo mode. These are sample letters, not real submissions.
                 </p>
               )}
               <SwipeDeck letters={letters} />
@@ -154,7 +172,7 @@ export default async function GiveLettersPage({
 
 function EmptyState({ title, body }: { title: string; body: string }) {
   return (
-    <div className="rounded-card-lg border border-line bg-card p-[42px] text-center">
+    <div className="border border-line bg-paper-raised p-[42px] text-center">
       <div aria-hidden className="text-[40px] text-green">
         ✶
       </div>

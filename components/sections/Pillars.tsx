@@ -1,67 +1,60 @@
 import { cn } from "@/lib/cn";
 import { Arrow } from "@/components/ui/Arrow";
-import { Card } from "@/components/ui/Card";
-import { Container } from "@/components/ui/Container";
 import { Photo } from "@/components/ui/Photo";
-import { Placeholder } from "@/components/ui/Placeholder";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { pillars } from "@/content/site";
 
-const TAG_STYLES = {
-  train: "bg-[#efe1de] text-red-deep",
-  give: "bg-green-soft text-green",
-} as const;
+const SUB: Record<string, string> = {
+  give: "It's the reason the nonprofit exists.",
+  train: "Beginners welcome. No cost, ever.",
+};
 
-const GO_STYLES = {
-  train: "text-red",
-  give: "text-green",
-} as const;
-
+/** Two full-bleed duotone program blocks for giving and training. */
 export function Pillars() {
   return (
-    <section className="pt-2.5 pb-[30px]">
-      <Container>
-        <SectionHeading
-          className="mb-[34px]"
-          eyebrow="What we do"
-          title="Two things, out of one gym in Harlem."
-          intro="Santa's Letters answers kids' wishes every December. The training runs all year. Both are free to the people who use them."
-          introClassName="max-w-[48ch]"
-        />
+    <section className="grid md:grid-cols-2">
+      {pillars.map((pillar) => {
+        const isGive = pillar.variant === "give";
+        return (
+          <article
+            key={pillar.title}
+            className={cn(
+              "relative flex min-h-[520px] flex-col justify-end overflow-hidden p-12 md:p-14",
+              isGive ? "bg-ink2" : "bg-ink md:border-l md:border-bone/12",
+            )}
+          >
+            <div className="absolute inset-0">
+              <Photo
+                src={pillar.image!}
+                alt={pillar.imageAlt ?? pillar.title}
+                duotone={isGive ? "warm" : "cool"}
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="h-full w-full"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(22,18,15,0.45)_0%,rgba(22,18,15,0.92)_78%)]" />
+            </div>
 
-        <div className="grid gap-[22px] md:grid-cols-2">
-          {pillars.map((pillar) => (
-            <Card key={pillar.title} href={pillar.href} hover className="group flex flex-col overflow-hidden">
-              {pillar.image ? (
-                <Photo
-                  src={pillar.image}
-                  alt={pillar.imageAlt ?? pillar.title}
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                  className="aspect-[16/10]"
-                />
-              ) : (
-                <Placeholder label={pillar.photo} className="aspect-[16/10]" />
-              )}
-              <div className="px-[30px] pt-[30px] pb-8">
-                <span
-                  className={cn(
-                    "mb-3.5 inline-flex self-start rounded-pill px-3 py-[5px] text-xs font-bold uppercase tracking-[0.06em]",
-                    TAG_STYLES[pillar.variant],
-                  )}
-                >
-                  {pillar.tag}
-                </span>
-                <h3 className="mb-2 text-h3">{pillar.title}</h3>
-                <p className="mb-[18px] text-base text-muted">{pillar.body}</p>
-                <span className={cn("flex items-center gap-[7px] text-[15.5px] font-bold", GO_STYLES[pillar.variant])}>
-                  {pillar.cta}
-                  <Arrow />
-                </span>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </Container>
+            <div className="relative z-10">
+              <h3 className="mb-2 font-display text-[clamp(34px,3.6vw,52px)] font-black uppercase leading-[0.92] tracking-[-0.02em] text-bone">
+                {pillar.title}
+              </h3>
+              <p className="mb-5 font-serif text-[21px] italic text-bone">{SUB[pillar.variant]}</p>
+              <p className="mb-7 max-w-[440px] text-base leading-relaxed text-bone/80">
+                {pillar.body}
+              </p>
+              <a
+                href={pillar.href}
+                className={cn(
+                  "group inline-flex w-fit items-center gap-2.5 border-b-2 pb-1 text-[14px] font-bold uppercase tracking-[0.08em] text-bone",
+                  isGive ? "border-red" : "border-amber",
+                )}
+              >
+                {pillar.cta}
+                <Arrow />
+              </a>
+            </div>
+          </article>
+        );
+      })}
     </section>
   );
 }

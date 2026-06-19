@@ -4,13 +4,14 @@ Guidance for Claude Code when working in this repository.
 
 ## Project
 
-The **Santa's Knights** platform — a Next.js + Supabase rebuild of the **Santa's Knights, Inc.** 501(c)(3) nonprofit site, plus the **Letters to Santa** gifting portal. Built by Columbia Software Solutions.
+The **Santa's Knights** platform — a Next.js + Supabase rebuild of the **Santa's Knights, Inc.** 501(c)(3) nonprofit site, plus the **Letters to Santa** gifting portal and **extensive Gladiators NYC program content**, on `santasknights.org`. Built by Columbia Software Solutions.
 
-The nonprofit's combat program, **Gladiators NYC** (training/classes, booking + waiver, armor rentals, instructor check-in, XP/gamification tracker), is a **separate, linked site** at `gladiators.nyc` — **not** built in this repo. Its scope is documented for reference in [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md). Linked but distinct: separate codebase, deployment, and cutover.
+**Scope is Plan v2** ([docs/plan-v2.md](./docs/plan-v2.md)) — **content here, training backend elsewhere**: this repo replicates **every public feature of the live Wix site** — nonprofit pages, member accounts, gallery, donate/membership, partners, the Letters portal, *and* Gladiators **content pages** (class catalog, descriptions, online/video). The Gladiators **training-tracker backend lives on the separate `gladiators.nyc` site — NOT in this repo:** class **booking**, **waivers**, **instructor check-in**, **XP/gamification**, **participant dashboards**, **training-video uploads**, plus the merch **Shop** and **Armory**. This site **cross-links out** for all booking/registration. [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md) is the Gladiators-side spec.
 
 **Deploy (beta):** https://santas-knights.vercel.app/ — internal Vercel beta, auto-deploys from `main`. Not the public production site; keep `noindex` until cutover (see ROLLOUT.md).
 
 Read these before substantial work:
+- **[docs/plan-v2.md](./docs/plan-v2.md)** — ⭐ current scope: the build list. Content (incl. Gladiators content pages) is built here; the Gladiators training-tracker backend + shop + armory live on `gladiators.nyc`. Wins on *where* features are built where docs conflict.
 - **[README.md](./README.md)** — scope, tech stack, phases, data model, setup, admin tasks.
 - **[ROLLOUT.md](./docs/ROLLOUT.md)** — build-≠-cutover strategy, two-track rollout, public cutover checklist.
 - **[CHANGELOG.md](./docs/CHANGELOG.md)** — impact-focused log of every change, maintained for Nicolas (SEO/ads/marketing).
@@ -22,7 +23,7 @@ Read these before substantial work:
 
 The app is built and the Supabase backend is wired up:
 
-- **Routes** (App Router, `app/`): `/` home, `/about`, `/contact`, `/get-involved`, `/donate`, `/sponsors`, `/links`, `/letters` (+ `/submit`, `/give`), `/admin` (+ `/login`).
+- **Routes** (App Router, `app/`): `/` home, `/about`, `/contact`, `/get-involved`, `/donate`, `/sponsors`, `/links`, `/letters` (+ `/submit`, `/give`), `/account` (+ login/register scaffolds), `/gallery`, `/membership`, `/training` + `/online`, and `/admin` (+ `/login`). Expanded account tracking and admin gallery/partners/donations remain planned. No booking/instructor/dashboard routes — those are on `gladiators.nyc`. See [docs/plan-v2.md](./docs/plan-v2.md) §D2.
 - **Supabase** clients in `lib/supabase/` (`browser` / `server` / `admin` / `config`); the admin gate is `lib/auth.ts`; server actions live in `app/actions/`. Every entry point checks `isSupabaseConfigured()` first, so the site builds and runs with features degraded to friendly empty-states before env vars exist.
 - **Env** lives in `.env.local` (template in `.env.example`); the live Supabase project is already configured.
 - **Content** copy/config in `content/` (`site.ts`, `consent.ts` — bump consent `version` strings when terms change).
@@ -67,13 +68,17 @@ Then write the git commit. Keep the CHANGELOG entry and the commit message consi
 - **Next.js (App Router)** on Vercel; **Supabase** (Postgres + RLS, Auth, Storage).
 - `SUPABASE_SECRET_KEY` is **server-only** — never import it into client components.
 - Mobile-first responsive design (audience is heavily social-media-driven).
+- Visual source of truth: `design-demos/home.html` + `design-demos/styles.css`. Use the
+  poster system: Archivo 900 uppercase display, Fraunces italic accents, Hanken body,
+  square controls/panels, warm near-black grounds, paper contrast sections, red/amber
+  flood accents, and no eyebrows/kickers.
 - Santa's Letters: never expose a child's identifying details publicly; gifts must be age-appropriate, legal, and safe.
 - _Companion-site conventions (Gladiators NYC, [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md)): XP values/levels/thresholds/rewards are admin-editable data, never hardcoded; XP can make a participant eligible to **request** a privilege but never auto-grants safety-sensitive access (armor, sparring) — those require instructor/admin certification._
 
 ## Environments
 
 - New stack stays **`noindex`** on `beta.*` subdomains until a coordinated public cutover — never let beta compete with the live Wix site in search. See ROLLOUT.md.
-- Santa's Knights (`santasknights.org`, this repo) and Gladiators NYC (`gladiators.nyc`, companion site) are on **separate domains** with separate codebases and separate cutovers.
+- Plan v2 split: **content on `santasknights.org`** (this repo — nonprofit, Letters, Gladiators content), **training-tracker backend + shop + armory on `gladiators.nyc`** (separate site). This site cross-links out for booking/registration. Separate codebases, deployments, and cutovers (see ROLLOUT.md).
 
 ## Database schema
 
@@ -136,7 +141,7 @@ create table public.santa_letters (
   child_first_name  text not null,
   child_age         int  not null check (child_age between 0 and 17),
   wish_note         text not null,
-  amazon_url        text not null,
+  amazon_urls       text[] not null check (cardinality(amazon_urls) between 1 and 20),  -- one or more Amazon links (any country)
   letter_image_path text,                    -- path in the private "letters" storage bucket
   status            public.letter_status not null default 'pending',
   -- Private fields — never exposed publicly
@@ -165,7 +170,7 @@ create policy "Admins manage letters"
 
 -- Public-safe projection: approved letters only, safe columns only.
 create view public.public_letters as
-  select id, child_first_name, child_age, wish_note, amazon_url, letter_image_path, created_at
+  select id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, created_at
   from public.santa_letters
   where status = 'approved';
 grant select on public.public_letters to anon, authenticated;

@@ -16,10 +16,11 @@ Built fresh on the new stack, gated and `noindex`. No public SEO/ads/analytics e
 
 **Sequence (discrete, low-risk first):**
 
-1. **Waiver capture** — standalone, immediate operational value, validates the Supabase + Auth + Storage foundation. No public-site dependency.
-2. **Training tracker** — booking, instructor check-in, XP engine, participant dashboard. Internal beta for participants/instructors.
-3. **Santa's Letters** — public-facing, launched on its own timeline (mind the **Nov–Dec seasonal spike**).
-4. **Public marketing site** — built in parallel, but its **public cutover is the last, coordinated step** (see [Public Cutover](#public-cutover-the-coordinated-event)), not an early deliverable.
+1. **Member accounts + Letters family tracking** — validates the Supabase + Auth + Storage foundation on this repo. No public-site dependency.
+2. **Santa's Letters** — public-facing, launched on its own timeline (mind the **Nov–Dec seasonal spike**).
+3. **Public marketing site** (incl. Gladiators **content** pages, gallery, donate/membership, partners) — built in parallel, but its **public cutover is the last, coordinated step** (see [Public Cutover](#public-cutover-the-coordinated-event)), not an early deliverable.
+
+> **Waiver capture, the training tracker (booking, check-in, XP, dashboard), shop & armory are a separate `gladiators.nyc` workstream** ([GLADIATORS-SITE.md](./GLADIATORS-SITE.md)), not this repo. This site only **cross-links out** to them.
 
 ### Track B — Public mirroring on Wix (content changes)
 
@@ -45,14 +46,14 @@ To track engagement cleanly, public-facing changes that *will* appear on the new
 | **Beta (new stack)** | New platform build + QA, gated behind auth/password | **`noindex`, `robots: disallow`** |
 | **Preview (Vercel)** | Per-PR preview deployments | `noindex` |
 
-**Primary hub + redirect** — `santasknights.org` is the single main site (hosting both the Gladiators program and Letters to Santa). `gladiators.nyc` redirects into it.
+**Two linked domains** — under **Plan v2** ([plan-v2.md](./plan-v2.md)), `santasknights.org` (this repo) hosts the nonprofit site, Letters to Santa, and **Gladiators content** (class catalog, descriptions, online/video). `gladiators.nyc` is a **separate site** hosting the **training-tracker backend** (booking, waiver, check-in, XP, dashboard), shop & armory. The two **cross-link**; transactional Gladiators actions on this site link out.
 
 | Domain | Role | Production (Wix) | Beta (new stack) |
 | --- | --- | --- | --- |
-| `santasknights.org` | Primary site | Live | `beta.santasknights.org` |
-| `gladiators.nyc` | Redirects → Gladiators section of primary | Live (currently standalone) | n/a — set up 301s at cutover |
+| `santasknights.org` | Nonprofit + Letters + Gladiators **content** | Live | `beta.santasknights.org` |
+| `gladiators.nyc` | Training-tracker backend + shop + armory (**separate site/codebase**) | Live (currently standalone) | separate Gladiators deployment/cutover |
 
-> At cutover, `gladiators.nyc` URLs need **301 redirects mapped to their new Santa's Knights paths** (preserve the existing Gladiators SEO/links and any ad destinations). Coordinate this mapping with Nicolas.
+> Both sites migrate off Wix on **separate cutovers**. Class-booking/training URLs stay on (or move to) `gladiators.nyc`; coordinate any redirects and the cross-link targets with Nicolas so SEO/links and ad destinations are preserved.
 
 > Beta **must stay `noindex`** until cutover so it never competes with the live Wix site in search or cannibalizes ad landing pages. Confirm `robots.txt` + `X-Robots-Tag` before sharing any beta link.
 

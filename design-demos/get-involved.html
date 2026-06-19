@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>Get Involved — Santa's Knights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  /* ============ GET INVOLVED — page styles ============ */
+  .gi-hero{background:var(--paper);color:var(--ink);padding:90px 0 88px;border-bottom:1px solid var(--line);}
+  .gi-hero-grid{display:grid;grid-template-columns:1.15fr 0.85fr;gap:64px;align-items:end;}
+  .gi-hero h1{
+    font-family:var(--display);font-weight:900;
+    font-size:clamp(52px,7vw,108px);line-height:0.86;letter-spacing:-0.03em;
+    text-transform:uppercase;text-wrap:balance;color:var(--ink);
+  }
+  .gi-hero h1 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--red);letter-spacing:-0.02em;}
+  .gi-hero .gi-lede{font-size:19px;line-height:1.6;color:var(--muted);max-width:440px;text-wrap:pretty;}
+
+  /* three ways to help */
+  .gi-help{background:var(--ink);padding:96px 0 100px;}
+  .gi-help-head{font-family:var(--display);font-weight:900;font-size:clamp(30px,3.4vw,46px);text-transform:uppercase;letter-spacing:-0.02em;line-height:0.92;margin-bottom:14px;}
+  .gi-help-sub{font-family:var(--serif);font-style:italic;font-size:21px;color:rgba(232,226,212,0.72);margin-bottom:54px;}
+  .gi-help-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid rgba(232,226,212,0.16);}
+  .gi-card{padding:48px 38px 44px 0;border-right:1px solid rgba(232,226,212,0.14);display:flex;flex-direction:column;}
+  .gi-card:not(:first-child){padding-left:38px;}
+  .gi-card:last-child{border-right:none;}
+  .gi-card .gi-bar{width:54px;height:7px;margin-bottom:30px;}
+  .gi-card.v-red .gi-bar{background:var(--red);}
+  .gi-card.v-amber .gi-bar{background:var(--amber);}
+  .gi-card.v-green .gi-bar{background:var(--green);}
+  .gi-card h3{font-family:var(--display);font-weight:900;font-size:clamp(28px,2.8vw,40px);text-transform:uppercase;letter-spacing:-0.02em;line-height:0.94;margin-bottom:18px;}
+  .gi-card p{font-size:16px;line-height:1.56;color:rgba(232,226,212,0.8);margin-bottom:28px;flex:1;text-wrap:pretty;}
+  .gi-card .gi-link{display:inline-flex;align-items:center;gap:10px;font-family:var(--body);font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:2px solid;padding-bottom:5px;width:fit-content;}
+  .gi-card.v-red .gi-link{border-color:var(--red);}
+  .gi-card.v-amber .gi-link{border-color:var(--amber);}
+  .gi-card.v-green .gi-link{border-color:var(--green);color:var(--bone);}
+  .gi-card .gi-link .arr{font-family:var(--serif);font-style:italic;}
+
+  /* volunteer roles */
+  .gi-roles{background:var(--paper);color:var(--ink);padding:96px 0 100px;}
+  .gi-roles-grid{display:grid;grid-template-columns:0.85fr 1.6fr;gap:56px;align-items:start;}
+  .gi-roles h2{font-family:var(--display);font-weight:900;font-size:clamp(34px,4vw,58px);text-transform:uppercase;letter-spacing:-0.03em;line-height:0.9;color:var(--ink);}
+  .gi-roles h2 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--red);}
+  .gi-roles .gi-roles-lede{margin-top:22px;font-size:17px;line-height:1.6;color:var(--muted);max-width:340px;text-wrap:pretty;}
+  .gi-chips{display:flex;flex-wrap:wrap;gap:14px;}
+  .gi-chip{
+    font-family:var(--display);font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:0.01em;
+    color:var(--ink);background:var(--paper-raised);border:1.5px solid var(--line);
+    padding:16px 22px;line-height:1.1;
+  }
+  .gi-chip .gi-chip-n{font-family:var(--body);font-weight:700;font-size:12px;color:var(--red);margin-right:10px;letter-spacing:0.04em;}
+
+  /* ways to give recap */
+  .gi-give{background:var(--red-deep);color:var(--paper);padding:90px 0 94px;}
+  .gi-give-head{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;margin-bottom:48px;}
+  .gi-give h2{font-family:var(--display);font-weight:900;font-size:clamp(40px,5.4vw,80px);text-transform:uppercase;letter-spacing:-0.03em;line-height:0.88;}
+  .gi-give h2 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--amber);}
+  .gi-give .gi-give-note{font-family:var(--serif);font-style:italic;font-size:19px;color:rgba(247,240,227,0.86);max-width:320px;text-align:right;}
+  .gi-give-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid rgba(247,240,227,0.3);}
+  .gi-give-col{padding:38px 32px 8px 0;border-right:2px solid rgba(247,240,227,0.18);}
+  .gi-give-col:not(:first-child){padding-left:36px;}
+  .gi-give-col:last-child{border-right:none;}
+  .gi-give-col h4{font-family:var(--display);font-weight:900;font-size:26px;text-transform:uppercase;letter-spacing:-0.01em;margin-bottom:14px;}
+  .gi-give-col p{font-size:15px;line-height:1.55;color:rgba(247,240,227,0.86);margin-bottom:22px;}
+  .gi-give-col .gi-give-link{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:2px solid var(--amber);padding-bottom:5px;}
+  .gi-give-col .gi-give-link .arr{font-family:var(--serif);font-style:italic;}
+
+  /* closing CTA */
+  .gi-close{background:var(--ink);padding:118px 0 112px;}
+  .gi-close h2{font-family:var(--display);font-weight:900;font-size:clamp(64px,10vw,150px);line-height:0.82;text-transform:uppercase;letter-spacing:-0.04em;text-wrap:balance;}
+  .gi-close h2 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--amber);letter-spacing:-0.02em;}
+  .gi-close-actions{margin-top:46px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+  .gi-close .fine{margin-top:28px;font-family:var(--serif);font-style:italic;font-size:17px;color:rgba(232,226,212,0.7);}
+
+  @media (max-width:900px){
+    .gi-hero-grid{grid-template-columns:1fr;gap:32px;}
+    .gi-help-grid{grid-template-columns:1fr;}
+    .gi-card{border-right:none;border-bottom:1px solid rgba(232,226,212,0.14);padding:34px 0;}
+    .gi-card:not(:first-child){padding-left:0;}
+    .gi-card:last-child{border-bottom:none;}
+    .gi-roles-grid{grid-template-columns:1fr;gap:32px;}
+    .gi-give-grid{grid-template-columns:1fr;}
+    .gi-give-col{border-right:none;border-bottom:2px solid rgba(247,240,227,0.18);padding:30px 0;}
+    .gi-give-col:not(:first-child){padding-left:0;}
+    .gi-give-col:last-child{border-bottom:none;}
+    .gi-give .gi-give-note{text-align:left;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top">
+  <div class="wrap navrow">
+    <div class="brandmark">
+      <span class="bm-name">Santa's Knights</span>
+      <span class="bm-tag">The Gift of Martial Arts™</span>
+    </div>
+    <div class="navlinks">
+      <a href="donate.html">Donate</a>
+      <a href="about.html">Santa's Knights</a>
+      <a href="training.html">Classes</a>
+      <a href="letters.html">Letters to Santa</a>
+      <a href="membership.html">Membership</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="navactions">
+      <a class="btn" href="donate.html">Donate</a>
+      <a class="btn btn-red" href="letters-give.html">Adopt a letter</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="gi-hero">
+  <div class="wrap gi-hero-grid">
+    <div>
+      <h1>Give us<br>a <em>hand.</em></h1>
+    </div>
+    <div>
+      <p class="gi-lede">There's a way in for everyone. Adopt a kid's letter, lend a few hours, or help cover the cost. Pick what fits and we'll take it from there.</p>
+    </div>
+  </div>
+</header>
+
+<!-- THREE WAYS TO HELP -->
+<section class="gi-help">
+  <div class="wrap">
+    <h2 class="gi-help-head">Three ways in.</h2>
+    <p class="gi-help-sub">All of it helps. None of it asks for much.</p>
+    <div class="gi-help-grid">
+      <div class="gi-card v-green">
+        <div class="gi-bar"></div>
+        <h3>Adopt a letter</h3>
+        <p>Read a kid's wish, pick one, and send the gift. It's the most direct thing you can do here, and it lands on Christmas morning.</p>
+        <a class="gi-link" href="letters-give.html">See how it works <span class="arr">→</span></a>
+      </div>
+      <div class="gi-card v-red">
+        <div class="gi-bar"></div>
+        <h3>Give us a hand</h3>
+        <p>Help sort letters, run the holiday event, coach a class, or keep the books. Most of it fits around a regular schedule.</p>
+        <a class="gi-link" href="#volunteer">Volunteer roles <span class="arr">→</span></a>
+      </div>
+      <div class="gi-card v-amber">
+        <div class="gi-bar"></div>
+        <h3>Cover the cost</h3>
+        <p>Donations are what keep the gifts coming and the classes free. Every dollar is tax-deductible.</p>
+        <a class="gi-link" href="#give">Ways to give <span class="arr">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VOLUNTEER ROLES -->
+<section class="gi-roles" id="volunteer">
+  <div class="wrap gi-roles-grid">
+    <div>
+      <h2>Where we<br>need <em>hands.</em></h2>
+      <p class="gi-roles-lede">Pick whatever fits your skills and your schedule. Not sure? Choose "Something else" and tell us what you've got.</p>
+    </div>
+    <div class="gi-chips">
+      <span class="gi-chip"><span class="gi-chip-n">01</span>Santa's Letters helper</span>
+      <span class="gi-chip"><span class="gi-chip-n">02</span>Event Management</span>
+      <span class="gi-chip"><span class="gi-chip-n">03</span>Martial Arts Instructor</span>
+      <span class="gi-chip"><span class="gi-chip-n">04</span>Assistant Instructor</span>
+      <span class="gi-chip"><span class="gi-chip-n">05</span>Relationship Management</span>
+      <span class="gi-chip"><span class="gi-chip-n">06</span>Social Media</span>
+      <span class="gi-chip"><span class="gi-chip-n">07</span>Marketing</span>
+      <span class="gi-chip"><span class="gi-chip-n">08</span>Admin / General</span>
+      <span class="gi-chip"><span class="gi-chip-n">09</span>Internship</span>
+      <span class="gi-chip"><span class="gi-chip-n">10</span>Something else</span>
+    </div>
+  </div>
+</section>
+
+<!-- WAYS TO GIVE RECAP -->
+<section class="gi-give" id="give">
+  <div class="wrap">
+    <div class="gi-give-head">
+      <h2>Ways to <em>give.</em></h2>
+      <p class="gi-give-note">No amount is too small; every dollar makes a difference.</p>
+    </div>
+    <div class="gi-give-grid">
+      <div class="gi-give-col">
+        <h4>Adopt a letter</h4>
+        <p>Grant a child's holiday wish directly, or sponsor a batch of letters at once.</p>
+        <a class="gi-give-link" href="letters-give.html">Start with Santa's Letters <span class="arr">→</span></a>
+      </div>
+      <div class="gi-give-col">
+        <h4>PayPal</h4>
+        <p>Make a one-time or recurring gift. It's tax-deductible and goes straight to the programs.</p>
+        <a class="gi-give-link" href="donate.html">Give with PayPal <span class="arr">→</span></a>
+      </div>
+      <div class="gi-give-col">
+        <h4>Venmo</h4>
+        <p>Prefer Venmo? Send your gift there and it does the same work.</p>
+        <a class="gi-give-link" href="donate.html">Give with Venmo <span class="arr">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING CTA -->
+<section class="gi-close">
+  <div class="wrap">
+    <h2>Pick a wish<br><em>&amp; send it.</em></h2>
+    <div class="gi-close-actions">
+      <a class="btn btn-red btn-lg" href="letters-give.html">Adopt a letter</a>
+      <a class="btn btn-lg" href="donate.html">Donate</a>
+    </div>
+    <p class="fine">Tax-deductible. 501(c)(3). Every dollar makes a difference.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <div class="fb-name">Santa's Knights</div>
+      <div class="fb-tag">The Gift of Martial Arts™</div>
+    </div>
+    <div class="foot-col">
+      <h5>Find us</h5>
+      <p>Manhattanville Community Center<br>530 W 133rd St<br>New York, NY 10027</p>
+    </div>
+    <div class="foot-col">
+      <h5>Reach us</h5>
+      <a href="tel:+12128735818">(212) 873-5818</a>
+      <a href="mailto:contact@santasknights.org">contact@santasknights.org</a>
+      <a href="https://www.instagram.com/santasknights/">Instagram</a>
+      <a href="https://www.facebook.com/santasknights">Facebook</a>
+      <a href="https://www.youtube.com/channel/UC5trQ89gJ3e-pRy-d977KCg">YouTube</a>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© Santa's Knights, Inc. — a 501(c)(3) nonprofit.</span>
+    <span>Built by Columbia Software Solutions</span>
+  </div>
+</footer>
+
+</body>
+</html>

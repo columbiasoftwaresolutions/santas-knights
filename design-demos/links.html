@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>Links — Santa's Knights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  .lb-body{
+    min-height:100vh;background:var(--ink);
+    display:flex;flex-direction:column;align-items:center;
+    padding:48px 22px 40px;
+  }
+  .lb-stage{width:100%;max-width:520px;}
+
+  /* ===== header ===== */
+  .lb-head{text-align:center;padding:14px 0 34px;}
+  .lb-name{
+    font-family:var(--display);font-weight:900;
+    font-size:clamp(38px,11vw,52px);line-height:0.9;letter-spacing:-0.02em;
+    text-transform:uppercase;color:var(--bone);
+  }
+  .lb-tag{
+    margin-top:14px;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;
+    color:var(--amber);font-weight:600;
+  }
+  .lb-line{
+    margin-top:18px;font-family:var(--serif);font-style:italic;font-weight:400;
+    font-size:18px;line-height:1.4;color:rgba(232,226,212,0.78);text-wrap:pretty;
+  }
+
+  /* ===== feature buttons ===== */
+  .lb-stack{display:flex;flex-direction:column;gap:13px;}
+  .lb-btn{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    width:100%;padding:20px 24px;
+    border:1.5px solid rgba(232,226,212,0.34);
+    color:var(--bone);background:transparent;
+    transition:all .18s;
+  }
+  .lb-btn .lbl{
+    font-family:var(--display);font-weight:800;font-size:17px;
+    text-transform:uppercase;letter-spacing:0.01em;
+  }
+  .lb-btn .arr{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--amber);transition:transform .18s;}
+  .lb-btn:hover{background:var(--ink2);border-color:rgba(232,226,212,0.6);}
+  .lb-btn:hover .arr{transform:translateX(4px);}
+
+  .lb-btn.red{background:var(--red);border-color:var(--red);color:var(--paper);}
+  .lb-btn.red .arr{color:var(--paper);}
+  .lb-btn.red:hover{background:var(--red-deep);border-color:var(--red-deep);}
+  .lb-btn.amber{background:var(--amber);border-color:var(--amber);color:var(--ink);}
+  .lb-btn.amber .arr{color:var(--ink);}
+  .lb-btn.amber:hover{background:var(--paper);border-color:var(--paper);}
+
+  /* group label */
+  .lb-divider{
+    text-align:center;font-size:11px;letter-spacing:0.24em;text-transform:uppercase;
+    color:rgba(232,226,212,0.4);font-weight:700;margin:26px 0 4px;
+  }
+
+  /* ===== socials ===== */
+  .lb-socials{display:flex;gap:13px;margin-top:8px;}
+  .lb-social{
+    flex:1;text-align:center;padding:16px 8px;
+    border:1.5px solid rgba(232,226,212,0.34);color:var(--bone);
+    font-family:var(--display);font-weight:800;font-size:13px;text-transform:uppercase;
+    letter-spacing:0.04em;transition:all .18s;
+  }
+  .lb-social:hover{background:var(--ink2);border-color:var(--amber);color:var(--amber);}
+
+  /* ===== footer ===== */
+  .lb-foot{text-align:center;margin-top:38px;}
+  .lb-foot .lf-tm{font-family:var(--display);font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:0.02em;color:rgba(232,226,212,0.6);}
+  .lb-foot .lf-fine{margin-top:10px;font-size:12px;letter-spacing:0.04em;color:rgba(232,226,212,0.45);line-height:1.6;}
+</style>
+</head>
+<body class="lb-body">
+  <main class="lb-stage">
+
+    <!-- HEADER -->
+    <div class="lb-head">
+      <div class="lb-name">Santa's<br>Knights</div>
+      <div class="lb-tag">The Gift of Martial Arts™</div>
+      <p class="lb-line">A Harlem nonprofit — free training all year, and a letter to Santa answered every December.</p>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="lb-stack">
+      <a class="lb-btn red" href="donate.html"><span class="lbl">Donate</span><span class="arr">→</span></a>
+      <a class="lb-btn amber" href="letters-give.html"><span class="lbl">Adopt a letter</span><span class="arr">→</span></a>
+      <a class="lb-btn" href="letters-submit.html"><span class="lbl">Write a letter</span><span class="arr">→</span></a>
+      <a class="lb-btn" href="letters.html"><span class="lbl">Santa's Letters</span><span class="arr">→</span></a>
+
+      <div class="lb-divider">Train with us</div>
+      <a class="lb-btn" href="training.html"><span class="lbl">Classes / Training</span><span class="arr">→</span></a>
+      <a class="lb-btn" href="online.html"><span class="lbl">Online classes</span><span class="arr">→</span></a>
+      <a class="lb-btn" href="membership.html"><span class="lbl">Membership</span><span class="arr">→</span></a>
+
+      <div class="lb-divider">More</div>
+      <a class="lb-btn" href="get-involved.html"><span class="lbl">Volunteer</span><span class="arr">→</span></a>
+      <a class="lb-btn" href="gallery.html"><span class="lbl">Gallery</span><span class="arr">→</span></a>
+      <a class="lb-btn" href="contact.html"><span class="lbl">Contact</span><span class="arr">→</span></a>
+
+      <div class="lb-divider">Follow along</div>
+      <div class="lb-socials">
+        <a class="lb-social" href="https://www.instagram.com/santasknights/">Instagram</a>
+        <a class="lb-social" href="https://www.facebook.com/santasknights">Facebook</a>
+        <a class="lb-social" href="https://www.youtube.com/channel/UC5trQ89gJ3e-pRy-d977KCg">YouTube</a>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="lb-foot">
+      <div class="lf-tm">Santa's Knights, Inc.</div>
+      <div class="lf-fine">A 501(c)(3) nonprofit — every gift is tax-deductible.<br>Harlem, New York City.</div>
+    </div>
+
+  </main>
+</body>
+</html>

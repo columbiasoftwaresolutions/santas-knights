@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
-import { links, org } from "@/content/site";
+import { links, org, donateCopy } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Donate · Santa's Knights",
@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * Donation processing stays external (PRD: no on-site payments). This page is
- * the framing + hand-off: each option redirects out to PayPal / Venmo / the
- * donation processor. Options whose URLs aren't configured yet don't render.
+ * Donation processing stays external (Plan v2: no on-site payments). This page
+ * captures donor intent, then redirects out to PayPal / Venmo / the processor.
+ * TODO: Add external processor URLs manually in code when ready, not as env vars.
  */
 const PROCESSOR_URL = process.env.NEXT_PUBLIC_DONATE_URL;
 const PAYPAL_URL = process.env.NEXT_PUBLIC_PAYPAL_URL;
@@ -24,7 +24,7 @@ const VENMO_URL = process.env.NEXT_PUBLIC_VENMO_URL;
 const externalOptions = [
   {
     label: "Give online",
-    body: "A one-time or monthly gift through our donation page. Card, Apple Pay, the usual.",
+    body: "Make a one-time or monthly gift by card or Apple Pay.",
     cta: "Donate online",
     href: PROCESSOR_URL,
   },
@@ -36,7 +36,7 @@ const externalOptions = [
   },
   {
     label: "Venmo",
-    body: "Prefer Venmo? Send your gift there and it does the same work.",
+    body: "Send a one-time gift through Venmo.",
     cta: "Give with Venmo",
     href: VENMO_URL,
   },
@@ -53,7 +53,7 @@ const spend: { title: string; body: string }[] = [
   },
   {
     title: "Keeping the lights on",
-    body: "The unglamorous rest: storage, permits, the website you're reading. Small, but real.",
+    body: "Storage, permits, insurance, and the website all carry recurring costs.",
   },
 ];
 
@@ -64,10 +64,11 @@ export default function DonatePage() {
         eyebrow="Donate"
         title={
           <>
-            Your gift keeps it <em className="font-serif font-medium italic text-red">free</em>.
+            Help keep classes free and letters{" "}
+            <em className="font-serif font-medium italic text-red">answered</em>.
           </>
         }
-        intro="Santa's Knights is a 501(c)(3) nonprofit, so every donation is tax-deductible. The money buys Christmas presents, keeps the classes free, and covers the events that keep the neighborhood showing up."
+        intro={`${donateCopy.encouragement} Santa's Knights is a 501(c)(3) nonprofit, and donations are tax-deductible.`}
       >
         {externalOptions.length > 0 ? (
           <Button href={externalOptions[0].href} variant="red" arrow>
@@ -89,8 +90,8 @@ export default function DonatePage() {
           <SectionHeading
             className="max-w-[640px]"
             eyebrow="Ways to give"
-            title="Pick whatever's easiest"
-            intro="All of these land in the same place. Giving happens on the payment provider's site — we never take card details here."
+            title="Choose how to give"
+            intro="Payment is handled by the provider you choose. We never collect card details on this site."
             introClassName="max-w-[52ch]"
           />
           <div className="mt-10 grid gap-[18px] md:grid-cols-3">
@@ -118,10 +119,21 @@ export default function DonatePage() {
               </div>
             </Card>
             <Card hover className="flex flex-col p-[28px]">
+              <h2 className="text-[20px] font-extrabold tracking-[-0.02em]">Become a member</h2>
+              <p className="mt-2 flex-1 text-[15.5px] text-muted">
+                Monthly membership starts at $20. It helps pay for gifts and equipment for kids.
+              </p>
+              <div className="mt-5">
+                <Button href={links.membership} variant="ghost" className="px-5 py-3 text-[15px]">
+                  Membership tiers
+                </Button>
+              </div>
+            </Card>
+            <Card hover className="flex flex-col p-[28px]">
               <h2 className="text-[20px] font-extrabold tracking-[-0.02em]">Sponsor us</h2>
               <p className="mt-2 flex-1 text-[15.5px] text-muted">
-                Businesses can back a season, an event, or the letter drive — and get thanked
-                publicly for it.
+                Businesses can sponsor a season, an event, or the letter drive. We recognize
+                sponsors publicly.
               </p>
               <div className="mt-5">
                 <Button href={links.sponsors} variant="ghost" className="px-5 py-3 text-[15px]">
@@ -132,8 +144,7 @@ export default function DonatePage() {
             <Card hover className="flex flex-col p-[28px]">
               <h2 className="text-[20px] font-extrabold tracking-[-0.02em]">Something else</h2>
               <p className="mt-2 flex-1 text-[15.5px] text-muted">
-                Stock, in-kind gifts, employer matching, or a check in the mail — write to us and
-                we&apos;ll sort it out.
+                Contact us about stock, in-kind gifts, employer matching, or checks.
               </p>
               <div className="mt-5">
                 <Button
@@ -171,11 +182,37 @@ export default function DonatePage() {
           <p className="mt-10 max-w-[64ch] text-[14.5px] text-muted">
             Santa&apos;s Knights, Inc. is a registered 501(c)(3) nonprofit. Donations are
             tax-deductible to the extent allowed by law; we&apos;re happy to provide a receipt for
-            your records — email{" "}
+            your records. Email{" "}
             <a href={`mailto:${org.email}`} className="font-semibold text-ink underline">
               {org.email}
             </a>
             .
+          </p>
+        </Container>
+      </section>
+
+      {/* Tax-deductibility guidance (Plan v2 §E6) */}
+      <section className="py-section">
+        <Container>
+          <SectionHeading
+            eyebrow="Tax deductibility"
+            title="What you can deduct"
+            intro="This is general information, not tax advice. Consult a tax professional for your situation."
+            introClassName="max-w-[52ch] text-muted"
+          />
+          <ul className="mt-8 grid gap-4 md:grid-cols-2">
+            {donateCopy.taxGuidance.map((point) => (
+              <li key={point} className="flex gap-4">
+                <span aria-hidden className="mt-1 flex-none text-green">
+                  ✦
+                </span>
+                <p className="text-[15.5px] text-muted">{point}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 text-[13px] text-muted/70">
+            This is general information, not legal or tax advice. Please consult a qualified tax
+            advisor regarding your specific situation.
           </p>
         </Container>
       </section>

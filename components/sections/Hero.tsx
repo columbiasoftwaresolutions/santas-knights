@@ -1,59 +1,49 @@
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { Photo } from "@/components/ui/Photo";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { links } from "@/content/site";
 
+/** Warm-paper opening hero: serif headline + community photo with caption. */
 export function Hero() {
   return (
-    <section className="pt-[60px] pb-[46px]">
-      <Container className="grid items-center gap-[34px] md:grid-cols-[1.04fr_0.96fr] md:gap-[54px]">
+    <section className="border-b border-line bg-paper text-ink">
+      <Container className="grid items-center gap-9 py-[86px] md:grid-cols-[1fr_1.05fr] md:gap-16">
         <div>
-          <SectionHeading
-            as="h1"
-            size="display"
-            eyebrow={<>A Harlem 501(c)(3) nonprofit</>}
-            title={
-              <>
-                A Harlem nonprofit,{" "}
-                <em className="font-serif font-medium italic text-red">free</em> to everyone who
-                walks in.
-              </>
-            }
-            intro="We teach martial arts and fitness in Harlem at no cost. And every December, we make sure local kids get an answer to their letter to Santa."
-            introClassName="text-xl max-w-[36ch]"
-          />
-          <div className="mt-[30px] flex flex-wrap items-center gap-3.5">
-            <Button href={links.adoptLetter} variant="red" arrow>
-              See Santa&apos;s Letters
+          <h1 className="font-serif text-[clamp(40px,5vw,70px)] font-medium leading-[1.04] tracking-[-0.02em]">
+            Free training all year, and a letter to Santa{" "}
+            <em className="font-medium italic text-red">answered</em> every December.
+          </h1>
+          <p className="mt-[26px] max-w-[520px] text-[19px] leading-relaxed text-muted">
+            A Harlem nonprofit that teaches armored combat and fitness at no cost. Every December,
+            we also help answer local kids&apos; letters to Santa.
+          </p>
+          <div className="mt-[34px] flex flex-wrap items-center gap-3.5">
+            <Button href={links.adoptLetter} variant="red" size="lg" arrow>
+              Adopt a letter
             </Button>
-            <Button href={links.about} variant="ghost">
-              What we do
+            <Button href={links.donate} variant="ghost" size="lg">
+              Donate
             </Button>
           </div>
-          <p className="mt-[18px] flex items-center gap-2 text-[14.5px] text-muted">
-            <span className="text-green" aria-hidden>
-              ♥
-            </span>
-            Registered 501(c)(3). Everything we run is paid for by people who chip in.
-          </p>
         </div>
 
-        <div className="relative">
+        <figure className="relative">
           <Photo
             src="/images/hero-community.jpg"
-            alt="Santa's Knights members and families of all ages together"
+            alt="Kids and volunteers together at a Santa's Knights holiday gift event in Harlem"
             priority
-            sizes="(min-width: 768px) 45vw, 100vw"
-            className="aspect-4/5 rounded-[20px]"
+            sizes="(min-width: 768px) 50vw, 100vw"
+            className="h-[420px] md:h-[540px]"
           />
-          <div className="absolute bottom-[30px] left-3.5 max-w-[235px] rounded-[18px] border border-line bg-card p-[18px_22px] shadow-card md:-left-6">
-            <div className="text-[34px] font-black tracking-[-0.03em] text-red">100%</div>
-            <div className="mt-0.5 text-[13.5px] font-semibold text-muted">
-              Free for the people we serve, every day of the year.
-            </div>
-          </div>
-        </div>
+          <figcaption className="absolute right-6 bottom-6 left-6 bg-ink/[0.74] p-[18px_22px] text-paper backdrop-blur-[2px]">
+            <p className="font-serif text-[19px] italic leading-tight">
+              &ldquo;It&apos;s the reason the nonprofit exists.&rdquo;
+            </p>
+            <p className="mt-2 text-[12px] uppercase tracking-[0.06em] text-paper/70">
+              Santa&apos;s Letters · Harlem, every December
+            </p>
+          </figcaption>
+        </figure>
       </Container>
     </section>
   );

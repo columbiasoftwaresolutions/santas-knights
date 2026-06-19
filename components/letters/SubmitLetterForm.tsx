@@ -1,13 +1,13 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { submitLetter, type SubmitLetterState } from "@/app/letters/submit/actions";
 import { GUARDIAN_CONSENT_TEXT } from "@/content/consent";
 import { org } from "@/content/site";
 
 const fieldBase =
-  "w-full rounded-[14px] border-[1.5px] border-line bg-white px-[18px] py-[13px] text-[15.5px] text-ink placeholder:text-muted/70 focus:border-red focus:outline-2 focus:outline-offset-1 focus:outline-red";
+  "w-full border-[1.5px] border-line bg-paper px-[18px] py-[13px] text-[15.5px] text-ink placeholder:text-muted/70 focus:border-red focus:outline-2 focus:outline-offset-1 focus:outline-red";
 const labelBase = "mb-1.5 block text-[13px] font-bold uppercase tracking-[0.1em] text-muted";
 
 const initialState: SubmitLetterState = { ok: false };
@@ -19,18 +19,20 @@ function FieldError({ message }: { message?: string }) {
 
 export function SubmitLetterForm() {
   const [state, formAction, pending] = useActionState(submitLetter, initialState);
+  // One Amazon link by default; families with a few wishes can add more rows.
+  const [linkIds, setLinkIds] = useState<number[]>([0]);
+  const nextLinkId = useRef(1);
 
   if (state.ok) {
     return (
-      <div className="rounded-card border border-line bg-green-soft p-[34px] text-center">
+      <div className="border border-green/40 bg-green-soft p-[34px] text-center">
         <div aria-hidden className="text-[34px] text-green">
           ♔
         </div>
         <h3 className="mt-2 text-h3 text-green">The letter is in</h3>
         <p className="mx-auto mt-2 max-w-[46ch] text-muted">
-          Thank you. A real person reviews every letter before it goes up — we&apos;ll email you
-          if anything needs a tweak, and the wish goes live once it&apos;s approved. The child&apos;s
-          identity stays private the whole way through.
+          Thank you. A real person reviews every letter before it is published. We&apos;ll email you
+          if we need a clearer photo or more information. The child&apos;s identity stays private.
         </p>
       </div>
     );
@@ -83,27 +85,52 @@ export function SubmitLetterForm() {
             name="wish_note"
             required
             rows={3}
-            placeholder="A line or two, in your words — donors read this next to the letter."
+            placeholder="Write a line or two in your own words. Donors read this next to the letter."
             className={`${fieldBase} resize-y`}
           />
           <FieldError message={state.errors?.wish_note} />
         </div>
         <div>
           <label htmlFor="amazon_url" className={labelBase}>
-            Amazon product or wishlist link
+            Amazon link(s)
           </label>
-          <input
-            id="amazon_url"
-            name="amazon_url"
-            type="url"
-            required
-            placeholder="https://www.amazon.com/…"
-            className={fieldBase}
-          />
-          <p className="mt-1.5 text-[13.5px] text-muted">
-            Donors buy the gift straight from this link, so double-check it&apos;s the right item
-            or list.
-          </p>
+          <div className="grid gap-2.5">
+            {linkIds.map((id, i) => (
+              <div key={id} className="flex gap-2">
+                <input
+                  id={i === 0 ? "amazon_url" : undefined}
+                  name="amazon_url"
+                  type="url"
+                  required={i === 0}
+                  placeholder="https://www.amazon.com/…"
+                  className={fieldBase}
+                />
+                {linkIds.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setLinkIds((ids) => ids.filter((x) => x !== id))}
+                    aria-label={`Remove link ${i + 1}`}
+                    className="flex-none border-[1.5px] border-line px-4 text-[14px] font-bold text-muted hover:border-red hover:text-red"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-[13.5px] text-muted">
+              Donors buy the gift from these links, so check each one before submitting. Any
+              Amazon country site is fine.
+            </p>
+            <button
+              type="button"
+              onClick={() => setLinkIds((ids) => [...ids, nextLinkId.current++])}
+              className="text-[13.5px] font-bold text-green hover:underline"
+            >
+              + Add another link
+            </button>
+          </div>
           <FieldError message={state.errors?.amazon_url} />
         </div>
         <div>
@@ -116,10 +143,10 @@ export function SubmitLetterForm() {
             type="file"
             accept="image/*"
             required
-            className={`${fieldBase} file:mr-4 file:rounded-pill file:border-0 file:bg-green-soft file:px-4 file:py-1.5 file:text-[13.5px] file:font-bold file:text-green`}
+            className={`${fieldBase} file:mr-4 file:border-0 file:bg-green-soft file:px-4 file:py-1.5 file:text-[13.5px] file:font-bold file:text-green`}
           />
           <p className="mt-1.5 text-[13.5px] text-muted">
-            The letter is the front of the card donors see — a clear phone photo works great.
+            Donors see this image on the front of the card. A clear phone photo works well.
             Please make sure no last name, address, or school name is visible.
           </p>
           <FieldError message={state.errors?.letter_image} />
@@ -171,7 +198,7 @@ export function SubmitLetterForm() {
         <legend className="mb-2 text-[13px] font-bold uppercase tracking-[0.12em] text-green">
           Consent
         </legend>
-        <div className="max-h-[210px] overflow-y-auto whitespace-pre-line rounded-[14px] border border-line bg-white p-[18px] text-[13.5px] leading-relaxed text-muted">
+        <div className="max-h-[210px] overflow-y-auto whitespace-pre-line border border-line bg-paper p-[18px] text-[13.5px] leading-relaxed text-muted">
           {GUARDIAN_CONSENT_TEXT}
         </div>
         <label className="mt-4 flex cursor-pointer items-start gap-3 text-[15px] font-semibold">
@@ -187,7 +214,7 @@ export function SubmitLetterForm() {
       </fieldset>
 
       {state.message && !state.ok && (
-        <div className="rounded-[14px] border border-red/30 bg-red/5 px-[18px] py-[14px] text-[14.5px] font-semibold text-red">
+        <div className="border border-red/30 bg-red/5 px-[18px] py-[14px] text-[14.5px] font-semibold text-red">
           {state.message}{" "}
           {state.message.includes("email us") && (
             <a href={`mailto:${org.email}`} className="underline">

@@ -1,5 +1,7 @@
 # Requirements
 
+> ⚠️ **Build boundary refined by [plan-v2.md](./plan-v2.md).** Plan v2 splits by **content vs. backend**: this repo (`santasknights.org`) builds all nonprofit pages, Letters, member accounts, **and Gladiators content pages** (Stage 1 Gladiators *pages* — class catalog, descriptions, online/video); the **Gladiators training-tracker backend** (Stage 2 — booking, waiver, check-in, XP, dashboard, training videos) **and shop/armory live on the separate `gladiators.nyc` site**, with this site cross-linking out. The feature requirements here (Stages 1–3) remain authoritative for *what* each feature does and *how* it behaves; for *where* it's built, **plan-v2.md wins.**
+
 Everything to be built, organized by stage. Derived from the PRD (v1.0), the client clarifications (Damion's notes), the rollout strategy ([ROLLOUT.md](./ROLLOUT.md)), and feature requests logged since.
 
 **Legend:** `[v1]` in scope for first release · `[stretch]` stretch goal · `[future]` designed-for but not built now.

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>Create your account — Santa's Knights Members</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  /* ===== AUTH (shared login/register) ===== */
+  .auth-stage{
+    background:var(--paper);color:var(--ink);
+    min-height:calc(100vh - 70px);
+    display:flex;align-items:center;justify-content:center;
+    padding:80px 24px;
+    background-image:radial-gradient(circle at 50% -10%, rgba(194,51,31,0.08), transparent 60%);
+  }
+  .auth-card{
+    width:100%;max-width:460px;
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    padding:48px 44px 40px;
+    box-shadow:0 24px 60px -34px rgba(22,18,15,0.5);
+  }
+  .auth-kick{
+    font-family:var(--display);font-weight:900;font-size:13px;
+    letter-spacing:0.22em;text-transform:uppercase;color:var(--red);
+    margin-bottom:14px;
+  }
+  .auth-card h1{
+    font-family:var(--display);font-weight:900;
+    font-size:clamp(32px,3.6vw,44px);line-height:0.92;
+    text-transform:uppercase;letter-spacing:-0.02em;color:var(--ink);
+  }
+  .auth-sub{
+    margin-top:14px;font-size:15px;line-height:1.55;color:var(--muted);
+    text-wrap:pretty;max-width:40ch;
+  }
+  .auth-form{margin-top:30px;}
+  .fld{margin-bottom:20px;}
+  .fld label{
+    display:block;font-size:12px;font-weight:700;letter-spacing:0.1em;
+    text-transform:uppercase;color:var(--ink);margin-bottom:8px;
+  }
+  .fld input{
+    width:100%;font-family:var(--body);font-size:16px;color:var(--ink);
+    background:#fffdf8;border:1.5px solid var(--line);
+    padding:14px 16px;transition:border-color .16s, box-shadow .16s;
+  }
+  .fld input::placeholder{color:#b3a890;}
+  .fld input:focus{
+    outline:none;border-color:var(--red);
+    box-shadow:0 0 0 3px rgba(194,51,31,0.14);
+  }
+  .fld .hint{margin-top:7px;font-size:12px;color:var(--muted);}
+  .consent{
+    display:flex;gap:12px;align-items:flex-start;
+    margin:6px 0 24px;font-size:13px;line-height:1.5;color:var(--muted);
+  }
+  .consent input[type="checkbox"]{
+    appearance:none;-webkit-appearance:none;
+    flex:0 0 auto;width:20px;height:20px;margin-top:1px;
+    border:1.5px solid var(--line);background:#fffdf8;cursor:pointer;
+    position:relative;transition:border-color .16s,background .16s;
+  }
+  .consent input[type="checkbox"]:checked{background:var(--red);border-color:var(--red);}
+  .consent input[type="checkbox"]:checked::after{
+    content:"";position:absolute;left:6px;top:2px;
+    width:5px;height:10px;border:solid var(--paper);
+    border-width:0 2.5px 2.5px 0;transform:rotate(45deg);
+  }
+  .consent input[type="checkbox"]:focus-visible{
+    outline:none;box-shadow:0 0 0 3px rgba(194,51,31,0.18);
+  }
+  .consent a{color:var(--red);font-weight:600;border-bottom:1px solid transparent;}
+  .consent a:hover{border-bottom-color:var(--red);}
+  .auth-btn{
+    width:100%;font-family:var(--body);font-weight:700;font-size:15px;
+    letter-spacing:0.06em;text-transform:uppercase;
+    background:var(--red);color:var(--paper);border:1.5px solid var(--red);
+    padding:16px;cursor:pointer;transition:background .16s,border-color .16s;
+  }
+  .auth-btn:hover{background:var(--red-deep);border-color:var(--red-deep);}
+  .auth-foot{
+    margin-top:28px;padding-top:22px;border-top:1px solid var(--line);
+    font-size:14px;color:var(--muted);text-align:center;
+  }
+  .auth-foot a{color:var(--red);font-weight:700;border-bottom:1px solid transparent;}
+  .auth-foot a:hover{border-bottom-color:var(--red);}
+  .auth-back{
+    display:block;text-align:center;
+    font-family:var(--serif);font-style:italic;font-size:15px;color:var(--muted);
+  }
+  .auth-back:hover{color:var(--ink);}
+  @media (max-width:900px){
+    .auth-card{padding:36px 26px 32px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top">
+  <div class="wrap navrow">
+    <div class="brandmark">
+      <span class="bm-name">Santa's Knights</span>
+      <span class="bm-tag">The Gift of Martial Arts™</span>
+    </div>
+    <div class="navlinks">
+      <a href="donate.html">Donate</a>
+      <a href="about.html">Santa's Knights</a>
+      <a href="training.html">Classes</a>
+      <a href="letters.html">Letters to Santa</a>
+      <a href="membership.html">Membership</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="navactions">
+      <a class="btn" href="donate.html">Donate</a>
+      <a class="btn btn-red" href="letters-give.html">Adopt a letter</a>
+    </div>
+  </div>
+</nav>
+
+<!-- AUTH -->
+<main class="auth-stage">
+  <div class="auth-card">
+    <h1>Create your account</h1>
+    <p class="auth-sub">Make an account to adopt letters, send wishes, and keep track of everything in one place.</p>
+
+    <form class="auth-form" onsubmit="return false;">
+      <div class="fld">
+        <label for="name">Full name</label>
+        <input id="name" type="text" autocomplete="name" placeholder="Jordan Rivera" />
+      </div>
+      <div class="fld">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" placeholder="you@example.com" />
+      </div>
+      <div class="fld">
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="new-password" placeholder="At least 8 characters" />
+        <p class="hint">Use 8 or more characters with a mix of letters and numbers.</p>
+      </div>
+      <div class="fld">
+        <label for="confirm">Confirm password</label>
+        <input id="confirm" type="password" autocomplete="new-password" placeholder="Re-enter your password" />
+      </div>
+
+      <label class="consent">
+        <input type="checkbox" />
+        <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>, and understand that children's identifying details are never shared publicly.</span>
+      </label>
+
+      <button class="auth-btn" type="submit">Create account</button>
+    </form>
+
+    <div class="auth-foot">
+      Already a member? <a href="account-login.html">Sign in</a>
+    </div>
+  </div>
+</main>
+<div style="background:var(--paper);padding:0 24px 40px;text-align:center;">
+  <a class="auth-back" href="home.html">← Back to santasknights.org</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <div class="fb-name">Santa's Knights</div>
+      <div class="fb-tag">The Gift of Martial Arts™</div>
+    </div>
+    <div class="foot-col">
+      <h5>Find us</h5>
+      <p>Manhattanville Community Center<br>530 W 133rd St<br>New York, NY 10027</p>
+    </div>
+    <div class="foot-col">
+      <h5>Reach us</h5>
+      <a href="tel:+12128735818">(212) 873-5818</a>
+      <a href="mailto:contact@santasknights.org">contact@santasknights.org</a>
+      <a href="https://www.instagram.com/santasknights/">Instagram</a>
+      <a href="https://www.facebook.com/santasknights">Facebook</a>
+      <a href="https://www.youtube.com/channel/UC5trQ89gJ3e-pRy-d977KCg">YouTube</a>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© Santa's Knights, Inc. — a 501(c)(3) nonprofit.</span>
+    <span>Built by Columbia Software Solutions</span>
+  </div>
+</footer>
+
+</body>
+</html>

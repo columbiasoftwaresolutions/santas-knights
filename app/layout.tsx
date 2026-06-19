@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Hanken_Grotesk, Fraunces } from "next/font/google";
-import { UtilityBar } from "@/components/layout/UtilityBar";
+import { Hanken_Grotesk, Fraunces, Archivo } from "next/font/google";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
@@ -14,9 +13,17 @@ const hanken = Hanken_Grotesk({
 
 const fraunces = Fraunces({
   subsets: ["latin"],
-  weight: ["500", "600"],
+  weight: ["400", "500", "600"],
   style: ["normal", "italic"],
   variable: "--font-fraunces",
+  display: "swap",
+});
+
+// Archivo is the uppercase display face for the poster system.
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800", "900"],
+  variable: "--font-archivo",
   display: "swap",
 });
 
@@ -31,9 +38,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${hanken.variable} ${fraunces.variable}`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${hanken.variable} ${fraunces.variable} ${archivo.variable}`}
+    >
       <body>
-        <UtilityBar />
         <Navbar />
         <main>{children}</main>
         <Footer />

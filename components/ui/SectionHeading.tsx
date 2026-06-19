@@ -1,5 +1,4 @@
 import { cn } from "@/lib/cn";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 
 type Tone = "default" | "onDark" | "onColor";
 type Size = "display" | "displaySteel" | "h2" | "band" | "h3";
@@ -14,15 +13,10 @@ const TITLE_SIZE: Record<Size, string> = {
 };
 
 /** Tone shifts eyebrow, title, and intro colors together (warm vs steel vs colored band). */
-const EYEBROW_TONE: Record<Tone, string> = {
-  default: "",
-  onDark: "text-glad-amber",
-  onColor: "text-gold-soft",
-};
 const TITLE_TONE: Record<Tone, string> = {
-  default: "",
-  onDark: "text-white",
-  onColor: "text-white",
+  default: "text-ink",
+  onDark: "text-bone",
+  onColor: "text-paper",
 };
 const INTRO_TONE: Record<Tone, string> = {
   default: "text-muted",
@@ -31,20 +25,21 @@ const INTRO_TONE: Record<Tone, string> = {
 };
 
 /**
- * The eyebrow → heading → intro block, with one consistent vertical rhythm.
+ * Poster heading block with one consistent vertical rhythm. Eyebrow props are
+ * accepted during the port but deliberately omitted from rendering.
  * Owns the spacing and type scale so sections stop re-deciding them.
  *
  * `size` and `intro` width genuinely vary per section and stay as props;
  * the rhythm and tone are what's concentrated here.
  */
 export function SectionHeading({
-  eyebrow,
+  eyebrow: _eyebrow,
   title,
   intro,
   as: Heading = "h2",
   size = "h2",
   tone = "default",
-  eyebrowClassName,
+  eyebrowClassName: _eyebrowClassName,
   introClassName,
   className,
 }: {
@@ -60,8 +55,15 @@ export function SectionHeading({
 }) {
   return (
     <div className={className}>
-      <Eyebrow className={cn(EYEBROW_TONE[tone], eyebrowClassName)}>{eyebrow}</Eyebrow>
-      <Heading className={cn("mt-3", TITLE_SIZE[size], TITLE_TONE[tone])}>{title}</Heading>
+      <Heading
+        className={cn(
+          "font-display leading-[0.92] font-black tracking-[-0.03em] uppercase [&_em]:font-serif [&_em]:font-normal [&_em]:normal-case [&_em]:italic",
+          TITLE_SIZE[size],
+          TITLE_TONE[tone],
+        )}
+      >
+        {title}
+      </Heading>
       {intro && <p className={cn("mt-4", INTRO_TONE[tone], introClassName)}>{intro}</p>}
     </div>
   );

@@ -1,53 +1,55 @@
-import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/cn";
 import { Container } from "@/components/ui/Container";
 import { Photo } from "@/components/ui/Photo";
-import { SectionHeading } from "@/components/ui/SectionHeading";
-import { gladiatorsMeta, links, GLADIATORS_HREF } from "@/content/site";
+import { gladiatorsMeta, founder } from "@/content/site";
 
-/**
- * Tonal bridge into the Gladiators NYC "steel world". This is only a teaser —
- * the full Gladiators experience is a separate brand/site.
- */
+const CHIP_TONE = ["text-red", "text-amber", "text-bone"];
+
+/** Steel band: the training facts as chips, then the founder's pull-quote. */
 export function GladiatorsTeaser() {
   return (
-    <section
-      id="training"
-      className="relative mt-16 overflow-hidden bg-steel text-[#e8e2d4] before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(120%_90%_at_80%_0%,rgba(194,51,31,0.20),transparent_55%)] before:content-['']"
-    >
-      <Container className="relative grid items-center gap-8 py-16 md:grid-cols-[1.05fr_0.95fr] md:gap-[50px]">
-        <div>
-          <SectionHeading
-            tone="onDark"
-            size="displaySteel"
-            eyebrow="The training side"
-            title="Gladiators NYC"
-            intro="Full-contact armored combat with steel weapons and real armor, taught free in Harlem. It's the oldest league of its kind in the city, and Damion started it. The schedule and booking live on its own site."
-            introClassName="max-w-[44ch] text-[17px]"
-          />
-          <div className="mt-7 mb-7 flex flex-wrap gap-[26px]">
-            {gladiatorsMeta.map((item) => (
-              <div key={item.value} className="text-sm text-[#8d8779]">
-                <b className="mb-0.5 block text-[18px] font-extrabold text-[#e8e2d4]">{item.value}</b>
+    <section id="training" className="bg-ink py-26 text-bone">
+      <Container>
+        <div className="mb-20 flex flex-wrap gap-[18px]">
+          {gladiatorsMeta.map((item, i) => (
+            <div key={item.value} className="flex flex-col gap-1 border-[1.5px] border-bone/30 px-[26px] py-[18px]">
+              <span
+                className={cn(
+                  "font-display text-[24px] font-black uppercase tracking-[-0.01em]",
+                  CHIP_TONE[i],
+                )}
+              >
+                {item.value}
+              </span>
+              <span className="text-[12px] uppercase tracking-[0.08em] text-bone/60">
                 {item.label}
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-wrap items-center gap-3.5">
-            <Button href={GLADIATORS_HREF} variant="steel" arrow>
-              Go to the training site
-            </Button>
-            <Button href={links.about} variant="bone">
-              More about the org
-            </Button>
-          </div>
+              </span>
+            </div>
+          ))}
         </div>
 
-        <Photo
-          src="/images/combat-helmet.jpg"
-          alt="Steel helmet and gauntlet from full-contact armored combat"
-          sizes="(min-width: 768px) 45vw, 100vw"
-          className="aspect-[5/4] rounded-2xl"
-        />
+        <div className="grid items-center gap-14 md:grid-cols-[0.6fr_1.4fr]">
+          <Photo
+            src="/images/headshot.png"
+            alt={`${founder.name}, ${founder.role}`}
+            duotone="cool"
+            sizes="(min-width: 768px) 24vw, 100vw"
+            className="aspect-[4/5]"
+          />
+          <div>
+            <blockquote className="font-serif text-[clamp(28px,3.4vw,46px)] font-normal leading-[1.12] tracking-[-0.02em]">
+              <span className="font-semibold text-red">&ldquo;</span>I&apos;m ex-military and I got
+              heavily injured while I was in. When I came out I was just a mess. Fitness and sports
+              really <em className="italic text-amber">saved my life.</em>&rdquo;
+            </blockquote>
+            <div className="mt-7 text-[14px] font-semibold uppercase tracking-[0.1em] text-amber">
+              {founder.name}, {founder.role}
+              <span className="mt-1 block font-medium tracking-[0.06em] text-bone/55">
+                To CBS New York
+              </span>
+            </div>
+          </div>
+        </div>
       </Container>
     </section>
   );

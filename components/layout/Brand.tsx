@@ -1,20 +1,30 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
+import { TRADEMARK } from "@/content/site";
 
-/** Crest + wordmark lockup, reused in the nav and footer. */
-export function Brand({ className }: { className?: string }) {
+/**
+ * Wordmark lockup for the poster system: Archivo display name + optional amber
+ * trademark line. Reused in the nav (inline tagline) and footer (stacked).
+ */
+export function Brand({
+  className,
+  tagline = true,
+  href = "/",
+}: {
+  className?: string;
+  tagline?: boolean;
+  href?: string;
+}) {
   return (
-    <Link
-      href="/"
-      className={cn("flex items-center gap-3 text-[19px] font-black tracking-[-0.02em]", className)}
-    >
-      <span
-        aria-hidden
-        className="grid h-10 w-10 flex-none place-items-center rounded-full bg-red text-[19px] text-gold-soft"
-      >
-        ♔
+    <Link href={href} className={cn("flex items-baseline gap-3", className)}>
+      <span className="font-display text-[19px] font-black uppercase tracking-[0.01em]">
+        Santa&apos;s Knights
       </span>
-      SANTA&apos;S KNIGHTS
+      {tagline && (
+        <span className="hidden text-[11px] uppercase tracking-[0.18em] text-amber sm:inline">
+          {TRADEMARK}
+        </span>
+      )}
     </Link>
   );
 }

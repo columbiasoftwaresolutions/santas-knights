@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Photo } from "@/components/ui/Photo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { NewsletterForm } from "@/components/sections/NewsletterForm";
@@ -29,7 +28,7 @@ export default function GetInvolvedPage() {
         eyebrow="Get involved"
         title={
           <>
-            Ways to <em className="font-serif font-medium italic text-red">help out</em>.
+            Ways to <em className="font-serif font-medium italic text-red">take part</em>.
           </>
         }
         intro="The most direct thing you can do is adopt a kid's letter at Christmas. There's plenty else too: volunteering through the year, donating, or coming to train yourself."
@@ -51,18 +50,7 @@ export default function GetInvolvedPage() {
                 aria-hidden
                 className={`mb-5 h-1 w-12 rounded-pill ${ACCENT[way.variant].rule}`}
               />
-              <Eyebrow
-                className={
-                  way.variant === "green"
-                    ? "text-green"
-                    : way.variant === "gold"
-                      ? "text-gold"
-                      : "text-red"
-                }
-              >
-                {way.eyebrow}
-              </Eyebrow>
-              <h2 className="mt-3 text-h3">{way.title}</h2>
+              <h2 className="font-display text-h3 font-black uppercase">{way.title}</h2>
               <p className="mt-2.5 flex-1 text-muted">{way.body}</p>
               <div className="mt-6">
                 <Button
@@ -128,7 +116,7 @@ export default function GetInvolvedPage() {
       {/* Letters to Santa highlight */}
       <section className="py-section">
         <Container>
-          <div className="relative grid items-center gap-8 overflow-hidden rounded-card-lg bg-green bg-[linear-gradient(160deg,var(--color-green),#22483540)] p-[34px] text-[#eef4ef] md:grid-cols-[1.1fr_0.9fr] md:gap-[46px] md:p-[50px]">
+          <div className="relative grid items-center gap-8 overflow-hidden rounded-card-lg bg-green bg-[linear-gradient(160deg,var(--color-green),#1f3f2e)] p-[34px] text-[#eef4ef] md:grid-cols-[1.1fr_0.9fr] md:gap-[46px] md:p-[50px]">
             <span
               aria-hidden
               className="pointer-events-none absolute -top-[30px] -right-5 text-[200px] leading-none text-white/[0.06]"
@@ -195,9 +183,9 @@ export default function GetInvolvedPage() {
           <Card tone="goldSoft" className="grid items-center gap-8 p-[38px] md:grid-cols-[1.1fr_0.9fr] md:p-[46px]">
             <SectionHeading
               eyebrow="Stay in the loop"
-              eyebrowClassName="text-gold"
+              eyebrowClassName="text-[#8a6420]"
               title="News, and ways to help"
-              intro="A short email when there's something worth passing on, like the letter drive opening. We don't send much."
+              intro="We send occasional updates about the letter drive, events, and volunteer needs."
             />
             <NewsletterForm />
           </Card>

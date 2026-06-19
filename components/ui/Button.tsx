@@ -26,10 +26,16 @@ const VARIANTS: Record<ButtonVariant, string> = {
 };
 
 const BASE =
-  "group inline-flex cursor-pointer items-center gap-[9px] whitespace-nowrap rounded-pill border-[1.5px] border-transparent px-[26px] py-[15px] text-base font-bold transition-transform duration-150 hover:-translate-y-0.5";
+  "group inline-flex cursor-pointer items-center gap-[10px] whitespace-nowrap border-[1.5px] border-transparent font-bold uppercase tracking-[0.04em] transition-all duration-150 hover:-translate-y-0.5";
+
+const SIZES = {
+  md: "px-[22px] py-[11px] text-[13px]",
+  lg: "px-[34px] py-[17px] text-[15px]",
+} as const;
 
 type CommonProps = {
   variant?: ButtonVariant;
+  size?: keyof typeof SIZES;
   /** Appends an animated arrow that nudges on hover. */
   arrow?: boolean;
   className?: string;
@@ -44,8 +50,8 @@ function isInternal(href: string) {
 }
 
 export function Button(props: AsLink | AsButton) {
-  const { variant = "red", arrow, className, children } = props;
-  const classes = cn(BASE, VARIANTS[variant], className);
+  const { variant = "red", size = "md", arrow, className, children } = props;
+  const classes = cn(BASE, SIZES[size], VARIANTS[variant], className);
 
   const content = (
     <>
@@ -70,7 +76,14 @@ export function Button(props: AsLink | AsButton) {
     );
   }
 
-  const { variant: _v, arrow: _a, className: _c, children: _ch, ...buttonProps } = props as AsButton;
+  const {
+    variant: _v,
+    size: _s,
+    arrow: _a,
+    className: _c,
+    children: _ch,
+    ...buttonProps
+  } = props as AsButton & { size?: keyof typeof SIZES };
   return (
     <button className={classes} {...buttonProps}>
       {content}

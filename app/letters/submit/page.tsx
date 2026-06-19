@@ -3,9 +3,10 @@ import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/sections/PageHero";
 import { SubmitLetterForm } from "@/components/letters/SubmitLetterForm";
+import { giftGuidance, privacyInstruction } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: "Submit a Letter · Santa's Letters · Santa's Knights",
+  title: "Write a Letter · Santa's Letters · Santa's Knights",
   description:
     "Parents and guardians: submit your child's letter to Santa. We review every letter, protect the child's identity, and post the wish so a donor can send the gift.",
 };
@@ -29,7 +30,7 @@ export default function SubmitLetterPage() {
   return (
     <>
       <PageHero
-        eyebrow="Santa's Letters"
+        eyebrow="Write a Letter"
         title={
           <>
             Send us your child&apos;s{" "}
@@ -46,6 +47,18 @@ export default function SubmitLetterPage() {
           </Card>
 
           <div className="grid gap-7 lg:sticky lg:top-[110px]">
+            {/* Per-gift value guidance (Plan v2 §C1/E5) */}
+            <div className="rounded-card border border-green/30 bg-green-soft/40 p-6 text-[14.5px] text-[#1f4a2f]">
+              <strong className="font-extrabold">Gift value guidance:</strong>{" "}
+              {giftGuidance.submit}
+            </div>
+
+            {/* Privacy instruction (Plan v2 §E5) */}
+            <div className="rounded-card border border-red/20 bg-red/5 p-6 text-[14.5px] text-[#6b1a1a]">
+              <strong className="font-extrabold">Privacy reminder:</strong>{" "}
+              {privacyInstruction}
+            </div>
+
             {expectations.map((item) => (
               <div key={item.title} className="flex gap-4">
                 <span aria-hidden className="mt-1 text-[18px] text-green">
@@ -58,9 +71,9 @@ export default function SubmitLetterPage() {
               </div>
             ))}
             <div className="rounded-card border border-line bg-gold-soft/50 p-6 text-[14.5px] text-[#6c5418]">
-              <strong className="font-extrabold">Before you upload:</strong> check the letter
-              photo for anything identifying — last names, addresses, school names, phone
-              numbers. Crop it out or cover it, and we&apos;ll double-check on our end too.
+              <strong className="font-extrabold">Before you upload:</strong>{" "}check the letter
+              photo for identifying details such as last names, addresses, school names, or phone
+              numbers. Crop or cover them before uploading. We will check the image again during review.
             </div>
           </div>
         </Container>

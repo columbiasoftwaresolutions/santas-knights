@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>Classes — Santa's Knights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  /* ===== CLASSES / TRAINING PAGE ===== */
+  .thero{background:var(--paper);color:var(--ink);padding:80px 0 84px;border-bottom:1px solid var(--line);}
+  .thero-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:60px;align-items:center;}
+  .thero h1{font-family:var(--serif);font-weight:500;font-size:clamp(46px,6.6vw,96px);line-height:0.96;letter-spacing:-0.03em;color:var(--ink);}
+  .thero h1 em{display:block;font-style:italic;font-weight:500;color:var(--red);font-size:0.5em;line-height:1.1;margin-top:10px;}
+  .thero-lede{margin-top:24px;font-size:19px;line-height:1.6;color:var(--muted);max-width:480px;}
+  .thero-chips{margin-top:30px;display:flex;gap:14px;flex-wrap:wrap;}
+  .tchip{border:1.5px solid var(--ink);padding:14px 20px;display:flex;flex-direction:column;gap:3px;}
+  .tchip .ct{font-family:var(--display);font-weight:900;font-size:19px;text-transform:uppercase;letter-spacing:-0.01em;color:var(--ink);}
+  .tchip:nth-child(1) .ct{color:var(--red);}
+  .tchip:nth-child(2) .ct{color:var(--amber);}
+  .tchip .cl{font-size:11px;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);}
+  .thero-figure{position:relative;}
+  .thero-figure .duo{height:480px;}
+  .thero-figure .duo,.thero-figure .duo img{height:480px;}
+
+  /* featured bootcamp */
+  .tfeature{background:var(--red-deep);color:var(--paper);padding:96px 0 100px;}
+  .tfeature-grid{display:grid;grid-template-columns:0.85fr 1.15fr;gap:60px;align-items:center;}
+  .tfeature h2{font-family:var(--display);font-weight:900;font-size:clamp(40px,5.2vw,76px);line-height:0.9;text-transform:uppercase;letter-spacing:-0.03em;text-wrap:balance;}
+  .tfeature h2 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--amber);letter-spacing:-0.02em;}
+  .tfeature .flede{font-family:var(--serif);font-style:italic;font-size:21px;color:rgba(247,240,227,0.92);margin-top:18px;}
+  .tfeature p.body{margin-top:24px;font-size:17px;line-height:1.6;color:rgba(247,240,227,0.92);}
+  .tfeature .ffacts{margin-top:28px;display:flex;gap:14px;flex-wrap:wrap;}
+  .tfeature .ffact{border:1.5px solid rgba(247,240,227,0.4);padding:10px 16px;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--paper);}
+  .tfeature .fcta{margin-top:32px;}
+  .tfeature .btn{border-color:var(--paper);color:var(--paper);}
+  .tfeature .btn:hover{background:var(--paper);color:var(--red-deep);}
+
+  /* catalog */
+  .tcatalog{background:var(--ink);padding:96px 0 100px;}
+  .tcat-head{max-width:760px;margin-bottom:48px;}
+  .tcat-head h2{font-family:var(--display);font-weight:900;font-size:clamp(34px,4.4vw,60px);line-height:0.9;text-transform:uppercase;letter-spacing:-0.03em;}
+  .tcat-head p{margin-top:20px;font-size:18px;line-height:1.55;color:rgba(232,226,212,0.78);}
+  .tcat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;border-top:1px solid rgba(232,226,212,0.16);border-left:1px solid rgba(232,226,212,0.16);}
+  .tclass{border-right:1px solid rgba(232,226,212,0.16);border-bottom:1px solid rgba(232,226,212,0.16);padding:38px 36px 34px;display:flex;flex-direction:column;min-height:280px;}
+  .tclass .cmeta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+  .tclass .cm{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--amber);border:1px solid rgba(201,138,58,0.5);padding:5px 11px;}
+  .tclass .cm.dur{color:rgba(232,226,212,0.6);border-color:rgba(232,226,212,0.25);}
+  .tclass h3{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.0;text-transform:uppercase;letter-spacing:-0.01em;color:var(--bone);}
+  .tclass .ctag{margin-top:14px;font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.35;color:rgba(232,226,212,0.82);flex:1;}
+  .tclass .cbook{margin-top:24px;}
+  .tclass .textlink{font-size:13px;}
+
+  /* booking band */
+  .tband{background:var(--paper);color:var(--ink);padding:90px 0;}
+  .tband-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:56px;align-items:center;}
+  .tband h2{font-family:var(--display);font-weight:900;font-size:clamp(32px,4vw,56px);line-height:0.92;text-transform:uppercase;letter-spacing:-0.03em;color:var(--ink);text-wrap:balance;}
+  .tband h2 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--red);letter-spacing:-0.02em;}
+  .tband p{margin-top:22px;font-size:18px;line-height:1.6;color:var(--muted);max-width:520px;}
+  .tband .appbox{border:1.5px solid var(--ink);padding:30px 30px;}
+  .tband .appbox .alabel{font-family:var(--body);font-weight:700;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--red);}
+  .tband .appbox .atext{margin-top:14px;font-family:var(--serif);font-style:italic;font-size:21px;line-height:1.3;color:var(--ink);}
+  .tband .appbox .acta{margin-top:24px;}
+
+  @media (max-width:900px){
+    .thero-grid{grid-template-columns:1fr;gap:32px;}
+    .thero-figure .duo,.thero-figure .duo img{height:360px;}
+    .tfeature-grid{grid-template-columns:1fr;gap:32px;}
+    .tcat-grid{grid-template-columns:1fr;}
+    .tband-grid{grid-template-columns:1fr;gap:32px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top">
+  <div class="wrap navrow">
+    <div class="brandmark">
+      <span class="bm-name">Santa's Knights</span>
+      <span class="bm-tag">The Gift of Martial Arts™</span>
+    </div>
+    <div class="navlinks">
+      <a href="donate.html">Donate</a>
+      <a href="about.html">Santa's Knights</a>
+      <a href="training.html">Classes</a>
+      <a href="letters.html">Letters to Santa</a>
+      <a href="membership.html">Membership</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="navactions">
+      <a class="btn" href="donate.html">Donate</a>
+      <a class="btn btn-red" href="letters-give.html">Adopt a letter</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="thero">
+  <div class="wrap thero-grid">
+    <div>
+      <h1>Classes.<em>Train with us.</em></h1>
+      <p class="thero-lede">Full-contact armored combat and fitness in Harlem — for adults, teens, women, and veterans, beginners welcome. Booking and the schedule live on our training site.</p>
+      <div class="thero-chips">
+        <div class="tchip"><span class="ct">Full-contact</span><span class="cl">Steel weapons and armor</span></div>
+        <div class="tchip"><span class="ct">Free</span><span class="cl">No cost to train</span></div>
+        <div class="tchip"><span class="ct">Since 2013</span><span class="cl">Oldest league in NYC</span></div>
+      </div>
+    </div>
+    <figure class="thero-figure">
+      <div class="duo"><img src="../public/images/gladiators-sparring.jpg" alt="Gladiators NYC fighters sparring in full armor" /></div>
+    </figure>
+  </div>
+</header>
+
+<!-- FEATURED: GLADIATOR BOOTCAMP -->
+<section class="tfeature">
+  <div class="wrap tfeature-grid">
+    <div>
+      <h2>Gladiator<br><em>Bootcamp.</em></h2>
+      <p class="flede">Open to all levels — adults and teens.</p>
+    </div>
+    <div>
+      <p class="body">Inspired by classes such as Barry's Bootcamp®, SoulCycle®, and GRIT BXNG®, Gladiator Kids (for children) and Gladiator Bootcamp (for adults) teaches students how to fight as an armored combatant (using foam weapons and armor to train with) in the style of high-energy, high-intensity, non-stop, music-driven, headset-wearing instructors, bringing gladiatorial and medieval training into the modern age of fitness and martial arts practice.</p>
+      <div class="ffacts">
+        <span class="ffact">Foam weapons &amp; armor</span>
+        <span class="ffact">Music-driven</span>
+        <span class="ffact">All levels</span>
+      </div>
+      <div class="fcta"><a class="btn btn-lg" href="https://gladiators.nyc">Book now ↗</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- CLASS CATALOG -->
+<section class="tcatalog">
+  <div class="wrap">
+    <div class="tcat-head">
+      <h2>The full catalog.</h2>
+      <p>Six classes across the program. Booking is not on this site — every class books on our training site, gladiators.nyc.</p>
+    </div>
+    <div class="tcat-grid">
+
+      <!-- 1 -->
+      <div class="tclass">
+        <div class="cmeta">
+          <span class="cm">Adults &amp; Teens</span>
+          <span class="cm dur">Duration Varies</span>
+        </div>
+        <h3>Gladiator Bootcamp (open to all levels)</h3>
+        <p class="ctag">High-energy, music-driven armored combat training with foam weapons — for everyone.</p>
+        <div class="cbook"><a class="textlink" href="https://gladiators.nyc">Book now ↗</a></div>
+      </div>
+
+      <!-- 2 -->
+      <div class="tclass">
+        <div class="cmeta">
+          <span class="cm">Adults as fighters &amp; spectators · Teens/Children as spectators</span>
+        </div>
+        <h3>Gladiator Armored Practice (advanced)</h3>
+        <p class="ctag">Advanced full-contact practice in steel — fighters spar, families spectate.</p>
+        <div class="cbook"><a class="textlink" href="https://gladiators.nyc">Book now ↗</a></div>
+      </div>
+
+      <!-- 3 -->
+      <div class="tclass">
+        <div class="cmeta">
+          <span class="cm">Women</span>
+          <span class="cm dur">2 hr</span>
+        </div>
+        <h3>Women's Medieval Combat &amp; Fitness</h3>
+        <p class="ctag">Empowerment through Strength, Skill, and Sisterhood</p>
+        <div class="cbook"><a class="textlink" href="https://gladiators.nyc">Book now ↗</a></div>
+      </div>
+
+      <!-- 4 -->
+      <div class="tclass">
+        <div class="cmeta">
+          <span class="cm">Women</span>
+        </div>
+        <h3>Women's (Premium) Combat Class – Midtown</h3>
+        <p class="ctag">Combat, conditioning, and community — now in a luxury Midtown studio.</p>
+        <div class="cbook"><a class="textlink" href="https://gladiators.nyc">Book now ↗</a></div>
+      </div>
+
+      <!-- 5 -->
+      <div class="tclass">
+        <div class="cmeta">
+          <span class="cm">U.S. Military Veterans</span>
+          <span class="cm dur">2 hr</span>
+        </div>
+        <h3>Gladiators NYC for Military Veterans</h3>
+        <p class="ctag">This class is (only) for U.S. Military Veterans (sponsored by the Department of Veterans Services)</p>
+        <div class="cbook"><a class="textlink" href="https://gladiators.nyc">Book now ↗</a></div>
+      </div>
+
+      <!-- 6 -->
+      <div class="tclass">
+        <div class="cmeta">
+          <span class="cm">All levels</span>
+          <span class="cm dur">1 hr 30 min</span>
+        </div>
+        <h3>Medieval Combat Fundamentals</h3>
+        <p class="ctag">Step into the world of historical martial arts with Gladiators NYC</p>
+        <div class="cbook"><a class="textlink" href="https://gladiators.nyc">Book now ↗</a></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING BAND + APP -->
+<section class="tband">
+  <div class="wrap tband-grid">
+    <div>
+      <h2>Booking, schedule &amp; the app live on our <em>training site.</em></h2>
+      <p>This page is the catalog. To pick a time, see the live schedule, or manage your spot, head to gladiators.nyc — every "Book now" link on this page goes there.</p>
+    </div>
+    <div class="appbox">
+      <div class="alabel">The app</div>
+      <div class="atext">Use the app to register for and manage your classes! The app is 100% FREE, always!</div>
+      <div class="acta"><a class="btn btn-red" href="https://gladiators.nyc">Register for classes ↗</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING CTA -->
+<section class="closing">
+  <div class="wrap">
+    <h2>Step into<br>the <em>arena.</em></h2>
+    <div class="closing-actions">
+      <a class="btn btn-red btn-lg" href="https://gladiators.nyc">Book now ↗</a>
+      <a class="btn btn-lg" href="online.html">Train online</a>
+    </div>
+    <p class="fine">Free to train. Beginners welcome, every class.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <div class="fb-name">Santa's Knights</div>
+      <div class="fb-tag">The Gift of Martial Arts™</div>
+    </div>
+    <div class="foot-col">
+      <h5>Find us</h5>
+      <p>Manhattanville Community Center<br>530 W 133rd St<br>New York, NY 10027</p>
+    </div>
+    <div class="foot-col">
+      <h5>Reach us</h5>
+      <a href="tel:+12128735818">(212) 873-5818</a>
+      <a href="mailto:contact@santasknights.org">contact@santasknights.org</a>
+      <a href="https://www.instagram.com/santasknights/">Instagram</a>
+      <a href="https://www.facebook.com/santasknights">Facebook</a>
+      <a href="https://www.youtube.com/channel/UC5trQ89gJ3e-pRy-d977KCg">YouTube</a>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© Santa's Knights, Inc. — a 501(c)(3) nonprofit.</span>
+    <span>Built by Columbia Software Solutions</span>
+  </div>
+</footer>
+
+</body>
+</html>

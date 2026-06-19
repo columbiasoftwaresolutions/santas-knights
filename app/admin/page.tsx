@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { checkAdmin } from "@/lib/auth";
@@ -74,7 +73,7 @@ type AdminLetter = {
   child_first_name: string;
   child_age: number;
   wish_note: string;
-  amazon_url: string;
+  amazon_urls: string[];
   letter_image_path: string | null;
   status: LetterStatus;
   guardian_name: string;
@@ -83,6 +82,8 @@ type AdminLetter = {
   created_at: string;
   imageUrl?: string | null;
 };
+
+type LegacyAdminLetter = Omit<AdminLetter, "amazon_urls"> & { amazon_url: string };
 
 export default async function AdminPage({
   searchParams,
@@ -138,21 +139,43 @@ export default async function AdminPage({
     ? (params.status as LetterStatus)
     : "pending";
 
-  // Season totals — letters are at most thousands/season, so one status scan is fine.
+  // A single status scan is sufficient for the expected seasonal volume.
   const { data: statusRows } = await supabase.from("santa_letters").select("status");
   const counts = new Map<string, number>();
   statusRows?.forEach((row) => counts.set(row.status, (counts.get(row.status) ?? 0) + 1));
   const total = statusRows?.length ?? 0;
 
-  const { data: letterRows } = await supabase
+  let { data: letterRows, error: letterError } = await supabase
     .from("santa_letters")
     .select(
-      "id, child_first_name, child_age, wish_note, amazon_url, letter_image_path, status, guardian_name, guardian_email, moderation_note, created_at",
+      "id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, status, guardian_name, guardian_email, moderation_note, created_at",
     )
     .eq("status", activeStatus)
     .order("created_at", { ascending: true })
     .limit(200);
-  const letters = (letterRows ?? []) as AdminLetter[];
+
+  let legacy = false;
+  if (letterError?.message.includes("amazon_urls")) {
+    const legacyQuery = await supabase
+      .from("santa_letters")
+      .select(
+        "id, child_first_name, child_age, wish_note, amazon_url, letter_image_path, status, guardian_name, guardian_email, moderation_note, created_at",
+      )
+      .eq("status", activeStatus)
+      .order("created_at", { ascending: true })
+      .limit(200);
+    letterRows = legacyQuery.data as typeof letterRows;
+    letterError = legacyQuery.error;
+    legacy = true;
+  }
+
+  if (letterError) console.error("Failed to load moderation queue:", letterError.message);
+  const letters = legacy
+    ? ((letterRows ?? []) as unknown as LegacyAdminLetter[]).map(({ amazon_url, ...letter }) => ({
+        ...letter,
+        amazon_urls: amazon_url ? [amazon_url] : [],
+      }))
+    : ((letterRows ?? []) as AdminLetter[]);
 
   const paths = letters.map((l) => l.letter_image_path).filter(Boolean) as string[];
   if (paths.length > 0) {
@@ -168,12 +191,14 @@ export default async function AdminPage({
   }
 
   return (
-    <section className="py-[46px]">
+    <section className="min-h-screen bg-ink py-[46px] text-bone">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <Eyebrow>Admin · signed in as {admin.email}</Eyebrow>
-            <h1 className="mt-2 text-h2">Letter moderation</h1>
+            <p className="text-[12px] font-semibold tracking-[0.1em] text-amber uppercase">
+              Signed in as {admin.email}
+            </p>
+            <h1 className="mt-2 font-display text-h2 font-black uppercase">Letter moderation</h1>
           </div>
           <form action={signOut}>
             <Button type="submit" variant="ghost" className="px-5 py-[11px] text-[15px]">
@@ -200,7 +225,7 @@ export default async function AdminPage({
                 "rounded-pill border px-4 py-2 text-[14px] font-bold transition-colors",
                 status === activeStatus
                   ? "border-transparent bg-ink text-paper"
-                  : "border-line bg-card text-muted hover:text-ink",
+                  : "border-bone/20 bg-ink2 text-bone/65 hover:text-bone",
               )}
             >
               {STATUS_LABEL[status]} · {counts.get(status) ?? 0}
@@ -211,15 +236,15 @@ export default async function AdminPage({
         {/* Queue */}
         <div className="mt-7 grid gap-[18px]">
           {letters.length === 0 ? (
-            <Card className="p-[34px] text-center text-muted">
+            <Card className="border-bone/15 bg-ink2 p-[34px] text-center text-bone/60">
               Nothing with status “{STATUS_LABEL[activeStatus]}”.
             </Card>
           ) : (
             letters.map((letter) => (
-              <Card key={letter.id} className="grid gap-6 p-[26px] lg:grid-cols-[220px_1fr]">
+              <Card key={letter.id} className="grid gap-6 border-bone/15 bg-ink2 p-[26px] lg:grid-cols-[220px_1fr]">
                 {letter.imageUrl ? (
                   <a href={letter.imageUrl} target="_blank" rel="noopener noreferrer">
-                    {/* Signed URL from Supabase Storage — plain img by design. */}
+                    {/* Signed URL from Supabase Storage. */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={letter.imageUrl}
@@ -242,16 +267,19 @@ export default async function AdminPage({
                       submitted {new Date(letter.created_at).toLocaleDateString()}
                     </span>
                   </div>
-                  <p className="mt-2 text-[15.5px] text-ink">“{letter.wish_note}”</p>
-                  <p className="mt-2 text-[14px] text-muted">
-                    <a
-                      href={letter.amazon_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-semibold text-red underline"
-                    >
-                      Amazon link ↗
-                    </a>{" "}
+                  <p className="mt-2 font-serif text-[15.5px] italic text-bone">“{letter.wish_note}”</p>
+                  <p className="mt-2 text-[14px] text-bone/60">
+                    {letter.amazon_urls.map((url, i) => (
+                      <a
+                        key={url}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mr-2 font-semibold text-red underline"
+                      >
+                        Amazon link{letter.amazon_urls.length > 1 ? ` ${i + 1}` : ""} ↗
+                      </a>
+                    ))}
                     · Guardian: {letter.guardian_name} &lt;{letter.guardian_email}&gt;
                   </p>
                   {letter.moderation_note && (
@@ -266,7 +294,7 @@ export default async function AdminPage({
                       name="moderation_note"
                       rows={2}
                       placeholder="Moderation note (kept internal; included if you request edits)…"
-                      className="w-full rounded-[12px] border border-line bg-white px-3.5 py-2.5 text-[14px] placeholder:text-muted/60 focus:border-red focus:outline-none"
+                      className="w-full border border-bone/20 bg-[#0f0c0a] px-3.5 py-2.5 text-[14px] text-bone placeholder:text-bone/35 focus:border-amber focus:outline-none"
                     />
                     <div className="flex flex-wrap gap-2">
                       {ACTIONS_FOR_STATUS[letter.status].map(({ action, label, primary }) => (
@@ -280,8 +308,8 @@ export default async function AdminPage({
                             primary
                               ? "border-transparent bg-green text-white"
                               : action === "reject"
-                                ? "border-red/40 bg-white text-red"
-                                : "border-line bg-white text-ink",
+                                ? "border-red/60 bg-transparent text-[#e7705e]"
+                                : "border-bone/25 bg-transparent text-bone",
                           )}
                         >
                           {label}
@@ -301,9 +329,9 @@ export default async function AdminPage({
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <Card className="p-5">
-      <p className="text-[28px] font-black tracking-[-0.02em]">{value}</p>
-      <p className="text-[13px] font-bold text-muted uppercase tracking-[0.08em]">{label}</p>
+    <Card className="border-bone/15 bg-ink2 p-5">
+      <p className="font-display text-[34px] font-black tracking-[-0.03em] text-amber">{value}</p>
+      <p className="text-[11px] font-bold text-bone/55 uppercase tracking-[0.12em]">{label}</p>
     </Card>
   );
 }

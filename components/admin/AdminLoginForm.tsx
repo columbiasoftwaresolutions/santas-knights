@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 const fieldBase =
-  "w-full rounded-[14px] border-[1.5px] border-line bg-white px-[18px] py-[13px] text-[15.5px] text-ink placeholder:text-muted/70 focus:border-red focus:outline-2 focus:outline-offset-1 focus:outline-red";
+  "w-full border-[1.5px] border-line bg-paper px-[18px] py-[13px] text-[15.5px] text-ink placeholder:text-muted/70 focus:border-red focus:outline-2 focus:outline-offset-1 focus:outline-red";
 const labelBase = "mb-1.5 block text-[13px] font-bold uppercase tracking-[0.1em] text-muted";
 
 export function AdminLoginForm() {
@@ -66,7 +66,7 @@ export function AdminLoginForm() {
         />
       </div>
       {error && (
-        <p className="rounded-[14px] border border-red/30 bg-red/5 px-[18px] py-[12px] text-[14.5px] font-semibold text-red">
+        <p className="border border-red/30 bg-red/5 px-[18px] py-[12px] text-[14.5px] font-semibold text-red">
           {error}
         </p>
       )}

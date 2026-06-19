@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>Gallery — Santa's Knights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  /* ============ GALLERY HERO ============ */
+  .gal-hero{background:var(--ink);color:var(--bone);padding:84px 0 76px;border-bottom:1px solid rgba(232,226,212,0.12);position:relative;overflow:hidden;}
+  .gal-hero-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:56px;align-items:end;}
+  .gal-hero h1{font-family:var(--display);font-weight:900;font-size:clamp(72px,11vw,168px);line-height:0.82;text-transform:uppercase;letter-spacing:-0.04em;}
+  .gal-hero h1 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--amber);letter-spacing:-0.02em;}
+  .gal-lede{margin-top:28px;font-size:19px;line-height:1.6;color:rgba(232,226,212,0.82);max-width:560px;text-wrap:pretty;}
+  .gal-hero-fig{position:relative;}
+  .gal-hero-fig .duo,.gal-hero-fig .duo img{height:340px;width:100%;}
+  .gal-hero-fig figcaption{margin-top:14px;font-family:var(--serif);font-style:italic;font-size:15px;color:rgba(232,226,212,0.6);}
+
+  /* ============ FILTER BAR ============ */
+  .gal-bar{background:var(--ink2);border-bottom:1px solid rgba(232,226,212,0.12);padding:22px 0;}
+  .gal-bar-row{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  .gal-chips{display:flex;gap:10px;flex-wrap:wrap;}
+  .gal-chip{font-family:var(--body);font-weight:700;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;padding:9px 18px;border:1.5px solid rgba(232,226,212,0.28);color:rgba(232,226,212,0.78);transition:all .18s;cursor:pointer;}
+  .gal-chip:hover{border-color:var(--bone);color:var(--bone);}
+  .gal-chip.on{background:var(--red);border-color:var(--red);color:var(--paper);}
+  .gal-note{font-family:var(--serif);font-style:italic;font-size:15px;color:rgba(232,226,212,0.55);text-wrap:pretty;}
+
+  /* ============ GALLERY GRID ============ */
+  .gal-grid-sec{background:var(--ink);padding:48px 0 96px;}
+  .gal-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-auto-rows:200px;
+    gap:14px;
+  }
+  .tile{position:relative;overflow:hidden;background:var(--ink2);}
+  .tile.w2{grid-column:span 2;}
+  .tile.h2{grid-row:span 2;}
+
+  /* real, full-colour photos */
+  .tile-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease, filter .5s ease;filter:saturate(1.02);}
+  .tile-photo:hover img{transform:scale(1.04);}
+  .tile-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(22,18,15,0) 52%,rgba(22,18,15,0.7) 100%);z-index:1;pointer-events:none;}
+  .tile-cap{position:absolute;left:18px;right:18px;bottom:16px;z-index:2;}
+  .tile-cap .tc-k{font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.25;color:var(--paper);text-wrap:pretty;}
+  .tile-cap .tc-s{margin-top:6px;font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(247,240,227,0.66);}
+
+  /* honest placeholder tiles */
+  .tile-ph{background:var(--paper-raised);border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between;padding:20px;}
+  .tile-ph .ph-tag{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+  .tile-ph .ph-label{font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.25;color:var(--ink);text-wrap:pretty;}
+  .tile-ph.dark{background:var(--ink2);border-color:rgba(232,226,212,0.16);}
+  .tile-ph.dark .ph-tag{color:rgba(232,226,212,0.5);}
+  .tile-ph.dark .ph-label{color:var(--bone);}
+  .ph-mark{font-family:var(--display);font-weight:900;font-size:13px;letter-spacing:0.04em;color:var(--red);text-transform:uppercase;}
+
+  /* ============ CLOSING CTA ============ */
+  .gal-close{background:var(--red-deep);color:var(--paper);padding:104px 0 100px;}
+  .gal-close h2{font-family:var(--display);font-weight:900;font-size:clamp(48px,7vw,108px);line-height:0.86;text-transform:uppercase;letter-spacing:-0.03em;text-wrap:balance;}
+  .gal-close h2 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--amber);letter-spacing:-0.02em;}
+  .gal-close .intro{margin-top:28px;font-size:19px;line-height:1.55;max-width:600px;color:rgba(247,240,227,0.92);text-wrap:pretty;}
+  .gal-close-actions{margin-top:40px;display:flex;gap:16px;flex-wrap:wrap;}
+  .gal-close .btn{border-color:var(--paper);color:var(--paper);}
+  .gal-close .btn:hover{background:var(--paper);color:var(--red-deep);}
+  .gal-close .btn-red{background:var(--ink);border-color:var(--ink);color:var(--paper);}
+  .gal-close .btn-red:hover{background:var(--ink2);border-color:var(--ink2);}
+
+  @media (max-width:900px){
+    .gal-hero-grid{grid-template-columns:1fr;gap:32px;align-items:start;}
+    .gal-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px;}
+    .tile.w2{grid-column:span 2;}
+  }
+  @media (max-width:560px){
+    .gal-grid{grid-template-columns:1fr;}
+    .tile.w2{grid-column:span 1;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top">
+  <div class="wrap navrow">
+    <div class="brandmark">
+      <span class="bm-name">Santa's Knights</span>
+      <span class="bm-tag">The Gift of Martial Arts™</span>
+    </div>
+    <div class="navlinks">
+      <a href="donate.html">Donate</a>
+      <a href="about.html">Santa's Knights</a>
+      <a href="training.html">Classes</a>
+      <a href="letters.html">Letters to Santa</a>
+      <a href="membership.html">Membership</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="navactions">
+      <a class="btn" href="donate.html">Donate</a>
+      <a class="btn btn-red" href="letters-give.html">Adopt a letter</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="gal-hero">
+  <div class="wrap gal-hero-grid">
+    <div>
+      <h1>Gallery<em>.</em></h1>
+      <p class="gal-lede">Moments from Harlem — the holiday gift event, the training floor, and the people who show up. A record of what free martial arts and an answered letter look like in practice.</p>
+    </div>
+    <figure class="gal-hero-fig">
+      <div class="duo duo-warm"><img src="../public/images/hero-community.jpg" alt="Families and volunteers together at a Santa's Knights community event in Harlem" /></div>
+      <figcaption>Santa's Knights, Harlem.</figcaption>
+    </figure>
+  </div>
+</header>
+
+<!-- FILTER BAR -->
+<section class="gal-bar">
+  <div class="wrap gal-bar-row">
+    <div class="gal-chips">
+      <span class="gal-chip on">All</span>
+      <span class="gal-chip">Training</span>
+      <span class="gal-chip">Santa's Letters</span>
+      <span class="gal-chip">Events</span>
+      <span class="gal-chip">Community</span>
+    </div>
+    <p class="gal-note">We're migrating the full archive — more photos land here soon.</p>
+  </div>
+</section>
+
+<!-- GRID -->
+<section class="gal-grid-sec">
+  <div class="wrap">
+    <div class="gal-grid">
+
+      <!-- real photo, large feature -->
+      <figure class="tile tile-photo w2 h2">
+        <img src="../public/images/hero-community.jpg" alt="Families and volunteers gathered at the Santa's Knights holiday gift event" />
+        <figcaption class="tile-cap">
+          <div class="tc-k">The holiday gift event, all together.</div>
+          <div class="tc-s">Santa's Letters · December, Harlem</div>
+        </figcaption>
+      </figure>
+
+      <!-- placeholder -->
+      <div class="tile tile-ph">
+        <span class="ph-mark">Photo</span>
+        <span class="ph-label">Kids at the holiday gift drive</span>
+      </div>
+
+      <!-- placeholder dark -->
+      <div class="tile tile-ph dark">
+        <span class="ph-tag">Events</span>
+        <span class="ph-label">Letters being sorted before the giveaway</span>
+      </div>
+
+      <!-- real photo: sparring -->
+      <figure class="tile tile-photo h2">
+        <img src="../public/images/gladiators-sparring.jpg" alt="Two fighters sparring in full armor with steel weapons" />
+        <figcaption class="tile-cap">
+          <div class="tc-k">Full-contact, steel and armor.</div>
+          <div class="tc-s">Training · Gladiators NYC</div>
+        </figcaption>
+      </figure>
+
+      <!-- placeholder -->
+      <div class="tile tile-ph dark">
+        <span class="ph-tag">Training</span>
+        <span class="ph-label">Women's combat &amp; fitness class</span>
+      </div>
+
+      <!-- placeholder wide -->
+      <div class="tile tile-ph w2">
+        <span class="ph-mark">Photo</span>
+        <span class="ph-label">Armored tournament, 2024</span>
+      </div>
+
+      <!-- real photo: combat helmet -->
+      <figure class="tile tile-photo h2">
+        <img src="../public/images/combat-helmet.jpg" alt="Close-up of a steel combat helmet worn in armored practice" />
+        <figcaption class="tile-cap">
+          <div class="tc-k">Before the bout.</div>
+          <div class="tc-s">Training · Armored practice</div>
+        </figcaption>
+      </figure>
+
+      <!-- placeholder -->
+      <div class="tile tile-ph dark">
+        <span class="ph-tag">Community</span>
+        <span class="ph-label">Veterans' session on the floor</span>
+      </div>
+
+      <!-- placeholder -->
+      <div class="tile tile-ph">
+        <span class="ph-mark">Photo</span>
+        <span class="ph-label">Volunteers wrapping gifts</span>
+      </div>
+
+      <!-- real photo: founder headshot -->
+      <figure class="tile tile-photo">
+        <img src="../public/images/headshot.png" alt="Damion DiGrazia, founder of Santa's Knights" />
+        <figcaption class="tile-cap">
+          <div class="tc-k">Damion, founder.</div>
+          <div class="tc-s">Community · Harlem</div>
+        </figcaption>
+      </figure>
+
+      <!-- placeholder wide -->
+      <div class="tile tile-ph dark w2">
+        <span class="ph-tag">Santa's Letters</span>
+        <span class="ph-label">A kid's wish, picked off the pile</span>
+      </div>
+
+      <!-- placeholder -->
+      <div class="tile tile-ph">
+        <span class="ph-mark">Photo</span>
+        <span class="ph-label">Kids' bootcamp with foam weapons</span>
+      </div>
+
+      <!-- placeholder dark -->
+      <div class="tile tile-ph dark">
+        <span class="ph-tag">Events</span>
+        <span class="ph-label">Gift handoff, December morning</span>
+      </div>
+
+      <!-- placeholder -->
+      <div class="tile tile-ph">
+        <span class="ph-mark">Photo</span>
+        <span class="ph-label">Manhattanville Community Center, 133rd St</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING CTA -->
+<section class="gal-close">
+  <div class="wrap">
+    <h2>Be in the next<br><em>one.</em></h2>
+    <p class="intro">These photos start with someone deciding to help. Adopt a kid's letter, or lend a hand at the event, and you're part of the record.</p>
+    <div class="gal-close-actions">
+      <a class="btn btn-red btn-lg" href="letters-give.html">Adopt a letter</a>
+      <a class="btn btn-lg" href="get-involved.html">Get involved</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <div class="fb-name">Santa's Knights</div>
+      <div class="fb-tag">The Gift of Martial Arts™</div>
+    </div>
+    <div class="foot-col">
+      <h5>Find us</h5>
+      <p>Manhattanville Community Center<br>530 W 133rd St<br>New York, NY 10027</p>
+    </div>
+    <div class="foot-col">
+      <h5>Reach us</h5>
+      <a href="tel:+12128735818">(212) 873-5818</a>
+      <a href="mailto:contact@santasknights.org">contact@santasknights.org</a>
+      <a href="https://www.instagram.com/santasknights/">Instagram</a>
+      <a href="https://www.facebook.com/santasknights">Facebook</a>
+      <a href="https://www.youtube.com/channel/UC5trQ89gJ3e-pRy-d977KCg">YouTube</a>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© Santa's Knights, Inc. — a 501(c)(3) nonprofit.</span>
+    <span>Built by Columbia Software Solutions</span>
+  </div>
+</footer>
+
+</body>
+</html>

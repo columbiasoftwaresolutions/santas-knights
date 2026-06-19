@@ -33,7 +33,7 @@ export function GetInvolved() {
             as="h3"
             size="h3"
             eyebrow="Stay in the loop"
-            eyebrowClassName="text-gold"
+            eyebrowClassName="text-[#8a6420]"
             title="Newsletter"
             intro="Class schedules, news, and ways to help, straight to your inbox."
           />

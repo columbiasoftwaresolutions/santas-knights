@@ -30,7 +30,7 @@ export async function sendContactMessage(
   if (!supabase) {
     return {
       ok: false,
-      message: `The contact form isn't wired up yet — please email us directly at ${org.email}.`,
+      message: `The contact form is not available yet. Please email us directly at ${org.email}.`,
     };
   }
 
@@ -45,7 +45,7 @@ export async function sendContactMessage(
     };
   }
 
-  // Optional email routing — failure here never loses the message (it's stored).
+  // Optional email routing. A failure here never loses the stored message.
   const resendKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_EMAIL_TO;
   if (resendKey && to) {
@@ -60,7 +60,7 @@ export async function sendContactMessage(
           from: "Santa's Knights site <onboarding@resend.dev>",
           to: [to],
           reply_to: email,
-          subject: `[santasknights.org] ${reason || "Contact"} — ${name}`,
+          subject: `[santasknights.org] ${reason || "Contact"}: ${name}`,
           text: `From: ${name} <${email}>\nReason: ${reason || "n/a"}\n\n${message}`,
         }),
       });
@@ -86,13 +86,13 @@ export async function subscribeNewsletter(
   if (!supabase) {
     return {
       ok: false,
-      message: `Signups aren't open quite yet — email ${org.email} and we'll add you by hand.`,
+      message: `Email ${org.email} and we will add you to the list.`,
     };
   }
 
   const { error } = await supabase.from("newsletter_subscribers").insert({ email });
   if (error && error.code !== "23505") {
-    // 23505 = already subscribed — treat as success.
+    // 23505 means already subscribed, which is treated as success.
     console.error("Newsletter insert failed:", error.message);
     return { ok: false, message: "Something went wrong. Please try again." };
   }

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { links, org, socials, TRAINING_HREF } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -10,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * Link-in-bio page — the URL behind the Instagram profile link, so it's built
+ * Link-in-bio page used by the Instagram profile, so it is built
  * as a single thumb-friendly column of large tap targets.
  */
 const bioLinks: { label: string; sub: string; href: string; primary?: boolean }[] = [
@@ -22,11 +21,11 @@ const bioLinks: { label: string; sub: string; href: string; primary?: boolean }[
   },
   {
     label: "Submit your child's letter",
-    sub: "Parents & guardians — join the gift drive",
+    sub: "Parents and guardians can join the gift drive",
     href: links.submitLetter,
   },
   { label: "Donate", sub: "Tax-deductible · keeps everything free", href: links.donate },
-  { label: "Free training & classes", sub: "Gladiators NYC — our combat program", href: TRAINING_HREF },
+  { label: "Free training & classes", sub: "Gladiators NYC combat program", href: TRAINING_HREF },
   { label: "Volunteer with us", sub: "Letters, events, coaching, and more", href: links.getInvolved },
   { label: "About Santa's Knights", sub: "A Harlem 501(c)(3) since 2016", href: links.about },
   { label: "Contact", sub: "Questions, press, partnerships", href: links.contact },
@@ -44,7 +43,9 @@ export default function LinksPage() {
             ♔
           </span>
           <h1 className="mt-5 text-[34px] font-black tracking-[-0.03em]">{org.name}</h1>
-          <Eyebrow className="mt-2">Harlem 501(c)(3) · 100% free</Eyebrow>
+          <p className="mt-2 text-[12px] font-bold tracking-[0.16em] text-amber uppercase">
+            Harlem 501(c)(3) · 100% free
+          </p>
           <p className="mt-3 text-[16px] text-muted">{org.tagline}</p>
         </div>
 

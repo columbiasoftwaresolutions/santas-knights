@@ -4,12 +4,12 @@
  * The full text of the version in force is stored alongside every acceptance
  * (consent_records.full_text), so this copy can evolve without losing what a
  * guardian actually agreed to. Bump the version whenever the text materially
- * changes. Final language pending review — see REQUIREMENTS.md §3.1.
+ * changes. Final language is pending review; see REQUIREMENTS.md §3.1.
  */
 
-export const GUARDIAN_CONSENT_VERSION = "2026-06-draft-1";
+export const GUARDIAN_CONSENT_VERSION = "2026-06-draft-2";
 
-export const GUARDIAN_CONSENT_TEXT = `Santa's Letters — Parent/Guardian Consent (version ${GUARDIAN_CONSENT_VERSION})
+export const GUARDIAN_CONSENT_TEXT = `Santa's Letters Parent/Guardian Consent (version ${GUARDIAN_CONSENT_VERSION})
 
 I confirm that I am the parent or legal guardian of the child named in this submission, and I am submitting this letter on their behalf.
 
@@ -25,6 +25,6 @@ I understand and agree that:
 
 5. Santa's Knights may keep this submission and my acceptance of these terms on record.`;
 
-export const DONOR_TERMS_VERSION = "2026-06-draft-1";
+export const DONOR_TERMS_VERSION = "2026-06-draft-2";
 
-export const DONOR_TERMS_SUMMARY = `Gifts are fulfilled directly through Amazon — Santa's Knights never handles your payment. Don't attempt to identify, contact, or locate a child or family, scrape this site, or send anything that isn't age-appropriate, legal, and safe.`;
+export const DONOR_TERMS_SUMMARY = `Gifts are fulfilled directly through Amazon. Santa's Knights never handles your payment. Do not attempt to identify, contact, or locate a child or family, scrape this site, or send anything that is not age-appropriate, legal, and safe.`;

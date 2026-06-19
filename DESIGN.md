@@ -1,24 +1,26 @@
 ---
 # DESIGN.md — machine-readable design tokens
-# Format: Google Stitch DESIGN.md (alpha). Derived from santas-knights-home.html.
+# Format: Google Stitch DESIGN.md (alpha). Source: design-demos/home.html.
 meta:
   name: Santa's Knights
   product: Santa's Knights nonprofit hub (with embedded Gladiators NYC combat brand)
-  version: 0.1.0
+  version: 0.2.0
   status: alpha
 
 colors:
-  # Santa's Knights — warm, charitable wrapper
+  # Poster system — warm near-black grounds with paper contrast sections
   paper:        "#F7F0E3"   # app background / primary surface
   paperRaised:  "#FBF6EC"   # alternate surface, strips
   card:         "#FFFFFF"   # card surface
-  ink:          "#221D17"   # primary text + dark UI surfaces
+  ink:          "#16120F"   # primary dark ground
+  ink2:         "#1A1512"   # raised dark panel
   muted:        "#6C6256"   # secondary text
-  red:          "#9E2536"   # primary brand / CTA
-  redDeep:      "#741726"   # primary hover / pressed
+  red:          "#C2331F"   # primary accent / CTA
+  redDeep:      "#9E2536"   # flood-color feature ground
   green:        "#2E5E45"   # secondary — giving / community
   greenSoft:    "#E7EFE8"   # green tint surface
-  gold:         "#C2912F"   # accent
+  amber:        "#C98A3A"   # serif accents / secondary accent
+  gold:         "#C2912F"   # legacy accent
   goldSoft:     "#F0E2C2"   # accent tint surface
   line:         "#E4D8C4"   # borders / dividers
   focus:        "#9E2536"   # focus ring (= red)
@@ -30,8 +32,9 @@ colors:
 
 typography:
   families:
-    sans:  '"Hanken Grotesk", system-ui, sans-serif'   # UI + display
-    serif: '"Fraunces", Georgia, serif'                 # editorial emphasis (italic)
+    sans:    '"Hanken Grotesk", system-ui, sans-serif' # UI + body
+    display: '"Archivo", system-ui, sans-serif'         # uppercase poster display
+    serif:   '"Fraunces", Georgia, serif'               # italic emphasis
   base:
     size: "18px"
     lineHeight: 1.55
@@ -43,24 +46,20 @@ typography:
     lede:     { size: "20px",  weight: 400, lineHeight: 1.55 }
     body:     { size: "18px",  weight: 400, lineHeight: 1.55 }
     small:    { size: "15px",  weight: 600 }
-    eyebrow:  { size: "13px",  weight: 700, letterSpacing: "0.16em", transform: "uppercase" }
     quote:    { family: serif, size: "clamp(26px,3.4vw,40px)", weight: 500, lineHeight: 1.3 }
 
 spacing:
   unit: 2
   scale: [8, 12, 14, 18, 22, 26, 32, 38, 46, 54, 64, 74]   # px
   layout:
-    maxWidth: "1220px"
-    gutter: "32px"
+    maxWidth: "1440px"
+    gutter: "clamp(24px,4vw,56px)"
     sectionY: "74px"
 
 roundedCorners:
-  sm: "7px"
-  md: "14px"
-  lg: "18px"
-  xl: "22px"
-  "2xl": "26px"
-  pill: "999px"
+  panel: "0px"
+  control: "0px"
+  pill: "999px" # reserved for compact status chips only
 
 elevation:
   cta:    "0 10px 24px -10px rgba(178,58,46,.60)"
@@ -69,7 +68,7 @@ elevation:
 
 components:
   button:
-    radius: pill
+    radius: control
     padding: "15px 26px"
     fontSize: "16px"
     fontWeight: 700
@@ -86,10 +85,10 @@ components:
   card:
     bg: card
     border: "1px solid line"
-    radius: xl
+    radius: panel
     hover: "translateY(-4px) + elevation.card"
   input:
-    radius: pill
+    radius: control
     border: "1.5px solid gold"
     padding: "13px 18px"
     focus: "2px solid red"
@@ -107,7 +106,7 @@ Santa's Knights is a 501(c)(3) nonprofit bringing **free** martial arts, fitness
 - **Santa's Knights (default / wrapper)** — warm, hopeful, trustworthy. A cream "paper" canvas, deep brand red, community green, and gold accents. Editorial serif (Fraunces) used in italic for emotional emphasis. This is the charitable, welcoming voice that fronts the org, donations, and Letters to Santa.
 - **Gladiators NYC (sub-brand section)** — gritty, intense, medieval-meets-modern. Near-black steel surfaces, a hotter orange-red, bone-colored text. Used only for the combat program's section as a deliberate *tonal bridge* into "the steel world."
 
-The system is designed so the warm wrapper can hand off to the steel sub-brand without feeling like two different products: same typeface, same geometry (pills, rounded cards), same spacing — only the surface palette and intensity shift.
+The approved “Poster” system uses near-black grounds as the main identity, interrupted by warm paper, red, and amber flood sections. Geometry is square and editorial; rounded cards are not part of the system.
 
 ## Colors
 
@@ -137,18 +136,19 @@ Steel sub-brand palette (Gladiators NYC):
 | Combat eyebrow | `gladAmber` | `#C98A3A` |
 | Text on steel | `bone` | `#E8E2D4` |
 
-**Roles & usage.** `red` is the single primary CTA color in the warm world; `green` is reserved for giving/community contexts (Letters to Santa, "Service & events"); `gold` is accent-only (eyebrows, tints, decorative crowns), never a primary action. On `steel` sections, switch to `gladRed` for actions and `bone` for text. Color alone never carries meaning — pair with label/icon.
+**Roles & usage.** `red` is the primary CTA and flood color; `amber` supports italic accents and small metadata; `green` is reserved for giving/community state. Color alone never carries meaning.
 
 ## Typography
 
-- **Sans — Hanken Grotesk** is the workhorse for UI, navigation, and display headings. Headings run heavy (800–900) with tight tracking (`-0.02em` to `-0.035em`) and a compressed line-height (1.05) for a confident, athletic feel.
-- **Serif — Fraunces**, used **in italic at 500–600 weight**, appears only as emotional/editorial emphasis: a highlighted word inside a headline (`<em>everyone</em>`), the mission pull-quote, and stat flourishes. Never use Fraunces for body copy or UI controls.
-- **Eyebrows** (13px, 700, `0.16em`, uppercase, usually `red`) label every section.
+- **Archivo** is the display face: 800–900, uppercase, very tight tracking, and compressed line-height.
+- **Hanken Grotesk** is the workhorse for body copy, navigation, and UI controls.
+- **Fraunces**, usually italic at 400–500, provides one emotional emphasis beat inside large headings and quotes.
+- **No eyebrows or kickers.** Hierarchy comes from scale, spacing, rules, and color.
 - Base body is **18px / 1.55** for comfortable reading; ledes step up to 20px in `muted`.
 
 ## Layout
 
-- Centered content column, **max-width `1220px`**, horizontal gutter **`32px`**.
+- Centered content column, **max-width `1440px`**, responsive horizontal gutter **`24–56px`**.
 - Vertical rhythm: full sections ~**`74px`** top/bottom; tighter clusters use the spacing scale (`8 → 74`).
 - Primary structure is **two-column grids** (`~1fr 1fr`, hero `1.04fr .96fr`) that **collapse to a single column** at the breakpoints below.
 - Breakpoints (max-width): `980px` (nav links hide), `880px` (hero stacks), `820px`/`780px`/`720px` (grids → 1–2 col).
@@ -163,9 +163,8 @@ Steel sub-brand palette (Gladiators NYC):
 
 ## Shapes
 
-- **Pills everywhere for actions**: buttons and inputs use `radius: pill (999px)`.
-- **Cards & panels** use `xl (22px)`; the Letters card uses `2xl (26px)`; media/photos `lg (16–20px)`; small chips/date chips `md (14px)`; logo placeholders `sm (7px)`.
-- Decorative **circular crest** (`♔` in a red disc) is the brand mark; social icons are 36px circles.
+- **Buttons, inputs, cards, media, and panels are square.**
+- Pills are reserved for compact statuses or taxonomy chips where the shape carries meaning.
 - Image placeholders are diagonal hatch fills (light on warm surfaces, dark on steel) labeled with the intended photo direction.
 
 ## Components
@@ -188,8 +187,8 @@ Steel sub-brand palette (Gladiators NYC):
 **Do**
 - Keep the warm `paper` canvas as the default; reserve `steel` strictly for Gladiators content.
 - Use `red` for primary actions, `green` for giving/community, `gold` for accent only.
-- Lead sections with an uppercase eyebrow; use Fraunces italic sparingly for one emphasis beat per block.
-- Maintain pill buttons, `xl` cards, and the 1220px/32px layout frame across new pages.
+- Use Archivo uppercase display headings and Fraunces italic sparingly for one emphasis beat per block.
+- Maintain square controls/panels and the 1440px / 24–56px layout frame across new pages.
 - Reinforce "100% free · 501(c)(3) · tax-deductible" wherever donations or classes appear.
 
 **Don't**
@@ -205,8 +204,8 @@ When generating new screens or components for this product:
 
 - Default to the **Santa's Knights warm theme** (`paper` background, `ink` text, `red` primary). Only switch to the **Gladiators steel theme** (`steel` background, `bone` text, `gladRed` primary) for combat-program screens, and mark the transition with a full-bleed band.
 - Pull all colors, type, spacing, radii, and shadows from the YAML tokens above — do not invent values.
-- Headings: Hanken Grotesk 800–900, tight tracking; one optional Fraunces-italic emphasis word in red.
-- Every section starts with an uppercase eyebrow; primary CTA is a red pill that lifts on hover.
-- Layout: 1220px max width, 32px gutters, two-column grids that collapse to one column on mobile; design mobile-first.
+- Headings: Archivo 800–900 uppercase, tight tracking; one optional Fraunces-italic emphasis word in red or amber.
+- Never add eyebrows/kickers. Primary CTAs are square red controls.
+- Layout: 1440px max width, 24–56px gutters, two-column grids that collapse to one column on mobile.
 - Always surface the nonprofit framing (free / 501(c)(3) / tax-deductible) near classes or donations.
 - Source of truth for behavior/scope: `README.md` and `docs/REQUIREMENTS.md`. Reference mock: `santas-knights-home.html`.

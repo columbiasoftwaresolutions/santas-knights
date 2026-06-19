@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>Online Classes — Santa's Knights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  /* ===== ONLINE CLASSES PAGE ===== */
+  .ohero{background:var(--paper);color:var(--ink);padding:84px 0 80px;border-bottom:1px solid var(--line);}
+  .ohero h1{font-family:var(--serif);font-weight:500;font-size:clamp(46px,7vw,100px);line-height:0.96;letter-spacing:-0.03em;color:var(--ink);}
+  .ohero h1 em{font-style:italic;font-weight:500;color:var(--red);}
+  .ohero-lede{margin-top:26px;font-size:20px;line-height:1.6;color:var(--muted);max-width:640px;}
+  .ohero-actions{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap;}
+  .ohero .btn{border-color:var(--ink);color:var(--ink);}
+  .ohero .btn:hover{background:var(--ink);color:var(--paper);}
+  .ohero .btn-red{border-color:var(--red);color:var(--paper);}
+  .ohero .btn-red:hover{background:var(--red-deep);color:var(--paper);}
+
+  /* content blocks */
+  .oblocks{background:var(--ink);padding:96px 0 100px;}
+  .oblocks-head{max-width:760px;margin-bottom:54px;}
+  .oblocks-head h2{font-family:var(--display);font-weight:900;font-size:clamp(34px,4.6vw,64px);line-height:0.9;text-transform:uppercase;letter-spacing:-0.03em;}
+  .oblocks-head h2 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--amber);letter-spacing:-0.02em;}
+  .oblocks-head p{margin-top:22px;font-size:18px;line-height:1.55;color:rgba(232,226,212,0.78);max-width:600px;}
+  .ogrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid rgba(232,226,212,0.16);border-left:1px solid rgba(232,226,212,0.16);}
+  .oblock{border-right:1px solid rgba(232,226,212,0.16);border-bottom:1px solid rgba(232,226,212,0.16);padding:40px 34px 36px;display:flex;flex-direction:column;min-height:300px;}
+  .oblock .onum{font-family:var(--display);font-weight:900;font-size:56px;line-height:0.8;color:var(--amber);letter-spacing:-0.04em;}
+  .oblock h3{margin-top:22px;font-family:var(--display);font-weight:800;font-size:22px;text-transform:uppercase;letter-spacing:-0.01em;color:var(--bone);}
+  .oblock p{margin-top:14px;font-size:16px;line-height:1.55;color:rgba(232,226,212,0.78);flex:1;}
+  .oblock .textlink{margin-top:22px;font-size:13px;}
+
+  /* programs reference band (flood red) */
+  .oprograms{background:var(--red-deep);color:var(--paper);padding:90px 0 94px;}
+  .oprograms h2{font-family:var(--display);font-weight:900;font-size:clamp(32px,4vw,56px);line-height:0.9;text-transform:uppercase;letter-spacing:-0.03em;text-wrap:balance;max-width:760px;}
+  .oprograms h2 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--amber);letter-spacing:-0.02em;}
+  .oprograms .intro{margin-top:22px;font-size:18px;line-height:1.55;color:rgba(247,240,227,0.92);max-width:620px;}
+  .opg-list{margin-top:44px;display:flex;flex-wrap:wrap;gap:0;}
+  .opg{font-family:var(--display);font-weight:800;font-size:clamp(20px,2.2vw,30px);text-transform:uppercase;letter-spacing:-0.01em;color:var(--paper);padding:6px 26px 6px 0;line-height:1.3;}
+  .opg:not(:last-child)::after{content:"·";color:var(--amber);margin-left:26px;font-weight:900;}
+
+  /* app band */
+  .oapp{background:var(--paper);color:var(--ink);padding:90px 0;}
+  .oapp-grid{display:grid;grid-template-columns:0.9fr 1.6fr;gap:56px;align-items:center;}
+  .oapp .marker{font-family:var(--display);font-weight:900;font-size:clamp(60px,7vw,110px);line-height:0.82;color:var(--ink);letter-spacing:-0.04em;}
+  .oapp .standfirst{font-family:var(--serif);font-weight:400;font-size:clamp(26px,3vw,42px);line-height:1.18;letter-spacing:-0.02em;text-wrap:pretty;color:var(--ink);}
+  .oapp .standfirst em{font-style:italic;color:var(--red);}
+  .oapp .oapp-cta{margin-top:30px;}
+  .oapp .btn-red{border-color:var(--red);color:var(--paper);background:var(--red);}
+  .oapp .btn-red:hover{background:var(--red-deep);border-color:var(--red-deep);}
+
+  @media (max-width:900px){
+    .ogrid{grid-template-columns:1fr;}
+    .oapp-grid{grid-template-columns:1fr;gap:24px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top">
+  <div class="wrap navrow">
+    <div class="brandmark">
+      <span class="bm-name">Santa's Knights</span>
+      <span class="bm-tag">The Gift of Martial Arts™</span>
+    </div>
+    <div class="navlinks">
+      <a href="donate.html">Donate</a>
+      <a href="about.html">Santa's Knights</a>
+      <a href="training.html">Classes</a>
+      <a href="letters.html">Letters to Santa</a>
+      <a href="membership.html">Membership</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="navactions">
+      <a class="btn" href="donate.html">Donate</a>
+      <a class="btn btn-red" href="letters-give.html">Adopt a letter</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="ohero">
+  <div class="wrap">
+    <h1>Online <em>classes.</em></h1>
+    <p class="ohero-lede">Train from anywhere. Medieval combat and fitness, online — the same Gladiators NYC coaching, streamed to wherever you are. Booking and video live on our training site.</p>
+    <div class="ohero-actions">
+      <a class="btn btn-red btn-lg" href="https://gladiators.nyc">Watch / register on our training site ↗</a>
+      <a class="btn btn-lg" href="training.html">In-person classes</a>
+    </div>
+  </div>
+</header>
+
+<!-- CONTENT BLOCKS -->
+<section class="oblocks">
+  <div class="wrap">
+    <div class="oblocks-head">
+      <h2>Train from <em>anywhere.</em></h2>
+      <p>Online training brings combat and fitness to your living room. The sessions, video library, and registration all run on gladiators.nyc — here's what to expect.</p>
+    </div>
+    <div class="ogrid">
+
+      <div class="oblock">
+        <div class="onum">01</div>
+        <h3>Combat &amp; fitness online</h3>
+        <p>Medieval combat and fitness, streamed live — the same high-energy, music-driven coaching as our in-person Gladiator Bootcamp, adapted to train at home with foam weapons or none at all.</p>
+        <a class="textlink" href="https://gladiators.nyc">Register on the training site ↗</a>
+      </div>
+
+      <div class="oblock">
+        <div class="onum">02</div>
+        <h3>Video training</h3>
+        <p>Watch and follow along on your own schedule. Video sessions live on our training site so you can train when it suits you, from wherever you are.</p>
+        <a class="textlink" href="https://gladiators.nyc">Watch on the training site ↗</a>
+      </div>
+
+      <div class="oblock">
+        <div class="onum">03</div>
+        <h3>Free, like everything else</h3>
+        <p>Online training carries the same promise as the rest of Santa's Knights — no cost to take part, beginners welcome. Register through the free app to join.</p>
+        <a class="textlink" href="https://gladiators.nyc">Get the free app ↗</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMS REFERENCE -->
+<section class="oprograms">
+  <div class="wrap">
+    <h2>Our classes, on screen <em>or in person.</em></h2>
+    <p class="intro">The full program is the same whether you train in Harlem or from home. Browse what we run, then pick a session on the training site.</p>
+    <div class="opg-list">
+      <span class="opg">Gladiator Bootcamp</span>
+      <span class="opg">Armored Practice</span>
+      <span class="opg">Women's Combat &amp; Fitness</span>
+      <span class="opg">Women's Combat – Midtown</span>
+      <span class="opg">Gladiators for Veterans</span>
+      <span class="opg">Medieval Combat Fundamentals</span>
+    </div>
+  </div>
+</section>
+
+<!-- APP BAND -->
+<section class="oapp">
+  <div class="wrap oapp-grid">
+    <div class="marker">App</div>
+    <div>
+      <p class="standfirst">Use the app to register for and manage your classes! The app is <em>100% FREE,</em> always!</p>
+      <div class="oapp-cta">
+        <a class="btn btn-red btn-lg" href="https://gladiators.nyc">Register for classes ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING CTA -->
+<section class="closing">
+  <div class="wrap">
+    <h2>Train from<br><em>anywhere.</em></h2>
+    <div class="closing-actions">
+      <a class="btn btn-red btn-lg" href="https://gladiators.nyc">Watch / register ↗</a>
+      <a class="btn btn-lg" href="training.html">In-person classes</a>
+    </div>
+    <p class="fine">Online booking and video live on our training site.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <div class="fb-name">Santa's Knights</div>
+      <div class="fb-tag">The Gift of Martial Arts™</div>
+    </div>
+    <div class="foot-col">
+      <h5>Find us</h5>
+      <p>Manhattanville Community Center<br>530 W 133rd St<br>New York, NY 10027</p>
+    </div>
+    <div class="foot-col">
+      <h5>Reach us</h5>
+      <a href="tel:+12128735818">(212) 873-5818</a>
+      <a href="mailto:contact@santasknights.org">contact@santasknights.org</a>
+      <a href="https://www.instagram.com/santasknights/">Instagram</a>
+      <a href="https://www.facebook.com/santasknights">Facebook</a>
+      <a href="https://www.youtube.com/channel/UC5trQ89gJ3e-pRy-d977KCg">YouTube</a>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© Santa's Knights, Inc. — a 501(c)(3) nonprofit.</span>
+    <span>Built by Columbia Software Solutions</span>
+  </div>
+</footer>
+
+</body>
+</html>

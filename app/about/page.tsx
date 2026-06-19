@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
-import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Photo } from "@/components/ui/Photo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
@@ -16,13 +16,15 @@ import {
   org,
   programs,
   values,
+  sponsors,
+  TRADEMARK,
   TRAINING_HREF,
 } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "About · Santa's Knights",
   description:
-    "Santa's Knights is a Harlem 501(c)(3) nonprofit founded by Air Force veteran Damion DiGrazia. We answer kids' letters to Santa every December and teach free martial arts and fitness all year.",
+    "Santa's Knights is a Harlem 501(c)(3) nonprofit. We answer kids' letters to Santa every December and teach free martial arts and fitness all year.",
 };
 
 export default function AboutPage() {
@@ -36,7 +38,7 @@ export default function AboutPage() {
             <em className="font-serif font-medium italic text-red">why</em>.
           </>
         }
-        intro="We're a 501(c)(3) nonprofit in Harlem. We answer kids' letters to Santa every December, and teach martial arts and fitness for free all year. Damion DiGrazia started it, and still runs it."
+        intro="We're a 501(c)(3) nonprofit in Harlem. We answer kids' letters to Santa every December, and teach martial arts and fitness for free all year."
       >
         <Button href={links.adoptLetter} variant="red" arrow>
           See Santa&apos;s Letters
@@ -51,9 +53,8 @@ export default function AboutPage() {
       {/* Mission */}
       <section className="py-section">
         <Container className="max-w-[1000px]">
-          <Eyebrow className="mb-6">Our mission</Eyebrow>
           <q className="block font-serif text-quote font-medium leading-[1.3] tracking-[-0.01em] [quotes:none]">
-            Santa&apos;s Knights brings <b className="font-semibold italic text-red">free</b> martial
+            Santa&apos;s Knights brings <b className="font-semibold italic text-red">free</b>{" "}martial
             arts, fitness, and activities to everyone, equitably, transcending socioeconomic, racial,
             and location boundaries, positively changing children&apos;s and adults&apos; lives
             through exposure and lifestyle enhancement.
@@ -109,12 +110,6 @@ export default function AboutPage() {
               sizes="(min-width: 768px) 32vw, 100vw"
               className="aspect-4/5 rounded-[20px]"
             />
-            <div className="absolute -bottom-5 left-4 max-w-[230px] rounded-[18px] border border-line bg-card p-[16px_20px] shadow-card md:-right-6 md:left-auto">
-              <div className="text-[15px] font-extrabold text-ink">Air Force veteran</div>
-              <div className="mt-0.5 text-[13.5px] font-semibold text-muted">
-                Columbia &amp; Harvard · left Wall Street to build this
-              </div>
-            </div>
           </div>
           <div>
             <SectionHeading
@@ -133,7 +128,7 @@ export default function AboutPage() {
                 {founder.quote}
               </q>
               <cite className="mt-3 block text-[14px] font-semibold not-italic text-muted">
-                — {founder.quoteAttribution}
+                {founder.quoteAttribution}
               </cite>
             </blockquote>
           </div>
@@ -143,7 +138,7 @@ export default function AboutPage() {
       {/* Santa's Letters */}
       <section className="bg-paper-raised border-y border-line py-section">
         <Container>
-          <div className="relative grid items-center gap-8 overflow-hidden rounded-card-lg bg-green bg-[linear-gradient(160deg,var(--color-green),#22483540)] p-[34px] text-[#eef4ef] md:grid-cols-[1.05fr_0.95fr] md:gap-[46px] md:p-[50px]">
+          <div className="relative grid items-center gap-8 overflow-hidden rounded-card-lg bg-green bg-[linear-gradient(160deg,var(--color-green),#1f3f2e)] p-[34px] text-[#eef4ef] md:grid-cols-[1.05fr_0.95fr] md:gap-[46px] md:p-[50px]">
             <span
               aria-hidden
               className="pointer-events-none absolute -top-[30px] -right-5 text-[200px] leading-none text-white/[0.06]"
@@ -155,7 +150,7 @@ export default function AboutPage() {
                 tone="onColor"
                 size="band"
                 eyebrow="Santa's Letters"
-                title="The program at the heart of it"
+                title="Our holiday letter program"
                 intro={letters.intro}
                 introClassName="max-w-[44ch]"
               />
@@ -164,7 +159,7 @@ export default function AboutPage() {
                   How it works
                 </Button>
                 <Button href={links.getInvolved} variant="clear">
-                  Help out
+                  Volunteer
                 </Button>
               </div>
             </div>
@@ -199,7 +194,7 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* Training — overview, lives on its own site */}
+      {/* Training overview with external links */}
       <section className="bg-paper-raised border-y border-line py-section">
         <Container className="grid items-center gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-[54px]">
           <SectionHeading
@@ -222,12 +217,51 @@ export default function AboutPage() {
             </div>
             <div className="mt-7 flex flex-wrap gap-3">
               <Button href={TRAINING_HREF} variant="red" arrow>
-                Go to the training site
+                Go to the training site ↗
               </Button>
-              <Button href={links.contact} variant="ghost">
-                Ask us a question
+              <Button href={links.training} variant="ghost">
+                See class descriptions
               </Button>
             </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* Partners roster (Plan v2 §A5/E4) */}
+      <section id="partners" className="scroll-mt-24 py-section">
+        <Container>
+          <SectionHeading
+            eyebrow="Partners"
+            title="Who stands behind us"
+            intro="Organizations that have backed the programs, the letter drive, or the community."
+            introClassName="max-w-[50ch]"
+          />
+          <div className="mt-10 grid grid-cols-2 gap-[14px] sm:grid-cols-3 lg:grid-cols-5">
+            {sponsors.map((sponsor) => (
+              <div
+                key={sponsor.name}
+                className="flex h-[80px] items-center justify-center rounded-card border border-line bg-card p-4"
+              >
+                {sponsor.logo ? (
+                  <Image
+                    src={sponsor.logo}
+                    alt={sponsor.name}
+                    width={140}
+                    height={48}
+                    className="h-10 w-auto object-contain opacity-75 grayscale"
+                  />
+                ) : (
+                  <span className="text-center text-[13px] font-extrabold leading-[1.2] tracking-[-0.01em] text-ink">
+                    {sponsor.name}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Button href={links.sponsors} variant="ghost">
+              All sponsors & partners
+            </Button>
           </div>
         </Container>
       </section>

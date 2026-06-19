@@ -11,7 +11,7 @@ import { org, sponsors } from "@/content/site";
 export const metadata: Metadata = {
   title: "Sponsors · Santa's Knights",
   description:
-    "The sponsors who keep Santa's Knights free — and how your business can back the letter drive, the classes, or a season.",
+    "Meet the sponsors who help keep Santa's Knights free and learn how your business can help.",
 };
 
 const tiers: { title: string; body: string }[] = [
@@ -21,7 +21,7 @@ const tiers: { title: string; body: string }[] = [
   },
   {
     title: "Sponsor a season of classes",
-    body: "Keep the training free for a session of participants — equipment, space, and insurance for the program that runs all year.",
+    body: "Cover equipment, space, and insurance for a session of free training.",
   },
   {
     title: "Sponsor an event",
@@ -39,7 +39,7 @@ export default function SponsorsPage() {
             The people who <em className="font-serif font-medium italic text-red">make it free</em>.
           </>
         }
-        intro="Everything Santa's Knights runs is free to the people we serve. Sponsors are a big part of why. If your business wants Harlem kids to wake up to presents and train for free all year, we'd love to talk."
+        intro="Santa's Knights programs are free to participants. Business sponsors help pay for gifts, classes, equipment, and events."
       >
         <Button
           href={`mailto:${org.email}?subject=Sponsoring%20Santa%27s%20Knights`}
@@ -90,7 +90,7 @@ export default function SponsorsPage() {
               href={`mailto:${org.email}?subject=Sponsoring%20Santa%27s%20Knights`}
               className="flex h-[120px] items-center justify-center rounded-card border-[1.5px] border-dashed border-gold bg-gold-soft/40 p-6 text-center text-[14.5px] font-bold text-[#8a6420] transition-transform duration-150 hover:-translate-y-0.5"
             >
-              Your logo here — sponsor us
+              Sponsor Santa&apos;s Knights
             </a>
           </div>
         </Container>
@@ -103,7 +103,7 @@ export default function SponsorsPage() {
             className="max-w-[640px]"
             eyebrow="Sponsorship"
             title="Ways a business can help"
-            intro="Sponsorships are flexible — these are the shapes they usually take. All of it is tax-deductible, and all of it gets publicly thanked."
+            intro="Sponsors can support the letter drive, a class season, or a public event. Sponsorships are tax-deductible and publicly recognized."
             introClassName="max-w-[54ch]"
           />
           <div className="mt-10 grid gap-[22px] md:grid-cols-3">
@@ -124,7 +124,7 @@ export default function SponsorsPage() {
               Email {org.email}
             </Button>
             <span className="text-[14.5px] text-muted">
-              Or call {org.phone} — we&apos;ll put a package together.
+              Or call {org.phone} to discuss a sponsorship.
             </span>
           </div>
         </Container>

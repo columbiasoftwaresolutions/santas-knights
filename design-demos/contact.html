@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>Contact — Santa's Knights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  /* ============ CONTACT — page styles ============ */
+  .ct-hero{background:var(--paper);color:var(--ink);padding:88px 0 84px;border-bottom:1px solid var(--line);}
+  .ct-hero-grid{display:grid;grid-template-columns:1.15fr 0.85fr;gap:64px;align-items:end;}
+  .ct-hero h1{
+    font-family:var(--display);font-weight:900;
+    font-size:clamp(52px,7vw,108px);line-height:0.86;letter-spacing:-0.03em;
+    text-transform:uppercase;text-wrap:balance;color:var(--ink);
+  }
+  .ct-hero h1 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--red);letter-spacing:-0.02em;}
+  .ct-hero .ct-lede{font-size:19px;line-height:1.6;color:var(--muted);max-width:440px;text-wrap:pretty;}
+
+  /* form + details */
+  .ct-main{background:var(--ink);padding:96px 0 100px;}
+  .ct-main-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:72px;align-items:start;}
+
+  .ct-form-head{font-family:var(--display);font-weight:900;font-size:clamp(28px,3vw,42px);text-transform:uppercase;letter-spacing:-0.02em;line-height:0.92;margin-bottom:8px;}
+  .ct-form-sub{font-family:var(--serif);font-style:italic;font-size:19px;color:rgba(232,226,212,0.72);margin-bottom:38px;}
+  .ct-card{background:var(--paper);color:var(--ink);padding:40px 38px 42px;border:1px solid var(--line);}
+  .ct-field{margin-bottom:24px;}
+  .ct-field:last-of-type{margin-bottom:30px;}
+  .ct-field label{display:block;font-family:var(--body);font-weight:700;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);margin-bottom:9px;}
+  .ct-input,.ct-select,.ct-textarea{
+    width:100%;font-family:var(--body);font-size:16px;color:var(--ink);
+    background:var(--paper-raised);border:1.5px solid var(--line);
+    padding:14px 16px;transition:border-color .16s,box-shadow .16s;
+  }
+  .ct-input::placeholder,.ct-textarea::placeholder{color:#a89c88;}
+  .ct-input:focus,.ct-select:focus,.ct-textarea:focus{
+    outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(194,51,31,0.14);
+  }
+  .ct-textarea{resize:vertical;min-height:130px;line-height:1.5;}
+  .ct-select{appearance:none;-webkit-appearance:none;cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23c2331f' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 18px center;padding-right:44px;}
+  .ct-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .ct-card .btn-red{width:100%;justify-content:center;text-align:center;display:block;}
+  .ct-formnote{margin-top:16px;font-size:13px;color:var(--muted);font-style:italic;font-family:var(--serif);}
+
+  /* details column */
+  .ct-detail-block{margin-bottom:40px;}
+  .ct-detail-block h3{font-family:var(--body);font-weight:700;font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(232,226,212,0.45);margin-bottom:16px;}
+  .ct-venue{font-family:var(--display);font-weight:900;font-size:24px;text-transform:uppercase;letter-spacing:-0.01em;line-height:1.02;margin-bottom:10px;}
+  .ct-addr{font-size:16px;line-height:1.6;color:rgba(232,226,212,0.82);}
+  .ct-contact-line{display:block;font-size:17px;line-height:1.9;color:rgba(232,226,212,0.86);}
+  .ct-contact-line:hover{color:var(--bone);}
+  .ct-dir{display:inline-flex;align-items:center;gap:9px;margin-top:14px;font-family:var(--body);font-weight:700;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;border-bottom:2px solid var(--amber);padding-bottom:5px;}
+  .ct-dir .arr{font-family:var(--serif);font-style:italic;}
+
+  .ct-map{position:relative;height:200px;margin-bottom:40px;border:1px solid rgba(232,226,212,0.14);overflow:hidden;
+    background:
+      repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(232,226,212,0.07) 23px,rgba(232,226,212,0.07) 24px),
+      repeating-linear-gradient(90deg,transparent,transparent 23px,rgba(232,226,212,0.07) 23px,rgba(232,226,212,0.07) 24px),
+      var(--ink2);
+  }
+  .ct-map-pin{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:var(--red);box-shadow:0 0 0 6px rgba(194,51,31,0.22);}
+  .ct-map-lbl{position:absolute;left:16px;bottom:14px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,226,212,0.5);font-weight:700;}
+
+  .ct-socials{display:flex;gap:12px;}
+  .ct-social{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:46px;height:46px;border:1.5px solid rgba(232,226,212,0.3);
+    font-family:var(--display);font-weight:900;font-size:16px;color:var(--bone);transition:all .16s;
+  }
+  .ct-social:hover{background:var(--red);border-color:var(--red);color:var(--paper);}
+  .ct-social-lbl{font-size:13px;letter-spacing:0.04em;}
+
+  /* FAQs */
+  .ct-faqs{background:var(--paper);color:var(--ink);padding:96px 0 100px;}
+  .ct-faqs-head{font-family:var(--display);font-weight:900;font-size:clamp(40px,5vw,72px);text-transform:uppercase;letter-spacing:-0.03em;line-height:0.88;color:var(--ink);margin-bottom:54px;}
+  .ct-faqs-head em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--red);}
+  .ct-faq{border-top:1.5px solid var(--line);padding:34px 0;display:grid;grid-template-columns:0.85fr 1.6fr;gap:48px;align-items:start;}
+  .ct-faq:last-child{border-bottom:1.5px solid var(--line);}
+  .ct-faq .ct-q{font-family:var(--display);font-weight:900;font-size:clamp(22px,2.3vw,30px);text-transform:uppercase;letter-spacing:-0.01em;line-height:0.98;color:var(--ink);text-wrap:pretty;}
+  .ct-faq .ct-a{font-size:17px;line-height:1.62;color:var(--muted);text-wrap:pretty;}
+
+  @media (max-width:900px){
+    .ct-hero-grid{grid-template-columns:1fr;gap:32px;}
+    .ct-main-grid{grid-template-columns:1fr;gap:48px;}
+    .ct-row{grid-template-columns:1fr;}
+    .ct-faq{grid-template-columns:1fr;gap:14px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top">
+  <div class="wrap navrow">
+    <div class="brandmark">
+      <span class="bm-name">Santa's Knights</span>
+      <span class="bm-tag">The Gift of Martial Arts™</span>
+    </div>
+    <div class="navlinks">
+      <a href="donate.html">Donate</a>
+      <a href="about.html">Santa's Knights</a>
+      <a href="training.html">Classes</a>
+      <a href="letters.html">Letters to Santa</a>
+      <a href="membership.html">Membership</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="navactions">
+      <a class="btn" href="donate.html">Donate</a>
+      <a class="btn btn-red" href="letters-give.html">Adopt a letter</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="ct-hero">
+  <div class="wrap ct-hero-grid">
+    <div>
+      <h1>Get in<br><em>touch.</em></h1>
+    </div>
+    <div>
+      <p class="ct-lede">Questions about Santa's Letters, volunteering, donating, or the classes? Send us a note and we'll get back to you. We're a small team in Harlem, so give us a day or two.</p>
+    </div>
+  </div>
+</header>
+
+<!-- FORM + DETAILS -->
+<section class="ct-main">
+  <div class="wrap ct-main-grid">
+    <!-- form -->
+    <div>
+      <h2 class="ct-form-head">Send a message.</h2>
+      <p class="ct-form-sub">Tell us what's on your mind.</p>
+      <form class="ct-card" onsubmit="return false;">
+        <div class="ct-row">
+          <div class="ct-field">
+            <label for="ct-name">Name</label>
+            <input class="ct-input" type="text" id="ct-name" name="name" placeholder="Your name" />
+          </div>
+          <div class="ct-field">
+            <label for="ct-email">Email</label>
+            <input class="ct-input" type="email" id="ct-email" name="email" placeholder="you@email.com" />
+          </div>
+        </div>
+        <div class="ct-field">
+          <label for="ct-reason">Reason</label>
+          <select class="ct-select" id="ct-reason" name="reason">
+            <option value="" disabled selected>Choose a reason…</option>
+            <option value="letters">Santa's Letters</option>
+            <option value="volunteer">Volunteering</option>
+            <option value="donate">Donating or sponsorship</option>
+            <option value="training">Training and classes</option>
+            <option value="press">Press or media</option>
+            <option value="other">Something else</option>
+          </select>
+        </div>
+        <div class="ct-field">
+          <label for="ct-message">Message</label>
+          <textarea class="ct-textarea" id="ct-message" name="message" placeholder="Write your message…"></textarea>
+        </div>
+        <button class="btn btn-red btn-lg" type="submit">Send message <span class="arr" style="font-family:var(--serif);font-style:italic;">→</span></button>
+        <p class="ct-formnote">This is a design mockup — the form isn't wired up yet.</p>
+      </form>
+    </div>
+
+    <!-- details -->
+    <div>
+      <div class="ct-detail-block">
+        <h3>Find us</h3>
+        <div class="ct-map">
+          <div class="ct-map-pin"></div>
+          <div class="ct-map-lbl">Map · Manhattanville, Harlem</div>
+        </div>
+        <div class="ct-venue">Manhattanville<br>Community Center</div>
+        <p class="ct-addr">530 W 133rd St<br>New York, NY 10027</p>
+        <a class="ct-dir" href="https://www.google.com/maps/search/?api=1&query=Manhattanville%20Community%20Center%2C%20530%20West%20133rd%20Street%2C%20New%20York%2C%20NY%2010027">Get directions <span class="arr">→</span></a>
+      </div>
+
+      <div class="ct-detail-block">
+        <h3>Reach us</h3>
+        <a class="ct-contact-line" href="tel:+12128735818">(212) 873-5818</a>
+        <a class="ct-contact-line" href="mailto:contact@santasknights.org">contact@santasknights.org</a>
+      </div>
+
+      <div class="ct-detail-block" style="margin-bottom:0;">
+        <h3>Follow along</h3>
+        <div class="ct-socials">
+          <a class="ct-social" href="https://www.facebook.com/santasknights" aria-label="Facebook"><span class="ct-social-lbl">Facebook</span></a>
+          <a class="ct-social" href="https://www.instagram.com/santasknights/" aria-label="Instagram"><span class="ct-social-lbl">Instagram</span></a>
+          <a class="ct-social" href="https://www.youtube.com/channel/UC5trQ89gJ3e-pRy-d977KCg" aria-label="YouTube"><span class="ct-social-lbl">YouTube</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQs -->
+<section class="ct-faqs">
+  <div class="wrap">
+    <h2 class="ct-faqs-head">Asked <em>often.</em></h2>
+    <div class="ct-faq">
+      <div class="ct-q">What is Santa's Letters?</div>
+      <div class="ct-a">Kids around Harlem write letters to Santa. We remove anything that could identify a child, then post the wishes so people can adopt them and send the gifts. It runs every December.</div>
+    </div>
+    <div class="ct-faq">
+      <div class="ct-q">How do I adopt a letter?</div>
+      <div class="ct-a">Head to the Santa's Letters section to see how it works, or message us. You'll pick a wish, buy the gift, and send it. The child's identity stays private the whole way through.</div>
+    </div>
+    <div class="ct-faq">
+      <div class="ct-q">Is everything really free?</div>
+      <div class="ct-a">Yes. We're a 501(c)(3), so the people we serve never pay. Donors and grants cover the classes, the gifts, and the events.</div>
+    </div>
+    <div class="ct-faq">
+      <div class="ct-q">I want to train. Where do I start?</div>
+      <div class="ct-a">The classes, schedule, and booking live on our training site. Head there to find a class, or message us and we'll point you the right way.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <div class="fb-name">Santa's Knights</div>
+      <div class="fb-tag">The Gift of Martial Arts™</div>
+    </div>
+    <div class="foot-col">
+      <h5>Find us</h5>
+      <p>Manhattanville Community Center<br>530 W 133rd St<br>New York, NY 10027</p>
+    </div>
+    <div class="foot-col">
+      <h5>Reach us</h5>
+      <a href="tel:+12128735818">(212) 873-5818</a>
+      <a href="mailto:contact@santasknights.org">contact@santasknights.org</a>
+      <a href="https://www.instagram.com/santasknights/">Instagram</a>
+      <a href="https://www.facebook.com/santasknights">Facebook</a>
+      <a href="https://www.youtube.com/channel/UC5trQ89gJ3e-pRy-d977KCg">YouTube</a>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© Santa's Knights, Inc. — a 501(c)(3) nonprofit.</span>
+    <span>Built by Columbia Software Solutions</span>
+  </div>
+</footer>
+
+</body>
+</html>

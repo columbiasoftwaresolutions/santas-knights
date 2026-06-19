@@ -32,6 +32,12 @@ next-env.d.ts
 # Keep source zips out of git — extract into asset-library/ instead.
 *.zip
 
+# Raw video and duplicate-review media are local source archives. They are not
+# used by the app and include files too large for a normal GitHub push.
+/asset-library/video/
+/asset-library/_review/
+/design-demos/verified-*.png
+
 # e2e test artifacts (the e2e/ scripts are committed; their outputs aren't)
 /e2e-screenshots/
 /e2e-assets/

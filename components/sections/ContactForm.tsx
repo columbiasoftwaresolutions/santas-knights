@@ -6,7 +6,7 @@ import { contactReasons, org } from "@/content/site";
 import { sendContactMessage, type EngagementState } from "@/app/actions/engagement";
 
 const fieldBase =
-  "w-full rounded-[14px] border-[1.5px] border-line bg-white px-[18px] py-[13px] text-[15.5px] text-ink placeholder:text-muted/70 focus:border-red focus:outline-2 focus:outline-offset-1 focus:outline-red";
+  "w-full border-[1.5px] border-line bg-paper-raised px-[18px] py-[13px] text-[15.5px] text-ink placeholder:text-muted/70 focus:border-red focus:outline-2 focus:outline-offset-1 focus:outline-red";
 const labelBase = "mb-1.5 block text-[13px] font-bold uppercase tracking-[0.1em] text-muted";
 
 const initialState: EngagementState = { ok: false };
@@ -21,13 +21,13 @@ export function ContactForm() {
 
   if (state.ok) {
     return (
-      <div className="rounded-card border border-line bg-green-soft p-[34px] text-center">
+      <div className="border border-green/40 bg-green-soft p-[34px] text-center">
         <div aria-hidden className="text-[34px] text-green">
           ♔
         </div>
         <h3 className="mt-2 text-h3 text-green">Got it, thanks</h3>
         <p className="mx-auto mt-2 max-w-[42ch] text-muted">
-          Your message is on its way. We usually write back within a few days. If you need us sooner,
+          We received your message. We usually reply within a few days. If you need us sooner,
           email{" "}
           <a href={`mailto:${org.email}`} className="font-semibold text-green underline">
             {org.email}
@@ -90,7 +90,7 @@ export function ContactForm() {
       </div>
 
       {state.message && !state.ok && (
-        <p className="rounded-[14px] border border-red/30 bg-red/5 px-[18px] py-[14px] text-[14.5px] font-semibold text-red">
+        <p className="border border-red/30 bg-red/5 px-[18px] py-[14px] text-[14.5px] font-semibold text-red">
           {state.message}
         </p>
       )}

@@ -1,6 +1,8 @@
-# Gladiators NYC — Companion Site (Combat Program & Training Tracker)
+# Gladiators NYC — Combat Program & Training Tracker (spec)
 
-Reference spec for the **Gladiators NYC** site — a **separate, linked site** from the Santa's Knights / Letters to Santa platform documented in [README.md](../README.md).
+> ⚠️ **See [plan-v2.md](./plan-v2.md) for the content/backend boundary.** This **training-tracker backend remains a separate site** (`gladiators.nyc`): booking + waiver, instructor check-in, XP/gamification, participant dashboard, training-video uploads, admin config, plus shop & armory — **all here, not in the Santa's Knights repo.** What changed: the **Gladiators *content/marketing* pages** (class catalog, descriptions, online/video) are now built on `santasknights.org` and **cross-link out** to this site for booking/registration. This document stays the authoritative spec for the training tracker's behavior and data model.
+
+Reference spec for the **Gladiators NYC** combat program — a **separate, linked site** from the Santa's Knights / Letters to Santa platform documented in [README.md](../README.md).
 
 **Relationship.** **Santa's Knights, Inc.** is the 501(c)(3) nonprofit / parent org. **Gladiators NYC** is its combat program/team brand — the classes *are* the Gladiators program, delivered free by the nonprofit. The two sites **cross-link** (Santa's Knights links out to Gladiators for training; Gladiators links back to the nonprofit, Donate, and Letters to Santa) but are **separate codebases, deployments, and cutovers** (see [ROLLOUT.md](./ROLLOUT.md)). `gladiators.nyc` is **not** a redirect into `santasknights.org` — it is its own site.
 

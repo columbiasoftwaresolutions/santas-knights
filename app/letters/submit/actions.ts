@@ -15,19 +15,26 @@ export type SubmitLetterState = {
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
+const MAX_AMAZON_LINKS = 20;
 
-/** Amazon product/wishlist hosts we accept (fulfillment is Amazon-only by design). */
+/**
+ * True only for an Amazon link. Fulfillment is Amazon-only by design. Accepts
+ * Amazon storefronts in any country (amazon.com, amazon.co.uk, amazon.de,
+ * amazon.com.br, …), including www./smile. subdomains, plus Amazon's own
+ * short-link domains. Anything else (other retailers, generic shorteners) fails.
+ */
 function isAmazonUrl(value: string): boolean {
   try {
     const url = new URL(value);
     if (url.protocol !== "https:" && url.protocol !== "http:") return false;
     const host = url.hostname.toLowerCase();
     return (
+      /(^|\.)amazon\.[a-z]{2,}(\.[a-z]{2,})?$/.test(host) ||
       host === "a.co" ||
       host === "amzn.to" ||
-      host === "amzn.com" ||
-      host === "amazon.com" ||
-      host.endsWith(".amazon.com")
+      host === "amzn.eu" ||
+      host === "amzn.asia" ||
+      host === "amzn.com"
     );
   } catch {
     return false;
@@ -41,7 +48,10 @@ export async function submitLetter(
   const childFirstName = String(formData.get("child_first_name") ?? "").trim();
   const childAgeRaw = String(formData.get("child_age") ?? "").trim();
   const wishNote = String(formData.get("wish_note") ?? "").trim();
-  const amazonUrl = String(formData.get("amazon_url") ?? "").trim();
+  const amazonUrls = formData
+    .getAll("amazon_url")
+    .map((value) => String(value).trim())
+    .filter(Boolean);
   const guardianName = String(formData.get("guardian_name") ?? "").trim();
   const guardianEmail = String(formData.get("guardian_email") ?? "").trim();
   const consent = formData.get("consent") === "on";
@@ -52,12 +62,16 @@ export async function submitLetter(
 
   if (!childFirstName) errors.child_first_name = "Please add the child's first name.";
   if (childFirstName.split(/\s+/).length > 1)
-    errors.child_first_name = "First name only, please — we keep last names private.";
+    errors.child_first_name = "Enter a first name only. We keep last names private.";
   if (!childAgeRaw || !Number.isInteger(childAge) || childAge < 0 || childAge > 17)
     errors.child_age = "Age must be a whole number between 0 and 17.";
   if (!wishNote) errors.wish_note = "Tell us in a line or two what they're wishing for.";
-  if (!amazonUrl || !isAmazonUrl(amazonUrl))
-    errors.amazon_url = "Please paste a valid Amazon product or wishlist link (amazon.com, amzn.to, or a.co).";
+  if (amazonUrls.length === 0)
+    errors.amazon_url = "Please add at least one Amazon link.";
+  else if (amazonUrls.length > MAX_AMAZON_LINKS)
+    errors.amazon_url = `Please add no more than ${MAX_AMAZON_LINKS} links.`;
+  else if (!amazonUrls.every(isAmazonUrl))
+    errors.amazon_url = "Each one has to be an Amazon link (amazon.com or any country's Amazon, amzn.to, or a.co).";
   if (!guardianName) errors.guardian_name = "We need a parent or guardian's name.";
   if (!guardianEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guardianEmail))
     errors.guardian_email = "Please enter a valid email so we can reach you about this letter.";
@@ -67,7 +81,7 @@ export async function submitLetter(
     errors.letter_image = "Please upload a photo or scan of the handwritten letter.";
   } else {
     if (letterImage.size > MAX_IMAGE_BYTES)
-      errors.letter_image = "That image is over 10MB — a phone photo of the letter is perfect.";
+      errors.letter_image = "That image is over 10MB. Please upload a smaller phone photo.";
     if (!IMAGE_TYPES.includes(letterImage.type))
       errors.letter_image = "Please upload an image file (JPG, PNG, WebP, or HEIC).";
   }
@@ -80,7 +94,7 @@ export async function submitLetter(
   if (!supabase) {
     return {
       ok: false,
-      message: `Letter submissions aren't open yet — we're putting the system together. Please email us instead and we'll take it from there.`,
+      message: `Letter submissions are not open yet. Please email us for help.`,
     };
   }
 
@@ -96,20 +110,39 @@ export async function submitLetter(
     return { ok: false, message: "We couldn't save the letter image. Please try again in a minute." };
   }
 
-  const { data: letter, error: insertError } = await supabase
+  const letterBase = {
+    child_first_name: childFirstName,
+    child_age: childAge,
+    wish_note: wishNote,
+    letter_image_path: imagePath,
+    guardian_name: guardianName,
+    guardian_email: guardianEmail,
+    status: "pending",
+  };
+
+  let { data: letter, error: insertError } = await supabase
     .from("santa_letters")
     .insert({
-      child_first_name: childFirstName,
-      child_age: childAge,
-      wish_note: wishNote,
-      amazon_url: amazonUrl,
-      letter_image_path: imagePath,
-      guardian_name: guardianName,
-      guardian_email: guardianEmail,
-      status: "pending",
+      ...letterBase,
+      amazon_urls: amazonUrls,
     })
     .select("id")
     .single();
+
+  // The beta database predates multi-link support. Keep submissions working
+  // until its documented `amazon_urls text[]` migration is applied.
+  if (insertError?.message.includes("amazon_urls")) {
+    const legacyInsert = await supabase
+      .from("santa_letters")
+      .insert({
+        ...letterBase,
+        amazon_url: amazonUrls[0],
+      })
+      .select("id")
+      .single();
+    letter = legacyInsert.data;
+    insertError = legacyInsert.error;
+  }
   if (insertError || !letter) {
     console.error("Letter insert failed:", insertError?.message);
     await supabase.storage.from(LETTERS_BUCKET).remove([imagePath]);

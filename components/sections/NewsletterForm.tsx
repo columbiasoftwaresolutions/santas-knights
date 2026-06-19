@@ -15,8 +15,8 @@ export function NewsletterForm() {
 
   if (state.ok) {
     return (
-      <p className="rounded-pill border border-green/30 bg-green-soft px-[22px] py-[14px] text-[15px] font-bold text-green">
-        You&apos;re on the list — thanks for caring about this.
+      <p className="border border-green/30 bg-green-soft px-[22px] py-[14px] text-[15px] font-bold text-green">
+        You&apos;re on the list. We&apos;ll email only when there is news worth sharing.
       </p>
     );
   }
@@ -30,7 +30,7 @@ export function NewsletterForm() {
           required
           placeholder="you@email.com"
           aria-label="Email address"
-          className="min-w-[160px] flex-1 rounded-pill border-[1.5px] border-gold bg-white px-[18px] py-[13px] text-[15px] focus:outline-2 focus:outline-offset-1 focus:outline-red"
+          className="min-w-[160px] flex-1 border-[1.5px] border-gold bg-paper px-[18px] py-[13px] text-[15px] text-ink focus:outline-2 focus:outline-offset-1 focus:outline-red"
         />
         <Button type="submit" variant="red" disabled={pending}>
           {pending ? "Signing up…" : "Sign up"}

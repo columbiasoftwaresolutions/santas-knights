@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>Write a Letter — Santa's Knights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500;1,9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  /* ===== WRITE A LETTER — page-scoped ===== */
+  .ws-hero{background:var(--paper);color:var(--ink);padding:90px 0 80px;border-bottom:1px solid var(--line);}
+  .ws-hero h1{
+    font-family:var(--display);font-weight:900;
+    font-size:clamp(54px,8vw,118px);line-height:0.86;letter-spacing:-0.04em;
+    text-transform:uppercase;text-wrap:balance;color:var(--ink);
+  }
+  .ws-hero h1 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--red);letter-spacing:-0.02em;}
+  .ws-hero-lede{margin-top:30px;font-size:20px;line-height:1.55;color:var(--muted);max-width:600px;text-wrap:pretty;}
+
+  /* PRIVACY WARNING BANNER */
+  .ws-warn{background:var(--red-deep);color:var(--paper);padding:34px 0;}
+  .ws-warn-inner{display:flex;align-items:flex-start;gap:22px;}
+  .ws-warn .mark{
+    font-family:var(--display);font-weight:900;font-size:40px;line-height:0.8;color:var(--amber);
+    border:2.5px solid var(--amber);width:62px;min-width:62px;height:62px;display:flex;align-items:center;justify-content:center;
+  }
+  .ws-warn .copy h3{font-family:var(--display);font-weight:800;font-size:14px;letter-spacing:0.16em;text-transform:uppercase;color:var(--amber);margin-bottom:10px;}
+  .ws-warn .copy p{font-family:var(--serif);font-style:italic;font-size:clamp(21px,2.6vw,30px);line-height:1.25;letter-spacing:-0.01em;text-wrap:pretty;max-width:880px;}
+
+  /* FORM SECTION */
+  .ws-form-sec{background:var(--paper);color:var(--ink);padding:80px 0 96px;}
+  .ws-form-grid{display:grid;grid-template-columns:0.85fr 1.15fr;gap:56px;align-items:start;}
+
+  .ws-aside h2{font-family:var(--display);font-weight:900;font-size:clamp(30px,3.4vw,46px);line-height:0.92;text-transform:uppercase;letter-spacing:-0.02em;color:var(--ink);}
+  .ws-aside h2 em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;color:var(--red);}
+  .ws-aside p{margin-top:18px;font-size:16px;line-height:1.6;color:var(--muted);text-wrap:pretty;}
+  .ws-guide{margin-top:26px;border:1.5px solid var(--ink);background:var(--paper-raised);padding:22px 24px;}
+  .ws-guide .gt{font-family:var(--display);font-weight:900;font-size:28px;color:var(--red);letter-spacing:-0.02em;}
+  .ws-guide .gl{margin-top:8px;font-size:14px;line-height:1.5;color:var(--muted);}
+  .ws-mod{margin-top:22px;font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.45;color:var(--ink);border-left:3px solid var(--amber);padding-left:16px;text-wrap:pretty;}
+
+  /* paper form card */
+  .ws-card{background:var(--paper-raised);border:1px solid var(--line);padding:36px 38px 38px;}
+  .ws-fieldset{border:none;margin-bottom:30px;}
+  .ws-fieldset:last-of-type{margin-bottom:0;}
+  .ws-legend{
+    font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;
+    color:var(--muted);padding-bottom:10px;margin-bottom:22px;border-bottom:1px solid var(--line);width:100%;
+  }
+  .ws-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .ws-field{margin-bottom:20px;display:flex;flex-direction:column;}
+  .ws-field:last-child{margin-bottom:0;}
+  .ws-label{font-size:13px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink);margin-bottom:8px;}
+  .ws-label .req{color:var(--red);}
+  .ws-hint{font-size:13px;color:var(--muted);margin-top:7px;line-height:1.45;font-family:var(--serif);font-style:italic;}
+  .ws-input,.ws-select,.ws-textarea{
+    font-family:var(--body);font-size:15px;color:var(--ink);background:var(--paper);
+    border:1.5px solid var(--line);padding:13px 14px;width:100%;transition:border-color .16s,box-shadow .16s;
+  }
+  .ws-input::placeholder,.ws-textarea::placeholder{color:#a99e8d;}
+  .ws-input:focus,.ws-select:focus,.ws-textarea:focus{
+    outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(194,51,31,0.15);
+  }
+  .ws-textarea{resize:vertical;min-height:130px;line-height:1.55;}
+  .ws-select{appearance:none;cursor:pointer;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23c2331f' stroke-width='2.5'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;
+  }
+  /* amazon link rows */
+  .ws-link-row{display:flex;gap:10px;align-items:center;margin-bottom:10px;}
+  .ws-link-row .ws-input{flex:1;}
+  .ws-link-tag{font-family:var(--display);font-weight:900;font-size:13px;color:var(--red);min-width:22px;}
+  .ws-addlink{
+    align-self:flex-start;margin-top:4px;font-family:var(--body);font-weight:700;font-size:12px;letter-spacing:0.04em;text-transform:uppercase;
+    background:none;border:1.5px solid var(--ink);color:var(--ink);padding:9px 14px;cursor:pointer;transition:all .16s;
+  }
+  .ws-addlink:hover{background:var(--ink);color:var(--paper);}
+  /* file upload */
+  .ws-file{
+    border:1.5px dashed var(--line);background:var(--paper);padding:22px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:border-color .16s;
+  }
+  .ws-file:hover{border-color:var(--red);}
+  .ws-file .ic{font-family:var(--display);font-weight:900;font-size:26px;color:var(--amber);border:2px solid var(--amber);width:46px;height:46px;display:flex;align-items:center;justify-content:center;}
+  .ws-file .ft{font-size:14px;font-weight:600;color:var(--ink);}
+  .ws-file .fs{font-size:13px;color:var(--muted);margin-top:3px;font-family:var(--serif);font-style:italic;}
+
+  /* consent block */
+  .ws-consent{border:1.5px solid var(--ink);background:var(--paper);padding:24px 26px;}
+  .ws-consent-head{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin-bottom:14px;flex-wrap:wrap;}
+  .ws-consent-head .ct{font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink);}
+  .ws-consent-head .cv{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+  .ws-consent-text{
+    max-height:200px;overflow-y:auto;border:1px solid var(--line);background:var(--paper-raised);
+    padding:18px 20px;font-size:13.5px;line-height:1.6;color:var(--ink);
+  }
+  .ws-consent-text p{margin-bottom:12px;}
+  .ws-consent-text p:last-child{margin-bottom:0;}
+  .ws-consent-text .ctitle{font-weight:700;}
+  .ws-check{display:flex;align-items:flex-start;gap:13px;margin-top:18px;}
+  .ws-check input[type="checkbox"]{
+    appearance:none;-webkit-appearance:none;width:22px;height:22px;min-width:22px;margin-top:1px;
+    border:1.5px solid var(--ink);background:var(--paper);cursor:pointer;position:relative;transition:all .15s;
+  }
+  .ws-check input[type="checkbox"]:checked{background:var(--red);border-color:var(--red);}
+  .ws-check input[type="checkbox"]:checked::after{
+    content:"";position:absolute;left:7px;top:3px;width:6px;height:11px;border:solid var(--paper);border-width:0 2.5px 2.5px 0;transform:rotate(45deg);
+  }
+  .ws-check input[type="checkbox"]:focus{outline:none;box-shadow:0 0 0 3px rgba(194,51,31,0.18);}
+  .ws-check label{font-size:14.5px;line-height:1.5;color:var(--ink);cursor:pointer;text-wrap:pretty;}
+
+  .ws-submit{
+    margin-top:30px;font-family:var(--body);font-weight:700;font-size:16px;letter-spacing:0.05em;text-transform:uppercase;
+    background:var(--red);color:var(--paper);border:1.5px solid var(--red);padding:18px 36px;cursor:pointer;transition:all .18s;width:100%;
+  }
+  .ws-submit:hover{background:var(--red-deep);border-color:var(--red-deep);}
+  .ws-reassure{margin-top:16px;font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.5;color:var(--muted);text-align:center;text-wrap:pretty;}
+
+  @media (max-width:900px){
+    .ws-form-grid{grid-template-columns:1fr;gap:36px;}
+    .ws-row{grid-template-columns:1fr;}
+    .ws-warn-inner{flex-direction:column;gap:14px;}
+    .ws-card{padding:26px 22px 28px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top">
+  <div class="wrap navrow">
+    <div class="brandmark">
+      <span class="bm-name">Santa's Knights</span>
+      <span class="bm-tag">The Gift of Martial Arts™</span>
+    </div>
+    <div class="navlinks">
+      <a href="donate.html">Donate</a>
+      <a href="about.html">Santa's Knights</a>
+      <a href="training.html">Classes</a>
+      <a href="letters.html">Letters to Santa</a>
+      <a href="membership.html">Membership</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="navactions">
+      <a class="btn" href="donate.html">Donate</a>
+      <a class="btn btn-red" href="letters-give.html">Adopt a letter</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="ws-hero">
+  <div class="wrap">
+    <h1>Write a<br><em>letter.</em></h1>
+    <p class="ws-hero-lede">A parent or guardian can nominate a child here. Tell us their first name, age, and one wish, and once a moderator reviews it, the letter joins the pool for someone to adopt and gift this December.</p>
+  </div>
+</header>
+
+<!-- PRIVACY WARNING -->
+<section class="ws-warn">
+  <div class="wrap ws-warn-inner">
+    <div class="mark">!</div>
+    <div class="copy">
+      <h3>Read this before you submit</h3>
+      <p>Do NOT include your, or your child's, last name or mailing address in your physical letter or online post!</p>
+    </div>
+  </div>
+</section>
+
+<!-- FORM -->
+<section class="ws-form-sec">
+  <div class="wrap ws-form-grid">
+    <!-- ASIDE -->
+    <aside class="ws-aside">
+      <h2>One wish,<br>kept <em>safe.</em></h2>
+      <p>We publish only a first name, an age, the wish, and the wishlist links. Your contact details and your child's full identity stay private and are never shown to donors.</p>
+      <div class="ws-guide">
+        <div class="gt">$20–50</div>
+        <div class="gl">It's best to keep your request to $20–50 in total value of gifts per child/person.</div>
+      </div>
+      <p class="ws-mod">Nothing goes public automatically. A moderator reviews every submission before it can be adopted.</p>
+    </aside>
+
+    <!-- FORM CARD -->
+    <form class="ws-card" onsubmit="return false;">
+      <!-- Guardian -->
+      <fieldset class="ws-fieldset">
+        <legend class="ws-legend">Parent or guardian</legend>
+        <div class="ws-row">
+          <div class="ws-field">
+            <label class="ws-label" for="gname">Your name <span class="req">*</span></label>
+            <input class="ws-input" id="gname" name="guardian_name" type="text" placeholder="Full name" required />
+          </div>
+          <div class="ws-field">
+            <label class="ws-label" for="gemail">Your email <span class="req">*</span></label>
+            <input class="ws-input" id="gemail" name="guardian_email" type="email" placeholder="you@example.com" required />
+            <span class="ws-hint">Private. Used only to reach you if the moderator needs an edit.</span>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Child + wish -->
+      <fieldset class="ws-fieldset">
+        <legend class="ws-legend">The child &amp; the wish</legend>
+        <div class="ws-row">
+          <div class="ws-field">
+            <label class="ws-label" for="cname">Child's first name <span class="req">*</span></label>
+            <input class="ws-input" id="cname" name="child_first_name" type="text" placeholder="First name only" required />
+            <span class="ws-hint">First name only — no last name, please.</span>
+          </div>
+          <div class="ws-field">
+            <label class="ws-label" for="cage">Child's age <span class="req">*</span></label>
+            <select class="ws-select" id="cage" name="child_age" required>
+              <option value="" selected disabled>Select age (0–17)</option>
+              <option>0</option><option>1</option><option>2</option><option>3</option>
+              <option>4</option><option>5</option><option>6</option><option>7</option>
+              <option>8</option><option>9</option><option>10</option><option>11</option>
+              <option>12</option><option>13</option><option>14</option><option>15</option>
+              <option>16</option><option>17</option>
+            </select>
+          </div>
+        </div>
+        <div class="ws-field">
+          <label class="ws-label" for="wish">The wish <span class="req">*</span></label>
+          <textarea class="ws-textarea" id="wish" name="wish_note" placeholder="In a few sentences, what is your child hoping for this year?" required></textarea>
+          <span class="ws-hint">Keep it to what they're wishing for. No last names, schools, addresses, or social handles.</span>
+        </div>
+      </fieldset>
+
+      <!-- Amazon links -->
+      <fieldset class="ws-fieldset">
+        <legend class="ws-legend">Amazon link(s)</legend>
+        <div class="ws-field">
+          <label class="ws-label" for="amz1">Wishlist or product link <span class="req">*</span></label>
+          <div class="ws-link-row">
+            <span class="ws-link-tag">1</span>
+            <input class="ws-input" id="amz1" name="amazon_urls" type="url" placeholder="https://www.amazon.com/..." required />
+          </div>
+          <div class="ws-link-row">
+            <span class="ws-link-tag">2</span>
+            <input class="ws-input" name="amazon_urls" type="url" placeholder="https://www.amazon.com/... (optional)" />
+          </div>
+          <button class="ws-addlink" type="button">+ Add another link</button>
+          <span class="ws-hint">At least one Amazon link (any country) so a donor can send the gift directly.</span>
+        </div>
+      </fieldset>
+
+      <!-- Photo -->
+      <fieldset class="ws-fieldset">
+        <legend class="ws-legend">Letter photo (optional)</legend>
+        <div class="ws-field">
+          <label class="ws-label" for="photo">Upload a photo of the handwritten letter</label>
+          <label class="ws-file" for="photo">
+            <span class="ic">↑</span>
+            <span>
+              <span class="ft">Choose an image to upload</span>
+              <span class="fs">Make sure no last name, address, or face is visible in the photo.</span>
+            </span>
+          </label>
+          <input id="photo" name="letter_image" type="file" accept="image/*" style="display:none;" />
+        </div>
+      </fieldset>
+
+      <!-- Consent -->
+      <fieldset class="ws-fieldset">
+        <legend class="ws-legend">Consent</legend>
+        <div class="ws-consent">
+          <div class="ws-consent-head">
+            <span class="ct">Parent / Guardian Consent</span>
+            <span class="cv">Version 2026-06-draft-1</span>
+          </div>
+          <div class="ws-consent-text">
+            <p class="ctitle">I confirm that I am the parent or legal guardian of the child named in this submission, and I am submitting this letter on their behalf.</p>
+            <p>I understand and agree that:</p>
+            <p><b>1.</b> The child's first name, age, wish note, and an image of their handwritten letter may be displayed publicly on the Santa's Knights website so that donors can choose to send a gift. Santa's Knights will not publish last names, addresses, phone numbers, emails, school names, or social media handles, and I confirm the letter image I am uploading does not show any of these. Santa's Knights may decline, edit-request, or remove any submission.</p>
+            <p><b>2.</b> Gifts are fulfilled by donors directly through Amazon. Santa's Knights does not handle payment, shipping, or guarantee that any letter receives a gift.</p>
+            <p><b>3.</b> I will not use this platform to contact donors off-platform, and I understand donors are anonymous to families (and families to donors).</p>
+            <p><b>4.</b> Santa's Knights, Inc. is not liable for the actions of donors or third parties (including Amazon) in connection with this program.</p>
+            <p><b>5.</b> Santa's Knights may keep this submission and my acceptance of these terms on record.</p>
+          </div>
+          <div class="ws-check">
+            <input type="checkbox" id="consent" name="consent" />
+            <label for="consent">I am the parent or legal guardian, I have read the terms above, and I agree to them (version 2026-06-draft-1).</label>
+          </div>
+        </div>
+        <div class="ws-field" style="margin-top:20px;">
+          <label class="ws-label" for="typedname">Type your full name to confirm <span class="req">*</span></label>
+          <input class="ws-input" id="typedname" name="accepted_name" type="text" placeholder="Type your full name" required />
+          <span class="ws-hint">Your typed name is recorded with the version and time of acceptance.</span>
+        </div>
+      </fieldset>
+
+      <button class="ws-submit" type="submit">Submit letter for review</button>
+      <p class="ws-reassure">A moderator reviews every submission before it goes public. We'll email you if anything needs a small edit.</p>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <div class="fb-name">Santa's Knights</div>
+      <div class="fb-tag">The Gift of Martial Arts™</div>
+    </div>
+    <div class="foot-col">
+      <h5>Find us</h5>
+      <p>Manhattanville Community Center<br>530 W 133rd St<br>New York, NY 10027</p>
+    </div>
+    <div class="foot-col">
+      <h5>Reach us</h5>
+      <a href="tel:+12128735818">(212) 873-5818</a>
+      <a href="mailto:contact@santasknights.org">contact@santasknights.org</a>
+      <a href="https://www.instagram.com/santasknights/">Instagram</a>
+      <a href="https://www.facebook.com/santasknights">Facebook</a>
+      <a href="https://www.youtube.com/channel/UC5trQ89gJ3e-pRy-d977KCg">YouTube</a>
+    </div>
+  </div>
+  <div class="wrap foot-bottom">
+    <span>© Santa's Knights, Inc. — a 501(c)(3) nonprofit.</span>
+    <span>Built by Columbia Software Solutions</span>
+  </div>
+</footer>
+
+</body>
+</html>

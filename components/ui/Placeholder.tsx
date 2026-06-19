@@ -7,7 +7,7 @@ const HATCH_DARK =
 
 /**
  * Image stand-in until real photography lands. The `label` documents the
- * intended shot — mirrors the `data-label` placeholders in the design mock.
+ * intended shot. Mirrors the `data-label` placeholders in the design mock.
  */
 export function Placeholder({
   label,

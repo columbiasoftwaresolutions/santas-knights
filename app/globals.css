@@ -6,33 +6,39 @@
   generates matching utilities (bg-paper, text-ink, font-serif, rounded-pill, …).
 */
 @theme {
-  /* Santa's Knights — warm wrapper */
+  /* Santa's Knights — "Poster" system.
+     Warm near-black grounds + paper light sections; one bold accent at a time.
+     The dark grounds (ink / ink2 / bone) were the old Gladiators "steel" sub-brand,
+     now promoted to the primary brand. */
   --color-paper: #f7f0e3;
   --color-paper-raised: #fbf6ec;
   --color-card: #ffffff;
-  --color-ink: #221d17;
+  --color-ink: #16120f;       /* primary dark ground */
+  --color-ink2: #1a1512;      /* raised dark panel */
+  --color-bone: #e8e2d4;      /* text/marks on dark grounds */
   --color-muted: #6c6256;
-  --color-red: #9e2536;
-  --color-red-deep: #741726;
+  --color-red: #c2331f;       /* primary accent */
+  --color-red-deep: #9e2536;  /* flood-feature ground */
+  --color-amber: #c98a3a;     /* secondary accent (serif italics, chips) */
   --color-green: #2e5e45;
   --color-green-soft: #e7efe8;
   --color-gold: #c2912f;
   --color-gold-soft: #f0e2c2;
   --color-line: #e4d8c4;
 
-  /* Gladiators NYC — steel sub-brand */
+  /* Gladiators NYC — steel sub-brand (kept for any sub-brand surfaces) */
   --color-steel: #16171a;
   --color-glad-red: #c2331f;
   --color-glad-amber: #c98a3a;
-  --color-bone: #e8e2d4;
 
   /* Type — families come from next/font (see app/layout.tsx) */
   --font-sans: var(--font-hanken), system-ui, sans-serif;
   --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-display: var(--font-archivo), "Archivo", system-ui, sans-serif;
 
   /* Radii */
-  --radius-card: 22px;
-  --radius-card-lg: 26px;
+  --radius-card: 0px;
+  --radius-card-lg: 0px;
   --radius-pill: 999px;
 
   /* Spacing — section rhythm (DESIGN.md layout scale) → py-section, etc. */
@@ -57,12 +63,13 @@
   }
 
   body {
-    background: var(--color-paper);
-    color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-bone);
     font-family: var(--font-sans);
     font-size: 18px;
-    line-height: 1.55;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
   h1,
@@ -71,5 +78,25 @@
     line-height: 1.05;
     letter-spacing: -0.02em;
     font-weight: 800;
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-red);
+    color: var(--color-paper);
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    border-radius: 0;
+  }
+
+  /* Inner-page content defaults to warm paper. Explicit flood/dark sections
+     retain their own background utility. */
+  main section.py-section:not([class*="bg-"]) {
+    background: var(--color-paper);
+    color: var(--color-ink);
   }
 }

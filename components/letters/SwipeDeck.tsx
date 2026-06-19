@@ -10,7 +10,7 @@ export type SwipeLetter = {
   childFirstName: string;
   childAge: number;
   wishNote: string;
-  amazonUrl: string;
+  amazonUrls: string[];
   imageUrl: string | null;
 };
 
@@ -47,7 +47,8 @@ export function SwipeDeck({ letters }: { letters: SwipeLetter[] }) {
 
   const gift = useCallback(() => {
     if (!current || leaving) return;
-    window.open(current.amazonUrl, "_blank", "noopener,noreferrer");
+    // Swipe/keyboard "gift" opens the first wish; the card back lists them all.
+    if (current.amazonUrls[0]) window.open(current.amazonUrls[0], "_blank", "noopener,noreferrer");
     advance("right");
   }, [current, leaving, advance]);
 
@@ -74,14 +75,14 @@ export function SwipeDeck({ letters }: { letters: SwipeLetter[] }) {
 
   if (done) {
     return (
-      <div className="rounded-card-lg border border-line bg-card p-[42px] text-center">
+      <div className="border border-line bg-paper-raised p-[42px] text-center">
         <div aria-hidden className="text-[40px] text-red">
           ♔
         </div>
         <h2 className="mt-3 text-h3">You&apos;ve read the whole pile</h2>
         <p className="mx-auto mt-2.5 max-w-[44ch] text-muted">
           That&apos;s every letter that&apos;s live right now. New ones go up as families submit
-          them — or start again in case one deserves a second look.
+          them. You can start again if you want to reread one.
         </p>
         <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
           <Button variant="red" onClick={() => setIndex(0)}>
@@ -112,7 +113,7 @@ export function SwipeDeck({ letters }: { letters: SwipeLetter[] }) {
     const dx = drag?.dx ?? 0;
     pointerStart.current = null;
     if (Math.abs(dx) < TAP_TOLERANCE_PX) {
-      // A tap, not a drag — flip the card.
+      // A tap flips the card.
       setDrag(null);
       setFlipped((f) => !f);
       return;
@@ -149,7 +150,7 @@ export function SwipeDeck({ letters }: { letters: SwipeLetter[] }) {
               <div
                 key={letter.id}
                 aria-hidden
-                className="absolute inset-0 rounded-card-lg border border-line bg-card shadow-card"
+                className="absolute inset-0 border border-line bg-paper-raised shadow-card"
                 style={{
                   transform: `translateY(${depth * 14}px) scale(${1 - depth * 0.04})`,
                   zIndex: 1,
@@ -178,10 +179,10 @@ export function SwipeDeck({ letters }: { letters: SwipeLetter[] }) {
             className="relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]"
             style={{ transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
           >
-            {/* Front — the handwritten letter */}
-            <div className="absolute inset-0 flex flex-col overflow-hidden rounded-card-lg border border-line bg-card shadow-card [backface-visibility:hidden]">
+            {/* Front: the handwritten letter */}
+            <div className="absolute inset-0 flex flex-col overflow-hidden border border-line bg-paper-raised shadow-card [backface-visibility:hidden]">
               {current.imageUrl ? (
-                // Signed Supabase URL — domain isn't known at build time, so plain img.
+                // The signed Supabase URL domain is not known at build time, so use img.
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={current.imageUrl}
@@ -209,8 +210,8 @@ export function SwipeDeck({ letters }: { letters: SwipeLetter[] }) {
               </div>
             </div>
 
-            {/* Back — the wish + Amazon CTA */}
-            <div className="absolute inset-0 flex [transform:rotateY(180deg)] flex-col overflow-hidden rounded-card-lg border border-line bg-green bg-[linear-gradient(165deg,var(--color-green),#1f3f2e)] p-7 text-[#eef4ef] shadow-card [backface-visibility:hidden]">
+            {/* Back: the wish and Amazon CTA */}
+            <div className="absolute inset-0 flex [transform:rotateY(180deg)] flex-col overflow-hidden border border-line bg-red-deep p-7 text-paper shadow-card [backface-visibility:hidden]">
               <p className="text-[13px] font-bold uppercase tracking-[0.16em] text-gold-soft">
                 The wish
               </p>
@@ -220,22 +221,27 @@ export function SwipeDeck({ letters }: { letters: SwipeLetter[] }) {
               <p className="mt-4 flex-1 overflow-y-auto font-serif text-[19px] italic leading-relaxed">
                 “{current.wishNote}”
               </p>
-              <div className="mt-5">
-                <a
-                  href={current.amazonUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    advance("right");
-                  }}
-                  onPointerDown={(event) => event.stopPropagation()}
-                  className="block rounded-pill bg-white px-[26px] py-[15px] text-center text-base font-bold text-green transition-transform duration-150 hover:-translate-y-0.5"
-                >
-                  Gift this on Amazon ↗
-                </a>
-                <p className="mt-2.5 text-center text-[12.5px] opacity-80">
-                  Opens Amazon in a new tab — we never handle the payment.
+              <div className="mt-5 space-y-2">
+                {current.amazonUrls.map((url, i) => (
+                  <a
+                    key={url}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      advance("right");
+                    }}
+                    onPointerDown={(event) => event.stopPropagation()}
+                    className="block bg-paper px-[26px] py-[13px] text-center text-base font-bold text-red-deep transition-transform duration-150 hover:-translate-y-0.5"
+                  >
+                    {current.amazonUrls.length > 1 ? `Gift item ${i + 1} on Amazon ↗` : "Gift this on Amazon ↗"}
+                  </a>
+                ))}
+                <p className="text-center text-[12.5px] opacity-80">
+                  {current.amazonUrls.length > 1
+                    ? "Each link opens Amazon in a new tab. Gift one item or all of them. We never handle payment."
+                    : "This opens Amazon in a new tab. We never handle payment."}
                 </p>
               </div>
             </div>
@@ -244,14 +250,14 @@ export function SwipeDeck({ letters }: { letters: SwipeLetter[] }) {
           {/* Swipe verdict stamps */}
           <div
             aria-hidden
-            className="pointer-events-none absolute top-7 left-6 rotate-[-12deg] rounded-[10px] border-[3px] border-green bg-white/85 px-4 py-1.5 text-[20px] font-black tracking-wide text-green uppercase"
+            className="pointer-events-none absolute top-7 left-6 rotate-[-12deg] border-[3px] border-green bg-white/85 px-4 py-1.5 text-[20px] font-black tracking-wide text-green uppercase"
             style={{ opacity: dx > 0 || leaving === "right" ? verdictOpacity : 0, zIndex: 3 }}
           >
             Gift it
           </div>
           <div
             aria-hidden
-            className="pointer-events-none absolute top-7 right-6 rotate-[12deg] rounded-[10px] border-[3px] border-muted bg-white/85 px-4 py-1.5 text-[20px] font-black tracking-wide text-muted uppercase"
+            className="pointer-events-none absolute top-7 right-6 rotate-[12deg] border-[3px] border-muted bg-white/85 px-4 py-1.5 text-[20px] font-black tracking-wide text-muted uppercase"
             style={{ opacity: dx < 0 || leaving === "left" ? verdictOpacity : 0, zIndex: 3 }}
           >
             Next
