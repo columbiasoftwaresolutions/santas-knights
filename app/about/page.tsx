@@ -18,7 +18,6 @@ import {
   values,
   sponsors,
   TRADEMARK,
-  TRAINING_HREF,
 } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -194,13 +193,13 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* Training overview with external links */}
+      {/* Training overview */}
       <section className="bg-paper-raised border-y border-line py-section">
         <Container className="grid items-center gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-[54px]">
           <SectionHeading
             eyebrow="The training side"
             title="Gladiators NYC"
-            intro="The other half of what we do: full-contact armored combat and fitness, taught free in Harlem. Damion started it in 2013, and it's the oldest league of its kind in the city. The schedule and booking live on its own site."
+            intro="The other half of what we do: full-contact armored combat and fitness, taught free in Harlem. Damion started it in 2013, and it's the oldest league of its kind in the city. Every class and booking lives right here on the site."
             introClassName="max-w-[46ch]"
           />
           <div>
@@ -216,11 +215,11 @@ export default function AboutPage() {
               ))}
             </div>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Button href={TRAINING_HREF} variant="red" arrow>
-                Go to the training site ↗
+              <Button href={links.training} variant="red" arrow>
+                See the classes
               </Button>
-              <Button href={links.training} variant="ghost">
-                See class descriptions
+              <Button href={links.online} variant="ghost">
+                Online classes
               </Button>
             </div>
           </div>

@@ -17,8 +17,8 @@ export function Footer() {
               martial arts and fitness the rest of the year.
             </p>
             <p className="mt-4 max-w-[42ch] text-[13px] leading-relaxed text-bone/45">
-              Santa&apos;s Knights, Inc. is a registered 501(c)(3) nonprofit. The training schedule
-              and class booking live on the Gladiators NYC site.
+              Santa&apos;s Knights, Inc. is a registered 501(c)(3) nonprofit. Our free Gladiators
+              NYC classes, schedule, and booking all live right here.
             </p>
           </div>
 

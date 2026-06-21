@@ -1,19 +1,31 @@
 /**
  * Single source of truth for site copy and links.
  *
- * This site is the public face of the organization and the home of the
- * Santa's Letters program. The training program (Gladiators NYC) has its own
- * dedicated site for the armory, schedule, and class booking. Links here
- * point there rather than handling logistics in-page.
+ * This is the one nonprofit site: nonprofit pages, the Santa's Letters program,
+ * AND the full Gladiators NYC free program (class content + booking). The whole
+ * Gladiators free program lives here on santasknights.org — only the commercial
+ * Shop + Armory stay on the separate gladiators.nyc site (see SHOP_HREF /
+ * ARMORY_HREF below). See docs/EXECUTION-PLAN.md Phase 0.
  *
  * Placeholder hrefs ("#") are intentional until the real destinations exist.
  * "Buy now" membership URLs must be added manually in code. See Plan v2 §D5.
  */
 
-// Points to the dedicated training site once it's live (separate project).
-export const TRAINING_HREF = process.env.NEXT_PUBLIC_GLADIATORS_URL || "#training";
-// Kept for existing imports; both refer to the training program's destination.
+// Canonical home of the public domain (used for absolute URLs in JSON-LD).
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://santasknights.org";
+
+// The Gladiators NYC program lives on THIS site. TRAINING_HREF is the on-site
+// program hub; per-class pages are /training/[slug]. Full class booking arrives
+// with the training tracker (Execution Plan Phase 5) — pages say "coming soon".
+export const TRAINING_HREF = "/training";
+// Kept for existing imports; both point at the on-site program hub.
 export const GLADIATORS_HREF = TRAINING_HREF;
+
+// Reserved for the COMMERCIAL companion on gladiators.nyc ONLY — the merch Shop
+// and the item-level Armory rentals, which stay off the 501(c)(3) domain. Wired
+// up in Execution Plan Phase 6; not referenced anywhere yet. See Plan v2 §D5.
+export const SHOP_HREF = process.env.NEXT_PUBLIC_GLADIATORS_SHOP_URL || "https://gladiators.nyc";
+export const ARMORY_HREF = process.env.NEXT_PUBLIC_GLADIATORS_ARMORY_URL || "https://gladiators.nyc";
 
 /** Brand trademark restored per Plan v2 §E0. */
 export const TRADEMARK = "The Gift of Martial Arts™";
@@ -82,10 +94,11 @@ export const navLinks: NavItem[] = [
     ],
   },
   {
-    label: "Classes",
+    label: "Gladiators NYC",
+    gladiators: true,
     children: [
-      { label: "In-Person", href: "/training" },
-      { label: "Online", href: "/online" },
+      { label: "In-Person Classes", href: "/training" },
+      { label: "Online Classes", href: "/online" },
     ],
   },
   {
@@ -144,8 +157,8 @@ export const pillars: {
     variant: "train",
     tag: "Free training",
     title: "Martial arts & fitness, year-round",
-    body: "We teach armored combat and fitness in Harlem at no cost, beginners welcome. The classes, schedule, and booking live on our training site.",
-    cta: "Go to the training site",
+    body: "We teach armored combat and fitness in Harlem at no cost, beginners welcome. Browse the six free Gladiators NYC programs and reserve a spot, all right here.",
+    cta: "See the classes",
     href: TRAINING_HREF,
     image: "/images/gladiators-sparring.jpg",
     imageAlt: "Gladiators NYC fighters sparring in full armor",
@@ -199,7 +212,7 @@ export const privacyInstruction =
   "Do NOT include your, or your child's, last name or mailing address in your physical letter or online post!";
 
 /* ------------------------------------------------------------------ *
- * Training (Gladiators NYC): content for this site; booking on gladiators.nyc
+ * Training (Gladiators NYC): the free program, built and booked on THIS site
  * ------------------------------------------------------------------ */
 
 export const gladiatorsMeta: { value: string; label: string }[] = [
@@ -210,59 +223,80 @@ export const gladiatorsMeta: { value: string; label: string }[] = [
 
 /**
  * Full class catalog for /training (Plan v2 §E3/B1).
- * "Book Now" CTAs link to gladiators.nyc. Booking is not on this site.
- * TODO: Replace TRAINING_HREF with deep-links to specific classes on gladiators.nyc once available.
+ * Each class has its own on-site page at /training/[slug]; "Book Now" routes
+ * there. On-site booking goes live with the training tracker (Execution Plan
+ * Phase 5) — until then per-class pages show a "booking coming soon" panel.
  */
 export type ClassCard = {
+  slug: string;
   name: string;
   audience: string;
   duration: string;
   tagline?: string;
+  /** Fuller description shown on the per-class /training/[slug] page. */
+  details?: string;
+  /** Internal per-class route. */
   bookHref: string;
 };
 
 export const classes: ClassCard[] = [
   {
+    slug: "bootcamp",
     name: "Gladiator Bootcamp (open to all levels)",
     audience: "Adults & Teens",
     duration: "Duration Varies",
-    tagline: undefined, // uses bootcampBlurb
-    bookHref: TRAINING_HREF,
+    tagline: undefined, // detail page falls back to bootcampBlurb
+    bookHref: "/training/bootcamp",
   },
   {
+    slug: "armored-practice",
     name: "Gladiator Armored Practice (advanced)",
     audience: "Adults (as fighters & spectators) & Teens/Children as spectators",
     duration: "",
-    bookHref: TRAINING_HREF,
+    details:
+      "Advanced, full-contact armored practice with steel weapons for experienced fighters, with space for teens and children to spectate. Protective armor required; instructors run the floor.",
+    bookHref: "/training/armored-practice",
   },
   {
+    slug: "womens-combat",
     name: "Women's Medieval Combat & Fitness",
     audience: "Women",
     duration: "2 hr",
     tagline: "Empowerment through Strength, Skill, and Sisterhood",
-    bookHref: TRAINING_HREF,
+    details:
+      "A women's medieval combat and fitness class built around strength, skill, and sisterhood. Beginners welcome; all equipment provided.",
+    bookHref: "/training/womens-combat",
   },
   {
+    slug: "womens-midtown",
     name: "Women's (Premium) Combat Class, Midtown",
     audience: "Women",
     duration: "",
     tagline: "Combat, conditioning, and community in a Midtown studio.",
-    bookHref: TRAINING_HREF,
+    details:
+      "Combat, conditioning, and community for women in a Midtown studio. Same free program, a second location.",
+    bookHref: "/training/womens-midtown",
   },
   {
+    slug: "veterans",
     name: "Gladiators NYC for Military Veterans",
     audience: "U.S. Military Veterans",
     duration: "2 hr",
     tagline:
       "This class is (only) for U.S. Military Veterans (sponsored by the Department of Veterans Services)",
-    bookHref: TRAINING_HREF,
+    details:
+      "A class exclusively for U.S. Military Veterans, sponsored by the Department of Veterans Services. Camaraderie, fitness, and full-contact combat in a veteran-only space.",
+    bookHref: "/training/veterans",
   },
   {
+    slug: "fundamentals",
     name: "Medieval Combat Fundamentals",
     audience: "All levels",
     duration: "1 hr 30 min",
     tagline: "Step into the world of historical martial arts with Gladiators NYC",
-    bookHref: TRAINING_HREF,
+    details:
+      "Step into the world of historical martial arts. Fundamentals covers stance, footwork, and weapon basics for every level, no experience needed.",
+    bookHref: "/training/fundamentals",
   },
 ];
 
@@ -283,12 +317,13 @@ export const bootcampBlurb =
   "Inspired by classes such as Barry's Bootcamp®, SoulCycle®, and GRIT BXNG®, Gladiator Kids (for children) and Gladiator Bootcamp (for adults) teaches students how to fight as an armored combatant (using foam weapons and armor to train with) in the style of high-energy, high-intensity, non-stop, music-driven, headset-wearing instructors, bringing gladiatorial and medieval training into the modern age of fitness and martial arts practice.";
 
 /**
- * App promo copy (Plan v2 §E2). Registration app is on gladiators.nyc.
+ * App promo copy (Plan v2 §E2). On-site class registration arrives with the
+ * training tracker (Execution Plan Phase 5); for now this routes to the program hub.
  */
 export const appPromo = {
-  text: "Use the app to register for and manage your classes! The app is 100% FREE, always!",
+  text: "Register for and manage your classes online! Membership is 100% FREE, always!",
   href: TRAINING_HREF,
-  cta: "Register for classes ↗",
+  cta: "Browse classes",
 } as const;
 
 /* ------------------------------------------------------------------ *
@@ -494,7 +529,7 @@ export const aboutStory: { heading: string; body: string }[] = [
   },
   {
     heading: "One organization, two jobs",
-    body: "Today Santa's Knights does two things out of Harlem. It runs free martial arts and fitness all year, and every holiday season it answers kids' letters to Santa. The training has its own site now. This one is for everything else.",
+    body: "Today Santa's Knights does two things out of Harlem. It runs free martial arts and fitness all year, and every holiday season it answers kids' letters to Santa. Everything the nonprofit does, the classes included, lives right here.",
   },
 ];
 
@@ -635,6 +670,61 @@ export const faqs: { q: string; a: string }[] = [
   },
   {
     q: "I want to train. Where do I start?",
-    a: "The classes, schedule, and booking live on our training site. Head there to find a class, or message us and we'll point you the right way.",
+    a: "Browse the six free Gladiators NYC classes right here on the site and pick the one that fits. On-site booking is coming soon; in the meantime, message us and we'll get you into a class.",
   },
 ];
+
+/* ------------------------------------------------------------------ *
+ * Structured data (Plan v2 §SEO / Execution Plan Phase 0)
+ *
+ * Organization entity (sitewide) + per-class Course stubs (price $0). Booking
+ * actions (potentialAction / ReserveAction → on-site URLs) are filled in once
+ * the training tracker ships (Execution Plan Phase 5/7).
+ * ------------------------------------------------------------------ */
+
+/** Sitewide Organization (NGO) schema. Gladiators NYC is the program brand. */
+export const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  name: org.name,
+  legalName: org.legalName,
+  url: SITE_URL,
+  description: missionStatement,
+  email: org.email,
+  telephone: org.phone,
+  slogan: TRADEMARK,
+  brand: { "@type": "Brand", name: "Gladiators NYC" },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: org.address1,
+    addressLocality: "New York",
+    addressRegion: "NY",
+    postalCode: "10027",
+    addressCountry: "US",
+  },
+  sameAs: socials.map((s) => s.href),
+} as const;
+
+/** Per-class Course stub. Free program, so offers price is $0. */
+export function courseSchema(cls: ClassCard) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: cls.name,
+    description: cls.details ?? cls.tagline ?? bootcampBlurb,
+    url: `${SITE_URL}${cls.bookHref}`,
+    provider: {
+      "@type": "Organization",
+      name: org.name,
+      sameAs: SITE_URL,
+    },
+    isAccessibleForFree: true,
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      category: "Free",
+      availability: "https://schema.org/InStock",
+    },
+  };
+}

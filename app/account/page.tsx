@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
-import { links, TRAINING_HREF } from "@/content/site";
+import { links } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Members · Santa's Knights",
@@ -57,11 +57,12 @@ export default function AccountPage() {
             <span aria-hidden className="mb-4 block h-1 w-10 rounded-pill bg-red" />
             <h2 className="text-h3">Train with us</h2>
             <p className="mt-2.5 flex-1 text-muted">
-              Classes are free and open to everyone. Registration is handled on the training site.
+              Classes are free and open to everyone. Browse the six Gladiators NYC programs and
+              reserve a spot right here.
             </p>
             <div className="mt-5">
-              <Button href={TRAINING_HREF} variant="red" arrow className="px-5 py-3 text-[14.5px]">
-                Training site ↗
+              <Button href={links.training} variant="red" arrow className="px-5 py-3 text-[14.5px]">
+                Browse classes
               </Button>
             </div>
           </Card>

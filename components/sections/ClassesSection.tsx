@@ -5,8 +5,8 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { classes, bootcampBlurb, appPromo, links } from "@/content/site";
 
 /**
- * Homepage classes section with 6 class cards and Book Now CTAs (Plan v2 §E2/E3).
- * "Book Now" links out to gladiators.nyc; booking is NOT on this site.
+ * Homepage classes section with 6 class cards (Plan v2 §E2/E3).
+ * Each card links to its on-site per-class page at /training/[slug].
  */
 export function ClassesSection() {
   return (
@@ -53,7 +53,7 @@ export function ClassesSection() {
                     variant="red"
                     className="px-4 py-2.5 text-[13.5px]"
                   >
-                    Book Now ↗
+                    Class details
                   </Button>
                 </div>
               </Card>

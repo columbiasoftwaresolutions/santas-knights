@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/sections/PageHero";
 import { DonateBand } from "@/components/sections/DonateBand";
-import { links, TRAINING_HREF } from "@/content/site";
+import { links } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Online Classes · Santa's Knights",
@@ -22,10 +22,10 @@ export default function OnlinePage() {
             <em className="font-serif font-medium italic text-red">anywhere</em>.
           </>
         }
-        intro="Watch free instructional content from Gladiators NYC. The full schedule and in-person booking are on the training site."
+        intro="Watch free instructional content from Gladiators NYC, then come train in person. The full class schedule and booking are right here on the site."
       >
-        <Button href={TRAINING_HREF} variant="red" arrow>
-          In-person classes ↗
+        <Button href={links.training} variant="red" arrow>
+          In-person classes
         </Button>
         <Button href={links.training} variant="ghost">
           See all classes
@@ -39,18 +39,18 @@ export default function OnlinePage() {
           </div>
           <div>
             <h2 className="font-display text-[clamp(38px,5vw,68px)] leading-[0.9] font-black tracking-[-0.03em] uppercase">
-              Training content lives with Gladiators NYC.
+              Train on your own time.
             </h2>
             <p className="mt-7 max-w-[42rem] text-[18px] leading-[1.65] text-bone/75">
-              Class videos, schedules, booking, and the full combat program are maintained on the
-              dedicated training site so instructors can keep it current.
+              Instructor-made conditioning and technique videos to train between sessions. The full
+              video library lands with the training tracker, alongside on-site class booking.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <Button href={TRAINING_HREF} variant="red" size="lg" arrow>
-                Open Gladiators NYC ↗
+              <Button href={links.training} variant="red" size="lg" arrow>
+                Browse in-person classes
               </Button>
-              <Button href={links.training} variant="bone" size="lg">
-                Browse classes here
+              <Button href={links.membership} variant="bone" size="lg">
+                Join free
               </Button>
             </div>
           </div>

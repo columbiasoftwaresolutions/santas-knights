@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
 import { DonateBand } from "@/components/sections/DonateBand";
-import { classes, bootcampBlurb, appPromo, links, TRAINING_HREF } from "@/content/site";
+import { classes, bootcampBlurb, appPromo, links } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Classes · Santa's Knights",
@@ -27,8 +27,8 @@ export default function TrainingPage() {
         }
         intro="Beginners are welcome. Gladiators NYC instructors teach six free programs in Harlem and Midtown."
       >
-        <Button href={TRAINING_HREF} variant="red" arrow>
-          Register for classes ↗
+        <Button href="#classes" variant="red" arrow>
+          Browse the classes
         </Button>
         <Button href={links.online} variant="ghost">
           Online classes
@@ -36,7 +36,7 @@ export default function TrainingPage() {
       </PageHero>
 
       {/* Class catalog */}
-      <section className="py-section">
+      <section id="classes" className="scroll-mt-24 py-section">
         <Container>
           <SectionHeading
             eyebrow="Classes with Santa's Knights!"
@@ -73,7 +73,7 @@ export default function TrainingPage() {
                     variant="red"
                     className="px-5 py-3 text-[14px]"
                   >
-                    Book Now ↗
+                    Class details
                   </Button>
                 </div>
               </Card>

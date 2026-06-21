@@ -81,9 +81,13 @@ export default function ContactPage() {
                 </a>
               </DetailRow>
               <DetailRow label="Training schedule">
-                On the training site
+                Six free classes a week
                 <span className="mt-1 block text-[14px] font-normal text-muted">
-                  Classes run several days a week. The current schedule and booking live there.
+                  Browse every Gladiators NYC class on the{" "}
+                  <a href={links.training} className="underline transition-colors hover:text-red">
+                    classes page
+                  </a>
+                  . On-site booking is coming soon.
                 </span>
               </DetailRow>
             </div>

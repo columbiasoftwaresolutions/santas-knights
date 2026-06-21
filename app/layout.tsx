@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Hanken_Grotesk, Fraunces, Archivo } from "next/font/google";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { JsonLd } from "@/components/ui/JsonLd";
+import { organizationSchema } from "@/content/site";
 import "./globals.css";
 
 const hanken = Hanken_Grotesk({
@@ -44,6 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${hanken.variable} ${fraunces.variable} ${archivo.variable}`}
     >
       <body>
+        <JsonLd data={organizationSchema} />
         <Navbar />
         <main>{children}</main>
         <Footer />
