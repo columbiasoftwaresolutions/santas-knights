@@ -72,7 +72,6 @@ export type NavItem = {
 
 /** Top-level nav with optional dropdown children. */
 export const navLinks: NavItem[] = [
-  { label: "Donate", href: "/donate" },
   {
     label: "Santa's Knights",
     children: [

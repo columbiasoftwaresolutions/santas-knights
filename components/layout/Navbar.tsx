@@ -16,7 +16,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-bone/15 bg-ink">
       <Container className="flex h-[72px] items-center gap-[26px]">
-        <Brand />
+        <Brand tagline={false} />
 
         {/* Desktop nav */}
         <nav className="ml-2 hidden items-center gap-[22px] text-[13px] font-semibold text-bone/75 xl:flex">
