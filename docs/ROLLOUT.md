@@ -18,9 +18,10 @@ Built fresh on the new stack, gated and `noindex`. No public SEO/ads/analytics e
 
 1. **Member accounts + Letters family tracking** — validates the Supabase + Auth + Storage foundation on this repo. No public-site dependency.
 2. **Santa's Letters** — public-facing, launched on its own timeline (mind the **Nov–Dec seasonal spike**).
-3. **Public marketing site** (incl. Gladiators **content** pages, gallery, donate/membership, partners) — built in parallel, but its **public cutover is the last, coordinated step** (see [Public Cutover](#public-cutover-the-coordinated-event)), not an early deliverable.
+3. **Public marketing site** (incl. Gladiators program pages, gallery, donate/membership, partners) — built in parallel, but its **public cutover is the last, coordinated step** (see [Public Cutover](#public-cutover-the-coordinated-event)), not an early deliverable.
+4. **Training tracker** (booking + waiver, check-in, XP, participant dashboard, training videos, training admin) — **built here**, gated behind `participant`/`instructor` roles ([GLADIATORS-SITE.md](./GLADIATORS-SITE.md)). The heaviest chunk; sequence it after the public-site content lands.
 
-> **Waiver capture, the training tracker (booking, check-in, XP, dashboard), shop & armory are a separate `gladiators.nyc` workstream** ([GLADIATORS-SITE.md](./GLADIATORS-SITE.md)), not this repo. This site only **cross-links out** to them.
+> **Only the commercial Shop & Armory are a separate `gladiators.nyc` workstream** ([GLADIATORS-SITE.md](./GLADIATORS-SITE.md#commercial-companion-gladiatorsnyc)), not this repo. This site **cross-links out** to them for purchases/rentals.
 
 ### Track B — Public mirroring on Wix (content changes)
 
@@ -46,14 +47,14 @@ To track engagement cleanly, public-facing changes that *will* appear on the new
 | **Beta (new stack)** | New platform build + QA, gated behind auth/password | **`noindex`, `robots: disallow`** |
 | **Preview (Vercel)** | Per-PR preview deployments | `noindex` |
 
-**Two linked domains** — under **Plan v2** ([plan-v2.md](./plan-v2.md)), `santasknights.org` (this repo) hosts the nonprofit site, Letters to Santa, and **Gladiators content** (class catalog, descriptions, online/video). `gladiators.nyc` is a **separate site** hosting the **training-tracker backend** (booking, waiver, check-in, XP, dashboard), shop & armory. The two **cross-link**; transactional Gladiators actions on this site link out.
+**One nonprofit site + a commercial companion** — under **Plan v2** ([plan-v2.md](./plan-v2.md)), `santasknights.org` (this repo) hosts the **whole nonprofit**: nonprofit pages, Letters to Santa, and the **full Gladiators free program** (class content + training tracker — booking, waiver, check-in, XP, dashboard, videos). `gladiators.nyc` is a **separate site** for the **commercial Shop & Armory only**, kept off the nonprofit domain. The two **cross-link**; only commercial actions (shop/rentals) link out.
 
 | Domain | Role | Production (Wix) | Beta (new stack) |
 | --- | --- | --- | --- |
-| `santasknights.org` | Nonprofit + Letters + Gladiators **content** | Live | `beta.santasknights.org` |
-| `gladiators.nyc` | Training-tracker backend + shop + armory (**separate site/codebase**) | Live (currently standalone) | separate Gladiators deployment/cutover |
+| `santasknights.org` | Nonprofit + Letters + Gladiators free program (content + tracker) | Live | `beta.santasknights.org` |
+| `gladiators.nyc` | Commercial Shop + Armory (**separate site/codebase**) | Live (currently standalone) | separate commercial deployment/cutover |
 
-> Both sites migrate off Wix on **separate cutovers**. Class-booking/training URLs stay on (or move to) `gladiators.nyc`; coordinate any redirects and the cross-link targets with Nicolas so SEO/links and ad destinations are preserved.
+> Both sites migrate off Wix on **separate cutovers**. Consolidating the free program on `santasknights.org` keeps the free-class landing pages on the Ad-Grant-eligible domain and consolidates SEO authority — use per-class URLs + `Course`/`Event` schema. Coordinate any `gladiators.nyc` redirects and cross-link targets with Nicolas so SEO/links and ad destinations are preserved.
 
 > Beta **must stay `noindex`** until cutover so it never competes with the live Wix site in search or cannibalizes ad landing pages. Confirm `robots.txt` + `X-Robots-Tag` before sharing any beta link.
 

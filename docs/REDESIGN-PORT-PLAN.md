@@ -55,8 +55,8 @@ existing client components + server actions (reskin only). Real data, not the de
 | `/sponsors` | `sponsors.html` | partner tiles + press strip |
 | `/links` | `links.html` | link-in-bio, minimal centered layout |
 | `/membership` | `membership.html` | 6 tiers; free tier distinct; billing URLs manual |
-| `/training` | `training.html` | class catalog; "Book now" → gladiators.nyc |
-| `/online` | `online.html` | content page → gladiators.nyc |
+| `/training` | `training.html` | class catalog; on-site booking (training tracker built here — Plan v2 §B3). _Booking flow not yet wired; CTAs are placeholders._ |
+| `/online` | `online.html` | content page; video embeds + (later) uploaded training videos |
 | `/gallery` | `gallery.html` | 4 real photos + honest placeholders |
 
 ### Phase 4 — Account + Admin ✅ DONE

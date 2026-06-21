@@ -170,7 +170,7 @@ Steel sub-brand palette (Gladiators NYC):
 ## Components
 
 - **Utility bar** — slim `ink` bar; left "501(c)(3) · 100% free" status badge (green dot), right donation quick-links (Donate · PayPal · Venmo).
-- **Nav** — sticky translucent paper bar: crest + wordmark, center links, right-aligned "Gladiators NYC ↗" (ghost) + "Donate" (red). Gladiators link hover underlines in `steel`, others in `red`.
+- **Nav** — sticky translucent paper bar: crest + wordmark, center links, right-aligned "Gladiators NYC" (ghost, → the on-site Gladiators program section) + "Donate" (red). Gladiators link hover underlines in `steel`, others in `red`.
 - **Hero** — two-column: heading with serif-italic emphasis word + lede + CTA pair + reassurance note; media side has a 4:5 photo with an overlapping white stat badge.
 - **Impact strip** — 4 stats on `paperRaised`; big number with a small serif-italic red unit suffix.
 - **Mission quote** — large serif pull-quote with red italic emphasis and a gold-rule byline.

@@ -59,7 +59,7 @@ Sign in at `/admin/login` to reach the moderation dashboard.
 
 - **Resend API key** + `CONTACT_EMAIL_TO` — forwards each contact-form
   message by email. Messages are stored in Supabase regardless.
-- `NEXT_PUBLIC_GLADIATORS_URL` — once the companion training site is live.
+- `NEXT_PUBLIC_GLADIATORS_URL` — the commercial **Shop/Armory** site (`gladiators.nyc`) for cross-link-out buttons, once it's live. (The Gladiators *free program* — classes + training tracker — is built on this site, not behind this URL.)
 
 ## After steps 1–3
 

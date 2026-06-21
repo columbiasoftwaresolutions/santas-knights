@@ -4,26 +4,28 @@ Guidance for Claude Code when working in this repository.
 
 ## Project
 
-The **Santa's Knights** platform — a Next.js + Supabase rebuild of the **Santa's Knights, Inc.** 501(c)(3) nonprofit site, plus the **Letters to Santa** gifting portal and **extensive Gladiators NYC program content**, on `santasknights.org`. Built by Columbia Software Solutions.
+The **Santa's Knights** platform — a Next.js + Supabase rebuild of the **Santa's Knights, Inc.** 501(c)(3) nonprofit site, plus the **Letters to Santa** gifting portal and the **Gladiators NYC free combat program** (class content **and** training tracker), on `santasknights.org`. Built by Columbia Software Solutions.
 
-**Scope is Plan v2** ([docs/plan-v2.md](./docs/plan-v2.md)) — **content here, training backend elsewhere**: this repo replicates **every public feature of the live Wix site** — nonprofit pages, member accounts, gallery, donate/membership, partners, the Letters portal, *and* Gladiators **content pages** (class catalog, descriptions, online/video). The Gladiators **training-tracker backend lives on the separate `gladiators.nyc` site — NOT in this repo:** class **booking**, **waivers**, **instructor check-in**, **XP/gamification**, **participant dashboards**, **training-video uploads**, plus the merch **Shop** and **Armory**. This site **cross-links out** for all booking/registration. [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md) is the Gladiators-side spec.
+**Scope is Plan v2** ([docs/plan-v2.md](./docs/plan-v2.md)) — **one site for the nonprofit**: this repo replicates **every public feature of the live Wix site** — nonprofit pages, member accounts, gallery, donate/membership, partners, the Letters portal — **and the Gladiators NYC free program in full**: class content **plus** the training tracker (class **booking**, **waivers + media consent**, **instructor check-in**, **XP/gamification**, **participant dashboards**, **training videos**, and training admin / CSV grant export).
+
+**Only the commercial pieces stay on the separate `gladiators.nyc` site** — the merch **Shop** and the **Armory** (item-level armor inventory & rentals). They're kept **off the nonprofit domain** because Santa's Knights is a 501(c)(3); this site **cross-links out** to `gladiators.nyc` for shop purchases and armor rentals (e-commerce stays external). [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md) specs the Gladiators program (built here) and the commercial companion.
 
 **Deploy (beta):** https://santas-knights.vercel.app/ — internal Vercel beta, auto-deploys from `main`. Not the public production site; keep `noindex` until cutover (see ROLLOUT.md).
 
 Read these before substantial work:
-- **[docs/plan-v2.md](./docs/plan-v2.md)** — ⭐ current scope: the build list. Content (incl. Gladiators content pages) is built here; the Gladiators training-tracker backend + shop + armory live on `gladiators.nyc`. Wins on *where* features are built where docs conflict.
+- **[docs/plan-v2.md](./docs/plan-v2.md)** — ⭐ current scope: the build list. The whole nonprofit — nonprofit pages, Letters, and the full Gladiators free program (content + training tracker) — is built here; only the commercial Shop + Armory live on `gladiators.nyc`. Wins on *where* features are built where docs conflict.
 - **[README.md](./README.md)** — scope, tech stack, phases, data model, setup, admin tasks.
 - **[ROLLOUT.md](./docs/ROLLOUT.md)** — build-≠-cutover strategy, two-track rollout, public cutover checklist.
 - **[CHANGELOG.md](./docs/CHANGELOG.md)** — impact-focused log of every change, maintained for Nicolas (SEO/ads/marketing).
-- **[REQUIREMENTS.md](./docs/REQUIREMENTS.md)** — full feature scope by stage; site architecture & brand split.
-- **[docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md)** — reference spec for the separate Gladiators NYC companion site (combat program & training tracker).
+- **[REQUIREMENTS.md](./docs/REQUIREMENTS.md)** — full feature scope by stage; site architecture & nonprofit-vs-commercial split.
+- **[docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md)** — spec for the Gladiators NYC combat program & training tracker (built **here**), plus the commercial Shop/Armory companion on `gladiators.nyc`.
 - **[docs/SETUP-TODO.md](./docs/SETUP-TODO.md)** — remaining manual backend steps (first admin user, donation URLs, consent language, free-tier notes).
 
 ## Repo layout & current state
 
 The app is built and the Supabase backend is wired up:
 
-- **Routes** (App Router, `app/`): `/` home, `/about`, `/contact`, `/get-involved`, `/donate`, `/sponsors`, `/links`, `/letters` (+ `/submit`, `/give`), `/account` (+ login/register scaffolds), `/gallery`, `/membership`, `/training` + `/online`, and `/admin` (+ `/login`). Expanded account tracking and admin gallery/partners/donations remain planned. No booking/instructor/dashboard routes — those are on `gladiators.nyc`. See [docs/plan-v2.md](./docs/plan-v2.md) §D2.
+- **Routes** (App Router, `app/`): `/` home, `/about`, `/contact`, `/get-involved`, `/donate`, `/sponsors`, `/links`, `/letters` (+ `/submit`, `/give`), `/account` (+ login/register scaffolds), `/gallery`, `/membership`, `/training` + `/online`, and `/admin` (+ `/login`). Expanded account tracking and admin gallery/partners/donations remain planned. The Gladiators **training tracker** (booking, waiver, instructor check-in, XP, participant dashboard, training videos, training admin) is in scope for this repo but **not yet built** — `/training` + `/online` currently carry program content with booking CTAs to wire up. Only the commercial Shop/Armory route out to `gladiators.nyc`. See [docs/plan-v2.md](./docs/plan-v2.md) §D2.
 - **Supabase** clients in `lib/supabase/` (`browser` / `server` / `admin` / `config`); the admin gate is `lib/auth.ts`; server actions live in `app/actions/`. Every entry point checks `isSupabaseConfigured()` first, so the site builds and runs with features degraded to friendly empty-states before env vars exist.
 - **Env** lives in `.env.local` (template in `.env.example`); the live Supabase project is already configured.
 - **Content** copy/config in `content/` (`site.ts`, `consent.ts` — bump consent `version` strings when terms change).
@@ -73,16 +75,18 @@ Then write the git commit. Keep the CHANGELOG entry and the commit message consi
   square controls/panels, warm near-black grounds, paper contrast sections, red/amber
   flood accents, and no eyebrows/kickers.
 - Santa's Letters: never expose a child's identifying details publicly; gifts must be age-appropriate, legal, and safe.
-- _Companion-site conventions (Gladiators NYC, [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md)): XP values/levels/thresholds/rewards are admin-editable data, never hardcoded; XP can make a participant eligible to **request** a privilege but never auto-grants safety-sensitive access (armor, sparring) — those require instructor/admin certification._
+- _Gladiators program conventions (training tracker, built here — [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md)): XP values/levels/thresholds/rewards are admin-editable data, never hardcoded; XP can make a participant eligible to **request** a privilege but never auto-grants safety-sensitive access (armor, sparring) — those require instructor/admin certification. Armor rental eligibility is computed here, but the rental transaction + item inventory live on the commercial `gladiators.nyc` Armory._
 
 ## Environments
 
 - New stack stays **`noindex`** on `beta.*` subdomains until a coordinated public cutover — never let beta compete with the live Wix site in search. See ROLLOUT.md.
-- Plan v2 split: **content on `santasknights.org`** (this repo — nonprofit, Letters, Gladiators content), **training-tracker backend + shop + armory on `gladiators.nyc`** (separate site). This site cross-links out for booking/registration. Separate codebases, deployments, and cutovers (see ROLLOUT.md).
+- Plan v2 split: **the whole nonprofit on `santasknights.org`** (this repo — nonprofit pages, Letters, and the full Gladiators free program: content + training tracker). **Only the commercial Shop + Armory live on `gladiators.nyc`** (separate site), kept off the nonprofit domain; this site cross-links out for shop purchases and armor rentals. Payments stay external (Amazon, PayPal/Venmo, Eventbrite, external store). See ROLLOUT.md.
 
 ## Database schema
 
 This is the source of truth for the Postgres schema. Apply it on a fresh Supabase project via the **SQL Editor** (paste and run), then create the first admin (insert an Auth user, then `update profiles set role='admin' where email='<that email>'`). The live beta project already has this applied.
+
+> **Training-tracker tables are now in scope for this project** (the Gladiators free program is built here, not on a separate site). The DDL below currently covers the nonprofit/Letters side that is live; the training tables — `classes`, `registrations`, `checkins`, `waivers`, `media_consents`, `xp_config`, `xp_events`, `levels`/`badges`, `training_videos` — and their private storage buckets (`waivers`, `training-videos`) are specced in [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md#data-model-training-tables) and will be added to this same Supabase project when the tracker is built. The `app_role` enum already includes `participant` and `instructor` for exactly this. **Only `armor_inventory` / `armor_rentals` stay out** — those belong to the commercial Armory on `gladiators.nyc`.
 
 **Privacy invariant:** a child's identifying details are NEVER exposed publicly. Guardian contact lives on the same `santa_letters` row, but anonymous visitors can only read approved letters' safe columns through the `public_letters` view. Letter images sit in a private `letters` storage bucket, served via short-lived signed URLs.
 
