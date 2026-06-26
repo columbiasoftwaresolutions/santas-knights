@@ -3,11 +3,6 @@ import { Arrow } from "@/components/ui/Arrow";
 import { Photo } from "@/components/ui/Photo";
 import { pillars } from "@/content/site";
 
-const SUB: Record<string, string> = {
-  give: "It's the reason the nonprofit exists.",
-  train: "Beginners welcome. No cost, ever.",
-};
-
 /** Two full-bleed duotone program blocks for giving and training. */
 export function Pillars() {
   return (
@@ -30,15 +25,16 @@ export function Pillars() {
                 sizes="(min-width: 768px) 50vw, 100vw"
                 className="h-full w-full"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(22,18,15,0.45)_0%,rgba(22,18,15,0.92)_78%)]" />
+              {/* Flat darken for overall legibility + bottom gradient for the text. */}
+              <div className="absolute inset-0 bg-ink/45" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,14,11,0.45)_0%,rgba(18,14,11,0.97)_72%)]" />
             </div>
 
             <div className="relative z-10">
-              <h3 className="mb-2 font-display text-[clamp(34px,3.6vw,52px)] font-black uppercase leading-[0.92] tracking-[-0.02em] text-bone">
+              <h3 className="mb-4 font-display text-[clamp(34px,3.6vw,52px)] font-black uppercase leading-[0.92] tracking-[-0.02em] text-bone">
                 {pillar.title}
               </h3>
-              <p className="mb-5 font-serif text-[21px] italic text-bone">{SUB[pillar.variant]}</p>
-              <p className="mb-7 max-w-[440px] text-base leading-relaxed text-bone/80">
+              <p className="mb-7 max-w-[440px] text-base leading-relaxed text-bone/85">
                 {pillar.body}
               </p>
               <a

@@ -144,7 +144,7 @@ export const pillars: {
     variant: "give",
     tag: "Santa's Letters",
     title: "Answering kids' letters to Santa",
-    body: "Every December we collect letters from kids around Harlem, take off anything that could identify them, and post the wishes so anyone can pick one and send a gift. It's the reason the nonprofit exists.",
+    body: "Every December we collect letters from kids around the world, take off anything that could identify them, and post the wishes so anyone can pick one and send a gift. It's the reason the nonprofit exists.",
     cta: "How it works",
     href: "/letters",
     image: "/images/letters-painting.png",
@@ -172,7 +172,7 @@ export const letters = {
   eyebrow: "Santa's Letters",
   title: "Every kid deserves an answer.",
   intro:
-    "Each December, children around Harlem write to Santa. We make sure those letters don't go unanswered. You read a wish, pick one, and send the gift, and a kid wakes up to something they asked for.",
+    "Each December, children around the world write to Santa. We make sure those letters don't go unanswered. You read a wish, pick one, and send the gift, and a kid wakes up to something they asked for.",
   origin:
     "The idea isn't new. The Postal Service has been answering kids' letters to Santa since 1912, and Damion grew up taking part in it, picking a stranger's letter off the pile and mailing a gift. Santa's Letters is him running that same idea out of Harlem, and reaching a few more kids every year.",
   steps: [
@@ -654,7 +654,7 @@ export const contactReasons: { value: string; label: string }[] = [
 export const faqs: { q: string; a: string }[] = [
   {
     q: "What is Santa's Letters?",
-    a: "Kids around Harlem write letters to Santa. We remove anything that could identify a child, then post the wishes so people can adopt them and send the gifts. It runs every December.",
+    a: "Kids around the world write letters to Santa. We remove anything that could identify a child, then post the wishes so people can adopt them and send the gifts. It runs every December.",
   },
   {
     q: "How do I adopt a letter?",
