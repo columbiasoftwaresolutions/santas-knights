@@ -20,17 +20,8 @@ export function Navbar({ auth }: { auth: NavAuth }) {
       <Container className="flex h-[72px] items-center gap-[14px]">
         <Brand tagline={false} />
 
-        {/* Top-left auth button: Log In (signed out) / Dashboard (signed in). */}
-        <Button
-          href={auth.signedIn ? auth.dashboardHref : links.accountLogin}
-          variant="bone"
-          className="shrink-0 px-4 py-2 text-[12.5px]"
-        >
-          {auth.signedIn ? "Dashboard" : "Log In"}
-        </Button>
-
         {/* Desktop nav */}
-        <nav className="ml-1 hidden shrink-0 items-center gap-[18px] text-[13px] font-semibold whitespace-nowrap text-bone/75 xl:flex">
+        <nav className="ml-2 hidden shrink-0 items-center gap-[18px] text-[13px] font-semibold whitespace-nowrap text-bone/75 xl:flex">
           {navLinks.map((item) =>
             item.children ? (
               <DropdownItem
@@ -53,15 +44,21 @@ export function Navbar({ auth }: { auth: NavAuth }) {
         </nav>
 
         <div className="ml-auto flex items-center gap-3">
-          {/* Wrapper controls visibility cleanly (avoids the hidden/inline-flex conflict). */}
+          {/* Donate hidden on mobile (wrapper avoids the hidden/inline-flex conflict). */}
           <div className="hidden items-center gap-3 sm:flex">
             <Button href={links.donate} variant="bone">
               Donate
             </Button>
-            <Button href={links.adoptLetter} variant="red">
-              Adopt a letter
-            </Button>
           </div>
+
+          {/* Primary auth button: Log In (signed out) / Dashboard (signed in). */}
+          <Button
+            href={auth.signedIn ? auth.dashboardHref : links.accountLogin}
+            variant="red"
+            className="shrink-0"
+          >
+            {auth.signedIn ? "Dashboard" : "Log In"}
+          </Button>
 
           {/* Mobile hamburger */}
           <button
@@ -96,14 +93,9 @@ export function Navbar({ auth }: { auth: NavAuth }) {
         <div className="border-t border-bone/12 bg-ink pb-6 xl:hidden">
           <Container>
             <MobileNav items={navLinks} onClose={() => setMobileOpen(false)} />
+            {/* The auth button is always in the header; the menu keeps the CTAs. */}
             {/* Closing handled on the container so the Link buttons still navigate. */}
             <div className="mt-4 grid gap-2 px-2" onClick={() => setMobileOpen(false)}>
-              <Button
-                href={auth.signedIn ? auth.dashboardHref : links.accountLogin}
-                variant="bone"
-              >
-                {auth.signedIn ? "Dashboard" : "Log In"}
-              </Button>
               <Button href={links.adoptLetter} variant="red">
                 Adopt a letter
               </Button>
