@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/sections/PageHero";
 import { SubmitLetterForm } from "@/components/letters/SubmitLetterForm";
-import { giftGuidance, privacyInstruction } from "@/content/site";
+import { getCurrentUser } from "@/lib/auth";
+import { giftGuidance, privacyInstruction, links } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Write a Letter · Santa's Letters · Santa's Knights",
@@ -26,7 +28,11 @@ const expectations: { title: string; body: string }[] = [
   },
 ];
 
-export default function SubmitLetterPage() {
+const NEXT = "/letters/submit";
+
+export default async function SubmitLetterPage() {
+  const user = await getCurrentUser();
+
   return (
     <>
       <PageHero
@@ -37,13 +43,41 @@ export default function SubmitLetterPage() {
             <em className="font-serif font-medium italic text-red">letter</em>.
           </>
         }
-        intro="This form is for parents and guardians. It takes about five minutes: a photo of the handwritten letter, the wish, and an Amazon link for the gift. No account needed."
+        intro="This form is for parents and guardians. It takes about five minutes: a photo of the handwritten letter, the wish, and a gift link. A free account keeps you posted on its status."
       />
 
       <section className="py-section">
         <Container className="grid items-start gap-10 lg:grid-cols-[0.62fr_0.38fr] lg:gap-[54px]">
           <Card className="p-[34px] md:p-[42px]">
-            <SubmitLetterForm />
+            {user ? (
+              <SubmitLetterForm defaultEmail={user.email ?? undefined} />
+            ) : (
+              <div className="text-center">
+                <div aria-hidden className="text-[34px] text-green">
+                  ♔
+                </div>
+                <h2 className="mt-2 text-h3">Sign in to submit a letter</h2>
+                <p className="mx-auto mt-2.5 max-w-[44ch] text-muted">
+                  A free account lets us reach you about the letter and lets you track its status.
+                  It only takes a minute. Adopting a letter never needs an account.
+                </p>
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                  <Button
+                    href={`${links.accountRegister}?next=${encodeURIComponent(NEXT)}`}
+                    variant="green"
+                    arrow
+                  >
+                    Create a free account
+                  </Button>
+                  <Button
+                    href={`${links.accountLogin}?next=${encodeURIComponent(NEXT)}`}
+                    variant="ghost"
+                  >
+                    Sign in
+                  </Button>
+                </div>
+              </div>
+            )}
           </Card>
 
           <div className="grid gap-7 lg:sticky lg:top-[110px]">

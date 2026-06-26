@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
-import { Container } from "@/components/ui/Container";
-import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
-import { checkAdmin } from "@/lib/auth";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { requireAdmin } from "@/components/admin/guard";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { LETTERS_BUCKET } from "@/lib/supabase/config";
-import { moderateLetter, signOut, type ModerationAction } from "@/app/admin/actions";
+import { moderateLetter, type ModerationAction } from "@/app/admin/actions";
 
 export const metadata: Metadata = {
   title: "Letter Moderation · Santa's Knights Admin",
@@ -83,56 +81,14 @@ type AdminLetter = {
   imageUrl?: string | null;
 };
 
-type LegacyAdminLetter = Omit<AdminLetter, "amazon_urls"> & { amazon_url: string };
-
 export default async function AdminPage({
   searchParams,
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
-  const admin = await checkAdmin();
-
-  if (admin.status === "unconfigured") {
-    return (
-      <Notice title="Supabase isn't configured">
-        Set the Supabase environment variables and apply the database schema
-        (see <code>CLAUDE.md</code>) to use the moderation dashboard.
-      </Notice>
-    );
-  }
-  if (admin.status === "signed-out") {
-    return (
-      <Notice title="Signed out">
-        <Link href="/admin/login" className="font-semibold text-red underline">
-          Sign in
-        </Link>{" "}
-        to moderate letters.
-      </Notice>
-    );
-  }
-  if (admin.status === "not-admin") {
-    return (
-      <Notice title="Not authorized">
-        You&apos;re signed in as {admin.email ?? "an account"} without the admin role. An existing
-        admin can grant it by setting your <code>profiles.role</code> to <code>admin</code>.
-        <form action={signOut} className="mt-6">
-          <Button type="submit" variant="ghost" className="px-5 py-3 text-[15px]">
-            Sign out
-          </Button>
-        </form>
-      </Notice>
-    );
-  }
-
-  const supabase = createSupabaseAdminClient();
-  if (!supabase) {
-    return (
-      <Notice title="Missing secret key">
-        Set <code>SUPABASE_SECRET_KEY</code> (server-side env) so the dashboard can read and
-        moderate letters.
-      </Notice>
-    );
-  }
+  const gate = await requireAdmin();
+  if (!gate.ok) return gate.node;
+  const supabase = gate.supabase;
 
   const params = await searchParams;
   const activeStatus: LetterStatus = STATUSES.includes(params.status as LetterStatus)
@@ -145,7 +101,7 @@ export default async function AdminPage({
   statusRows?.forEach((row) => counts.set(row.status, (counts.get(row.status) ?? 0) + 1));
   const total = statusRows?.length ?? 0;
 
-  let { data: letterRows, error: letterError } = await supabase
+  const { data: letterRows, error: letterError } = await supabase
     .from("santa_letters")
     .select(
       "id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, status, guardian_name, guardian_email, moderation_note, created_at",
@@ -154,28 +110,8 @@ export default async function AdminPage({
     .order("created_at", { ascending: true })
     .limit(200);
 
-  let legacy = false;
-  if (letterError?.message.includes("amazon_urls")) {
-    const legacyQuery = await supabase
-      .from("santa_letters")
-      .select(
-        "id, child_first_name, child_age, wish_note, amazon_url, letter_image_path, status, guardian_name, guardian_email, moderation_note, created_at",
-      )
-      .eq("status", activeStatus)
-      .order("created_at", { ascending: true })
-      .limit(200);
-    letterRows = legacyQuery.data as typeof letterRows;
-    letterError = legacyQuery.error;
-    legacy = true;
-  }
-
   if (letterError) console.error("Failed to load moderation queue:", letterError.message);
-  const letters = legacy
-    ? ((letterRows ?? []) as unknown as LegacyAdminLetter[]).map(({ amazon_url, ...letter }) => ({
-        ...letter,
-        amazon_urls: amazon_url ? [amazon_url] : [],
-      }))
-    : ((letterRows ?? []) as AdminLetter[]);
+  const letters = (letterRows ?? []) as AdminLetter[];
 
   const paths = letters.map((l) => l.letter_image_path).filter(Boolean) as string[];
   if (paths.length > 0) {
@@ -191,22 +127,7 @@ export default async function AdminPage({
   }
 
   return (
-    <section className="min-h-screen bg-ink py-[46px] text-bone">
-      <Container>
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-[12px] font-semibold tracking-[0.1em] text-amber uppercase">
-              Signed in as {admin.email}
-            </p>
-            <h1 className="mt-2 font-display text-h2 font-black uppercase">Letter moderation</h1>
-          </div>
-          <form action={signOut}>
-            <Button type="submit" variant="ghost" className="px-5 py-[11px] text-[15px]">
-              Sign out
-            </Button>
-          </form>
-        </div>
-
+    <AdminShell active="letters" title="Letter moderation" email={gate.email}>
         {/* Season totals */}
         <div className="mt-8 grid grid-cols-2 gap-[14px] sm:grid-cols-4">
           <Stat label="Submitted (all)" value={total} />
@@ -322,8 +243,7 @@ export default async function AdminPage({
             ))
           )}
         </div>
-      </Container>
-    </section>
+    </AdminShell>
   );
 }
 
@@ -333,18 +253,5 @@ function Stat({ label, value }: { label: string; value: number }) {
       <p className="font-display text-[34px] font-black tracking-[-0.03em] text-amber">{value}</p>
       <p className="text-[11px] font-bold text-bone/55 uppercase tracking-[0.12em]">{label}</p>
     </Card>
-  );
-}
-
-function Notice({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="py-section">
-      <Container className="max-w-[560px]">
-        <Card className="p-[34px] text-center">
-          <h1 className="text-h3">{title}</h1>
-          <div className="mt-3 text-[15.5px] text-muted">{children}</div>
-        </Card>
-      </Container>
-    </section>
   );
 }

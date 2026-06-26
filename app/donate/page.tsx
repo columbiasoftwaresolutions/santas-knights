@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
+import { DonateForm } from "@/components/donate/DonateForm";
 import { links, org, donateCopy } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -84,13 +85,42 @@ export default function DonatePage() {
         </Button>
       </PageHero>
 
-      {/* Ways to give */}
+      {/* Give now — lead-capture form, then hand off to the external processor */}
       <section className="py-section">
+        <Container className="grid items-start gap-12 lg:grid-cols-[0.55fr_0.45fr]">
+          <div>
+            <SectionHeading
+              className="max-w-[560px]"
+              eyebrow="Give now"
+              title="Make a gift"
+              intro="Choose an amount and tell us where to send your receipt. You'll finish on our secure payment page."
+              introClassName="max-w-[48ch]"
+            />
+            <ul className="mt-8 grid gap-4">
+              {spend.map((item) => (
+                <li key={item.title} className="flex gap-4">
+                  <span aria-hidden className="mt-1.5 h-1 w-10 flex-none rounded-pill bg-red" />
+                  <div>
+                    <h3 className="text-[17px] font-extrabold tracking-[-0.02em]">{item.title}</h3>
+                    <p className="mt-1 text-[15px] text-muted">{item.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <Card className="p-[30px] md:p-[36px]">
+            <DonateForm />
+          </Card>
+        </Container>
+      </section>
+
+      {/* Ways to give */}
+      <section className="border-t border-line py-section">
         <Container>
           <SectionHeading
             className="max-w-[640px]"
-            eyebrow="Ways to give"
-            title="Choose how to give"
+            eyebrow="Other ways to give"
+            title="More ways to help"
             intro="Payment is handled by the provider you choose. We never collect card details on this site."
             introClassName="max-w-[52ch]"
           />

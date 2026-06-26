@@ -17,7 +17,7 @@ function FieldError({ message }: { message?: string }) {
   return <p className="mt-1.5 text-[13.5px] font-semibold text-red">{message}</p>;
 }
 
-export function SubmitLetterForm() {
+export function SubmitLetterForm({ defaultEmail }: { defaultEmail?: string }) {
   const [state, formAction, pending] = useActionState(submitLetter, initialState);
   // One Amazon link by default; families with a few wishes can add more rows.
   const [linkIds, setLinkIds] = useState<number[]>([0]);
@@ -92,7 +92,7 @@ export function SubmitLetterForm() {
         </div>
         <div>
           <label htmlFor="amazon_url" className={labelBase}>
-            Amazon link(s)
+            Gift links (Amazon)
           </label>
           <div className="grid gap-2.5">
             {linkIds.map((id, i) => (
@@ -128,7 +128,7 @@ export function SubmitLetterForm() {
               onClick={() => setLinkIds((ids) => [...ids, nextLinkId.current++])}
               className="text-[13.5px] font-bold text-green hover:underline"
             >
-              + Add another link
+              + Add gift
             </button>
           </div>
           <FieldError message={state.errors?.amazon_url} />
@@ -181,6 +181,7 @@ export function SubmitLetterForm() {
               name="guardian_email"
               type="email"
               required
+              defaultValue={defaultEmail}
               placeholder="you@email.com"
               className={fieldBase}
             />

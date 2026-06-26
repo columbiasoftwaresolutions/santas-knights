@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
 import { Press } from "@/components/sections/Press";
-import { org, sponsors } from "@/content/site";
+import { getPartners } from "@/lib/content";
+import { org, sponsors as staticSponsors } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Sponsors · Santa's Knights",
   description:
     "Meet the sponsors who help keep Santa's Knights free and learn how your business can help.",
 };
+
+export const dynamic = "force-dynamic";
 
 const tiers: { title: string; body: string }[] = [
   {
@@ -29,7 +31,13 @@ const tiers: { title: string; body: string }[] = [
   },
 ];
 
-export default function SponsorsPage() {
+export default async function SponsorsPage() {
+  const dbPartners = await getPartners();
+  const sponsors =
+    dbPartners.length > 0
+      ? dbPartners.map((p) => ({ name: p.name, logo: p.logo_url ?? undefined, href: p.website_url ?? undefined }))
+      : staticSponsors;
+
   return (
     <>
       <PageHero
@@ -69,11 +77,11 @@ export default function SponsorsPage() {
                   {...(sponsor.href ? { href: sponsor.href } : {})}
                 >
                   {sponsor.logo ? (
-                    <Image
+                    // Logos come from Supabase Storage (remote) or /public; plain img avoids remote-domain config.
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
                       src={sponsor.logo}
                       alt={sponsor.name}
-                      width={180}
-                      height={60}
                       className="h-[52px] w-auto object-contain opacity-80 grayscale transition hover:opacity-100 hover:grayscale-0"
                     />
                   ) : (

@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { headers } from "next/headers";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { LETTERS_BUCKET } from "@/lib/supabase/config";
+import { getCurrentUser } from "@/lib/auth";
 import { GUARDIAN_CONSENT_TEXT, GUARDIAN_CONSENT_VERSION } from "@/content/consent";
 
 export type SubmitLetterState = {
@@ -45,6 +46,16 @@ export async function submitLetter(
   _prev: SubmitLetterState,
   formData: FormData,
 ): Promise<SubmitLetterState> {
+  // An account is required to submit a letter (docs/ACCOUNT-MODEL.md §2): we need
+  // a way to reach the guardian and let them track status. Adopting stays guest-first.
+  const guardian = await getCurrentUser();
+  if (!guardian) {
+    return {
+      ok: false,
+      message: "Please sign in or create a free account to submit a letter.",
+    };
+  }
+
   const childFirstName = String(formData.get("child_first_name") ?? "").trim();
   const childAgeRaw = String(formData.get("child_age") ?? "").trim();
   const wishNote = String(formData.get("wish_note") ?? "").trim();
@@ -117,10 +128,11 @@ export async function submitLetter(
     letter_image_path: imagePath,
     guardian_name: guardianName,
     guardian_email: guardianEmail,
+    guardian_user_id: guardian.id,
     status: "pending",
   };
 
-  let { data: letter, error: insertError } = await supabase
+  const { data: letter, error: insertError } = await supabase
     .from("santa_letters")
     .insert({
       ...letterBase,
@@ -129,20 +141,6 @@ export async function submitLetter(
     .select("id")
     .single();
 
-  // The beta database predates multi-link support. Keep submissions working
-  // until its documented `amazon_urls text[]` migration is applied.
-  if (insertError?.message.includes("amazon_urls")) {
-    const legacyInsert = await supabase
-      .from("santa_letters")
-      .insert({
-        ...letterBase,
-        amazon_url: amazonUrls[0],
-      })
-      .select("id")
-      .single();
-    letter = legacyInsert.data;
-    insertError = legacyInsert.error;
-  }
   if (insertError || !letter) {
     console.error("Letter insert failed:", insertError?.message);
     await supabase.storage.from(LETTERS_BUCKET).remove([imagePath]);

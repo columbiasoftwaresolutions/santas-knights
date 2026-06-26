@@ -90,7 +90,7 @@ export default async function ClassDetailPage({
             <p className="text-[18px] leading-[1.7] text-muted">{description}</p>
           </div>
 
-          {/* Booking — on-site, coming soon with the training tracker (Phase 5). */}
+          {/* Booking — live on-site via the training tracker. */}
           <div id="booking" className="scroll-mt-24">
             <Card className="flex flex-col p-[30px]">
               <span aria-hidden className="mb-4 block h-1 w-10 rounded-pill bg-red" />
@@ -98,12 +98,12 @@ export default async function ClassDetailPage({
                 Reserve a spot
               </h2>
               <p className="mt-3 flex-1 text-[15px] leading-[1.6] text-muted">
-                On-site booking is launching soon. In the meantime, create a free membership or
-                message us and we&apos;ll get you into this class.
+                Booking is free. Pick an upcoming session, sign a quick one-time waiver, and you&apos;re
+                in. Classes are first-come, first-served up to capacity.
               </p>
               <div className="mt-5 flex flex-col gap-2.5">
-                <Button href={links.membership} variant="red" className="px-5 py-3 text-[14.5px]">
-                  Join free
+                <Button href={`${links.training}#book`} variant="red" className="px-5 py-3 text-[14.5px]">
+                  See upcoming sessions
                 </Button>
                 <Button href={links.contact} variant="ghost" className="px-5 py-3 text-[14.5px]">
                   Ask about this class

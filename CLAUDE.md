@@ -222,3 +222,156 @@ insert into storage.buckets (id, name, public)
 values ('letters', 'letters', false)
 on conflict (id) do nothing;
 ```
+
+### Account model + content tables (applied)
+
+These tables were applied on top of the base schema above (account model + gallery/donations/partners + the full Gladiators training tracker). The DDL is idempotent.
+
+```sql
+-- helpers + profile fields ----------------------------------------
+alter table public.profiles add column if not exists veteran_status boolean not null default false;
+alter table public.profiles add column if not exists waiver_signed_at timestamptz;
+
+create or replace function public.is_instructor()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.profiles where id = auth.uid() and role in ('instructor','admin'));
+$$;
+
+-- santa_letters: fulfillment + guardian self-read (account model) --
+alter table public.santa_letters add column if not exists guardian_user_id uuid references public.profiles(id);
+alter table public.santa_letters add column if not exists fulfilled_by_user_id uuid references public.profiles(id);
+alter table public.santa_letters add column if not exists fulfilled_by_email text;
+alter table public.santa_letters add column if not exists fulfilled_by_name  text;
+create policy "Guardians read own letters"
+  on public.santa_letters for select using (guardian_user_id = auth.uid());
+
+-- Guardian-scoped projection used by /account ("My letters").
+create or replace view public.my_letters as
+  select id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, status,
+         case when status = 'needs_edits' then moderation_note else null end as moderation_note,
+         created_at, updated_at
+  from public.santa_letters where guardian_user_id = auth.uid();
+
+-- family members (minors under a guardian account) ----------------
+create table public.family_members (
+  id uuid primary key default gen_random_uuid(),
+  guardian_user_id uuid not null references public.profiles(id) on delete cascade,
+  first_name text not null, dob date, relationship text,
+  veteran_status boolean not null default false, created_at timestamptz not null default now()
+);
+
+-- content tables (public-read when published, admin manage) -------
+create table public.gallery_media (
+  id uuid primary key default gen_random_uuid(),
+  title text, caption text, alt_text text,
+  media_type text not null default 'image',           -- 'image' | 'video'
+  storage_path text,                                    -- path in public 'gallery' bucket
+  external_url text, category text,
+  sort_order int not null default 0, is_published boolean not null default true,
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table public.partners (
+  id uuid primary key default gen_random_uuid(),
+  name text not null, logo_path text, website_url text,
+  sort_order int not null default 0, is_published boolean not null default true,
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table public.donations (
+  id uuid primary key default gen_random_uuid(),
+  first_name text not null, last_name text not null, email text not null,
+  amount numeric, frequency text not null default 'one_time',
+  dedicate_to text, designation text, processor text,
+  created_at timestamptz not null default now()
+);
+
+-- training tracker (Gladiators free program) ----------------------
+create table public.classes (
+  id uuid primary key default gen_random_uuid(),
+  title text not null, slug text, class_type text not null default 'standard', description text,
+  instructor_id uuid references public.profiles(id), location text,
+  starts_at timestamptz not null, ends_at timestamptz,
+  capacity int not null default 20 check (capacity >= 0),
+  requires_approval boolean not null default false, is_published boolean not null default true,
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table public.registrations (
+  id uuid primary key default gen_random_uuid(),
+  class_id uuid not null references public.classes(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  family_member_id uuid references public.family_members(id) on delete cascade,
+  status text not null default 'registered'
+    check (status in ('registered','waitlisted','cancelled','attended','no_show')),
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);  -- unique (class_id, user_id, coalesce(family_member_id, zero-uuid))
+create table public.checkins (
+  id uuid primary key default gen_random_uuid(),
+  registration_id uuid references public.registrations(id) on delete set null,
+  class_id uuid not null references public.classes(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  family_member_id uuid references public.family_members(id) on delete cascade,
+  checked_in_by uuid references public.profiles(id),
+  checked_in_at timestamptz not null default now(), xp_awarded int not null default 0
+);
+create table public.waivers (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  family_member_id uuid references public.family_members(id) on delete cascade,
+  version text not null, full_text text not null, participant_name text not null,
+  dob date, guardian_name text, typed_name text not null, consent boolean not null default true,
+  ip text, user_agent text, pdf_path text, signed_at timestamptz not null default now()
+);
+create table public.media_consents (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  family_member_id uuid references public.family_members(id) on delete cascade,
+  version text not null, full_text text not null, granted boolean not null default true,
+  typed_name text, guardian_name text, metadata jsonb, signed_at timestamptz not null default now()
+);
+create table public.xp_config (   -- admin-editable XP values; never hardcoded
+  id uuid primary key default gen_random_uuid(),
+  event_type text not null unique, label text not null, xp_value int not null default 0,
+  track text not null default 'fighter' check (track in ('fighter','instructor')),
+  unlock_threshold int, is_active boolean not null default true,
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table public.xp_events (   -- immutable XP ledger
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  family_member_id uuid references public.family_members(id) on delete cascade,
+  event_type text not null, xp_value int not null, track text not null default 'fighter',
+  source_type text, source_id uuid, note text,
+  created_by uuid references public.profiles(id), created_at timestamptz not null default now()
+);
+create table public.levels (      -- admin-editable level names/thresholds
+  id uuid primary key default gen_random_uuid(),
+  name text not null, threshold int not null, track text not null default 'fighter',
+  sort_order int not null default 0, unlock text, unique (track, threshold)
+);
+create table public.badges (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique, name text not null, description text, icon text,
+  created_at timestamptz not null default now()
+);
+create table public.participant_badges (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  family_member_id uuid references public.family_members(id) on delete cascade,
+  badge_id uuid not null references public.badges(id) on delete cascade,
+  awarded_by uuid references public.profiles(id), awarded_at timestamptz not null default now()
+);
+create table public.training_videos (
+  id uuid primary key default gen_random_uuid(),
+  title text not null, description text, category text,
+  uploader_id uuid references public.profiles(id),
+  storage_path text, external_url text, duration_seconds int, thumbnail_path text,
+  is_published boolean not null default true, sort_order int not null default 0,
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+
+-- private buckets for the tracker
+insert into storage.buckets (id, name, public) values
+  ('waivers','waivers',false), ('training-videos','training-videos',false)
+on conflict (id) do nothing;
+```
+
+**RLS summary for the above:** content tables (`gallery_media`/`partners`) are public-read when `is_published`, admin-manage; `donations` admin-read (insert via server action). Training tables: participant reads own rows (`user_id = auth.uid()`), instructors read via `is_instructor()`, admins manage; `classes` are public-read when published; `xp_config`/`levels`/`badges` are public-read, admin-manage; `training_videos` readable by any signed-in member when published, instructor/admin-manage. `family_members` are guardian-owned (`guardian_user_id = auth.uid()`). Seed data: `xp_config` (11 event types), `levels` (Recruit→Legend, 11 tiers), `badges` (5) per [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md#reference-v1-xp-values--levels).

@@ -28,23 +28,12 @@ async function getLetters(): Promise<SwipeLetter[] | null> {
   const supabase = createSupabaseAdminClient();
   if (!supabase) return null;
 
-  let { data, error } = await supabase
+  const { data, error } = await supabase
     .from("public_letters")
     .select("id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, created_at")
     .order("created_at", { ascending: true })
     .limit(150);
 
-  let legacy = false;
-  if (error?.message.includes("amazon_urls")) {
-    const legacyQuery = await supabase
-      .from("public_letters")
-      .select("id, child_first_name, child_age, wish_note, amazon_url, letter_image_path, created_at")
-      .order("created_at", { ascending: true })
-      .limit(150);
-    data = legacyQuery.data as typeof data;
-    error = legacyQuery.error;
-    legacy = true;
-  }
   if (error || !data) {
     console.error("Failed to load letters:", error?.message);
     return [];
@@ -66,9 +55,7 @@ async function getLetters(): Promise<SwipeLetter[] | null> {
     childFirstName: row.child_first_name,
     childAge: row.child_age,
     wishNote: row.wish_note,
-    amazonUrls: legacy
-      ? [String((row as typeof row & { amazon_url?: string }).amazon_url ?? "")].filter(Boolean)
-      : row.amazon_urls ?? [],
+    amazonUrls: row.amazon_urls ?? [],
     imageUrl: row.letter_image_path ? (signedByPath.get(row.letter_image_path) ?? null) : null,
   }));
 }

@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
 import { DonateBand } from "@/components/sections/DonateBand";
+import { getTrainingVideos } from "@/lib/training";
+import { getCurrentUser } from "@/lib/auth";
 import { links } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -11,7 +15,24 @@ export const metadata: Metadata = {
     "Free virtual classes and instructional videos from Gladiators NYC.",
 };
 
-export default function OnlinePage() {
+export const dynamic = "force-dynamic";
+
+function isExternalEmbed(url: string) {
+  return /youtube\.com|youtu\.be|vimeo\.com/.test(url);
+}
+
+/** Convert a YouTube/Vimeo share URL into its embeddable form. */
+function toEmbedUrl(url: string): string {
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
+  return url;
+}
+
+export default async function OnlinePage() {
+  const [user, videos] = await Promise.all([getCurrentUser(), getTrainingVideos()]);
+
   return (
     <>
       <PageHero
@@ -54,6 +75,72 @@ export default function OnlinePage() {
               </Button>
             </div>
           </div>
+        </Container>
+      </section>
+
+      {/* Strength & Conditioning video library */}
+      <section className="py-section">
+        <Container>
+          <SectionHeading
+            eyebrow="Strength & Conditioning"
+            title="Video library"
+            intro="Instructor-made conditioning and technique videos. Free for members — sign in to watch."
+            introClassName="max-w-[52ch]"
+          />
+
+          {!user ? (
+            <Card className="mt-8 p-[34px] text-center">
+              <p className="text-muted">
+                The video library is free for members. Create a free account or sign in to watch.
+              </p>
+              <div className="mt-5 flex flex-wrap justify-center gap-3">
+                <Button href={`${links.accountRegister}?next=${encodeURIComponent("/online")}`} variant="red" arrow>
+                  Create a free account
+                </Button>
+                <Button href={`${links.accountLogin}?next=${encodeURIComponent("/online")}`} variant="ghost">
+                  Sign in
+                </Button>
+              </div>
+            </Card>
+          ) : videos.length === 0 ? (
+            <Card className="mt-8 p-[34px] text-center">
+              <p className="text-muted">
+                No videos have been posted yet. Instructors are putting the library together — check
+                back soon.
+              </p>
+            </Card>
+          ) : (
+            <div className="mt-8 grid gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
+              {videos.map((v) => (
+                <Card key={v.id} className="flex flex-col overflow-hidden p-0">
+                  <div className="aspect-video bg-ink">
+                    {v.url && isExternalEmbed(v.url) ? (
+                      <iframe
+                        src={toEmbedUrl(v.url)}
+                        title={v.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="h-full w-full"
+                      />
+                    ) : v.url ? (
+                      <video src={v.url} controls preload="metadata" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="grid h-full place-items-center text-bone/50">Unavailable</div>
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col p-[22px]">
+                    {v.category && (
+                      <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-red">{v.category}</span>
+                    )}
+                    <h3 className="mt-1 text-[17px] font-extrabold tracking-[-0.02em]">{v.title}</h3>
+                    {v.description && (
+                      <p className="mt-2 flex-1 text-[14.5px] text-muted">{v.description}</p>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
         </Container>
       </section>
 

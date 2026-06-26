@@ -670,7 +670,7 @@ export const faqs: { q: string; a: string }[] = [
   },
   {
     q: "I want to train. Where do I start?",
-    a: "Browse the six free Gladiators NYC classes right here on the site and pick the one that fits. On-site booking is coming soon; in the meantime, message us and we'll get you into a class.",
+    a: "Browse the six free Gladiators NYC classes right here on the site and pick the one that fits. You can reserve an upcoming session online — create a free account, sign a quick one-time waiver, and you're booked.",
   },
 ];
 

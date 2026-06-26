@@ -4,20 +4,165 @@ import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
+import { getCurrentUser } from "@/lib/auth";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { signOutAction } from "@/app/account/actions";
+import { TrainingDashboard } from "@/components/account/TrainingDashboard";
+import { getDashboard, getMyRegistrations } from "@/lib/training";
 import { links } from "@/content/site";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Members · Santa's Knights",
-  description:
-    "Sign in to track submitted letters and manage your Santa's Knights membership.",
+  description: "Sign in to submit and track letters and manage your Santa's Knights membership.",
 };
 
-/**
- * Member account home from Plan v2 §A1.
- * Auth (email + password via Supabase Auth) and family letter-tracking (§C2) coming next.
- * This scaffold routes to login/register once auth is wired up.
- */
-export default function AccountPage() {
+type MyLetter = {
+  id: string;
+  child_first_name: string;
+  child_age: number;
+  wish_note: string;
+  amazon_urls: string[];
+  status: string;
+  moderation_note: string | null;
+  created_at: string;
+};
+
+const STATUS_LABELS: Record<string, { label: string; tone: string }> = {
+  pending: { label: "In review", tone: "bg-gold-soft text-[#6c5418]" },
+  approved: { label: "Live for adoption", tone: "bg-green-soft text-green" },
+  needs_edits: { label: "Needs edits", tone: "bg-red/10 text-red" },
+  flagged: { label: "In review", tone: "bg-gold-soft text-[#6c5418]" },
+  hidden: { label: "Not shown", tone: "bg-paper-raised text-muted" },
+  rejected: { label: "Not accepted", tone: "bg-paper-raised text-muted" },
+  fulfilled: { label: "Gift sent 🎁", tone: "bg-green-soft text-green" },
+};
+
+async function getMyLetters(): Promise<MyLetter[]> {
+  if (!isSupabaseConfigured()) return [];
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("my_letters")
+    .select("id, child_first_name, child_age, wish_note, amazon_urls, status, moderation_note, created_at")
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.error("Failed to load my letters:", error.message);
+    return [];
+  }
+  return (data ?? []) as MyLetter[];
+}
+
+export default async function AccountPage() {
+  const user = await getCurrentUser();
+
+  if (!user) return <SignedOut />;
+
+  const [letters, dashboard, registrations] = await Promise.all([
+    getMyLetters(),
+    getDashboard(user.id),
+    getMyRegistrations(user.id),
+  ]);
+
+  // Show the training panel once the account has engaged with the program.
+  const showTraining =
+    user.role === "participant" ||
+    user.role === "instructor" ||
+    dashboard.waiver.signed ||
+    dashboard.attendance > 0 ||
+    registrations.some((r) => r.status !== "cancelled");
+
+  return (
+    <>
+      <PageHero
+        eyebrow="Members Area"
+        title={
+          <>
+            Your{" "}
+            <em className="font-serif font-medium italic text-red">account</em>.
+          </>
+        }
+        intro={`Signed in as ${user.email ?? "your account"}.`}
+      >
+        <Button href={links.submitLetter} variant="green" arrow>
+          Submit a letter
+        </Button>
+        <form action={signOutAction}>
+          <Button type="submit" variant="ghost">
+            Sign out
+          </Button>
+        </form>
+      </PageHero>
+
+      {/* My letters (Phase 3 / §C2) */}
+      <section className="py-section">
+        <Container>
+          <SectionHeading
+            eyebrow="Santa's Letters"
+            title="My letters"
+            intro="Every letter you've submitted and where it stands. Only you can see this."
+            introClassName="max-w-[52ch]"
+          />
+
+          {letters.length === 0 ? (
+            <Card className="mt-8 p-[34px] text-center">
+              <p className="text-muted">You haven&apos;t submitted a letter yet.</p>
+              <div className="mt-5 flex justify-center">
+                <Button href={links.submitLetter} variant="green">
+                  Submit a child&apos;s letter
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <div className="mt-8 grid gap-[18px] sm:grid-cols-2">
+              {letters.map((letter) => {
+                const badge = STATUS_LABELS[letter.status] ?? {
+                  label: letter.status,
+                  tone: "bg-paper-raised text-muted",
+                };
+                return (
+                  <Card key={letter.id} className="flex flex-col p-[26px]">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-[17px] font-extrabold tracking-[-0.02em]">
+                        {letter.child_first_name}, age {letter.child_age}
+                      </h3>
+                      <span
+                        className={`rounded-pill px-3 py-1 text-[12px] font-bold ${badge.tone}`}
+                      >
+                        {badge.label}
+                      </span>
+                    </div>
+                    <p className="mt-3 line-clamp-3 flex-1 text-[14.5px] text-muted">
+                      {letter.wish_note}
+                    </p>
+                    <p className="mt-3 text-[12.5px] font-semibold text-muted">
+                      {letter.amazon_urls.length} gift
+                      {letter.amazon_urls.length === 1 ? "" : "s"} ·{" "}
+                      {new Date(letter.created_at).toLocaleDateString()}
+                    </p>
+                    {letter.status === "needs_edits" && letter.moderation_note && (
+                      <div className="mt-4 border border-red/30 bg-red/5 px-4 py-3 text-[13.5px] text-red">
+                        <strong className="font-bold">A moderator asked for an edit:</strong>{" "}
+                        {letter.moderation_note}
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </Container>
+      </section>
+
+      {showTraining && (
+        <TrainingDashboard dashboard={dashboard} registrations={registrations} />
+      )}
+    </>
+  );
+}
+
+function SignedOut() {
   return (
     <>
       <PageHero
@@ -28,13 +173,13 @@ export default function AccountPage() {
             <em className="font-serif font-medium italic text-red">account</em>.
           </>
         }
-        intro="Track submitted letters and manage your membership."
+        intro="Create a free account to submit a child's letter and track its status. Adopting a letter never requires an account."
       >
-        <Button href={links.accountLogin} variant="red" arrow>
-          Sign in
-        </Button>
-        <Button href={links.accountRegister} variant="ghost">
+        <Button href={links.accountRegister} variant="red" arrow>
           Create an account
+        </Button>
+        <Button href={links.accountLogin} variant="ghost">
+          Sign in
         </Button>
       </PageHero>
 
@@ -42,13 +187,14 @@ export default function AccountPage() {
         <Container className="grid gap-[22px] md:grid-cols-3">
           <Card hover className="flex flex-col p-[30px]">
             <span aria-hidden className="mb-4 block h-1 w-10 rounded-pill bg-green" />
-            <h2 className="text-h3">Track your letters</h2>
+            <h2 className="text-h3">Submit &amp; track letters</h2>
             <p className="mt-2.5 flex-1 text-muted">
-              See whether each submitted letter is pending, approved, or fulfilled.
+              An account is required to submit a child&apos;s letter, so we can reach you and you can
+              follow its status.
             </p>
             <div className="mt-5">
-              <Button href={links.accountLogin} variant="green" className="px-5 py-3 text-[14.5px]">
-                Sign in to see your letters
+              <Button href={links.accountRegister} variant="green" className="px-5 py-3 text-[14.5px]">
+                Get started
               </Button>
             </div>
           </Card>
