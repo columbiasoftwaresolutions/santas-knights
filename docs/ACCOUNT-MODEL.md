@@ -14,7 +14,7 @@ This document settles **who needs an account, what kind, and how it's created** 
 
 > **"Guardian" and "donor" are NOT roles — they are data *relationships* on a `public` account.**
 > - A **guardian** is a `public` account that *owns letters* (`santa_letters.guardian_user_id = me`).
-> - A **donor** is a guest, or a `public` account, that *owns fulfillments/donations*.
+> - A **donor** is a `public` account that *owns fulfillments* (adopting a letter requires signing in). General one-off gifts on the `/donate` page can still be made anonymously.
 >
 > No new enum values are needed. The enum already captures the only privileged tiers (`participant`, `instructor`, `admin`); everyone else is `public`.
 
@@ -25,14 +25,16 @@ This document settles **who needs an account, what kind, and how it's created** 
 | Persona | `app_role` | Account? | Created how | Auth method |
 | --- | --- | --- | --- | --- |
 | **Letter submitter** (guardian) | `public` | **Required** | Self-signup | **Email + password** |
-| **Gift giver** (donor) | `public` *(or none)* | **Optional — guest-first** | Self-signup, opt-in after giving | Guest → optional **email + password** upgrade |
+| **Gift giver** (donor) | `public` | **Required** | Self-signup | **Email + password** |
 | **Person taking classes** (adult or a guardian's child) | `participant` | **Required** | Self-signup → role granted on first booking | **Email + password** |
 | **Coach** | `instructor` | **Required** | **Provisioned by admin** (not self-signup) | **Email + password** (MFA later) |
 | **Admin** | `admin` | **Required** | **Provisioned by admin** | **Email + password** (MFA recommended) |
 
 **One auth method everywhere — email + password.** There is a single way to sign in across the whole site; no magic-link / OTP, no per-role auth split. Dropping magic-link removes the dependency on configured email delivery (SMTP) and keeps the mental model trivial: one account, one password, every role. Registration creates an already-confirmed user (server action, admin client) so signup doesn't depend on an email round-trip either.
 
-**The friction asymmetry that remains is about *accounts*, not *auth methods*:** the hard account wall sits only on the recurring/trust-sensitive flows (submitting a letter, booking a class). Gift giving — the impulse, seasonal flow — stays guest-first so a signup wall never costs a fulfillment.
+**Every meaningful action now sits behind one free account.** Submitting a letter, adopting a wish to gift, and booking a class all require signing in. An earlier draft kept gift-giving guest-first to avoid a signup wall; that was **reversed** — adopting a letter links the gift to a real, reachable identity, which is what makes the tax acknowledgment, handoff coordination, and the self-dealing guard (§5) actually enforceable rather than best-effort. The only people who never need an account are anonymous visitors browsing public pages (home, class catalog).
+
+**One login for everyone, role decides the landing.** There is a single sign-in form at `/account/login` (the old `/admin/login` just forwards to it). On success the user is routed by role: an `admin` lands in the admin area (`/admin`); everyone else lands on their member dashboard (`/account`). An explicit `?next=` destination (e.g. coming from the adopt gate) is always honored regardless of role. The member dashboard exposes the three member actions — **adopt a letter, book a class (waiver), donate** — plus "My letters", "Gifts I'm sending", and the training panel; the admin area holds management/monitoring (letters, gifts pipeline, class signups, classes, check-in, XP, donations, grant export, roles).
 
 ---
 
@@ -58,14 +60,20 @@ This is what lets the same family account both **submit a Santa letter** and **e
 
 ---
 
-## 5. The gift-giving (donor) flow — guest-first details
+## 5. The gift-giving (donor) flow — account-gated
 
-Guest-first, but two things are non-negotiable even for guests:
+Adopting a letter requires a signed-in account. The swipe deck at `/letters/give` is gated: signed-out visitors see a create-account / sign-in card and never reach the letters. Two things are non-negotiable, and an account makes both reliable rather than best-effort:
 
-- **Capture an email at fulfillment.** Santa's Knights is a 501(c)(3); donors expect a fulfillment/tax acknowledgment, and the org needs a channel to coordinate handoff. Capture email even with no account, then offer *"save this to track your gifts"* as the optional account upgrade (email + password).
-- **Self-dealing guard.** Block a guardian from fulfilling their own child's letter.
+- **A reachable identity on every fulfillment.** Santa's Knights is a 501(c)(3); donors expect a fulfillment/tax acknowledgment, and the org needs a channel to coordinate handoff. The account already carries a confirmed email, so there's no separate email-capture step and no guest rows to reconcile.
+- **Self-dealing guard.** Block a guardian from fulfilling their own child's letter. With an account this is an exact `fulfiller_user_id == guardian_user_id` check rather than a fuzzy email match.
 
-> **Self-dealing rule:** at fulfillment time, reject (or flag for review) if the fulfilling identity matches the letter's guardian — i.e. `fulfiller_user_id == santa_letters.guardian_user_id` **or** `fulfiller_email == santa_letters.guardian_email`. Enforced in the fulfillment server action; for accounts it's exact, for guests it's a best-effort email match.
+**Claim lifecycle (gift tracking).** Adopting records a claim so admins can monitor gifts and two donors can't buy the same wish. The `letter_status` enum gains a `claimed` state between `approved` and `fulfilled`:
+
+- `approved` → in the public pool (the swipe deck reads only approved letters via `public_letters`).
+- **`claimed`** → a donor pressed "Gift this": the row is stamped `fulfilled_by_user_id` / `fulfilled_by_email` / `claimed_at` and **drops out of the pool**. The claim is atomic (`update … where status = 'approved'`), so a race resolves to exactly one donor. The donor sees it under "Gifts I'm sending"; admins see it as "to send" in the Gifts pipeline.
+- **`fulfilled`** → the donor (or an admin) marked it sent. A donor can also **release** a claim back to `approved`.
+
+> **Self-dealing rule:** at fulfillment time, reject (or flag for review) if the fulfilling identity matches the letter's guardian — i.e. `fulfiller_user_id == santa_letters.guardian_user_id` (exact, since both sides are signed-in accounts) **or**, as a backstop, `fulfiller_email == santa_letters.guardian_email`. Enforced in the fulfillment server action.
 
 ---
 
@@ -96,7 +104,8 @@ Identity lives on the existing `profiles` table; these are the **additions/chang
 
 This model **refines** earlier docs; update them to match (don't leave the contradiction):
 
-- **plan-v2 §C2** said "keep submission possible **without** an account (optional)." → **Superseded:** a letter submitter now **needs** an account. (Adopting/donating stays account-optional — that's the donor, §2.)
+- **plan-v2 §C2** said "keep submission possible **without** an account (optional)." → **Superseded:** a letter submitter now **needs** an account.
+- **Earlier draft of this doc** kept gift-giving (adopting a letter) **guest-first**. → **Superseded:** adopting now **requires** an account too (§2, §5). The `/letters/give` swipe deck is gated behind sign-in.
 - **plan-v2 §A1 / EXECUTION-PLAN Phase 1** specify "email + password registration." → **Reaffirmed:** email + password is the single auth method for **every** role. An earlier draft of this doc made magic-link / OTP the default for seasonal users; that is **reverted** — one account, one password, everywhere (§2). This drops the SMTP dependency magic-link would have required.
 - **GLADIATORS-SITE "Users & Roles"** → reaffirmed: `instructor`/`admin` are **provisioned, never self-selected** (§3.2).
 - **GLADIATORS-SITE open question "Minors: program assumed 18+"** → **Resolved:** minors are in scope and handled via guardian-owned **family accounts** + `family_members`; training tables gain `family_member_id` (§4, §6).

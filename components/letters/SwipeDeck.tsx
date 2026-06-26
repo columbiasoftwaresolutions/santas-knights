@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
+import { claimLetter } from "@/app/letters/give/actions";
 import { links } from "@/content/site";
 
 export type SwipeLetter = {
@@ -24,11 +25,19 @@ const FLING_MS = 280;
  * "Gift this" button) = purchase intent → opens the Amazon link in a new tab
  * and advances; left swipe passes. Works with pointer, buttons, and keyboard.
  */
-export function SwipeDeck({ letters }: { letters: SwipeLetter[] }) {
+export function SwipeDeck({
+  letters,
+  claimable = true,
+}: {
+  letters: SwipeLetter[];
+  /** When true, gifting records a claim in Supabase (off for demo letters). */
+  claimable?: boolean;
+}) {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [drag, setDrag] = useState<{ dx: number; dy: number } | null>(null);
   const [leaving, setLeaving] = useState<"left" | "right" | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
   const deckRef = useRef<HTMLDivElement>(null);
 
@@ -45,12 +54,29 @@ export function SwipeDeck({ letters }: { letters: SwipeLetter[] }) {
     }, FLING_MS);
   }, []);
 
+  /** Record a claim for the current letter (no-op for demo letters). The Amazon
+   *  tab is opened by the caller synchronously so popup blockers don't fire. */
+  const claimCurrent = useCallback(() => {
+    if (!claimable || !current) return;
+    void claimLetter(current.id).then((res) => {
+      if (res.ok) return;
+      if (res.reason === "self")
+        setNotice("That was your own child's letter — not recorded as an adoption.");
+      else if (res.reason === "taken")
+        setNotice("That one was already claimed by someone else.");
+      else if (res.reason === "auth")
+        window.location.href = `/account/login?next=${encodeURIComponent("/letters/give")}`;
+    });
+  }, [claimable, current]);
+
   const gift = useCallback(() => {
     if (!current || leaving) return;
-    // Swipe/keyboard "gift" opens the first wish; the card back lists them all.
+    setNotice(null);
+    // Open Amazon synchronously (preserve the user gesture), then record the claim.
     if (current.amazonUrls[0]) window.open(current.amazonUrls[0], "_blank", "noopener,noreferrer");
+    claimCurrent();
     advance("right");
-  }, [current, leaving, advance]);
+  }, [current, leaving, advance, claimCurrent]);
 
   const pass = useCallback(() => {
     if (!current || leaving) return;
@@ -229,7 +255,10 @@ export function SwipeDeck({ letters }: { letters: SwipeLetter[] }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(event) => {
+                      // The anchor's href opens this specific item natively; record the claim too.
                       event.stopPropagation();
+                      setNotice(null);
+                      claimCurrent();
                       advance("right");
                     }}
                     onPointerDown={(event) => event.stopPropagation()}
@@ -284,6 +313,11 @@ export function SwipeDeck({ letters }: { letters: SwipeLetter[] }) {
       <p className="mt-4 text-center text-[13.5px] font-semibold text-muted">
         Letter {index + 1} of {letters.length}
       </p>
+      {notice && (
+        <p className="mx-auto mt-3 max-w-[44ch] border border-gold bg-gold-soft/60 px-4 py-2.5 text-center text-[13.5px] font-semibold text-[#6c5418]">
+          {notice}
+        </p>
+      )}
     </div>
   );
 }

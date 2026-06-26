@@ -46,5 +46,5 @@ export async function moderateLetter(formData: FormData): Promise<void> {
 export async function signOut(): Promise<void> {
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
-  redirect("/admin/login");
+  redirect(`/account/login?next=${encodeURIComponent("/admin")}`);
 }

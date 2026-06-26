@@ -59,7 +59,7 @@ export default async function SubmitLetterPage() {
                 <h2 className="mt-2 text-h3">Sign in to submit a letter</h2>
                 <p className="mx-auto mt-2.5 max-w-[44ch] text-muted">
                   A free account lets us reach you about the letter and lets you track its status.
-                  It only takes a minute. Adopting a letter never needs an account.
+                  It only takes a minute.
                 </p>
                 <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                   <Button

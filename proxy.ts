@@ -35,20 +35,15 @@ export default async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Admin area: require a signed-in user (the page checks the admin role).
+  // Admin area: require a signed-in user, then the unified login (the page itself
+  // checks the admin role). /admin/login forwards to the same login, so let it
+  // through even when signed out.
   const path = request.nextUrl.pathname;
-  if (path.startsWith("/admin")) {
-    const isLoginPage = path === "/admin/login";
-    if (!user && !isLoginPage) {
-      const loginUrl = request.nextUrl.clone();
-      loginUrl.pathname = "/admin/login";
-      return NextResponse.redirect(loginUrl);
-    }
-    if (user && isLoginPage) {
-      const adminUrl = request.nextUrl.clone();
-      adminUrl.pathname = "/admin";
-      return NextResponse.redirect(adminUrl);
-    }
+  if (path.startsWith("/admin") && path !== "/admin/login" && !user) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/account/login";
+    loginUrl.search = `?next=${encodeURIComponent(path)}`;
+    return NextResponse.redirect(loginUrl);
   }
 
   return response;

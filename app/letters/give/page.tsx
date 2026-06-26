@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { SwipeDeck, type SwipeLetter } from "@/components/letters/SwipeDeck";
+import { getCurrentUser } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured, LETTERS_BUCKET } from "@/lib/supabase/config";
 import { DONOR_TERMS_SUMMARY } from "@/content/consent";
 import { links } from "@/content/site";
+
+const NEXT = "/letters/give";
 
 export const metadata: Metadata = {
   title: "Adopt a Letter · Santa's Letters · Santa's Knights",
@@ -104,7 +108,10 @@ export default async function GiveLettersPage({
 }) {
   const params = await searchParams;
   const demo = params.demo === "1";
-  const letters = demo ? DEMO_LETTERS : await getLetters();
+  const user = await getCurrentUser();
+  // Adopting now requires an account: the gift is linked to the donor so we can
+  // coordinate handoff, send a tax acknowledgment, and block self-dealing.
+  const letters = user ? (demo ? DEMO_LETTERS : await getLetters()) : null;
 
   return (
     <>
@@ -127,7 +134,9 @@ export default async function GiveLettersPage({
 
       <section className="bg-paper py-[46px] text-ink">
         <Container className="max-w-[640px]">
-          {letters === null ? (
+          {!user ? (
+            <SignInGate />
+          ) : letters === null ? (
             <EmptyState
               title="The letter drive isn't open yet"
               body="The letter drive is not open yet. Join the email list on the homepage to hear when approved letters are available."
@@ -144,16 +153,60 @@ export default async function GiveLettersPage({
                   Demo mode. These are sample letters, not real submissions.
                 </p>
               )}
-              <SwipeDeck letters={letters} />
+              <SwipeDeck letters={letters} claimable={!demo} />
             </>
           )}
 
-          <p className="mx-auto mt-10 max-w-[58ch] text-center text-[13.5px] leading-relaxed text-muted">
-            <strong className="font-bold">The fine print:</strong> {DONOR_TERMS_SUMMARY}
-          </p>
+          {user && (
+            <p className="mx-auto mt-10 max-w-[58ch] text-center text-[13.5px] leading-relaxed text-muted">
+              <strong className="font-bold">The fine print:</strong> {DONOR_TERMS_SUMMARY}
+            </p>
+          )}
         </Container>
       </section>
     </>
+  );
+}
+
+/**
+ * Adopting requires an account (see docs/ACCOUNT-MODEL.md §5). Offers create-
+ * account and sign-in, both returning to the swipe deck. Warm theme, green
+ * giving CTA per DESIGN.md.
+ */
+function SignInGate() {
+  return (
+    <Card className="p-[42px] text-center">
+      <div aria-hidden className="text-[40px] text-green">
+        ♔
+      </div>
+      <h2 className="mt-2 text-h3">Read a kid&apos;s letter, send the gift</h2>
+      <p className="mx-auto mt-2.5 max-w-[44ch] text-muted">
+        Log in and we&apos;ll show you the letters one at a time. Pick one, buy the gift on Amazon, and
+        we keep the kid&apos;s details private the whole way.
+      </p>
+      <div className="mt-7 flex justify-center">
+        <Button
+          href={`${links.accountLogin}?next=${encodeURIComponent(NEXT)}`}
+          variant="red"
+          arrow
+        >
+          Log in to gift a kid
+        </Button>
+      </div>
+      <p className="mt-4 text-[14px] text-muted">
+        No account yet?{" "}
+        <a
+          href={`${links.accountRegister}?next=${encodeURIComponent(NEXT)}`}
+          className="font-bold text-ink underline"
+        >
+          Sign up
+        </a>
+        .
+      </p>
+      <p className="mx-auto mt-6 max-w-[52ch] text-[13px] leading-relaxed text-muted/80">
+        {DONOR_TERMS_SUMMARY}
+      </p>
+    </Card>
   );
 }
 

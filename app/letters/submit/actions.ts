@@ -47,7 +47,7 @@ export async function submitLetter(
   formData: FormData,
 ): Promise<SubmitLetterState> {
   // An account is required to submit a letter (docs/ACCOUNT-MODEL.md §2): we need
-  // a way to reach the guardian and let them track status. Adopting stays guest-first.
+  // a way to reach the guardian and let them track status. Adopting also requires an account.
   const guardian = await getCurrentUser();
   if (!guardian) {
     return {

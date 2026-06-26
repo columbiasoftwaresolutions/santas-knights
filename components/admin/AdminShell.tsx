@@ -7,7 +7,9 @@ import { signOut } from "@/app/admin/actions";
 /** Admin navigation tabs. `key` matches the `active` prop on each page. */
 const TABS: { key: string; label: string; href: string }[] = [
   { key: "letters", label: "Letters", href: "/admin" },
+  { key: "gifts", label: "Gifts", href: "/admin/gifts" },
   { key: "classes", label: "Classes", href: "/admin/classes" },
+  { key: "signups", label: "Signups", href: "/admin/signups" },
   { key: "checkin", label: "Check-in", href: "/admin/check-in" },
   { key: "xp", label: "XP & Levels", href: "/admin/xp" },
   { key: "videos", label: "Videos", href: "/admin/videos" },

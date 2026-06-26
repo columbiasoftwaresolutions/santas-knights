@@ -85,7 +85,7 @@ export default function LettersLandingPage() {
               eyebrow="For families"
               eyebrowClassName="text-green"
               title="Send us your child's letter"
-              intro="A parent or guardian submits on the child's behalf: a photo of the handwritten letter, their first name and age, and a link to the gift on Amazon. No account needed. We review it, protect their identity, and put the wish up for adoption."
+              intro="A parent or guardian submits on the child's behalf: a photo of the handwritten letter, their first name and age, and a link to the gift on Amazon. A free account takes a minute and lets you track its status. We review it, protect their identity, and put the wish up for adoption."
             />
             <div className="mt-6 flex-1" />
             <div>

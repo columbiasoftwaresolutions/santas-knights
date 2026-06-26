@@ -242,8 +242,13 @@ alter table public.santa_letters add column if not exists guardian_user_id uuid 
 alter table public.santa_letters add column if not exists fulfilled_by_user_id uuid references public.profiles(id);
 alter table public.santa_letters add column if not exists fulfilled_by_email text;
 alter table public.santa_letters add column if not exists fulfilled_by_name  text;
+alter table public.santa_letters add column if not exists claimed_at timestamptz;          -- gift claim/track
+alter type public.letter_status add value if not exists 'claimed';  -- approved → claimed → fulfilled
 create policy "Guardians read own letters"
   on public.santa_letters for select using (guardian_user_id = auth.uid());
+-- A donor may read the letters they have claimed/gifted (their "Gifts I'm sending").
+create policy "Donors read own gifts"
+  on public.santa_letters for select using (fulfilled_by_user_id = auth.uid());
 
 -- Guardian-scoped projection used by /account ("My letters").
 create or replace view public.my_letters as
@@ -251,6 +256,13 @@ create or replace view public.my_letters as
          case when status = 'needs_edits' then moderation_note else null end as moderation_note,
          created_at, updated_at
   from public.santa_letters where guardian_user_id = auth.uid();
+
+-- Donor-scoped projection used by /account ("Gifts I'm sending").
+create or replace view public.my_gifts as
+  select id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path,
+         status, claimed_at, fulfilled_at
+  from public.santa_letters where fulfilled_by_user_id = auth.uid();
+grant select on public.my_gifts to authenticated;
 
 -- family members (minors under a guardian account) ----------------
 create table public.family_members (

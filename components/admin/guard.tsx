@@ -35,7 +35,7 @@ export async function requireAdmin(): Promise<AdminOk | AdminBlocked> {
       ok: false,
       node: (
         <Notice title="Signed out">
-          <Link href="/admin/login" className="font-semibold text-red underline">
+          <Link href="/account/login?next=%2Fadmin" className="font-semibold text-red underline">
             Sign in
           </Link>{" "}
           to use the admin tools.
@@ -87,7 +87,7 @@ export async function requireStaff(): Promise<StaffOk | AdminBlocked> {
       ok: false,
       node: (
         <Notice title="Signed out">
-          <Link href="/admin/login" className="font-semibold text-red underline">Sign in</Link>{" "}
+          <Link href="/account/login?next=%2Fadmin" className="font-semibold text-red underline">Sign in</Link>{" "}
           to use the staff tools.
         </Notice>
       ),

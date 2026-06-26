@@ -9,6 +9,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { signOutAction } from "@/app/account/actions";
 import { TrainingDashboard } from "@/components/account/TrainingDashboard";
+import { MyGifts, type MyGift } from "@/components/account/MyGifts";
 import { getDashboard, getMyRegistrations } from "@/lib/training";
 import { links } from "@/content/site";
 
@@ -54,13 +55,28 @@ async function getMyLetters(): Promise<MyLetter[]> {
   return (data ?? []) as MyLetter[];
 }
 
+async function getMyGifts(): Promise<MyGift[]> {
+  if (!isSupabaseConfigured()) return [];
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("my_gifts")
+    .select("id, child_first_name, child_age, wish_note, amazon_urls, status, claimed_at, fulfilled_at")
+    .order("claimed_at", { ascending: false });
+  if (error) {
+    console.error("Failed to load my gifts:", error.message);
+    return [];
+  }
+  return (data ?? []) as MyGift[];
+}
+
 export default async function AccountPage() {
   const user = await getCurrentUser();
 
   if (!user) return <SignedOut />;
 
-  const [letters, dashboard, registrations] = await Promise.all([
+  const [letters, gifts, dashboard, registrations] = await Promise.all([
     getMyLetters(),
+    getMyGifts(),
     getDashboard(user.id),
     getMyRegistrations(user.id),
   ]);
@@ -94,6 +110,39 @@ export default async function AccountPage() {
           </Button>
         </form>
       </PageHero>
+
+      {/* What you can do — the three member actions */}
+      <section className="border-b border-line py-section">
+        <Container className="grid gap-[18px] md:grid-cols-3">
+          <ActionCard
+            accent="bg-red"
+            title="Gift a kid"
+            body="Read the letters one at a time and pick a wish to send. We keep the child's details private."
+            cta="Adopt a letter"
+            href={links.adoptLetter}
+            variant="red"
+          />
+          <ActionCard
+            accent="bg-green"
+            title="Train with us"
+            body="Reserve a free class. First time, you'll sign a quick one-time waiver, then you're booked."
+            cta="Find a class"
+            href={`${links.training}#book`}
+            variant="green"
+          />
+          <ActionCard
+            accent="bg-gold"
+            title="Donate"
+            body="Help keep classes free and the gifts coming. Every dollar is tax-deductible."
+            cta="Donate"
+            href={links.donate}
+            variant="ghost"
+          />
+        </Container>
+      </section>
+
+      {/* Gifts I'm sending */}
+      <MyGifts gifts={gifts} />
 
       {/* My letters (Phase 3 / §C2) */}
       <section className="py-section">
@@ -162,6 +211,35 @@ export default async function AccountPage() {
   );
 }
 
+function ActionCard({
+  accent,
+  title,
+  body,
+  cta,
+  href,
+  variant,
+}: {
+  accent: string;
+  title: string;
+  body: string;
+  cta: string;
+  href: string;
+  variant: "red" | "green" | "ghost";
+}) {
+  return (
+    <Card hover className="flex flex-col p-[30px]">
+      <span aria-hidden className={`mb-4 block h-1 w-10 rounded-pill ${accent}`} />
+      <h2 className="text-h3">{title}</h2>
+      <p className="mt-2.5 flex-1 text-muted">{body}</p>
+      <div className="mt-5">
+        <Button href={href} variant={variant} className="px-5 py-3 text-[14.5px]">
+          {cta}
+        </Button>
+      </div>
+    </Card>
+  );
+}
+
 function SignedOut() {
   return (
     <>
@@ -173,7 +251,7 @@ function SignedOut() {
             <em className="font-serif font-medium italic text-red">account</em>.
           </>
         }
-        intro="Create a free account to submit a child's letter and track its status. Adopting a letter never requires an account."
+        intro="Create a free account to submit a child's letter, adopt a wish to gift, and track everything in one place."
       >
         <Button href={links.accountRegister} variant="red" arrow>
           Create an account
