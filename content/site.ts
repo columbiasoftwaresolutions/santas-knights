@@ -48,7 +48,8 @@ export const links = {
   gallery: "/gallery",
   membership: "/membership",
   training: "/training",
-  online: "/online",
+  // Online classes were merged into the Gladiators NYC page as the "Train online" section.
+  online: "/training#train-online",
   account: "/account",
   accountLogin: "/account/login",
   accountRegister: "/account/register",
@@ -58,7 +59,7 @@ export const links = {
 export const org = {
   name: "Santa's Knights",
   legalName: "Santa's Knights, Inc.",
-  tagline: "A Harlem nonprofit. Free training all year, and a letter to Santa answered every December.",
+  tagline: "Strengthening kids and lifting communities. Free training all year, and gifts that answer kids' letters to Santa.",
   venue: "Manhattanville Community Center",
   address1: "530 W 133rd St",
   address2: "New York, NY 10027",
@@ -95,11 +96,8 @@ export const navLinks: NavItem[] = [
   },
   {
     label: "Gladiators NYC",
+    href: "/training",
     gladiators: true,
-    children: [
-      { label: "In-Person Classes", href: "/training" },
-      { label: "Online Classes", href: "/online" },
-    ],
   },
   {
     label: "Letters to Santa",
@@ -149,8 +147,8 @@ export const pillars: {
     body: "Every December we collect letters from kids around Harlem, take off anything that could identify them, and post the wishes so anyone can pick one and send a gift. It's the reason the nonprofit exists.",
     cta: "How it works",
     href: "/letters",
-    image: "/images/hero-community.jpg",
-    imageAlt: "Santa's Knights members and families together at a community event",
+    image: "/images/letters-painting.png",
+    imageAlt: "Illustration of Santa, a Gladiators knight, and kids at the holiday letters event",
     photo: "PHOTO: kids and volunteers at the holiday gift event",
   },
   {
@@ -160,8 +158,8 @@ export const pillars: {
     body: "We teach armored combat and fitness in Harlem at no cost, beginners welcome. Browse the six free Gladiators NYC programs and reserve a spot, all right here.",
     cta: "See the classes",
     href: TRAINING_HREF,
-    image: "/images/gladiators-sparring.jpg",
-    imageAlt: "Gladiators NYC fighters sparring in full armor",
+    image: "/images/hero-community.jpg",
+    imageAlt: "Santa's Knights members and families together at a community event",
     photo: "PHOTO: armored fighter, steel weapon",
   },
 ];
@@ -188,7 +186,7 @@ export const letters = {
     },
     {
       title: "Someone sends the gift",
-      body: "You read a wish, adopt it, and ship the present. You never see who the child is, and they never see who you are.",
+      body: "You read a wish, adopt it, and ship the present.",
     },
   ],
 } as const;
@@ -459,7 +457,6 @@ export const footerColumns: { heading: string; links: { label: string; href: str
       { label: "About", href: "/about" },
       { label: "Santa's Letters", href: "/letters" },
       { label: "Training", href: "/training" },
-      { label: "Online Classes", href: "/online" },
       { label: "Membership", href: "/membership" },
       { label: "Gallery", href: "/gallery" },
       { label: "Partners", href: "/sponsors" },
@@ -473,7 +470,6 @@ export const footerColumns: { heading: string; links: { label: string; href: str
       { label: "Submit a Letter", href: "/letters/submit" },
       { label: "Volunteer", href: "/get-involved" },
       { label: "Become a Sponsor", href: "/sponsors" },
-      { label: "All our links", href: "/links" },
     ],
   },
   {

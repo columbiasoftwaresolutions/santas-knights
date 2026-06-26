@@ -198,7 +198,7 @@ export async function createVideo(formData: FormData): Promise<void> {
     is_published: true,
   });
   revalidatePath("/admin/videos");
-  revalidatePath("/online");
+  revalidatePath("/training");
 }
 
 export async function setVideoPublished(formData: FormData): Promise<void> {
@@ -209,7 +209,7 @@ export async function setVideoPublished(formData: FormData): Promise<void> {
     .update({ is_published: String(formData.get("is_published")) === "true" })
     .eq("id", String(formData.get("id")));
   revalidatePath("/admin/videos");
-  revalidatePath("/online");
+  revalidatePath("/training");
 }
 
 export async function deleteVideo(formData: FormData): Promise<void> {
@@ -219,5 +219,5 @@ export async function deleteVideo(formData: FormData): Promise<void> {
   if (path) await staff.db.storage.from(TRAINING_VIDEOS_BUCKET).remove([path]);
   await staff.db.from("training_videos").delete().eq("id", String(formData.get("id")));
   revalidatePath("/admin/videos");
-  revalidatePath("/online");
+  revalidatePath("/training");
 }

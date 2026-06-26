@@ -10,12 +10,12 @@ export function Hero() {
       <Container className="grid items-center gap-9 py-[86px] md:grid-cols-[1fr_1.05fr] md:gap-16">
         <div>
           <h1 className="font-serif text-[clamp(40px,5vw,70px)] font-medium leading-[1.04] tracking-[-0.02em]">
-            Free training all year, and a letter to Santa{" "}
-            <em className="font-medium italic text-red">answered</em> every December.
+            Strengthening kids and lifting{" "}
+            <em className="font-medium italic text-red">communities</em>.
           </h1>
           <p className="mt-[26px] max-w-[520px] text-[19px] leading-relaxed text-muted">
-            A Harlem nonprofit that teaches armored combat and fitness at no cost. Every December,
-            we also help answer local kids&apos; letters to Santa.
+            A nonprofit that teaches armored combat and fitness at no cost, and helps answer local
+            kids&apos; letters to Santa at the holidays.
           </p>
           <div className="mt-[34px] flex flex-wrap items-center gap-3.5">
             <Button href={links.adoptLetter} variant="red" size="lg" arrow>
@@ -29,8 +29,8 @@ export function Hero() {
 
         <figure className="relative">
           <Photo
-            src="/images/hero-community.jpg"
-            alt="Kids and volunteers together at a Santa's Knights holiday gift event in Harlem"
+            src="/images/santa-gift.png"
+            alt="A child holding a wrapped gift next to Santa at a Santa's Knights holiday event"
             priority
             sizes="(min-width: 768px) 50vw, 100vw"
             className="h-[420px] md:h-[540px]"
@@ -40,7 +40,7 @@ export function Hero() {
               &ldquo;It&apos;s the reason the nonprofit exists.&rdquo;
             </p>
             <p className="mt-2 text-[12px] uppercase tracking-[0.06em] text-paper/70">
-              Santa&apos;s Letters · Harlem, every December
+              Santa&apos;s Letters
             </p>
           </figcaption>
         </figure>
