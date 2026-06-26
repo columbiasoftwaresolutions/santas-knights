@@ -16,8 +16,8 @@ export function Brand({
   href?: string;
 }) {
   return (
-    <Link href={href} className={cn("flex items-baseline gap-3", className)}>
-      <span className="font-display text-[19px] font-black uppercase tracking-[0.01em]">
+    <Link href={href} className={cn("flex shrink-0 items-baseline gap-3", className)}>
+      <span className="font-display text-[19px] font-black whitespace-nowrap uppercase tracking-[0.01em]">
         Santa&apos;s Knights
       </span>
       {tagline && (

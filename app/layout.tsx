@@ -3,6 +3,7 @@ import { Hanken_Grotesk, Fraunces, Archivo } from "next/font/google";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { getCurrentUser } from "@/lib/auth";
 import { organizationSchema } from "@/content/site";
 import "./globals.css";
 
@@ -38,7 +39,15 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Resolve auth once for the header: signed-out shows "Log In", signed-in shows
+  // "Dashboard" pointing at the right place for the user's role.
+  const user = await getCurrentUser();
+  const auth = {
+    signedIn: user !== null,
+    dashboardHref: user?.role === "admin" ? "/admin" : "/account",
+  };
+
   return (
     <html
       lang="en"
@@ -47,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body>
         <JsonLd data={organizationSchema} />
-        <Navbar />
+        <Navbar auth={auth} />
         <main>{children}</main>
         <Footer />
       </body>

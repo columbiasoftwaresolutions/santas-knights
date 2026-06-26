@@ -8,18 +8,29 @@ import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { type NavItem, navLinks, links } from "@/content/site";
 
+export type NavAuth = { signedIn: boolean; dashboardHref: string };
+
 /** Dark poster nav with dropdown menus and a mobile slide-out. */
-export function Navbar() {
+export function Navbar({ auth }: { auth: NavAuth }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   return (
     <header className="sticky top-0 z-50 border-b border-bone/15 bg-ink">
-      <Container className="flex h-[72px] items-center gap-[26px]">
+      <Container className="flex h-[72px] items-center gap-[14px]">
         <Brand tagline={false} />
 
+        {/* Top-left auth button: Log In (signed out) / Dashboard (signed in). */}
+        <Button
+          href={auth.signedIn ? auth.dashboardHref : links.accountLogin}
+          variant="bone"
+          className="shrink-0 px-4 py-2 text-[12.5px]"
+        >
+          {auth.signedIn ? "Dashboard" : "Log In"}
+        </Button>
+
         {/* Desktop nav */}
-        <nav className="ml-2 hidden items-center gap-[22px] text-[13px] font-semibold text-bone/75 xl:flex">
+        <nav className="ml-1 hidden shrink-0 items-center gap-[18px] text-[13px] font-semibold whitespace-nowrap text-bone/75 xl:flex">
           {navLinks.map((item) =>
             item.children ? (
               <DropdownItem
@@ -42,12 +53,15 @@ export function Navbar() {
         </nav>
 
         <div className="ml-auto flex items-center gap-3">
-          <Button href={links.donate} variant="bone" className="hidden sm:inline-flex">
-            Donate
-          </Button>
-          <Button href={links.adoptLetter} variant="red">
-            Adopt a letter
-          </Button>
+          {/* Wrapper controls visibility cleanly (avoids the hidden/inline-flex conflict). */}
+          <div className="hidden items-center gap-3 sm:flex">
+            <Button href={links.donate} variant="bone">
+              Donate
+            </Button>
+            <Button href={links.adoptLetter} variant="red">
+              Adopt a letter
+            </Button>
+          </div>
 
           {/* Mobile hamburger */}
           <button
@@ -82,6 +96,21 @@ export function Navbar() {
         <div className="border-t border-bone/12 bg-ink pb-6 xl:hidden">
           <Container>
             <MobileNav items={navLinks} onClose={() => setMobileOpen(false)} />
+            {/* Closing handled on the container so the Link buttons still navigate. */}
+            <div className="mt-4 grid gap-2 px-2" onClick={() => setMobileOpen(false)}>
+              <Button
+                href={auth.signedIn ? auth.dashboardHref : links.accountLogin}
+                variant="bone"
+              >
+                {auth.signedIn ? "Dashboard" : "Log In"}
+              </Button>
+              <Button href={links.adoptLetter} variant="red">
+                Adopt a letter
+              </Button>
+              <Button href={links.donate} variant="bone">
+                Donate
+              </Button>
+            </div>
           </Container>
         </div>
       )}
