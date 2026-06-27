@@ -2,68 +2,16 @@ import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { PageHero } from "@/components/sections/PageHero";
-import { GalleryGrid, type GalleryTile } from "@/components/gallery/GalleryGrid";
-import { getGalleryItems } from "@/lib/content";
+import { galleryPhotos } from "@/content/galleryPhotos";
 import { links } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Gallery · Santa's Knights",
   description:
-    "Photos and videos from Santa's Knights events, classes, and community programs in Harlem.",
+    "Photos from Santa's Knights events, classes, and community programs in Harlem.",
 };
 
-export const dynamic = "force-dynamic";
-
-/** Static fallback shown until the gallery_media table has published rows. */
-const fallbackTiles: GalleryTile[] = [
-  {
-    id: "f1",
-    url: "/images/hero-community.jpg",
-    type: "image",
-    alt: "Families and volunteers gathered at a Santa's Knights community event",
-    caption: "The holiday gift event, all together.",
-    meta: "Santa's Letters",
-  },
-  {
-    id: "f2",
-    url: "/images/gladiators-sparring.jpg",
-    type: "image",
-    alt: "Two fighters sparring in full armor",
-    caption: "Full-contact, steel and armor.",
-    meta: "Training",
-  },
-  {
-    id: "f3",
-    url: "/images/combat-helmet.jpg",
-    type: "image",
-    alt: "A steel combat helmet used in armored training",
-    caption: "The tools of the training floor.",
-    meta: "Training",
-  },
-  {
-    id: "f4",
-    url: "/images/headshot.png",
-    type: "image",
-    alt: "Damion DiGrazia, founder of Santa's Knights",
-    caption: "Damion DiGrazia, founder.",
-    meta: "Community",
-  },
-];
-
-export default async function GalleryPage() {
-  const dbItems = await getGalleryItems();
-  const tiles: GalleryTile[] =
-    dbItems.length > 0
-      ? dbItems.map((i) => ({
-          id: i.id,
-          url: i.url,
-          type: i.media_type,
-          alt: i.alt_text ?? i.title ?? "Santa's Knights gallery image",
-          caption: i.caption ?? i.title,
-          meta: i.category,
-        }))
-      : fallbackTiles;
-
+export default function GalleryPage() {
   return (
     <>
       <PageHero
@@ -74,7 +22,7 @@ export default async function GalleryPage() {
             <em className="font-serif font-medium italic text-red">motion</em>.
           </>
         }
-        intro="Photos and videos from training sessions, the Letters to Santa event, and life at the Manhattanville Community Center."
+        intro="Photos from training sessions, the Letters to Santa event, and life at the Manhattanville Community Center."
       >
         <Button href={links.getInvolved} variant="red" arrow>
           Get involved
@@ -84,10 +32,22 @@ export default async function GalleryPage() {
         </Button>
       </PageHero>
 
-      <section className="bg-ink py-12 md:py-20">
-        <Container>
-          <GalleryGrid items={tiles} />
-        </Container>
+      {/* Full-bleed photo wall: every gallery photo, whole and unedited, packed
+          edge-to-edge with no gaps, captions, or categories. */}
+      <section className="bg-ink">
+        <div className="columns-2 gap-0 sm:columns-3 lg:columns-4">
+          {galleryPhotos.map((file) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={file}
+              src={`/images/gallery/${encodeURIComponent(file)}`}
+              alt="Santa's Knights"
+              loading="lazy"
+              decoding="async"
+              className="block w-full break-inside-avoid align-top"
+            />
+          ))}
+        </div>
       </section>
 
       <section className="bg-red-deep py-[clamp(72px,9vw,120px)] text-paper">
