@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
-import { Card } from "@/components/ui/Card";
 import { requireAdmin } from "@/components/admin/guard";
-import { AdminShell, adminField, adminLabel } from "@/components/admin/AdminShell";
+import { AdminShell } from "@/components/admin/AdminShell";
 import { UsersTable, type UserRow } from "@/components/admin/UsersTable";
-import { updateUserRole } from "@/app/admin/content-actions";
 
 export const metadata: Metadata = {
   title: "Users · Admin",
   robots: { index: false, follow: false },
 };
 export const dynamic = "force-dynamic";
-
-const ROLES = ["public", "participant", "instructor", "admin"] as const;
 
 type Profile = {
   id: string;
@@ -88,32 +84,11 @@ export default async function AdminUsersPage() {
 
   return (
     <AdminShell active="users" title="Users" email={gate.email}>
-      <Card className="border-bone/15 bg-ink2 p-[26px]">
-        <h2 className="text-[17px] font-extrabold text-bone">Set a role by email</h2>
-        <p className="mt-1 text-[13px] text-bone/50">
-          Coaches and admins are provisioned here — never self-selected at signup. The account must
-          already exist.
-        </p>
-        <form action={updateUserRole} className="mt-4 flex flex-wrap items-end gap-3">
-          <div className="grow">
-            <label className={adminLabel}>Account email</label>
-            <input name="email" type="email" required placeholder="person@email.com" className={adminField} />
-          </div>
-          <div>
-            <label className={adminLabel}>Role</label>
-            <select name="role" className={adminField} defaultValue="instructor">
-              {ROLES.map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
-          </div>
-          <button type="submit" className="cursor-pointer bg-green px-5 py-2.5 text-[14px] font-bold text-white">
-            Update role
-          </button>
-        </form>
-      </Card>
-
-      <div className="mt-7">
+      <p className="max-w-[70ch] text-[14px] text-bone/55">
+        Everyone with an account. Expand a row to see their activity and set their role — coaches
+        and admins are provisioned here, never self-selected at signup.
+      </p>
+      <div className="mt-6">
         <UsersTable users={users} />
       </div>
     </AdminShell>

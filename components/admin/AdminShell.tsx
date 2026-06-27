@@ -49,16 +49,18 @@ export function AdminShell({
           </form>
         </div>
 
-        <nav className="mt-7 flex flex-wrap gap-2">
+        {/* Editorial underline tab bar — square geometry, color + rule for
+            hierarchy (no pills). Scrolls horizontally on narrow screens. */}
+        <nav className="mt-8 flex gap-7 overflow-x-auto border-b border-bone/15">
           {TABS.map((tab) => (
             <Link
               key={tab.key}
               href={tab.href}
               className={cn(
-                "rounded-pill border px-4 py-2 text-[13.5px] font-bold transition-colors",
+                "-mb-px shrink-0 border-b-2 pt-1 pb-3 text-[12.5px] font-bold tracking-[0.08em] whitespace-nowrap uppercase transition-colors",
                 tab.key === active
-                  ? "border-transparent bg-paper text-ink"
-                  : "border-bone/20 bg-ink2 text-bone/65 hover:text-bone",
+                  ? "border-red text-bone"
+                  : "border-transparent text-bone/45 hover:text-bone",
               )}
             >
               {tab.label}

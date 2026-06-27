@@ -80,10 +80,18 @@ export function UsersTable({ users }: { users: UserRow[] }) {
                     <Stat label="Classes attended" value={u.classesAttended} />
                     <Stat label="XP" value={u.xp} />
                     <Stat label="Joined" value={new Date(u.createdAt).toLocaleDateString()} />
-                    <Stat
-                      label="Waiver"
-                      value={u.waiverSignedAt ? new Date(u.waiverSignedAt).toLocaleDateString() : "—"}
-                    />
+                    <div>
+                      <dt className="text-[10.5px] font-bold tracking-[0.1em] text-bone/40 uppercase">
+                        Waiver
+                      </dt>
+                      <dd
+                        className={`mt-0.5 text-[17px] font-extrabold ${
+                          u.waiverSignedAt ? "text-[#57ad7d]" : "text-[#e7705e]"
+                        }`}
+                      >
+                        {u.waiverSignedAt ? "Signed" : "Not signed"}
+                      </dd>
+                    </div>
                   </dl>
 
                   {/* Role editor: green square SAVE sits at the top-right, above

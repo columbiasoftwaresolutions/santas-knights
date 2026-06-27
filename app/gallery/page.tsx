@@ -33,8 +33,9 @@ export default function GalleryPage() {
       </PageHero>
 
       {/* Full-bleed photo wall: every gallery photo, whole and unedited, packed
-          edge-to-edge with no gaps, captions, or categories. */}
-      <section className="bg-ink">
+          edge-to-edge with no gaps, captions, or categories. The red ground
+          matches the CTA band below so the page flows into one red field. */}
+      <section className="bg-red-deep">
         <div className="columns-2 gap-0 sm:columns-3 lg:columns-4">
           {galleryPhotos.map((file) => (
             // eslint-disable-next-line @next/next/no-img-element
