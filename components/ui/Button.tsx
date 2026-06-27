@@ -6,6 +6,7 @@ export type ButtonVariant =
   | "red"
   | "ink"
   | "ghost"
+  | "ghostInverse" // filled ink by default, outline on hover (ghost, swapped)
   | "green"
   | "cream"
   | "clear"
@@ -17,6 +18,7 @@ const VARIANTS: Record<ButtonVariant, string> = {
   red: "bg-red text-white shadow-cta hover:bg-red-deep",
   ink: "bg-ink text-paper hover:bg-black",
   ghost: "bg-transparent text-ink border-ink hover:bg-ink hover:text-paper",
+  ghostInverse: "bg-ink text-paper border-ink hover:bg-transparent hover:text-ink",
   green: "bg-green text-white hover:bg-[#244c38]",
   cream: "bg-paper text-ink hover:bg-white",
   clear: "bg-white/10 text-white border-white/45 hover:bg-white/20",

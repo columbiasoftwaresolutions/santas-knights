@@ -136,7 +136,7 @@ export default async function AccountPage() {
             body="Help keep classes free and the gifts coming. Every dollar is tax-deductible."
             cta="Donate"
             href={links.donate}
-            variant="ghost"
+            variant="ghostInverse"
           />
         </Container>
       </section>
@@ -224,7 +224,7 @@ function ActionCard({
   body: string;
   cta: string;
   href: string;
-  variant: "red" | "green" | "ghost";
+  variant: "red" | "green" | "ghost" | "ghostInverse";
 }) {
   return (
     <Card hover className="flex flex-col p-[30px]">
