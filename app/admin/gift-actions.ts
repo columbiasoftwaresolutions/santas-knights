@@ -32,5 +32,5 @@ export async function adminReleaseClaim(formData: FormData): Promise<void> {
     .eq("id", String(formData.get("letter_id")))
     .eq("status", "claimed");
   revalidatePath("/admin/gifts");
-  revalidatePath("/letters/give");
+  revalidatePath("/letters");
 }

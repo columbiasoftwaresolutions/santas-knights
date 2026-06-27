@@ -35,9 +35,8 @@ export const links = {
   paypal: process.env.NEXT_PUBLIC_PAYPAL_URL || "/donate",
   venmo: process.env.NEXT_PUBLIC_VENMO_URL || "/donate",
   volunteer: "/get-involved",
-  adoptLetter: "/letters/give",
-  submitLetter: "/letters/give?do=submit",
-  lettersLearnMore: "/letters",
+  adoptLetter: "/letters",
+  submitLetter: "/letters?do=submit",
   findClass: TRAINING_HREF,
   about: "/about",
   contact: "/contact",
@@ -388,21 +387,22 @@ export const membershipTiers: MembershipTier[] = [
  * ------------------------------------------------------------------ */
 
 /**
- * Full partners roster from the live site. Logos are not yet in asset-library/
- * for most entries; text tiles render as fallback until client supplies logos.
- * See Plan v2 §F3 for the open question about partner logos.
+ * Full partners roster from the live site — the single source of truth for both
+ * the homepage "In good company" strip and the /sponsors page. `featured` marks
+ * the handful shown on the homepage; `logo` (in /public/images/sponsors) upgrades
+ * a /sponsors tile from a text wordmark to the real mark where one is available.
  */
-export const sponsors: { name: string; logo?: string; href?: string }[] = [
-  { name: "Google" },
-  { name: "Graham Windham" },
-  { name: "Whole Foods Market" },
-  { name: "NYU" },
-  { name: "Kohl's" },
-  { name: "Wounded Warrior Project" },
+export const sponsors: { name: string; logo?: string; href?: string; featured?: boolean }[] = [
+  { name: "Google", logo: "/images/sponsors/google.png", featured: true },
+  { name: "Graham Windham", logo: "/images/sponsors/graham-windham.png", featured: true },
+  { name: "Whole Foods Market", logo: "/images/sponsors/whole-foods-market.png", featured: true },
+  { name: "NYU", logo: "/images/sponsors/nyu.png", featured: true },
+  { name: "Kohl's", logo: "/images/sponsors/kohls.png", featured: true },
+  { name: "Wounded Warrior Project", logo: "/images/sponsors/wounded-warrior-project.png", featured: true },
   { name: "Combat Wounded Veterans of America" },
   { name: "Futurelabs" },
   { name: "ClassPass" },
-  { name: "NYPD Community Affairs" },
+  { name: "NYPD Community Affairs", logo: "/images/sponsors/nypd-community-affairs.png" },
   { name: "New York Adventure Club" },
   { name: "Armored Combat Worldwide" },
   { name: "Bohemian Hall" },
@@ -487,8 +487,8 @@ export const footerColumns: { heading: string; links: { label: string; href: str
   {
     heading: "Get Involved",
     links: [
-      { label: "Adopt a Letter", href: "/letters/give" },
-      { label: "Submit a Letter", href: "/letters/give?do=submit" },
+      { label: "Adopt a Letter", href: "/letters" },
+      { label: "Submit a Letter", href: "/letters?do=submit" },
       { label: "Volunteer", href: "/get-involved" },
       { label: "Become a Sponsor", href: "/sponsors" },
     ],

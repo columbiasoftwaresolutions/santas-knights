@@ -49,7 +49,7 @@ export async function claimLetter(letterId: string): Promise<ClaimResult> {
   if (error) return { ok: false, reason: "error" };
   if (!updated || updated.length === 0) return { ok: false, reason: "taken" };
 
-  revalidatePath("/letters/give");
+  revalidatePath("/letters");
   revalidatePath("/account");
   revalidatePath("/admin/gifts");
   return { ok: true };
@@ -84,6 +84,6 @@ export async function releaseClaim(formData: FormData): Promise<void> {
     .eq("fulfilled_by_user_id", user.id)
     .eq("status", "claimed");
   revalidatePath("/account");
-  revalidatePath("/letters/give");
+  revalidatePath("/letters");
   revalidatePath("/admin/gifts");
 }

@@ -65,7 +65,7 @@ export function SwipeDeck({
       else if (res.reason === "taken")
         setNotice("That one was already claimed by someone else.");
       else if (res.reason === "auth")
-        window.location.href = `/account/login?next=${encodeURIComponent("/letters/give")}`;
+        window.location.href = `/account/login?next=${encodeURIComponent("/letters")}`;
     });
   }, [claimable, current]);
 

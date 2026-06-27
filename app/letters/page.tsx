@@ -1,18 +1,104 @@
 import type { Metadata } from "next";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
-import { Photo } from "@/components/ui/Photo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { PageHero } from "@/components/sections/PageHero";
-import { letters, links, org } from "@/content/site";
+import { LettersPortal } from "@/components/letters/LettersPortal";
+import type { SwipeLetter } from "@/components/letters/SwipeDeck";
+import { getCurrentUser } from "@/lib/auth";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { isSupabaseConfigured, LETTERS_BUCKET } from "@/lib/supabase/config";
+import { org } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Santa's Letters · Santa's Knights",
   description:
-    "Kids write to Santa. We protect their identities and post the wishes so anyone can adopt a letter and send the gift. Submit a letter or grant a wish.",
+    "Read kids' letters to Santa and adopt a wish, or submit your child's letter — all on one page. We protect every child's identity, and here's exactly how we keep them safe.",
 };
 
+// Render per request because approvals and fulfillment change the pool.
+export const dynamic = "force-dynamic";
+
+const SIGNED_URL_TTL_SECONDS = 60 * 60;
+
+/**
+ * Approved letters via the public-safe view, with short-lived signed URLs for
+ * the letter images (the bucket is private so unapproved uploads stay dark).
+ * Returns null when Supabase isn't configured yet.
+ */
+async function getLetters(): Promise<SwipeLetter[] | null> {
+  if (!isSupabaseConfigured()) return null;
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from("public_letters")
+    .select("id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, created_at")
+    .order("created_at", { ascending: true })
+    .limit(150);
+
+  if (error || !data) {
+    console.error("Failed to load letters:", error?.message);
+    return [];
+  }
+
+  const paths = data.map((row) => row.letter_image_path).filter(Boolean) as string[];
+  const signedByPath = new Map<string, string>();
+  if (paths.length > 0) {
+    const { data: signed } = await supabase.storage
+      .from(LETTERS_BUCKET)
+      .createSignedUrls(paths, SIGNED_URL_TTL_SECONDS);
+    signed?.forEach((entry) => {
+      if (entry.signedUrl && entry.path) signedByPath.set(entry.path, entry.signedUrl);
+    });
+  }
+
+  return data.map((row) => ({
+    id: row.id,
+    childFirstName: row.child_first_name,
+    childAge: row.child_age,
+    wishNote: row.wish_note,
+    amazonUrls: row.amazon_urls ?? [],
+    imageUrl: row.letter_image_path ? (signedByPath.get(row.letter_image_path) ?? null) : null,
+  }));
+}
+
+/**
+ * Sample letters for `?demo=1` let the team review the swipe experience on
+ * the beta before real submissions exist. Clearly labeled, never mixed with
+ * real data, and the beta is noindex so this never reaches search.
+ */
+const DEMO_LETTERS: SwipeLetter[] = [
+  {
+    id: "demo-1",
+    childFirstName: "Maya",
+    childAge: 7,
+    wishNote:
+      "Dear Santa, I have been very good this year. I would love a watercolor paint set so I can paint the park near my building.",
+    amazonUrls: [
+      "https://www.amazon.com/s?k=watercolor+paint+set+kids",
+      "https://www.amazon.com/s?k=sketch+pad+kids",
+    ],
+    imageUrl: null,
+  },
+  {
+    id: "demo-2",
+    childFirstName: "Jaylen",
+    childAge: 10,
+    wishNote:
+      "Hi Santa! My sneakers are too small now. Size 5 please, any color but mostly blue. Thank you and say hi to the reindeer.",
+    amazonUrls: ["https://www.amazon.com/s?k=kids+sneakers+size+5"],
+    imageUrl: null,
+  },
+  {
+    id: "demo-3",
+    childFirstName: "Sofia",
+    childAge: 5,
+    wishNote: "deer santa. a stuffed dog pleese. a big one. i wil name him biscit.",
+    amazonUrls: ["https://www.amazon.com/s?k=large+stuffed+dog+plush"],
+    imageUrl: null,
+  },
+];
+
+/** Trust content kept on this page for visitors and for SEO. */
 const privacyPoints: { title: string; body: string }[] = [
   {
     title: "First names only",
@@ -32,108 +118,32 @@ const privacyPoints: { title: string; body: string }[] = [
   },
 ];
 
-export default function LettersLandingPage() {
+export default async function LettersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ do?: string; demo?: string }>;
+}) {
+  const params = await searchParams;
+  const demo = params.demo === "1";
+  // Always defaults to adopt; only an explicit ?do=submit opens the submit side.
+  const initialView = params.do === "submit" ? "submit" : "adopt";
+  const user = await getCurrentUser();
+  // Adopting requires an account: the gift is linked to the donor so we can
+  // coordinate handoff, send a tax acknowledgment, and block self-dealing.
+  const letters = user ? (demo ? DEMO_LETTERS : await getLetters()) : null;
+
   return (
     <>
-      <PageHero
-        eyebrow={letters.eyebrow}
-        title={
-          <>
-            Every kid deserves an{" "}
-            <em className="font-serif font-medium italic text-red">answer</em>.
-          </>
-        }
-        intro={letters.intro}
-      >
-        <Button href={links.adoptLetter} variant="red" arrow>
-          Adopt a letter
-        </Button>
-        <Button href={links.submitLetter} variant="ghost">
-          Submit your child&apos;s letter
-        </Button>
-      </PageHero>
+      <LettersPortal
+        initialView={initialView}
+        signedIn={!!user}
+        defaultEmail={user?.email ?? undefined}
+        letters={letters}
+        demo={demo}
+      />
 
-      {/* How it works */}
-      <section className="py-section">
-        <Container>
-          <SectionHeading
-            className="max-w-[640px]"
-            eyebrow="How it works"
-            title="Three steps, start to finish"
-          />
-          <div className="mt-10 grid gap-[22px] md:grid-cols-3">
-            {letters.steps.map((step, index) => (
-              <Card key={step.title} className="p-[32px]">
-                <span className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-green-soft text-[17px] font-extrabold text-green">
-                  {index + 1}
-                </span>
-                <h2 className="mt-5 text-h3">{step.title}</h2>
-                <p className="mt-2.5 text-muted">{step.body}</p>
-              </Card>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* Two doors: families / donors */}
-      <section className="border-y border-line bg-paper-raised py-section">
-        <Container className="grid gap-[22px] md:grid-cols-2">
-          <Card hover className="flex flex-col p-[34px]">
-            <span aria-hidden className="mb-5 block h-1 w-12 rounded-pill bg-green" />
-            <SectionHeading
-              size="h3"
-              eyebrow="For families"
-              eyebrowClassName="text-green"
-              title="Send us your child's letter"
-              intro="A parent or guardian submits on the child's behalf: a photo of the handwritten letter, their first name and age, and a link to the gift on Amazon. A free account takes a minute and lets you track its status. We review it, protect their identity, and put the wish up for adoption."
-            />
-            <div className="mt-6 flex-1" />
-            <div>
-              <Button href={links.submitLetter} variant="green" arrow>
-                Submit a letter
-              </Button>
-            </div>
-          </Card>
-          <Card hover className="flex flex-col p-[34px]">
-            <span aria-hidden className="mb-5 block h-1 w-12 rounded-pill bg-red" />
-            <SectionHeading
-              size="h3"
-              eyebrow="For gift-givers"
-              title="Adopt a wish"
-              intro="Read the letters one at a time. Choose a wish, then buy the gift on Amazon. The child remains anonymous throughout the process."
-            />
-            <div className="mt-6 flex-1" />
-            <div>
-              <Button href={links.adoptLetter} variant="red" arrow>
-                Start reading letters
-              </Button>
-            </div>
-          </Card>
-        </Container>
-      </section>
-
-      {/* Origin story */}
-      <section className="py-section">
-        <Container className="grid items-center gap-10 md:grid-cols-[1fr_1fr] md:gap-[54px]">
-          <div>
-            <SectionHeading
-              eyebrow="Where it comes from"
-              title="An idea older than any of us"
-              intro={letters.origin}
-              introClassName="max-w-[54ch]"
-            />
-          </div>
-          <Photo
-            src="/images/hero-community.jpg"
-            alt="Santa's Knights volunteers and families at the holiday gift event"
-            sizes="(min-width: 768px) 45vw, 100vw"
-            className="aspect-[4/3] rounded-card"
-          />
-        </Container>
-      </section>
-
-      {/* Privacy & safety */}
-      <section className="border-y border-line bg-paper-raised py-section">
+      {/* Privacy & safety — kept on the page for visitors and for SEO. */}
+      <section className="border-t border-line bg-paper-raised py-section text-ink">
         <Container>
           <SectionHeading
             className="max-w-[640px]"
@@ -149,7 +159,9 @@ export default function LettersLandingPage() {
                   ✦
                 </span>
                 <div>
-                  <h2 className="text-[19px] font-extrabold tracking-[-0.02em]">{point.title}</h2>
+                  <h2 className="text-[19px] font-extrabold tracking-[-0.02em] text-ink">
+                    {point.title}
+                  </h2>
                   <p className="mt-1.5 text-[15.5px] text-muted">{point.body}</p>
                 </div>
               </div>
@@ -162,31 +174,6 @@ export default function LettersLandingPage() {
             </a>
             .
           </p>
-        </Container>
-      </section>
-
-      {/* Closing CTA band */}
-      <section className="py-section">
-        <Container>
-          <div className="relative overflow-hidden rounded-card-lg bg-green bg-[linear-gradient(160deg,var(--color-green),#1f3f2e)] p-[40px] text-center text-[#eef4ef] md:p-[56px]">
-            <span
-              aria-hidden
-              className="pointer-events-none absolute -top-[30px] -right-5 text-[200px] leading-none text-white/[0.06]"
-            >
-              ✶
-            </span>
-            <h2 className="mx-auto max-w-[24ch] text-h2-band text-white">
-              Adopt one letter, and make a kid&apos;s Christmas morning.
-            </h2>
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-              <Button href={links.adoptLetter} variant="cream" arrow>
-                Adopt a letter
-              </Button>
-              <Button href={links.submitLetter} variant="clear">
-                Submit a letter
-              </Button>
-            </div>
-          </div>
         </Container>
       </section>
     </>

@@ -40,7 +40,7 @@ export async function moderateLetter(formData: FormData): Promise<void> {
   if (error) console.error("Moderation update failed:", error.message);
 
   revalidatePath("/admin");
-  revalidatePath("/letters/give");
+  revalidatePath("/letters");
 }
 
 export async function signOut(): Promise<void> {

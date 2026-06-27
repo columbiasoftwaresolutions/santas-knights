@@ -15,8 +15,8 @@ type View = "adopt" | "submit";
 
 const VIEWS: View[] = ["adopt", "submit"];
 
-const ADOPT_NEXT = "/letters/give";
-const SUBMIT_NEXT = "/letters/give?do=submit";
+const ADOPT_NEXT = "/letters";
+const SUBMIT_NEXT = "/letters?do=submit";
 
 /** Copy that swaps with the active view. Photo + toggle stay put underneath. */
 const HERO: Record<View, { title: React.ReactNode; intro: React.ReactNode }> = {
@@ -107,9 +107,8 @@ export function LettersPortal({
     (next: View) => {
       if (next === view) return;
       setView(next);
-      // Keep the URL shareable/back-button-friendly without a route change, so
-      // the two sides stay one page rather than two navigations.
-      window.history.replaceState(null, "", next === "submit" ? SUBMIT_NEXT : ADOPT_NEXT);
+      // The URL stays a constant `/letters` while toggling — one canonical link
+      // for the page. `?do=submit` only sets the initial side on first load.
 
       const commit = () => {
         setBodyView(next);

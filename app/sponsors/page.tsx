@@ -5,16 +5,13 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
 import { Press } from "@/components/sections/Press";
-import { getPartners } from "@/lib/content";
-import { org, sponsors as staticSponsors } from "@/content/site";
+import { org, sponsors } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Sponsors · Santa's Knights",
   description:
     "Meet the sponsors who help keep Santa's Knights free and learn how your business can help.",
 };
-
-export const dynamic = "force-dynamic";
 
 const tiers: { title: string; body: string }[] = [
   {
@@ -31,13 +28,7 @@ const tiers: { title: string; body: string }[] = [
   },
 ];
 
-export default async function SponsorsPage() {
-  const dbPartners = await getPartners();
-  const sponsors =
-    dbPartners.length > 0
-      ? dbPartners.map((p) => ({ name: p.name, logo: p.logo_url ?? undefined, href: p.website_url ?? undefined }))
-      : staticSponsors;
-
+export default function SponsorsPage() {
   return (
     <>
       <PageHero
