@@ -34,9 +34,10 @@ async function makeLetter(extra = {}) {
     .insert({
       child_first_name: "Testkid", child_age: 8,
       wish_note: `E2E wish ${Math.random().toString(36).slice(2, 8)}`,
-      amazon_urls: ["https://www.amazon.com/s?k=toy"], status: "live",
+      amazon_urls: ["https://www.amazon.com/s?k=toy"], amazon_image_urls: [""], status: "live",
       guardian_name: "Guardian",
       guardian_email: `sk-guardian-${stamp}-${created.letters.length}@example.com`,
+      created_at: new Date(Date.UTC(2000, 0, 1, 0, created.letters.length)).toISOString(),
       ...extra,
     })
     .select("id").single();

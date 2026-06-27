@@ -12,6 +12,7 @@ export type SwipeLetter = {
   childAge: number;
   wishNote: string;
   amazonUrls: string[];
+  amazonImageUrls: string[];
   imageUrl: string | null;
 };
 
@@ -151,6 +152,10 @@ export function SwipeDeck({
 
   const dx = drag?.dx ?? 0;
   const dy = drag?.dy ?? 0;
+  const giftItems = current.amazonUrls.map((url, i) => ({
+    url,
+    imageUrl: current.amazonImageUrls[i] || null,
+  }));
   const topTransform = leaving
     ? `translate(${leaving === "right" ? 720 : -720}px, ${dy * 0.4 - 40}px) rotate(${leaving === "right" ? 24 : -24}deg)`
     : `translate(${dx}px, ${dy * 0.4}px) rotate(${dx * 0.055}deg)`;
@@ -244,14 +249,14 @@ export function SwipeDeck({
               <p className="mt-3 text-[24px] font-extrabold tracking-[-0.02em] text-white">
                 {current.childFirstName}, age {current.childAge}
               </p>
-              <p className="mt-4 flex-1 overflow-y-auto font-serif text-[19px] italic leading-relaxed">
+              <p className="mt-4 max-h-[135px] overflow-y-auto font-serif text-[19px] italic leading-relaxed">
                 “{current.wishNote}”
               </p>
-              <div className="mt-5 space-y-2">
-                {current.amazonUrls.map((url, i) => (
+              <div className="mt-5 min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+                {giftItems.map((item, i) => (
                   <a
-                    key={url}
-                    href={url}
+                    key={item.url}
+                    href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(event) => {
@@ -262,9 +267,30 @@ export function SwipeDeck({
                       advance("right");
                     }}
                     onPointerDown={(event) => event.stopPropagation()}
-                    className="block bg-paper px-[26px] py-[13px] text-center text-base font-bold text-red-deep transition-transform duration-150 hover:-translate-y-0.5"
+                    className="flex min-h-[92px] items-center gap-3 bg-paper p-3 text-red-deep transition-transform duration-150 hover:-translate-y-0.5"
                   >
-                    {current.amazonUrls.length > 1 ? `Gift item ${i + 1} on Amazon ↗` : "Gift this on Amazon ↗"}
+                    <span className="flex h-[68px] w-[78px] shrink-0 items-center justify-center bg-white">
+                      {item.imageUrl ? (
+                        // Amazon image hosts are remote and dynamic, so use img here.
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={item.imageUrl}
+                          alt=""
+                          className="h-full w-full object-contain"
+                          loading="lazy"
+                          draggable={false}
+                        />
+                      ) : (
+                        <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-red-deep/45">
+                          Amazon
+                        </span>
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1 text-left text-[15px] font-bold leading-tight">
+                      {current.amazonUrls.length > 1
+                        ? `Gift item ${i + 1} on Amazon ↗`
+                        : "Gift this on Amazon ↗"}
+                    </span>
                   </a>
                 ))}
                 <p className="text-center text-[12.5px] opacity-80">

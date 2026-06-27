@@ -89,10 +89,11 @@ async function run() {
   const { data: prof } = await admin.from("profiles").select("id").eq("email", email).single();
   const { data: letter } = await admin
     .from("santa_letters")
-    .select("amazon_urls, guardian_user_id, status")
+    .select("amazon_urls, amazon_image_urls, guardian_user_id, status")
     .eq("guardian_email", email)
     .single();
   check("letter stored 2 gifts as array", letter?.amazon_urls?.length === 2);
+  check("letter stored preview array", letter?.amazon_image_urls?.length === 2);
   check("letter linked to guardian account", letter?.guardian_user_id === prof?.id);
   check("letter status live", letter?.status === "live");
 

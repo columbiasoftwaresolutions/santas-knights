@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { LETTERS_BUCKET } from "@/lib/supabase/config";
 import { getCurrentUser } from "@/lib/auth";
+import { fetchAmazonImagePreviews } from "@/lib/amazonPreview";
 import { GUARDIAN_CONSENT_TEXT, GUARDIAN_CONSENT_VERSION } from "@/content/consent";
 
 export type SubmitLetterState = {
@@ -121,6 +122,8 @@ export async function submitLetter(
     return { ok: false, message: "We couldn't save the letter image. Please try again in a minute." };
   }
 
+  const amazonImageUrls = await fetchAmazonImagePreviews(amazonUrls);
+
   const letterBase = {
     child_first_name: childFirstName,
     child_age: childAge,
@@ -137,6 +140,7 @@ export async function submitLetter(
     .insert({
       ...letterBase,
       amazon_urls: amazonUrls,
+      amazon_image_urls: amazonImageUrls,
     })
     .select("id")
     .single();

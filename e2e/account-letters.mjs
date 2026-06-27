@@ -98,26 +98,29 @@ async function run() {
       child_age: 9,
       wish_note: "A bike and a book.",
       amazon_urls: gifts,
+      amazon_image_urls: ["", ""],
       guardian_name: "Test Guardian",
       guardian_email: userA.email,
       guardian_user_id: userA.id,
       status: "live",
     })
-    .select("id, amazon_urls")
+    .select("id, amazon_urls, amazon_image_urls")
     .single();
   if (insErr) throw new Error(`letter insert: ${insErr.message}`);
   created.letters.push(letter.id);
   console.log("\nMulti-gift storage");
   check("amazon_urls stored as array", Array.isArray(letter.amazon_urls));
   check("array preserves all gifts (2)", letter.amazon_urls.length === 2);
+  check("preview array preserves gift positions", letter.amazon_image_urls.length === 2);
 
   // 5. A sees their letter via my_letters
   const { data: mine } = await aClient
     .from("my_letters")
-    .select("id, amazon_urls, status");
+    .select("id, amazon_urls, amazon_image_urls, status");
   console.log("\nMy Letters (owner view + RLS)");
   check("owner sees their 1 letter", mine?.length === 1);
   check("owner sees both gifts", mine?.[0]?.amazon_urls?.length === 2);
+  check("owner view returns preview array", mine?.[0]?.amazon_image_urls?.length === 2);
   check("submitted letter is live immediately", mine?.[0]?.status === "live");
 
   // 6. Deleted letters stay visible to the submitting guardian.
@@ -142,11 +145,12 @@ async function run() {
   const anon = createClient(URL_, ANON, { auth: { persistSession: false } });
   const { data: pub } = await anon
     .from("public_letters")
-    .select("id, amazon_urls")
+    .select("id, amazon_urls, amazon_image_urls")
     .eq("id", letter.id);
   console.log("\nPublic adoption view (anon)");
   check("live unclaimed letter visible in public_letters", pub?.length === 1);
   check("public_letters returns the gift array", pub?.[0]?.amazon_urls?.length === 2);
+  check("public_letters returns the preview array", pub?.[0]?.amazon_image_urls?.length === 2);
 
   await admin
     .from("santa_letters")

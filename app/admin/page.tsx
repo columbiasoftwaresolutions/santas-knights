@@ -109,17 +109,17 @@ export default async function AdminPage({
           <Stat label="Deleted" value={counts.get("deleted") ?? 0} />
         </div>
 
-        {/* Status tabs */}
-        <nav className="mt-9 flex flex-wrap gap-2">
+        {/* Status filter — underline tabs, matching the admin nav */}
+        <nav className="mt-9 flex flex-wrap gap-7">
           {STATUSES.map((status) => (
             <Link
               key={status}
               href={`/admin?status=${status}`}
               className={cn(
-                "rounded-pill border px-4 py-2 text-[14px] font-bold transition-colors",
+                "border-b-2 pb-1.5 text-[13.5px] font-bold tracking-[0.05em] uppercase transition-colors",
                 status === activeStatus
-                  ? "border-transparent bg-ink text-paper"
-                  : "border-bone/20 bg-ink2 text-bone/65 hover:text-bone",
+                  ? "border-red text-bone"
+                  : "border-transparent text-bone/45 hover:text-bone",
               )}
             >
               {STATUS_LABEL[status]} · {counts.get(status) ?? 0}
@@ -202,9 +202,9 @@ export default async function AdminPage({
                           name="action"
                           value={action}
                           className={cn(
-                            "cursor-pointer rounded-pill border px-4 py-2 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5",
+                            "cursor-pointer border-[1.5px] px-4 py-2 text-[13px] font-bold uppercase tracking-[0.04em] transition-transform hover:-translate-y-0.5",
                             primary
-                              ? "border-transparent bg-green text-white"
+                              ? "border-green bg-green text-white"
                               : action === "delete"
                                 ? "border-red/60 bg-transparent text-[#e7705e]"
                                 : "border-bone/25 bg-transparent text-bone",
