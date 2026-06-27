@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
+import { Photo } from "@/components/ui/Photo";
+import { PageHero } from "@/components/sections/PageHero";
 import { SwipeDeck, type SwipeLetter } from "@/components/letters/SwipeDeck";
 import { getCurrentUser } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -115,22 +117,32 @@ export default async function GiveLettersPage({
 
   return (
     <>
-      <section className="border-b border-line bg-paper py-[clamp(64px,8vw,100px)] text-ink">
-        <Container>
-          <h1 className="max-w-[980px] font-display text-[clamp(54px,9vw,128px)] leading-[0.84] font-black tracking-[-0.04em] uppercase">
-            Pick a letter off the{" "}
-            <em className="font-serif font-normal normal-case italic text-red">pile</em>.
-          </h1>
-          <p className="mt-8 max-w-[52ch] text-[19px] text-muted">
+      <PageHero
+        eyebrow="Adopt a letter"
+        title={
+          <>
+            Pick a letter off the <em>pile</em>.
+          </>
+        }
+        media={
+          <Photo
+            src="/images/santas-knights.jpg"
+            alt="A child holding a wrapped gift beside Santa at a Santa's Knights holiday event"
+            sizes="(min-width: 1024px) 32vw, 100vw"
+            className="aspect-[4/5] rounded-[16px]"
+          />
+        }
+        intro={
+          <>
             One letter at a time, the way it&apos;s always worked. Swipe right (or tap{" "}
-            <strong className="font-bold">Gift this</strong>) to grant the wish on
-            Amazon. Swipe left to read the next one.
-          </p>
-          <p className="mt-3 max-w-[46ch] text-[13.5px] font-semibold tracking-[0.04em] text-red uppercase">
-            Suggested gift value: $20–50 per child/person.
-          </p>
-        </Container>
-      </section>
+            <strong className="font-bold">Gift this</strong>) to grant the wish on Amazon. Swipe left
+            to read the next one.
+            <span className="mt-3 block text-[13.5px] font-semibold tracking-[0.04em] text-red uppercase">
+              Suggested gift value: $20–50 per child/person.
+            </span>
+          </>
+        }
+      />
 
       <section className="bg-paper py-[46px] text-ink">
         <Container className="max-w-[640px]">

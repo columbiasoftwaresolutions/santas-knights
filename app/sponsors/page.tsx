@@ -118,8 +118,8 @@ export default async function SponsorsPage() {
             {tiers.map((tier) => (
               <Card key={tier.title} hover className="p-[32px]">
                 <span aria-hidden className="mb-5 block h-1 w-12 rounded-pill bg-gold" />
-                <h2 className="text-h3">{tier.title}</h2>
-                <p className="mt-2.5 text-muted">{tier.body}</p>
+                <h2 className="text-h3 text-ink">{tier.title}</h2>
+                <p className="mt-2.5 text-ink/80">{tier.body}</p>
               </Card>
             ))}
           </div>

@@ -89,9 +89,7 @@ export const navLinks: NavItem[] = [
     label: "About",
     children: [
       { label: "About Us", href: "/about" },
-      { label: "Partners", href: "/sponsors" },
-      { label: "Founder", href: "/about#founder" },
-      { label: "Members", href: "/account" },
+      { label: "Sponsors", href: "/sponsors" },
     ],
   },
   {

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
@@ -8,17 +7,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
 import { ImpactStrip } from "@/components/sections/ImpactStrip";
 import { DonateBand } from "@/components/sections/DonateBand";
-import {
-  aboutStory,
-  founder,
-  letters,
-  links,
-  org,
-  programs,
-  values,
-  sponsors,
-  TRADEMARK,
-} from "@/content/site";
+import { aboutStory, founder, letters, links, org, programs, values } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "About · Santa's Knights",
@@ -36,6 +25,14 @@ export default function AboutPage() {
             What Santa&apos;s Knights is, and{" "}
             <em className="font-serif font-medium italic text-red">why</em>.
           </>
+        }
+        media={
+          <Photo
+            src="/images/gallery/6b7494_da7cab87beee4becb1fa08dd5b8bb6b9_mv2.webp"
+            alt="Kids training with foam weapons in the gym at a Santa's Knights class"
+            sizes="(min-width: 1024px) 32vw, 100vw"
+            className="aspect-[5/4] rounded-[16px]"
+          />
         }
         intro="We're a 501(c)(3) nonprofit in Harlem. We answer kids' letters to Santa every December, and teach martial arts and fitness for free all year."
       >
@@ -89,8 +86,8 @@ export default function AboutPage() {
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
-                    <h3 className="text-h3">{block.heading}</h3>
-                    <p className="mt-2.5 text-muted">{block.body}</p>
+                    <h3 className="text-h3 text-ink">{block.heading}</h3>
+                    <p className="mt-2.5 text-ink/80">{block.body}</p>
                   </div>
                 </Card>
               </li>
@@ -222,45 +219,6 @@ export default function AboutPage() {
                 Online classes
               </Button>
             </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Partners roster (Plan v2 §A5/E4) */}
-      <section id="partners" className="scroll-mt-24 py-section">
-        <Container>
-          <SectionHeading
-            eyebrow="Partners"
-            title="Who stands behind us"
-            intro="Organizations that have backed the programs, the letter drive, or the community."
-            introClassName="max-w-[50ch]"
-          />
-          <div className="mt-10 grid grid-cols-2 gap-[14px] sm:grid-cols-3 lg:grid-cols-5">
-            {sponsors.map((sponsor) => (
-              <div
-                key={sponsor.name}
-                className="flex h-[80px] items-center justify-center rounded-card border border-line bg-card p-4"
-              >
-                {sponsor.logo ? (
-                  <Image
-                    src={sponsor.logo}
-                    alt={sponsor.name}
-                    width={140}
-                    height={48}
-                    className="h-10 w-auto object-contain opacity-75 grayscale"
-                  />
-                ) : (
-                  <span className="text-center text-[13px] font-extrabold leading-[1.2] tracking-[-0.01em] text-ink">
-                    {sponsor.name}
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <Button href={links.sponsors} variant="ghost">
-              All sponsors & partners
-            </Button>
           </div>
         </Container>
       </section>

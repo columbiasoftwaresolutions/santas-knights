@@ -10,11 +10,14 @@ export function PageHero({
   eyebrow: _eyebrow,
   title,
   intro,
+  media,
   children,
 }: {
   eyebrow: React.ReactNode;
   title: React.ReactNode;
   intro?: React.ReactNode;
+  /** Optional image/visual shown above the lede in the right column. */
+  media?: React.ReactNode;
   /** Optional actions (buttons) below the lede. */
   children?: React.ReactNode;
 }) {
@@ -25,10 +28,15 @@ export function PageHero({
           <h1 className="font-display text-[clamp(52px,8vw,118px)] leading-[0.86] font-black tracking-[-0.04em] uppercase [&_em]:font-serif [&_em]:font-normal [&_em]:normal-case [&_em]:italic [&_em]:text-red">
             {title}
           </h1>
-          {intro && (
-            <p className="max-w-[34rem] text-[clamp(17px,1.6vw,20px)] leading-[1.6] text-muted">
-              {intro}
-            </p>
+          {(intro || media) && (
+            <div>
+              {media && <div className="mb-6">{media}</div>}
+              {intro && (
+                <div className="max-w-[34rem] text-[clamp(17px,1.6vw,20px)] leading-[1.6] text-muted">
+                  {intro}
+                </div>
+              )}
+            </div>
           )}
         </div>
         {children && <div className="mt-[30px] flex flex-wrap items-center gap-3.5">{children}</div>}

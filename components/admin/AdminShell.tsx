@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
-import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { signOut } from "@/app/admin/actions";
 
@@ -43,15 +42,18 @@ export function AdminShell({
             <h1 className="mt-2 font-display text-h2 font-black uppercase">{title}</h1>
           </div>
           <form action={signOut}>
-            <Button type="submit" variant="ghost" className="px-5 py-[11px] text-[15px]">
+            <button
+              type="submit"
+              className="cursor-pointer border-[1.5px] border-red bg-transparent px-5 py-[10px] text-[14px] font-bold tracking-[0.04em] text-red uppercase transition-colors hover:bg-red hover:text-white"
+            >
               Sign out
-            </Button>
+            </button>
           </form>
         </div>
 
         {/* Editorial underline tab bar — square geometry, color + rule for
-            hierarchy (no pills). Scrolls horizontally on narrow screens. */}
-        <nav className="mt-8 flex gap-7 overflow-x-auto border-b border-bone/15">
+            hierarchy (no pills). Scrolls horizontally only (never vertically). */}
+        <nav className="mt-8 flex gap-7 overflow-x-auto overflow-y-hidden border-b border-bone/15">
           {TABS.map((tab) => (
             <Link
               key={tab.key}
