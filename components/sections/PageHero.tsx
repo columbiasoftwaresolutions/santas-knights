@@ -24,7 +24,7 @@ export function PageHero({
   return (
     <section className="border-b border-line bg-paper py-[clamp(64px,8vw,108px)] text-ink">
       <Container>
-        <div className={cn("grid gap-8 lg:grid-cols-[1.25fr_0.75fr] lg:items-end lg:gap-16")}>
+        <div className={cn("grid gap-8 lg:grid-cols-[1.25fr_0.75fr] lg:items-start lg:gap-16")}>
           <h1 className="font-display text-[clamp(52px,8vw,118px)] leading-[0.86] font-black tracking-[-0.04em] uppercase [&_em]:font-serif [&_em]:font-normal [&_em]:normal-case [&_em]:italic [&_em]:text-red">
             {title}
           </h1>

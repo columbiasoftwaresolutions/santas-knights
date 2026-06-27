@@ -97,16 +97,15 @@ export default async function TrainingPage({
                 <h2 className="text-[18px] font-extrabold leading-[1.25] tracking-[-0.02em]">
                   {cls.name}
                 </h2>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="rounded-pill bg-paper-raised px-3 py-1 text-[12.5px] font-semibold text-muted">
-                    {cls.audience}
-                  </span>
+                <p className="mt-3 text-[13px] font-semibold leading-[1.45] text-muted">
+                  {cls.audience}
                   {cls.duration && (
-                    <span className="rounded-pill bg-paper-raised px-3 py-1 text-[12.5px] font-semibold text-muted">
+                    <>
+                      <span aria-hidden className="mx-2 text-muted/40">·</span>
                       {cls.duration}
-                    </span>
+                    </>
                   )}
-                </div>
+                </p>
                 {cls.tagline && (
                   <p className="mt-3 flex-1 text-[14.5px] italic leading-[1.5] text-muted">
                     {cls.tagline}

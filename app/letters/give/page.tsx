@@ -1,22 +1,14 @@
 import type { Metadata } from "next";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Container } from "@/components/ui/Container";
-import { Photo } from "@/components/ui/Photo";
-import { PageHero } from "@/components/sections/PageHero";
-import { SwipeDeck, type SwipeLetter } from "@/components/letters/SwipeDeck";
+import { LettersPortal } from "@/components/letters/LettersPortal";
+import type { SwipeLetter } from "@/components/letters/SwipeDeck";
 import { getCurrentUser } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured, LETTERS_BUCKET } from "@/lib/supabase/config";
-import { DONOR_TERMS_SUMMARY } from "@/content/consent";
-import { links } from "@/content/site";
-
-const NEXT = "/letters/give";
 
 export const metadata: Metadata = {
-  title: "Adopt a Letter · Santa's Letters · Santa's Knights",
+  title: "Santa's Letters · Santa's Knights",
   description:
-    "Read kids' letters to Santa one at a time. Choose a wish and buy the gift on Amazon while the child's identity stays private.",
+    "Read kids' letters to Santa and adopt a wish, or submit your child's letter — one page, two sides. Identities stay private throughout.",
 };
 
 // Render per request because approvals and fulfillment change the pool.
@@ -103,141 +95,27 @@ const DEMO_LETTERS: SwipeLetter[] = [
   },
 ];
 
-export default async function GiveLettersPage({
+export default async function LettersPortalPage({
   searchParams,
 }: {
-  searchParams: Promise<{ demo?: string }>;
+  searchParams: Promise<{ do?: string; demo?: string }>;
 }) {
   const params = await searchParams;
   const demo = params.demo === "1";
+  // Always defaults to adopt; only an explicit ?do=submit opens the submit side.
+  const initialView = params.do === "submit" ? "submit" : "adopt";
   const user = await getCurrentUser();
-  // Adopting now requires an account: the gift is linked to the donor so we can
+  // Adopting requires an account: the gift is linked to the donor so we can
   // coordinate handoff, send a tax acknowledgment, and block self-dealing.
   const letters = user ? (demo ? DEMO_LETTERS : await getLetters()) : null;
 
   return (
-    <>
-      <PageHero
-        eyebrow="Adopt a letter"
-        title={
-          <>
-            Pick a letter off the <em>pile</em>.
-          </>
-        }
-        media={
-          <Photo
-            src="/images/santas-knights.jpg"
-            alt="A child holding a wrapped gift beside Santa at a Santa's Knights holiday event"
-            sizes="(min-width: 1024px) 32vw, 100vw"
-            className="aspect-[4/5] rounded-[16px]"
-          />
-        }
-        intro={
-          <>
-            One letter at a time, the way it&apos;s always worked. Swipe right (or tap{" "}
-            <strong className="font-bold">Gift this</strong>) to grant the wish on Amazon. Swipe left
-            to read the next one.
-            <span className="mt-3 block text-[13.5px] font-semibold tracking-[0.04em] text-red uppercase">
-              Suggested gift value: $20–50 per child/person.
-            </span>
-          </>
-        }
-      />
-
-      <section className="bg-paper py-[46px] text-ink">
-        <Container className="max-w-[640px]">
-          {!user ? (
-            <SignInGate />
-          ) : letters === null ? (
-            <EmptyState
-              title="The letter drive isn't open yet"
-              body="The letter drive is not open yet. Join the email list on the homepage to hear when approved letters are available."
-            />
-          ) : letters.length === 0 ? (
-            <EmptyState
-              title="The pile is empty"
-              body="Every approved letter has been adopted. New letters will appear after families submit them and a moderator approves them."
-            />
-          ) : (
-            <>
-              {demo && (
-                <p className="mb-6 border border-amber bg-gold-soft/60 px-5 py-3 text-center text-[14px] font-bold text-[#6c5418]">
-                  Demo mode. These are sample letters, not real submissions.
-                </p>
-              )}
-              <SwipeDeck letters={letters} claimable={!demo} />
-            </>
-          )}
-
-          {user && (
-            <p className="mx-auto mt-10 max-w-[58ch] text-center text-[13.5px] leading-relaxed text-muted">
-              <strong className="font-bold">The fine print:</strong> {DONOR_TERMS_SUMMARY}
-            </p>
-          )}
-        </Container>
-      </section>
-    </>
-  );
-}
-
-/**
- * Adopting requires an account (see docs/ACCOUNT-MODEL.md §5). Offers create-
- * account and sign-in, both returning to the swipe deck. Warm theme, green
- * giving CTA per DESIGN.md.
- */
-function SignInGate() {
-  return (
-    <Card className="p-[42px] text-center">
-      <div aria-hidden className="text-[40px] text-green">
-        ♔
-      </div>
-      <h2 className="mt-2 text-h3">Read a kid&apos;s letter, send the gift</h2>
-      <p className="mx-auto mt-2.5 max-w-[44ch] text-muted">
-        Log in and we&apos;ll show you the letters one at a time. Pick one, buy the gift on Amazon, and
-        we keep the kid&apos;s details private the whole way.
-      </p>
-      <div className="mt-7 flex justify-center">
-        <Button
-          href={`${links.accountLogin}?next=${encodeURIComponent(NEXT)}`}
-          variant="red"
-          arrow
-        >
-          Log in to gift a kid
-        </Button>
-      </div>
-      <p className="mt-4 text-[14px] text-muted">
-        No account yet?{" "}
-        <a
-          href={`${links.accountRegister}?next=${encodeURIComponent(NEXT)}`}
-          className="font-bold text-ink underline"
-        >
-          Sign up
-        </a>
-        .
-      </p>
-      <p className="mx-auto mt-6 max-w-[52ch] text-[13px] leading-relaxed text-muted/80">
-        {DONOR_TERMS_SUMMARY}
-      </p>
-    </Card>
-  );
-}
-
-function EmptyState({ title, body }: { title: string; body: string }) {
-  return (
-    <div className="border border-line bg-paper-raised p-[42px] text-center">
-      <div aria-hidden className="text-[40px] text-green">
-        ✶
-      </div>
-      <h2 className="mt-3 text-h3">{title}</h2>
-      <p className="mx-auto mt-2.5 max-w-[46ch] text-muted">{body}</p>
-      <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-        <Button href={links.submitLetter} variant="green">
-          Submit a child&apos;s letter
-        </Button>
-        <Button href={links.donate} variant="ghost">
-          Donate instead
-        </Button>
-      </div>
-    </div>
+    <LettersPortal
+      initialView={initialView}
+      signedIn={!!user}
+      defaultEmail={user?.email ?? undefined}
+      letters={letters}
+      demo={demo}
+    />
   );
 }

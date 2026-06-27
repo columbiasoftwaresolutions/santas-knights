@@ -32,16 +32,15 @@ export function ClassesSection() {
                 <h2 className="text-[17px] font-extrabold leading-[1.25] tracking-[-0.02em]">
                   {cls.name}
                 </h2>
-                <div className="mt-2.5 flex flex-wrap gap-1.5">
-                  <span className="rounded-pill bg-paper-raised px-2.5 py-0.5 text-[12px] font-semibold text-muted">
-                    {cls.audience}
-                  </span>
+                <p className="mt-2.5 text-[12.5px] font-semibold leading-[1.45] text-muted">
+                  {cls.audience}
                   {cls.duration && (
-                    <span className="rounded-pill bg-paper-raised px-2.5 py-0.5 text-[12px] font-semibold text-muted">
+                    <>
+                      <span aria-hidden className="mx-2 text-muted/40">·</span>
                       {cls.duration}
-                    </span>
+                    </>
                   )}
-                </div>
+                </p>
                 {cls.tagline && (
                   <p className="mt-2.5 flex-1 text-[13.5px] italic leading-[1.5] text-muted">
                     {cls.tagline}

@@ -36,7 +36,7 @@ export const links = {
   venmo: process.env.NEXT_PUBLIC_VENMO_URL || "/donate",
   volunteer: "/get-involved",
   adoptLetter: "/letters/give",
-  submitLetter: "/letters/submit",
+  submitLetter: "/letters/give?do=submit",
   lettersLearnMore: "/letters",
   findClass: TRAINING_HREF,
   about: "/about",
@@ -100,8 +100,8 @@ export const navLinks: NavItem[] = [
   {
     label: "Letters to Santa",
     children: [
-      { label: "Write a Letter", href: "/letters/submit" },
       { label: "Adopt a Letter", href: "/letters/give" },
+      { label: "Write a Letter", href: "/letters/give?do=submit" },
     ],
   },
   { label: "Membership", href: "/membership" },
@@ -464,7 +464,7 @@ export const footerColumns: { heading: string; links: { label: string; href: str
     heading: "Get Involved",
     links: [
       { label: "Adopt a Letter", href: "/letters/give" },
-      { label: "Submit a Letter", href: "/letters/submit" },
+      { label: "Submit a Letter", href: "/letters/give?do=submit" },
       { label: "Volunteer", href: "/get-involved" },
       { label: "Become a Sponsor", href: "/sponsors" },
     ],
