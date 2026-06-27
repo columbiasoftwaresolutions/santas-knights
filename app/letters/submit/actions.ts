@@ -129,7 +129,7 @@ export async function submitLetter(
     guardian_name: guardianName,
     guardian_email: guardianEmail,
     guardian_user_id: guardian.id,
-    status: "pending",
+    status: "live",
   };
 
   const { data: letter, error: insertError } = await supabase
@@ -160,7 +160,7 @@ export async function submitLetter(
     },
   });
   if (consentError) {
-    // The letter stays in the pending queue either way; log so it can be reconciled.
+    // The letter stays live either way; log so it can be reconciled.
     console.error("Consent record insert failed:", consentError.message);
   }
 

@@ -67,13 +67,14 @@ Adopting a letter requires a signed-in account. The swipe deck on `/letters` is 
 - **A reachable identity on every fulfillment.** Santa's Knights is a 501(c)(3); donors expect a fulfillment/tax acknowledgment, and the org needs a channel to coordinate handoff. The account already carries a confirmed email, so there's no separate email-capture step and no guest rows to reconcile.
 - **Self-dealing guard.** Block a guardian from fulfilling their own child's letter. With an account this is an exact `fulfiller_user_id == guardian_user_id` check rather than a fuzzy email match.
 
-**Claim lifecycle (gift tracking).** Adopting records a claim so admins can monitor gifts and two donors can't buy the same wish. The `letter_status` enum gains a `claimed` state between `approved` and `fulfilled`:
+**Claim lifecycle (gift tracking).** Adopting records a claim so admins can monitor gifts and two donors can't buy the same wish. Public letter statuses are intentionally simple: `live`, `fulfilled`, or `deleted`.
 
-- `approved` → in the public pool (the swipe deck reads only approved letters via `public_letters`).
-- **`claimed`** → a donor pressed "Gift this": the row is stamped `fulfilled_by_user_id` / `fulfilled_by_email` / `claimed_at` and **drops out of the pool**. The claim is atomic (`update … where status = 'approved'`), so a race resolves to exactly one donor. The donor sees it under "Gifts I'm sending"; admins see it as "to send" in the Gifts pipeline.
-- **`fulfilled`** → the donor (or an admin) marked it sent. A donor can also **release** a claim back to `approved`.
+- `live` → submitted and visible in the public pool while unclaimed.
+- **Claimed live row** → a donor pressed "Gift this": the row stays `status = 'live'`, but is stamped `fulfilled_by_user_id` / `fulfilled_by_email` / `claimed_at` and **drops out of the pool**. The claim is atomic (`update … where status = 'live' and claimed_at is null`), so a race resolves to exactly one donor. The donor sees it under "Gifts I'm sending"; admins see it as "to send" in the Gifts pipeline.
+- **`fulfilled`** → the donor (or an admin) marked it sent. A donor can also **release** a claim back to unclaimed `live`.
+- **`deleted`** → admin removed the letter from the public pool. The submitting guardian still sees it in "My letters."
 
-> **Self-dealing rule:** at fulfillment time, reject (or flag for review) if the fulfilling identity matches the letter's guardian — i.e. `fulfiller_user_id == santa_letters.guardian_user_id` (exact, since both sides are signed-in accounts) **or**, as a backstop, `fulfiller_email == santa_letters.guardian_email`. Enforced in the fulfillment server action.
+> **Self-dealing rule:** at claim time, reject if the fulfilling identity matches the letter's guardian — i.e. `fulfiller_user_id == santa_letters.guardian_user_id` (exact, since both sides are signed-in accounts) **or**, as a backstop, `fulfiller_email == santa_letters.guardian_email`. Enforced in the fulfillment server action.
 
 ---
 

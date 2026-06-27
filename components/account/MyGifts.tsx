@@ -15,8 +15,8 @@ export type MyGift = {
   fulfilled_at: string | null;
 };
 
-/** Letters this member has claimed to gift. 'claimed' = still to buy/send,
- *  'fulfilled' = gift sent. Members confirm or release their own claims.
+/** Letters this member has claimed to gift. live + claimed_at = still to
+ *  buy/send; fulfilled = gift sent. Members confirm or release their claims.
  *  Renders as a panel (no section wrapper) so it can sit beside "My letters". */
 export function MyGifts({ gifts }: { gifts: MyGift[] }) {
   if (gifts.length === 0) {

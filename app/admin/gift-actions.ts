@@ -18,7 +18,8 @@ export async function adminMarkGifted(formData: FormData): Promise<void> {
     .from("santa_letters")
     .update({ status: "fulfilled", fulfilled_at: new Date().toISOString() })
     .eq("id", String(formData.get("letter_id")))
-    .eq("status", "claimed");
+    .eq("status", "live")
+    .not("claimed_at", "is", null);
   revalidatePath("/admin/gifts");
 }
 
@@ -28,9 +29,10 @@ export async function adminReleaseClaim(formData: FormData): Promise<void> {
   if (!db) return;
   await db
     .from("santa_letters")
-    .update({ status: "approved", fulfilled_by_user_id: null, fulfilled_by_email: null, claimed_at: null })
+    .update({ status: "live", fulfilled_by_user_id: null, fulfilled_by_email: null, claimed_at: null })
     .eq("id", String(formData.get("letter_id")))
-    .eq("status", "claimed");
+    .eq("status", "live")
+    .not("claimed_at", "is", null);
   revalidatePath("/admin/gifts");
   revalidatePath("/letters");
 }

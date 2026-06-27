@@ -14,14 +14,14 @@ export const metadata: Metadata = {
     "Read kids' letters to Santa and adopt a wish, or submit your child's letter — all on one page. We protect every child's identity, and here's exactly how we keep them safe.",
 };
 
-// Render per request because approvals and fulfillment change the pool.
+// Render per request because submissions, claims, and fulfillment change the pool.
 export const dynamic = "force-dynamic";
 
 const SIGNED_URL_TTL_SECONDS = 60 * 60;
 
 /**
- * Approved letters via the public-safe view, with short-lived signed URLs for
- * the letter images (the bucket is private so unapproved uploads stay dark).
+ * Live unclaimed letters via the public-safe view, with short-lived signed URLs
+ * for the letter images (the bucket is private so raw uploads stay dark).
  * Returns null when Supabase isn't configured yet.
  */
 async function getLetters(): Promise<SwipeLetter[] | null> {
@@ -105,8 +105,8 @@ const privacyPoints: { title: string; body: string }[] = [
     body: "A donor sees a first name, an age, and a wish. Never a last name, address, school, phone number, or social handle.",
   },
   {
-    title: "Every letter is reviewed",
-    body: "A real person checks each submission before it goes live, and anything identifying gets taken off first.",
+    title: "Admins can remove issues",
+    body: "Letters go live immediately, and admins can delete anything that should not stay in the gift pool.",
   },
   {
     title: "No contact, either way",

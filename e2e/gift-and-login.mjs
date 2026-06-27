@@ -34,7 +34,7 @@ async function makeLetter(extra = {}) {
     .insert({
       child_first_name: "Testkid", child_age: 8,
       wish_note: `E2E wish ${Math.random().toString(36).slice(2, 8)}`,
-      amazon_urls: ["https://www.amazon.com/s?k=toy"], status: "approved",
+      amazon_urls: ["https://www.amazon.com/s?k=toy"], status: "live",
       guardian_name: "Guardian",
       guardian_email: `sk-guardian-${stamp}-${created.letters.length}@example.com`,
       ...extra,
@@ -74,11 +74,20 @@ async function login(page, email, pw, nextParam) {
 
 async function pollLetter(id, want, tries = 14) {
   for (let i = 0; i < tries; i++) {
-    const { data } = await admin.from("santa_letters").select("status, fulfilled_by_user_id").eq("id", id).maybeSingle();
+    const { data } = await admin.from("santa_letters").select("status, fulfilled_by_user_id, claimed_at").eq("id", id).maybeSingle();
     if (data?.status === want) return data;
     await new Promise((r) => setTimeout(r, 500));
   }
-  return (await admin.from("santa_letters").select("status, fulfilled_by_user_id").eq("id", id).maybeSingle()).data;
+  return (await admin.from("santa_letters").select("status, fulfilled_by_user_id, claimed_at").eq("id", id).maybeSingle()).data;
+}
+
+async function pollClaimed(id, tries = 14) {
+  for (let i = 0; i < tries; i++) {
+    const { data } = await admin.from("santa_letters").select("status, fulfilled_by_user_id, claimed_at").eq("id", id).maybeSingle();
+    if (data?.status === "live" && data.claimed_at) return data;
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  return (await admin.from("santa_letters").select("status, fulfilled_by_user_id, claimed_at").eq("id", id).maybeSingle()).data;
 }
 
 async function run() {
@@ -125,8 +134,9 @@ async function run() {
     const giftBtn = page.getByRole("button", { name: /Gift this/ });
     await giftBtn.waitFor({ timeout: 12000 });
     await giftBtn.click();
-    const claimed = await pollLetter(letterA, "claimed");
-    check("letter is marked claimed", claimed?.status === "claimed");
+    const claimed = await pollClaimed(letterA);
+    check("letter stays live while claimed", claimed?.status === "live");
+    check("letter has a claim timestamp", Boolean(claimed?.claimed_at));
     check("claim linked to the donor", claimed?.fulfilled_by_user_id === donor?.id);
     const { data: pool } = await admin.from("public_letters").select("id").eq("id", letterA);
     check("claimed letter drops out of the public pool", (pool ?? []).length === 0);
@@ -149,7 +159,7 @@ async function run() {
     await giftBtn.click();
     await new Promise((r) => setTimeout(r, 2500));
     const { data: still } = await admin.from("santa_letters").select("status, fulfilled_by_user_id").eq("id", letterSelf).maybeSingle();
-    check("own child's letter is NOT claimed (stays approved)", still?.status === "approved");
+    check("own child's letter is NOT claimed (stays live)", still?.status === "live");
     check("no donor linked to own letter", !still?.fulfilled_by_user_id);
     await ctx.close();
   }

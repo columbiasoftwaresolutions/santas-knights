@@ -6,8 +6,8 @@
  *   - new account auto-gets a `public` profiles row (handle_new_user trigger)
  *   - a letter stores amazon_urls as an ARRAY + guardian_user_id
  *   - my_letters returns ONLY the owner's letters (RLS scoping)
- *   - moderation_note is hidden unless status = needs_edits
- *   - public_letters exposes approved letters (array) to anon
+ *   - my_letters returns deleted letters submitted by the owner
+ *   - public_letters exposes live, unclaimed letters (array) to anon
  *   - a second account cannot see the first's letters
  *   - anon cannot read the raw santa_letters table
  *
@@ -101,7 +101,7 @@ async function run() {
       guardian_name: "Test Guardian",
       guardian_email: userA.email,
       guardian_user_id: userA.id,
-      status: "pending",
+      status: "live",
     })
     .select("id, amazon_urls")
     .single();
@@ -114,43 +114,51 @@ async function run() {
   // 5. A sees their letter via my_letters
   const { data: mine } = await aClient
     .from("my_letters")
-    .select("id, amazon_urls, status, moderation_note");
+    .select("id, amazon_urls, status");
   console.log("\nMy Letters (owner view + RLS)");
   check("owner sees their 1 letter", mine?.length === 1);
   check("owner sees both gifts", mine?.[0]?.amazon_urls?.length === 2);
-  check("moderation_note hidden while pending", mine?.[0]?.moderation_note === null);
+  check("submitted letter is live immediately", mine?.[0]?.status === "live");
 
-  // 6. needs_edits surfaces the note
-  await admin
-    .from("santa_letters")
-    .update({ status: "needs_edits", moderation_note: "Please re-crop the photo." })
-    .eq("id", letter.id);
-  const { data: edited } = await aClient
+  // 6. Deleted letters stay visible to the submitting guardian.
+  await admin.from("santa_letters").update({ status: "deleted" }).eq("id", letter.id);
+  const { data: deleted } = await aClient
     .from("my_letters")
-    .select("status, moderation_note")
+    .select("status")
     .eq("id", letter.id)
     .single();
-  check("status shows needs_edits", edited?.status === "needs_edits");
-  check("moderation_note visible on needs_edits", edited?.moderation_note === "Please re-crop the photo.");
+  check("owner sees deleted letter status", deleted?.status === "deleted");
 
-  // 7. Second account cannot see A's letter
+  // 7. Return it live for public view checks.
+  await admin.from("santa_letters").update({ status: "live" }).eq("id", letter.id);
+
+  // 8. Second account cannot see A's letter
   const bClient = await signedInClient(userB);
   const { data: bSees } = await bClient.from("my_letters").select("id");
   console.log("\nIsolation between accounts");
   check("other account sees none of A's letters", Array.isArray(bSees) && bSees.length === 0);
 
-  // 8. Approve → public_letters exposes it (array) to anon
-  await admin.from("santa_letters").update({ status: "approved" }).eq("id", letter.id);
+  // 9. Live, unclaimed letter → public_letters exposes it (array) to anon
   const anon = createClient(URL_, ANON, { auth: { persistSession: false } });
   const { data: pub } = await anon
     .from("public_letters")
     .select("id, amazon_urls")
     .eq("id", letter.id);
   console.log("\nPublic adoption view (anon)");
-  check("approved letter visible in public_letters", pub?.length === 1);
+  check("live unclaimed letter visible in public_letters", pub?.length === 1);
   check("public_letters returns the gift array", pub?.[0]?.amazon_urls?.length === 2);
 
-  // 9. anon cannot read the raw table
+  await admin
+    .from("santa_letters")
+    .update({ fulfilled_by_user_id: userB.id, fulfilled_by_email: userB.email, claimed_at: new Date().toISOString() })
+    .eq("id", letter.id);
+  const { data: claimedPub } = await anon
+    .from("public_letters")
+    .select("id")
+    .eq("id", letter.id);
+  check("claimed live letter drops out of public_letters", claimedPub?.length === 0);
+
+  // 10. anon cannot read the raw table
   const { data: raw, error: rawErr } = await anon.from("santa_letters").select("guardian_email");
   check(
     "anon cannot read raw santa_letters (no rows / denied)",

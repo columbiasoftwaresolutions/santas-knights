@@ -7,7 +7,7 @@
  * changes. Final language is pending review; see REQUIREMENTS.md §3.1.
  */
 
-export const GUARDIAN_CONSENT_VERSION = "2026-06-draft-2";
+export const GUARDIAN_CONSENT_VERSION = "2026-06-draft-3";
 
 export const GUARDIAN_CONSENT_TEXT = `Santa's Letters Parent/Guardian Consent (version ${GUARDIAN_CONSENT_VERSION})
 
@@ -15,7 +15,7 @@ I confirm that I am the parent or legal guardian of the child named in this subm
 
 I understand and agree that:
 
-1. The child's first name, age, wish note, and an image of their handwritten letter may be displayed publicly on the Santa's Knights website so that donors can choose to send a gift. Santa's Knights will not publish last names, addresses, phone numbers, emails, school names, or social media handles, and I confirm the letter image I am uploading does not show any of these. Santa's Knights may decline, edit-request, or remove any submission.
+1. The child's first name, age, wish note, and an image of their handwritten letter may be displayed publicly on the Santa's Knights website so that donors can choose to send a gift. Santa's Knights will not publish last names, addresses, phone numbers, emails, school names, or social media handles, and I confirm the letter image I am uploading does not show any of these. Santa's Knights may remove any submission if needed.
 
 2. Gifts are fulfilled by donors directly through Amazon. Santa's Knights does not handle payment, shipping, or guarantee that any letter receives a gift.
 

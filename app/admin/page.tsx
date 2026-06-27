@@ -5,65 +5,36 @@ import { cn } from "@/lib/cn";
 import { requireAdmin } from "@/components/admin/guard";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { LETTERS_BUCKET } from "@/lib/supabase/config";
-import { moderateLetter, type ModerationAction } from "@/app/admin/actions";
+import { updateLetterStatus, type LetterAction } from "@/app/admin/actions";
 
 export const metadata: Metadata = {
-  title: "Letter Moderation · Santa's Knights Admin",
+  title: "Letters · Santa's Knights Admin",
   robots: { index: false, follow: false },
 };
 
 export const dynamic = "force-dynamic";
 
-const STATUSES = [
-  "pending",
-  "flagged",
-  "needs_edits",
-  "approved",
-  "fulfilled",
-  "hidden",
-  "rejected",
-] as const;
+const STATUSES = ["live", "fulfilled", "deleted"] as const;
 type LetterStatus = (typeof STATUSES)[number];
 
 const STATUS_LABEL: Record<LetterStatus, string> = {
-  pending: "Pending",
-  flagged: "Flagged",
-  needs_edits: "Needs edits",
-  approved: "Approved (live)",
+  live: "Live",
   fulfilled: "Fulfilled",
-  hidden: "Hidden",
-  rejected: "Rejected",
+  deleted: "Deleted",
 };
 
-/** Which moderation verbs make sense from each status. */
-const ACTIONS_FOR_STATUS: Record<LetterStatus, { action: ModerationAction; label: string; primary?: boolean }[]> = {
-  pending: [
-    { action: "approve", label: "Approve", primary: true },
-    { action: "request_edits", label: "Request edits" },
-    { action: "flag", label: "Flag" },
-    { action: "reject", label: "Reject" },
-  ],
-  flagged: [
-    { action: "approve", label: "Approve", primary: true },
-    { action: "request_edits", label: "Request edits" },
-    { action: "reject", label: "Reject" },
-  ],
-  needs_edits: [
-    { action: "approve", label: "Approve", primary: true },
-    { action: "flag", label: "Flag" },
-    { action: "reject", label: "Reject" },
-  ],
-  approved: [
+/** Which management verbs make sense from each status. */
+const ACTIONS_FOR_STATUS: Record<LetterStatus, { action: LetterAction; label: string; primary?: boolean }[]> = {
+  live: [
     { action: "fulfill", label: "Mark fulfilled", primary: true },
-    { action: "hide", label: "Hide" },
-    { action: "flag", label: "Flag" },
+    { action: "release", label: "Release claim" },
+    { action: "delete", label: "Delete" },
   ],
-  fulfilled: [{ action: "approve", label: "Return to pool" }],
-  hidden: [
-    { action: "approve", label: "Re-approve", primary: true },
-    { action: "reject", label: "Reject" },
+  fulfilled: [
+    { action: "restore", label: "Return live", primary: true },
+    { action: "delete", label: "Delete" },
   ],
-  rejected: [{ action: "reopen", label: "Reopen as pending" }],
+  deleted: [{ action: "restore", label: "Restore live", primary: true }],
 };
 
 type AdminLetter = {
@@ -76,7 +47,9 @@ type AdminLetter = {
   status: LetterStatus;
   guardian_name: string;
   guardian_email: string;
-  moderation_note: string | null;
+  fulfilled_by_email: string | null;
+  claimed_at: string | null;
+  fulfilled_at: string | null;
   created_at: string;
   imageUrl?: string | null;
 };
@@ -93,7 +66,7 @@ export default async function AdminPage({
   const params = await searchParams;
   const activeStatus: LetterStatus = STATUSES.includes(params.status as LetterStatus)
     ? (params.status as LetterStatus)
-    : "pending";
+    : "live";
 
   // A single status scan is sufficient for the expected seasonal volume.
   const { data: statusRows } = await supabase.from("santa_letters").select("status");
@@ -104,13 +77,13 @@ export default async function AdminPage({
   const { data: letterRows, error: letterError } = await supabase
     .from("santa_letters")
     .select(
-      "id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, status, guardian_name, guardian_email, moderation_note, created_at",
+      "id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, status, guardian_name, guardian_email, fulfilled_by_email, claimed_at, fulfilled_at, created_at",
     )
     .eq("status", activeStatus)
     .order("created_at", { ascending: true })
     .limit(200);
 
-  if (letterError) console.error("Failed to load moderation queue:", letterError.message);
+  if (letterError) console.error("Failed to load letters:", letterError.message);
   const letters = (letterRows ?? []) as AdminLetter[];
 
   const paths = letters.map((l) => l.letter_image_path).filter(Boolean) as string[];
@@ -127,13 +100,13 @@ export default async function AdminPage({
   }
 
   return (
-    <AdminShell active="letters" title="Letter moderation" email={gate.email}>
+    <AdminShell active="letters" title="Letters" email={gate.email}>
         {/* Season totals */}
         <div className="mt-8 grid grid-cols-2 gap-[14px] sm:grid-cols-4">
           <Stat label="Submitted (all)" value={total} />
-          <Stat label="Awaiting review" value={(counts.get("pending") ?? 0) + (counts.get("flagged") ?? 0)} />
-          <Stat label="Live in the pool" value={counts.get("approved") ?? 0} />
+          <Stat label="Live" value={counts.get("live") ?? 0} />
           <Stat label="Fulfilled" value={counts.get("fulfilled") ?? 0} />
+          <Stat label="Deleted" value={counts.get("deleted") ?? 0} />
         </div>
 
         {/* Status tabs */}
@@ -154,7 +127,7 @@ export default async function AdminPage({
           ))}
         </nav>
 
-        {/* Queue */}
+        {/* Letters */}
         <div className="mt-7 grid gap-[18px]">
           {letters.length === 0 ? (
             <Card className="border-bone/15 bg-ink2 p-[34px] text-center text-bone/60">
@@ -203,22 +176,26 @@ export default async function AdminPage({
                     ))}
                     · Guardian: {letter.guardian_name} &lt;{letter.guardian_email}&gt;
                   </p>
-                  {letter.moderation_note && (
+                  {letter.claimed_at && letter.status === "live" && (
                     <p className="mt-2 rounded-[10px] bg-gold-soft/60 px-3 py-2 text-[13.5px] text-[#6c5418]">
-                      <strong className="font-bold">Note:</strong> {letter.moderation_note}
+                      <strong className="font-bold">Claimed:</strong>{" "}
+                      {letter.fulfilled_by_email ?? "donor"} on{" "}
+                      {new Date(letter.claimed_at).toLocaleDateString()}.
+                    </p>
+                  )}
+                  {letter.fulfilled_at && letter.status === "fulfilled" && (
+                    <p className="mt-2 rounded-[10px] bg-green-soft px-3 py-2 text-[13.5px] text-green">
+                      <strong className="font-bold">Fulfilled:</strong>{" "}
+                      {new Date(letter.fulfilled_at).toLocaleDateString()}.
                     </p>
                   )}
 
-                  <form action={moderateLetter} className="mt-4 grid gap-3">
+                  <form action={updateLetterStatus} className="mt-4">
                     <input type="hidden" name="letter_id" value={letter.id} />
-                    <textarea
-                      name="moderation_note"
-                      rows={2}
-                      placeholder="Moderation note (kept internal; included if you request edits)…"
-                      className="w-full border border-bone/20 bg-[#0f0c0a] px-3.5 py-2.5 text-[14px] text-bone placeholder:text-bone/35 focus:border-amber focus:outline-none"
-                    />
                     <div className="flex flex-wrap gap-2">
-                      {ACTIONS_FOR_STATUS[letter.status].map(({ action, label, primary }) => (
+                      {ACTIONS_FOR_STATUS[letter.status]?.map(({ action, label, primary }) => {
+                        if (action === "release" && !letter.claimed_at) return null;
+                        return (
                         <button
                           key={action}
                           type="submit"
@@ -228,14 +205,15 @@ export default async function AdminPage({
                             "cursor-pointer rounded-pill border px-4 py-2 text-[13.5px] font-bold transition-transform hover:-translate-y-0.5",
                             primary
                               ? "border-transparent bg-green text-white"
-                              : action === "reject"
+                              : action === "delete"
                                 ? "border-red/60 bg-transparent text-[#e7705e]"
                                 : "border-bone/25 bg-transparent text-bone",
                           )}
                         >
                           {label}
                         </button>
-                      ))}
+                        );
+                      })}
                     </div>
                   </form>
                 </div>

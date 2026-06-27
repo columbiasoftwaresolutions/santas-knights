@@ -33,17 +33,16 @@ export default async function AdminGiftsPage() {
   if (!gate.ok) return gate.node;
 
   // Pipeline counts across the whole pool.
-  const { data: statusRows } = await gate.supabase.from("santa_letters").select("status");
-  const tally = (s: string) => (statusRows ?? []).filter((r) => r.status === s).length;
-  const unclaimed = tally("approved");
-  const pending = tally("claimed");
-  const gifted = tally("fulfilled");
+  const { data: statusRows } = await gate.supabase.from("santa_letters").select("status, claimed_at");
+  const unclaimed = (statusRows ?? []).filter((r) => r.status === "live" && !r.claimed_at).length;
+  const pending = (statusRows ?? []).filter((r) => r.status === "live" && r.claimed_at).length;
+  const gifted = (statusRows ?? []).filter((r) => r.status === "fulfilled").length;
 
   // The active gift pipeline: claimed (to send) first, then recently gifted.
   const { data } = await gate.supabase
     .from("santa_letters")
     .select("id, child_first_name, child_age, wish_note, status, fulfilled_by_email, claimed_at, fulfilled_at")
-    .in("status", ["claimed", "fulfilled"])
+    .or("and(status.eq.live,claimed_at.not.is.null),status.eq.fulfilled")
     .order("claimed_at", { ascending: false })
     .limit(500);
   const rows = (data ?? []) as Row[];

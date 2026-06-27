@@ -88,7 +88,7 @@ This is the source of truth for the Postgres schema. Apply it on a fresh Supabas
 
 > **Training-tracker tables are now in scope for this project** (the Gladiators free program is built here, not on a separate site). The DDL below currently covers the nonprofit/Letters side that is live; the training tables — `classes`, `registrations`, `checkins`, `waivers`, `media_consents`, `xp_config`, `xp_events`, `levels`/`badges`, `training_videos` — and their private storage buckets (`waivers`, `training-videos`) are specced in [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md#data-model-training-tables) and will be added to this same Supabase project when the tracker is built. The `app_role` enum already includes `participant` and `instructor` for exactly this. **Only `armor_inventory` / `armor_rentals` stay out** — those belong to the commercial Armory on `gladiators.nyc`.
 
-**Privacy invariant:** a child's identifying details are NEVER exposed publicly. Guardian contact lives on the same `santa_letters` row, but anonymous visitors can only read approved letters' safe columns through the `public_letters` view. Letter images sit in a private `letters` storage bucket, served via short-lived signed URLs.
+**Privacy invariant:** a child's identifying details are NEVER exposed publicly. Guardian contact lives on the same `santa_letters` row, but anonymous visitors can only read live, unclaimed letters' safe columns through the `public_letters` view. Letter images sit in a private `letters` storage bucket, served via short-lived signed URLs.
 
 ```sql
 -- roles -----------------------------------------------------------
@@ -130,28 +130,28 @@ create policy "Admins can update roles"
 
 -- santa letters ---------------------------------------------------
 create type public.letter_status as enum (
-  'pending',      -- submitted, awaiting moderation
-  'approved',     -- live in the swipe pool
-  'needs_edits',  -- moderator requested changes from the family
-  'flagged',      -- needs a closer look
-  'hidden',       -- approved previously but pulled from the pool
-  'rejected',     -- will not run
-  'fulfilled'     -- gifted — leaves the active pool, kept for totals
+  'live',         -- submitted and visible while unclaimed
+  'fulfilled',    -- gifted — leaves the active pool, kept for totals
+  'deleted'       -- admin removed from the active pool; guardian still sees it
 );
 
 create table public.santa_letters (
   id                uuid primary key default gen_random_uuid(),
-  -- Public-safe fields (surface through public_letters once approved)
+  -- Public-safe fields (surface through public_letters once live and unclaimed)
   child_first_name  text not null,
   child_age         int  not null check (child_age between 0 and 17),
   wish_note         text not null,
   amazon_urls       text[] not null check (cardinality(amazon_urls) between 1 and 20),  -- one or more Amazon links (any country)
   letter_image_path text,                    -- path in the private "letters" storage bucket
-  status            public.letter_status not null default 'pending',
+  status            public.letter_status not null default 'live',
   -- Private fields — never exposed publicly
   guardian_name     text not null,
   guardian_email    text not null,
-  moderation_note   text,                    -- internal and/or sent back on needs_edits
+  guardian_user_id  uuid references public.profiles(id),
+  fulfilled_by_user_id uuid references public.profiles(id),
+  fulfilled_by_email text,
+  fulfilled_by_name  text,
+  claimed_at        timestamptz,
   fulfilled_at      timestamptz,
   created_at        timestamptz not null default now(),
   updated_at        timestamptz not null default now()
@@ -172,11 +172,11 @@ create policy "Admins manage letters"
   on public.santa_letters for all
   using (public.is_admin()) with check (public.is_admin());
 
--- Public-safe projection: approved letters only, safe columns only.
+-- Public-safe projection: live, unclaimed letters only, safe columns only.
 create view public.public_letters as
   select id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, created_at
   from public.santa_letters
-  where status = 'approved';
+  where status = 'live' and claimed_at is null and fulfilled_by_user_id is null;
 grant select on public.public_letters to anon, authenticated;
 
 -- consent records -------------------------------------------------
@@ -243,7 +243,9 @@ alter table public.santa_letters add column if not exists fulfilled_by_user_id u
 alter table public.santa_letters add column if not exists fulfilled_by_email text;
 alter table public.santa_letters add column if not exists fulfilled_by_name  text;
 alter table public.santa_letters add column if not exists claimed_at timestamptz;          -- gift claim/track
-alter type public.letter_status add value if not exists 'claimed';  -- approved → claimed → fulfilled
+alter type public.letter_status add value if not exists 'live';
+alter type public.letter_status add value if not exists 'deleted';
+alter table public.santa_letters alter column status set default 'live';
 create policy "Guardians read own letters"
   on public.santa_letters for select using (guardian_user_id = auth.uid());
 -- A donor may read the letters they have claimed/gifted (their "Gifts I'm sending").
@@ -253,7 +255,6 @@ create policy "Donors read own gifts"
 -- Guardian-scoped projection used by /account ("My letters").
 create or replace view public.my_letters as
   select id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, status,
-         case when status = 'needs_edits' then moderation_note else null end as moderation_note,
          created_at, updated_at
   from public.santa_letters where guardian_user_id = auth.uid();
 
@@ -261,7 +262,8 @@ create or replace view public.my_letters as
 create or replace view public.my_gifts as
   select id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path,
          status, claimed_at, fulfilled_at
-  from public.santa_letters where fulfilled_by_user_id = auth.uid();
+  from public.santa_letters
+  where fulfilled_by_user_id = auth.uid() and status in ('live', 'fulfilled');
 grant select on public.my_gifts to authenticated;
 
 -- family members (minors under a guardian account) ----------------

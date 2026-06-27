@@ -94,7 +94,7 @@ async function run() {
     .single();
   check("letter stored 2 gifts as array", letter?.amazon_urls?.length === 2);
   check("letter linked to guardian account", letter?.guardian_user_id === prof?.id);
-  check("letter status pending", letter?.status === "pending");
+  check("letter status live", letter?.status === "live");
 
   // My Letters shows it.
   await page.goto(`${BASE}/account`);

@@ -27,18 +27,13 @@ type MyLetter = {
   wish_note: string;
   amazon_urls: string[];
   status: string;
-  moderation_note: string | null;
   created_at: string;
 };
 
 const STATUS_LABELS: Record<string, { label: string; tone: string }> = {
-  pending: { label: "In review", tone: "bg-gold-soft text-[#6c5418]" },
-  approved: { label: "Live for adoption", tone: "bg-green-soft text-green" },
-  needs_edits: { label: "Needs edits", tone: "bg-red/10 text-red" },
-  flagged: { label: "In review", tone: "bg-gold-soft text-[#6c5418]" },
-  hidden: { label: "Not shown", tone: "bg-paper-raised text-muted" },
-  rejected: { label: "Not accepted", tone: "bg-paper-raised text-muted" },
+  live: { label: "Live", tone: "bg-green-soft text-green" },
   fulfilled: { label: "Gift sent 🎁", tone: "bg-green-soft text-green" },
+  deleted: { label: "Deleted", tone: "bg-red/10 text-red" },
 };
 
 async function getMyLetters(): Promise<MyLetter[]> {
@@ -46,7 +41,7 @@ async function getMyLetters(): Promise<MyLetter[]> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("my_letters")
-    .select("id, child_first_name, child_age, wish_note, amazon_urls, status, moderation_note, created_at")
+    .select("id, child_first_name, child_age, wish_note, amazon_urls, status, created_at")
     .order("created_at", { ascending: false });
   if (error) {
     console.error("Failed to load my letters:", error.message);
@@ -198,15 +193,9 @@ export default async function AccountPage() {
                           {letter.amazon_urls.length === 1 ? "" : "s"} ·{" "}
                           {new Date(letter.created_at).toLocaleDateString()}
                         </p>
-                        {letter.status === "needs_edits" && letter.moderation_note && (
-                          <div className="mt-4 border border-red/30 bg-red/5 px-4 py-3 text-[13.5px] text-red">
-                            <strong className="font-bold">A moderator asked for an edit:</strong>{" "}
-                            {letter.moderation_note}
-                          </div>
-                        )}
-                      </Card>
-                    );
-                  })}
+                  </Card>
+                );
+              })}
                 </div>
               )}
             </div>

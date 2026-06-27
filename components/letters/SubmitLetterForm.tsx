@@ -31,8 +31,8 @@ export function SubmitLetterForm({ defaultEmail }: { defaultEmail?: string }) {
         </div>
         <h3 className="mt-2 text-h3 text-green">The letter is in</h3>
         <p className="mx-auto mt-2 max-w-[46ch] text-muted">
-          Thank you. A real person reviews every letter before it is published. We&apos;ll email you
-          if we need a clearer photo or more information. The child&apos;s identity stays private.
+          Thank you. The letter is live in the gift pool now. The child&apos;s identity stays private,
+          and an admin can remove the letter if anything needs attention.
         </p>
       </div>
     );
@@ -230,7 +230,7 @@ export function SubmitLetterForm({ defaultEmail }: { defaultEmail?: string }) {
           {pending ? "Sending…" : "Submit the letter"}
         </Button>
         <span className="text-[13.5px] text-muted">
-          Reviewed by a real person before anything goes live.
+          Goes live immediately; admins can remove anything that needs attention.
         </span>
       </div>
     </form>

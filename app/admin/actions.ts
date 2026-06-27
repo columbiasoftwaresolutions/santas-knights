@@ -6,41 +6,46 @@ import { checkAdmin } from "@/lib/auth";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-/** Moderation verbs → letter status. Mirrors REQUIREMENTS.md §3.3. */
 const ACTION_TO_STATUS = {
-  approve: "approved",
-  reject: "rejected",
-  hide: "hidden",
-  flag: "flagged",
-  request_edits: "needs_edits",
+  delete: "deleted",
+  restore: "live",
   fulfill: "fulfilled",
-  reopen: "pending",
 } as const;
 
-export type ModerationAction = keyof typeof ACTION_TO_STATUS;
+export type LetterAction = keyof typeof ACTION_TO_STATUS | "release";
 
-export async function moderateLetter(formData: FormData): Promise<void> {
+export async function updateLetterStatus(formData: FormData): Promise<void> {
   const admin = await checkAdmin();
   if (admin.status !== "admin") return;
 
   const letterId = String(formData.get("letter_id") ?? "");
-  const action = String(formData.get("action") ?? "") as ModerationAction;
-  const note = String(formData.get("moderation_note") ?? "").trim();
-  const status = ACTION_TO_STATUS[action];
-  if (!letterId || !status) return;
+  const action = String(formData.get("action") ?? "") as LetterAction;
+  if (!letterId) return;
+  if (action !== "release" && !(action in ACTION_TO_STATUS)) return;
 
   const supabase = createSupabaseAdminClient();
   if (!supabase) return;
 
-  const update: Record<string, unknown> = { status };
-  if (note) update.moderation_note = note;
-  update.fulfilled_at = status === "fulfilled" ? new Date().toISOString() : null;
+  const update: Record<string, unknown> =
+    action === "release"
+      ? { status: "live", fulfilled_by_user_id: null, fulfilled_by_email: null, claimed_at: null }
+      : { status: ACTION_TO_STATUS[action] };
+
+  if (action === "fulfill") update.fulfilled_at = new Date().toISOString();
+  if (action === "restore") update.fulfilled_at = null;
+  if (action === "delete") {
+    update.fulfilled_by_user_id = null;
+    update.fulfilled_by_email = null;
+    update.claimed_at = null;
+  }
 
   const { error } = await supabase.from("santa_letters").update(update).eq("id", letterId);
-  if (error) console.error("Moderation update failed:", error.message);
+  if (error) console.error("Letter status update failed:", error.message);
 
   revalidatePath("/admin");
   revalidatePath("/letters");
+  revalidatePath("/account");
+  revalidatePath("/admin/gifts");
 }
 
 export async function signOut(): Promise<void> {

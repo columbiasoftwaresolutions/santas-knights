@@ -44,7 +44,7 @@ in the SQL Editor:
 update profiles set role = 'admin' where email = '<that email>';
 ```
 
-Sign in at `/admin/login` to reach the moderation dashboard.
+Sign in at `/admin/login` to reach the Letters admin dashboard.
 
 ## 4. Get from Damion / Nicolas
 
@@ -64,8 +64,8 @@ Sign in at `/admin/login` to reach the moderation dashboard.
 ## After steps 1–3
 
 Tell Claude the backend is live and it can verify the full flow end-to-end:
-submit a letter → moderate at `/admin` → see it in the swipe deck at
-`/letters` → mark fulfilled. (`/letters?demo=1` previews the swipe
+submit a letter → see it live in the swipe deck at `/letters` → delete if
+needed in `/admin` → mark fulfilled. (`/letters?demo=1` previews the swipe
 UI with sample letters at any time.)
 
 ## Notes for later

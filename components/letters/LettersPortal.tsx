@@ -54,8 +54,8 @@ const HERO: Record<View, { title: React.ReactNode; intro: React.ReactNode }> = {
 
 const SUBMIT_EXPECTATIONS: { title: string; body: string }[] = [
   {
-    title: "You submit, we review",
-    body: "Every letter is checked by a real person before it appears anywhere. We'll email you if something needs a tweak.",
+    title: "You submit, it goes live",
+    body: "The letter joins the gift pool right away. Admins can remove anything that needs attention.",
   },
   {
     title: "Identity stays private",
@@ -267,12 +267,12 @@ function AdoptPanel({
       ) : letters === null ? (
         <EmptyState
           title="The letter drive isn't open yet"
-          body="The letter drive is not open yet. Join the email list on the homepage to hear when approved letters are available."
+          body="The letter drive is not open yet. Join the email list on the homepage to hear when letters are available."
         />
       ) : letters.length === 0 ? (
         <EmptyState
           title="The pile is empty"
-          body="Every approved letter has been adopted. New letters will appear after families submit them and a moderator approves them."
+          body="Every live letter has been adopted. New letters will appear as families submit them."
         />
       ) : (
         <>
@@ -337,7 +337,7 @@ function SubmitPanel({ signedIn, defaultEmail }: { signedIn: boolean; defaultEma
         <div className="rounded-card border border-line bg-gold-soft/50 p-6 text-[14.5px] text-[#6c5418]">
           <strong className="font-extrabold">Before you upload:</strong> check the letter photo for
           identifying details such as last names, addresses, school names, or phone numbers. Crop or
-          cover them before uploading. We will check the image again during review.
+          cover them before uploading.
         </div>
       </div>
     </Container>

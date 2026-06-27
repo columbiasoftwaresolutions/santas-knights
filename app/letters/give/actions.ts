@@ -10,8 +10,8 @@ export type ClaimResult =
 
 /**
  * Claim a letter to gift it. Atomic: the update only succeeds while the letter
- * is still 'approved', so two donors can't both claim the same wish. Blocks a
- * guardian from claiming their own child's letter (self-dealing guard).
+ * is live and unclaimed, so two donors can't both claim the same wish. Blocks
+ * a guardian from claiming their own child's letter (self-dealing guard).
  */
 export async function claimLetter(letterId: string): Promise<ClaimResult> {
   const user = await getCurrentUser();
@@ -23,10 +23,10 @@ export async function claimLetter(letterId: string): Promise<ClaimResult> {
 
   const { data: letter } = await supabase
     .from("santa_letters")
-    .select("id, status, guardian_user_id, guardian_email")
+    .select("id, status, guardian_user_id, guardian_email, claimed_at")
     .eq("id", letterId)
     .maybeSingle();
-  if (!letter || letter.status !== "approved") return { ok: false, reason: "taken" };
+  if (!letter || letter.status !== "live" || letter.claimed_at) return { ok: false, reason: "taken" };
 
   // Self-dealing guard: can't gift your own child's letter.
   const email = (user.email ?? "").toLowerCase();
@@ -34,17 +34,17 @@ export async function claimLetter(letterId: string): Promise<ClaimResult> {
     return { ok: false, reason: "self" };
   }
 
-  // Atomic claim — only flips an still-approved row.
+  // Atomic claim — only claims a live, unclaimed row.
   const { data: updated, error } = await supabase
     .from("santa_letters")
     .update({
-      status: "claimed",
       fulfilled_by_user_id: user.id,
       fulfilled_by_email: user.email,
       claimed_at: new Date().toISOString(),
     })
     .eq("id", letterId)
-    .eq("status", "approved")
+    .eq("status", "live")
+    .is("claimed_at", null)
     .select("id");
   if (error) return { ok: false, reason: "error" };
   if (!updated || updated.length === 0) return { ok: false, reason: "taken" };
@@ -66,7 +66,7 @@ export async function markGifted(formData: FormData): Promise<void> {
     .update({ status: "fulfilled", fulfilled_at: new Date().toISOString() })
     .eq("id", String(formData.get("letter_id")))
     .eq("fulfilled_by_user_id", user.id)
-    .eq("status", "claimed");
+    .eq("status", "live");
   revalidatePath("/account");
   revalidatePath("/admin/gifts");
 }
@@ -79,10 +79,10 @@ export async function releaseClaim(formData: FormData): Promise<void> {
   if (!supabase) return;
   await supabase
     .from("santa_letters")
-    .update({ status: "approved", fulfilled_by_user_id: null, fulfilled_by_email: null, claimed_at: null })
+    .update({ status: "live", fulfilled_by_user_id: null, fulfilled_by_email: null, claimed_at: null })
     .eq("id", String(formData.get("letter_id")))
     .eq("fulfilled_by_user_id", user.id)
-    .eq("status", "claimed");
+    .eq("status", "live");
   revalidatePath("/account");
   revalidatePath("/letters");
   revalidatePath("/admin/gifts");

@@ -43,12 +43,11 @@ async function shot(page, name) {
   log(`screenshot ${name}`);
 }
 
-// Find the moderation card form for a given child name ("Maya, 7") and click a button by label.
-async function moderate(page, heading, buttonLabel, note) {
+// Find the admin letter card form for a given child name ("Maya, 7") and click a button by label.
+async function manageLetter(page, heading, buttonLabel) {
   const card = page.locator("div").filter({
     has: page.getByRole("heading", { name: heading, exact: true }),
   }).filter({ has: page.locator("form") }).last();
-  if (note) await card.getByRole("textbox").fill(note);
   await card.getByRole("button", { name: buttonLabel, exact: true }).click();
   await page.waitForLoadState("networkidle");
 }
@@ -102,25 +101,21 @@ const run = async () => {
   await page.fill("#email", ADMIN_EMAIL);
   await page.fill("#password", ADMIN_PASSWORD);
   await page.getByRole("button", { name: /Sign in/i }).click();
-  await page.getByRole("heading", { name: "Letter moderation" }).waitFor({ timeout: 20000 });
+  await page.getByRole("heading", { name: "Letters" }).waitFor({ timeout: 20000 });
   await page.waitForLoadState("networkidle");
-  await shot(page, "07-admin-pending-3.png");
+  await shot(page, "07-admin-live-3.png");
 
-  // ---- 3. Moderate: approve two, request edits on one ------------------------
-  log("Approving Maya…");
-  await moderate(page, "Maya, 7", "Approve");
-  log("Approving Jaylen…");
-  await moderate(page, "Jaylen, 10", "Approve");
-  log("Requesting edits on Sofia…");
-  await moderate(page, "Sofia, 5", "Request edits", "Please retake the photo in better light — the wish is hard to read.");
-  await shot(page, "08-admin-after-moderation.png"); // pending tab, now empty
+  // ---- 3. Admin can delete a letter from the live pool -----------------------
+  log("Deleting Sofia…");
+  await manageLetter(page, "Sofia, 5", "Delete");
+  await shot(page, "08-admin-after-delete.png");
 
-  await page.goto(`${BASE}/admin?status=approved`, { waitUntil: "networkidle" });
-  await shot(page, "09-admin-approved.png");
-  await page.goto(`${BASE}/admin?status=needs_edits`, { waitUntil: "networkidle" });
-  await shot(page, "10-admin-needs-edits.png");
+  await page.goto(`${BASE}/admin?status=deleted`, { waitUntil: "networkidle" });
+  await shot(page, "09-admin-deleted.png");
+  await page.goto(`${BASE}/admin?status=live`, { waitUntil: "networkidle" });
+  await shot(page, "10-admin-live.png");
 
-  // ---- 4. Donor side: the swipe deck shows the two approved letters ----------
+  // ---- 4. Donor side: the swipe deck shows the two live letters --------------
   log("Loading donor swipe deck…");
   await page.goto(`${BASE}/letters`, { waitUntil: "networkidle" });
   await page.getByText(/Letter 1 of/).waitFor({ timeout: 20000 });
@@ -131,8 +126,8 @@ const run = async () => {
 
   // ---- 5. Admin marks one fulfilled, pool shrinks ----------------------------
   log("Marking Maya fulfilled…");
-  await page.goto(`${BASE}/admin?status=approved`, { waitUntil: "networkidle" });
-  await moderate(page, "Maya, 7", "Mark fulfilled");
+  await page.goto(`${BASE}/admin?status=live`, { waitUntil: "networkidle" });
+  await manageLetter(page, "Maya, 7", "Mark fulfilled");
   await page.goto(`${BASE}/admin?status=fulfilled`, { waitUntil: "networkidle" });
   await shot(page, "13-admin-fulfilled.png");
 

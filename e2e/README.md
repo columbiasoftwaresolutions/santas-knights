@@ -2,7 +2,7 @@
 
 Drives a fresh headless Chromium (Playwright) through the full flow against a
 **local dev server + the real Supabase project**: family submits a letter →
-admin moderates → letter appears in the donor swipe deck → admin marks it
+letter appears in the donor swipe deck → admin can delete it → admin marks it
 fulfilled. Screenshots land in `../e2e-screenshots/` (gitignored).
 
 > Runs against real Supabase data. Use mock guardian emails ending in
@@ -18,11 +18,7 @@ npm run dev -- -p 3100
 BASE_URL=http://localhost:3100 node e2e/run.mjs
 ```
 
-- `run.mjs` — the full flow (3 submissions, login, approve ×2, request-edits ×1, deck, fulfill).
-- `fix-sofia.mjs` — example of a targeted moderation step that waits for the
-  card to leave the queue before continuing (the robust pattern; the server
-  action revalidates with a slight client-render lag, so back-to-back clicks
-  need a wait-for-removal between them).
+- `run.mjs` — the full flow (3 submissions, login, delete ×1, deck, fulfill).
 
 ## Clean up mock data
 
