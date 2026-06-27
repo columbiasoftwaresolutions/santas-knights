@@ -117,20 +117,20 @@ export default function DonatePage() {
       {/* Ways to give */}
       <section className="border-t border-line py-section">
         <Container>
-          <SectionHeading
-            className="max-w-[640px]"
-            eyebrow="Other ways to give"
-            title="More ways to help"
-            intro="Payment is handled by the provider you choose. We never collect card details on this site."
-            introClassName="max-w-[52ch]"
-          />
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <SectionHeading eyebrow="Other ways to give" title="More ways to help" />
+            <p className="max-w-[38ch] text-[14.5px] text-muted sm:text-right">
+              Payment is handled by the provider you choose. We never collect card details on this
+              site.
+            </p>
+          </div>
           <div className="mt-10 grid gap-[18px] md:grid-cols-3">
             {externalOptions.map((option) => (
               <Card key={option.label} hover className="flex flex-col p-[28px]">
                 <h2 className="text-[20px] font-extrabold tracking-[-0.02em]">{option.label}</h2>
                 <p className="mt-2 flex-1 text-[15.5px] text-muted">{option.body}</p>
                 <div className="mt-5">
-                  <Button href={option.href} variant="ghost" className="px-5 py-3 text-[15px]">
+                  <Button href={option.href} variant="ghostInverse" className="px-5 py-3 text-[15px]">
                     {option.cta} ↗
                   </Button>
                 </div>
@@ -154,7 +154,7 @@ export default function DonatePage() {
                 Monthly membership starts at $20. It helps pay for gifts and equipment for kids.
               </p>
               <div className="mt-5">
-                <Button href={links.membership} variant="ghost" className="px-5 py-3 text-[15px]">
+                <Button href={links.membership} variant="ghostInverse" className="px-5 py-3 text-[15px]">
                   Membership tiers
                 </Button>
               </div>
@@ -166,23 +166,8 @@ export default function DonatePage() {
                 sponsors publicly.
               </p>
               <div className="mt-5">
-                <Button href={links.sponsors} variant="ghost" className="px-5 py-3 text-[15px]">
+                <Button href={links.sponsors} variant="ghostInverse" className="px-5 py-3 text-[15px]">
                   Sponsorship
-                </Button>
-              </div>
-            </Card>
-            <Card hover className="flex flex-col p-[28px]">
-              <h2 className="text-[20px] font-extrabold tracking-[-0.02em]">Something else</h2>
-              <p className="mt-2 flex-1 text-[15.5px] text-muted">
-                Contact us about stock, in-kind gifts, employer matching, or checks.
-              </p>
-              <div className="mt-5">
-                <Button
-                  href={`mailto:${org.email}?subject=Donating%20to%20Santa%27s%20Knights`}
-                  variant="ghost"
-                  className="px-5 py-3 text-[15px]"
-                >
-                  Email {org.email}
                 </Button>
               </div>
             </Card>

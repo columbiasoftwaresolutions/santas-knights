@@ -71,7 +71,6 @@ export default function MembershipPage() {
                     className="w-full justify-center px-5 py-3 text-[14.5px]"
                   >
                     {tier.ctaLabel}
-                    {!tier.isFree && " ↗"}
                   </Button>
                 </div>
               </Card>

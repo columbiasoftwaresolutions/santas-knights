@@ -369,7 +369,7 @@ export const membershipTiers: MembershipTier[] = [
     name: "Sponsor 2 Children",
     price: 100,
     priceLabel: "$100/mo",
-    description: "Sponsor 2 children per month: gifts and foam swords for each.",
+    description: "Equivalent to a foam sword and a present for 2 children!",
     ctaLabel: "Buy now", // TODO: add external recurring-billing URL
     href: links.donate,
   },
@@ -377,7 +377,7 @@ export const membershipTiers: MembershipTier[] = [
     name: "Sponsor 5 Children",
     price: 250,
     priceLabel: "$250/mo",
-    description: "Sponsor 5 children per month with gifts and equipment.",
+    description: "Equivalent to a foam sword and a present for 5 children!",
     ctaLabel: "Buy now", // TODO: add external recurring-billing URL
     href: links.donate,
   },
@@ -385,8 +385,7 @@ export const membershipTiers: MembershipTier[] = [
     name: "Corporate Membership",
     price: 500,
     priceLabel: "$500/mo",
-    description:
-      "This tier covers equipment and gifts for 10 children.",
+    description: "For companies that would like to sponsor Santa's Knights!",
     ctaLabel: "Buy now", // TODO: add external recurring-billing URL
     href: links.donate,
   },
