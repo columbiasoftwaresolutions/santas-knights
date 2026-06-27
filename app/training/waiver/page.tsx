@@ -79,6 +79,17 @@ export default async function WaiverPage({
               continue.
             </Card>
           )}
+          {error === "dob" && (
+            <Card className="mb-6 border-red/40 bg-red/5 p-5 text-[15px] font-semibold text-red">
+              Please enter a valid date of birth to continue.
+            </Card>
+          )}
+          {error === "signature" && (
+            <Card className="mb-6 border-red/40 bg-red/5 p-5 text-[15px] font-semibold text-red">
+              The legal signature must match the participant name for adults, or the parent/guardian
+              name for participants under 18.
+            </Card>
+          )}
 
           <Card className="p-[30px] md:p-[38px]">
             <h2 className="text-h3">Liability waiver &amp; assumption of risk</h2>

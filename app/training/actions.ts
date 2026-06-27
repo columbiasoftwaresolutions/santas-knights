@@ -16,15 +16,42 @@ import {
 
 const ACTIVE_REG = ["registered", "attended"];
 
-/** True when a date-of-birth string places the participant under 18. */
-function isMinor(dob: string | null): boolean {
-  if (!dob) return false;
-  const d = new Date(dob);
-  if (Number.isNaN(d.getTime())) return false;
+function redirectWaiverError(error: string, next: string): never {
+  redirect(`/training/waiver?error=${error}&next=${encodeURIComponent(next)}`);
+}
+
+function normalizeName(name: string): string {
+  return name.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function namesMatch(a: string, b: string): boolean {
+  return Boolean(a.trim()) && normalizeName(a) === normalizeName(b);
+}
+
+function parseDob(dob: string | null): Date | null {
+  if (!dob) return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dob);
+  if (!match) return null;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+    return null;
+  }
+
   const now = new Date();
-  let age = now.getFullYear() - d.getFullYear();
-  const m = now.getMonth() - d.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age -= 1;
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return date <= today ? date : null;
+}
+
+/** True when a date-of-birth string places the participant under 18. */
+function isMinor(dob: Date): boolean {
+  const now = new Date();
+  let age = now.getFullYear() - dob.getFullYear();
+  const m = now.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) age -= 1;
   return age < 18;
 }
 
@@ -126,19 +153,30 @@ export async function signWaiver(formData: FormData): Promise<void> {
   if (!user) redirect(`/account/login?next=${encodeURIComponent("/training/waiver")}`);
 
   const typedName = String(formData.get("typed_name") ?? "").trim();
-  const participantName = String(formData.get("participant_name") ?? "").trim() || typedName;
+  const participantName = String(formData.get("participant_name") ?? "").trim();
   const dob = String(formData.get("dob") ?? "").trim() || null;
   const guardianName = String(formData.get("guardian_name") ?? "").trim() || null;
   const agree = formData.get("agree") === "on";
   const mediaConsent = formData.get("media_consent") === "on";
   const next = String(formData.get("next") ?? "/training");
 
-  if (!agree || !typedName) {
-    redirect(`/training/waiver?error=incomplete&next=${encodeURIComponent(next)}`);
+  if (!agree || !typedName || !participantName) {
+    redirectWaiverError("incomplete", next);
   }
-  // The waiver is the legal record — a minor's must carry a parent/guardian name.
-  if (isMinor(dob) && !guardianName) {
-    redirect(`/training/waiver?error=guardian&next=${encodeURIComponent(next)}`);
+
+  const dobDate = parseDob(dob);
+  if (!dobDate) {
+    redirectWaiverError("dob", next);
+  }
+
+  const minor = isMinor(dobDate);
+  // The waiver is the legal record: adults sign for themselves; minors need a
+  // parent/guardian signature that matches the parent/guardian field.
+  if (minor) {
+    if (!guardianName) redirectWaiverError("guardian", next);
+    if (!namesMatch(typedName, guardianName)) redirectWaiverError("signature", next);
+  } else if (!namesMatch(typedName, participantName)) {
+    redirectWaiverError("signature", next);
   }
 
   const supabase = createSupabaseAdminClient();

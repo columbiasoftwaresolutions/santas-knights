@@ -107,6 +107,7 @@ async function run() {
 
   // 3. Sign the waiver (decline media consent) → returns toward booking
   await page.fill('input[name="participant_name"]', "Test Participant");
+  await page.fill('input[name="dob"]', "1990-01-01");
   await page.fill('input[name="typed_name"]', "Test Participant");
   await page.check('input[name="agree"]');
   await page.click('button[type="submit"]');

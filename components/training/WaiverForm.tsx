@@ -52,6 +52,7 @@ export function WaiverForm({ next }: { next: string }) {
             id="dob"
             name="dob"
             type="date"
+            required
             value={dob}
             onChange={(e) => setDob(e.target.value)}
             className={fieldBase}
@@ -85,7 +86,7 @@ export function WaiverForm({ next }: { next: string }) {
 
       <div>
         <label htmlFor="typed_name" className={labelBase}>
-          Type your legal name to sign
+          Type your legal name to sign{minor ? " (Parent / guardian name)" : ""}
         </label>
         <input
           id="typed_name"
@@ -93,7 +94,7 @@ export function WaiverForm({ next }: { next: string }) {
           required
           autoComplete="name"
           className={fieldBase}
-          placeholder="Your full legal name"
+          placeholder={minor ? "Must match the parent / guardian name" : "Must match the participant name"}
         />
       </div>
 
