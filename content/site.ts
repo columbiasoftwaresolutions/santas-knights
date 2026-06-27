@@ -410,14 +410,44 @@ export const sponsors: { name: string; logo?: string; href?: string }[] = [
   { name: "Manhattanville Community Center" },
 ];
 
-export const pressLogos: { name: string; src: string }[] = [
-  { name: "The Guardian", src: "/images/press/the-guardian.png" },
-  { name: "Men's Journal", src: "/images/press/mens-journal.jpg" },
-  { name: "Yahoo News", src: "/images/press/yahoo-news.jpg" },
-  { name: "Business Insider", src: "/images/press/business-insider.jpg" },
-  { name: "New York Magazine", src: "/images/press/new-york-magazine.jpg" },
-  { name: "Gizmodo", src: "/images/press/gizmodo.jpg" },
-  { name: "ABC News", src: "/images/press/abc-news.jpg" },
+/**
+ * "Seen in" press strip. Each logo links to the actual article. Only outlets
+ * with a verified, live article are listed (all checked 200; sourced from the
+ * Gladiators NYC media page + search). The Guardian and New York Magazine were
+ * dropped — no traceable article exists for either, so the logos can't back a
+ * coverage claim. Re-add with an `href` if a real article surfaces.
+ */
+export const pressLogos: { name: string; src: string; href: string }[] = [
+  {
+    name: "Gothamist",
+    src: "/images/press/gothamist.png",
+    href: "https://gothamist.com/arts-entertainment/nycs-knights-get-medieval-on-each-other-in-central-park",
+  },
+  {
+    name: "ABC News",
+    src: "/images/press/abc-news.jpg",
+    href: "https://abcnews.go.com/Travel/competing-axe-wielding-bone-crushing-sport-medieval-combat/story?id=24865343",
+  },
+  {
+    name: "Business Insider",
+    src: "/images/press/business-insider.jpg",
+    href: "https://www.businessinsider.com/armored-combat-league-warriors-management-consultant-hobby-2017-3",
+  },
+  {
+    name: "Men's Journal",
+    src: "/images/press/mens-journal.jpg",
+    href: "https://www.mensjournal.com/features/the-wild-violent-world-of-armored-combat-league-20140922/",
+  },
+  {
+    name: "Yahoo",
+    src: "/images/press/yahoo-news.jpg",
+    href: "https://sports.yahoo.com/knights-shining-armor-them-doing-162058863.html",
+  },
+  {
+    name: "Gizmodo",
+    src: "/images/press/gizmodo.jpg",
+    href: "https://gizmodo.com/harlem-knight-fight-shows-off-the-appeal-of-the-armored-1774117164",
+  },
 ];
 
 /* ------------------------------------------------------------------ *
