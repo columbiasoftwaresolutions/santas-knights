@@ -119,14 +119,6 @@ export default function AboutPage() {
                 <p key={para.slice(0, 24)}>{para}</p>
               ))}
             </div>
-            <blockquote className="mt-7 border-l-2 border-red pl-5">
-              <q className="font-serif text-[22px] font-medium italic leading-[1.35] text-ink [quotes:none]">
-                {founder.quote}
-              </q>
-              <cite className="mt-3 block text-[14px] font-semibold not-italic text-muted">
-                {founder.quoteAttribution}
-              </cite>
-            </blockquote>
           </div>
         </Container>
       </section>

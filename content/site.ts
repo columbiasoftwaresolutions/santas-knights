@@ -534,7 +534,7 @@ export const founder = {
   ],
   quote:
     "I'm ex-military and I got heavily injured while I was in. When I came out I was just a mess. Fitness and sports really saved my life.",
-  quoteAttribution: "Damion DiGrazia, to CBS New York",
+  quoteAttribution: "Damion DiGrazia, to Gothamist",
 };
 
 export const values: { title: string; body: string }[] = [
