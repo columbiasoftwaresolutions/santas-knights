@@ -63,7 +63,7 @@ export default function SponsorsPage() {
               const tile = (
                 <Card
                   hover
-                  className="flex h-[120px] items-center justify-center p-6"
+                  className="group flex h-[120px] items-center justify-center p-6"
                   key={sponsor.name}
                   {...(sponsor.href ? { href: sponsor.href } : {})}
                 >
@@ -73,7 +73,7 @@ export default function SponsorsPage() {
                     <img
                       src={sponsor.logo}
                       alt={sponsor.name}
-                      className="h-[52px] w-auto object-contain opacity-80 grayscale transition hover:opacity-100 hover:grayscale-0"
+                      className="h-[52px] w-auto object-contain opacity-80 grayscale transition group-hover:opacity-100 group-hover:grayscale-0"
                     />
                   ) : (
                     <span className="text-center text-[15.5px] font-extrabold tracking-[-0.01em] text-ink">
