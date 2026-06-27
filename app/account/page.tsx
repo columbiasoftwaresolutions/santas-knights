@@ -141,72 +141,78 @@ export default async function AccountPage() {
         </Container>
       </section>
 
-      {/* Gifts I'm sending */}
-      <MyGifts gifts={gifts} />
-
-      {/* My letters (Phase 3 / §C2) */}
-      <section className="py-section">
-        <Container>
-          <SectionHeading
-            eyebrow="Santa's Letters"
-            title="My letters"
-            intro="Every letter you've submitted and where it stands. Only you can see this."
-            introClassName="max-w-[52ch]"
-          />
-
-          {letters.length === 0 ? (
-            <Card className="mt-8 p-[34px] text-center">
-              <p className="text-muted">You haven&apos;t submitted a letter yet.</p>
-              <div className="mt-5 flex justify-center">
-                <Button href={links.submitLetter} variant="green">
-                  Submit a child&apos;s letter
-                </Button>
-              </div>
-            </Card>
-          ) : (
-            <div className="mt-8 grid gap-[18px] sm:grid-cols-2">
-              {letters.map((letter) => {
-                const badge = STATUS_LABELS[letter.status] ?? {
-                  label: letter.status,
-                  tone: "bg-paper-raised text-muted",
-                };
-                return (
-                  <Card key={letter.id} className="flex flex-col p-[26px]">
-                    <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-[17px] font-extrabold tracking-[-0.02em]">
-                        {letter.child_first_name}, age {letter.child_age}
-                      </h3>
-                      <span
-                        className={`rounded-pill px-3 py-1 text-[12px] font-bold ${badge.tone}`}
-                      >
-                        {badge.label}
-                      </span>
-                    </div>
-                    <p className="mt-3 line-clamp-3 flex-1 text-[14.5px] text-muted">
-                      {letter.wish_note}
-                    </p>
-                    <p className="mt-3 text-[12.5px] font-semibold text-muted">
-                      {letter.amazon_urls.length} gift
-                      {letter.amazon_urls.length === 1 ? "" : "s"} ·{" "}
-                      {new Date(letter.created_at).toLocaleDateString()}
-                    </p>
-                    {letter.status === "needs_edits" && letter.moderation_note && (
-                      <div className="mt-4 border border-red/30 bg-red/5 px-4 py-3 text-[13.5px] text-red">
-                        <strong className="font-bold">A moderator asked for an edit:</strong>{" "}
-                        {letter.moderation_note}
-                      </div>
-                    )}
-                  </Card>
-                );
-              })}
-            </div>
-          )}
-        </Container>
-      </section>
-
+      {/* Training / classes — above the letters tracking */}
       {showTraining && (
         <TrainingDashboard dashboard={dashboard} registrations={registrations} />
       )}
+
+      {/* Gifts I'm sending + My letters, side by side */}
+      <section className="border-t border-line py-section">
+        <Container>
+          <div className="grid gap-x-[44px] gap-y-14 lg:grid-cols-2">
+            {/* Gifts I'm sending */}
+            <MyGifts gifts={gifts} />
+
+            {/* My letters (Phase 3 / §C2) */}
+            <div>
+              <SectionHeading
+                eyebrow="Santa's Letters"
+                title="My letters"
+                intro="Every letter you've submitted and where it stands. Only you can see this."
+                introClassName="max-w-[52ch]"
+              />
+
+              {letters.length === 0 ? (
+                <Card className="mt-8 p-[34px] text-center">
+                  <p className="text-muted">You haven&apos;t submitted a letter yet.</p>
+                  <div className="mt-5 flex justify-center">
+                    <Button href={links.submitLetter} variant="green">
+                      Submit a child&apos;s letter
+                    </Button>
+                  </div>
+                </Card>
+              ) : (
+                <div className="mt-8 grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-1">
+                  {letters.map((letter) => {
+                    const badge = STATUS_LABELS[letter.status] ?? {
+                      label: letter.status,
+                      tone: "bg-paper-raised text-muted",
+                    };
+                    return (
+                      <Card key={letter.id} className="flex flex-col p-[26px]">
+                        <div className="flex items-center justify-between gap-3">
+                          <h3 className="text-[17px] font-extrabold tracking-[-0.02em]">
+                            {letter.child_first_name}, age {letter.child_age}
+                          </h3>
+                          <span
+                            className={`rounded-pill px-3 py-1 text-[12px] font-bold ${badge.tone}`}
+                          >
+                            {badge.label}
+                          </span>
+                        </div>
+                        <p className="mt-3 line-clamp-3 flex-1 text-[14.5px] text-muted">
+                          {letter.wish_note}
+                        </p>
+                        <p className="mt-3 text-[12.5px] font-semibold text-muted">
+                          {letter.amazon_urls.length} gift
+                          {letter.amazon_urls.length === 1 ? "" : "s"} ·{" "}
+                          {new Date(letter.created_at).toLocaleDateString()}
+                        </p>
+                        {letter.status === "needs_edits" && letter.moderation_note && (
+                          <div className="mt-4 border border-red/30 bg-red/5 px-4 py-3 text-[13.5px] text-red">
+                            <strong className="font-bold">A moderator asked for an edit:</strong>{" "}
+                            {letter.moderation_note}
+                          </div>
+                        )}
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </Container>
+      </section>
     </>
   );
 }

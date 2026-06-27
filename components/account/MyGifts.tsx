@@ -1,5 +1,4 @@
 import { Card } from "@/components/ui/Card";
-import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { markGifted, releaseClaim } from "@/app/letters/give/actions";
@@ -17,42 +16,40 @@ export type MyGift = {
 };
 
 /** Letters this member has claimed to gift. 'claimed' = still to buy/send,
- *  'fulfilled' = gift sent. Members confirm or release their own claims. */
+ *  'fulfilled' = gift sent. Members confirm or release their own claims.
+ *  Renders as a panel (no section wrapper) so it can sit beside "My letters". */
 export function MyGifts({ gifts }: { gifts: MyGift[] }) {
   if (gifts.length === 0) {
     return (
-      <section className="border-t border-line py-section">
-        <Container>
-          <SectionHeading
-            eyebrow="Santa's Letters"
-            title="Gifts I'm sending"
-            intro="Letters you've picked to gift will show up here so you can keep track."
-            introClassName="max-w-[52ch]"
-          />
-          <Card className="mt-8 p-[34px] text-center">
-            <p className="text-muted">You haven&apos;t adopted a letter yet.</p>
-            <div className="mt-5 flex justify-center">
-              <Button href={links.adoptLetter} variant="red" arrow>
-                Pick a letter to gift
-              </Button>
-            </div>
-          </Card>
-        </Container>
-      </section>
+      <div>
+        <SectionHeading
+          eyebrow="Santa's Letters"
+          title="Gifts I'm sending"
+          intro="Letters you've picked to gift will show up here so you can keep track."
+          introClassName="max-w-[52ch]"
+        />
+        <Card className="mt-8 p-[34px] text-center">
+          <p className="text-muted">You haven&apos;t adopted a letter yet.</p>
+          <div className="mt-5 flex justify-center">
+            <Button href={links.adoptLetter} variant="red" arrow>
+              Pick a letter to gift
+            </Button>
+          </div>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <section className="border-t border-line py-section">
-      <Container>
-        <SectionHeading
-          eyebrow="Santa's Letters"
-          title="Gifts I'm sending"
-          intro="The letters you've adopted. Mark one as sent once you've bought and shipped the gift."
-          introClassName="max-w-[52ch]"
-        />
-        <div className="mt-8 grid gap-[18px] sm:grid-cols-2">
-          {gifts.map((g) => {
+    <div>
+      <SectionHeading
+        eyebrow="Santa's Letters"
+        title="Gifts I'm sending"
+        intro="The letters you've adopted. Mark one as sent once you've bought and shipped the gift."
+        introClassName="max-w-[52ch]"
+      />
+      <div className="mt-8 grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-1">
+        {gifts.map((g) => {
             const gifted = g.status === "fulfilled";
             return (
               <Card key={g.id} className="flex flex-col p-[26px]">
@@ -109,8 +106,7 @@ export function MyGifts({ gifts }: { gifts: MyGift[] }) {
               </Card>
             );
           })}
-        </div>
-      </Container>
-    </section>
+      </div>
+    </div>
   );
 }
