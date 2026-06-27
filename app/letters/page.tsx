@@ -4,6 +4,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { LettersPortal } from "@/components/letters/LettersPortal";
 import type { SwipeLetter } from "@/components/letters/SwipeDeck";
 import { getCurrentUser } from "@/lib/auth";
+import { fetchAmazonImagePreviews } from "@/lib/amazonPreview";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured, LETTERS_BUCKET } from "@/lib/supabase/config";
 import { org } from "@/content/site";
@@ -51,13 +52,38 @@ async function getLetters(): Promise<SwipeLetter[] | null> {
     });
   }
 
+  const previewByLetterId = new Map<string, string[]>();
+  await Promise.all(
+    data
+      .filter((row) => {
+        const amazonUrls: string[] = row.amazon_urls ?? [];
+        const previewUrls: string[] = row.amazon_image_urls ?? [];
+        return amazonUrls.length > 0 && amazonUrls.some((_, i) => !previewUrls[i]);
+      })
+      .slice(0, 12)
+      .map(async (row) => {
+        const amazonUrls: string[] = row.amazon_urls ?? [];
+        const previewUrls: string[] = row.amazon_image_urls ?? [];
+        const fetched = await fetchAmazonImagePreviews(amazonUrls);
+        const merged = amazonUrls.map((_, i) => previewUrls[i] || fetched[i] || "");
+        if (!merged.some((url, i) => url && url !== previewUrls[i])) return;
+
+        previewByLetterId.set(row.id, merged);
+        const { error: updateError } = await supabase
+          .from("santa_letters")
+          .update({ amazon_image_urls: merged })
+          .eq("id", row.id);
+        if (updateError) console.error("Failed to backfill Amazon previews:", updateError.message);
+      }),
+  );
+
   return data.map((row) => ({
     id: row.id,
     childFirstName: row.child_first_name,
     childAge: row.child_age,
     wishNote: row.wish_note,
     amazonUrls: row.amazon_urls ?? [],
-    amazonImageUrls: row.amazon_image_urls ?? [],
+    amazonImageUrls: previewByLetterId.get(row.id) ?? row.amazon_image_urls ?? [],
     imageUrl: row.letter_image_path ? (signedByPath.get(row.letter_image_path) ?? null) : null,
   }));
 }
