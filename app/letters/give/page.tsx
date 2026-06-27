@@ -8,8 +8,12 @@ import { permanentRedirect } from "next/navigation";
 export default async function LettersGiveRedirect({
   searchParams,
 }: {
-  searchParams: Promise<{ do?: string }>;
+  searchParams: Promise<{ do?: string; demo?: string }>;
 }) {
   const params = await searchParams;
-  permanentRedirect(params.do === "submit" ? "/letters?do=submit" : "/letters");
+  const query = new URLSearchParams();
+  if (params.do === "submit") query.set("do", "submit");
+  if (params.demo === "1") query.set("demo", "1");
+  const qs = query.toString();
+  permanentRedirect(qs ? `/letters?${qs}` : "/letters");
 }

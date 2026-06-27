@@ -1,7 +1,7 @@
 /**
  * Full-stack UI test for the account-gated multi-gift submission.
  * Drives a real browser through the actual server actions:
- *   register -> redirected back to /letters/submit -> fill form with 2 gifts
+ *   register -> redirected back to /letters?do=submit -> fill form with 2 gifts
  *   -> success -> My Letters shows the letter.
  * Cleans up the test user + letter afterwards.
  *
@@ -54,15 +54,15 @@ async function run() {
   const page = await browser.newPage();
   console.log("Full-stack account-gated submission\n");
 
-  // Register, expecting a redirect back to the submit page.
-  await page.goto(`${BASE}/account/register?next=${encodeURIComponent("/letters/submit")}`);
+  // Register, expecting a redirect back to the submit side of the Letters page.
+  await page.goto(`${BASE}/account/register?next=${encodeURIComponent("/letters?do=submit")}`);
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);
   await Promise.all([
-    page.waitForURL("**/letters/submit", { timeout: 20000 }),
+    page.waitForURL("**/letters?do=submit", { timeout: 20000 }),
     page.click('button[type="submit"]'),
   ]);
-  check("register redirected to /letters/submit", page.url().includes("/letters/submit"));
+  check("register redirected to /letters?do=submit", page.url().includes("/letters?do=submit"));
 
   // The form is now visible (account satisfied the gate).
   await page.waitForSelector('input[name="child_first_name"]', { timeout: 10000 });
