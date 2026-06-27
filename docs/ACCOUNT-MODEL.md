@@ -62,7 +62,7 @@ This is what lets the same family account both **submit a Santa letter** and **e
 
 ## 5. The gift-giving (donor) flow — account-gated
 
-Adopting a letter requires a signed-in account. The swipe deck at `/letters/give` is gated: signed-out visitors see a create-account / sign-in card and never reach the letters. Two things are non-negotiable, and an account makes both reliable rather than best-effort:
+Adopting a letter requires a signed-in account. The swipe deck on `/letters` is gated: signed-out visitors see a create-account / sign-in card and never reach the letters. Two things are non-negotiable, and an account makes both reliable rather than best-effort:
 
 - **A reachable identity on every fulfillment.** Santa's Knights is a 501(c)(3); donors expect a fulfillment/tax acknowledgment, and the org needs a channel to coordinate handoff. The account already carries a confirmed email, so there's no separate email-capture step and no guest rows to reconcile.
 - **Self-dealing guard.** Block a guardian from fulfilling their own child's letter. With an account this is an exact `fulfiller_user_id == guardian_user_id` check rather than a fuzzy email match.
@@ -105,7 +105,7 @@ Identity lives on the existing `profiles` table; these are the **additions/chang
 This model **refines** earlier docs; update them to match (don't leave the contradiction):
 
 - **plan-v2 §C2** said "keep submission possible **without** an account (optional)." → **Superseded:** a letter submitter now **needs** an account.
-- **Earlier draft of this doc** kept gift-giving (adopting a letter) **guest-first**. → **Superseded:** adopting now **requires** an account too (§2, §5). The `/letters/give` swipe deck is gated behind sign-in.
+- **Earlier draft of this doc** kept gift-giving (adopting a letter) **guest-first**. → **Superseded:** adopting now **requires** an account too (§2, §5). The `/letters` swipe deck is gated behind sign-in.
 - **plan-v2 §A1 / EXECUTION-PLAN Phase 1** specify "email + password registration." → **Reaffirmed:** email + password is the single auth method for **every** role. An earlier draft of this doc made magic-link / OTP the default for seasonal users; that is **reverted** — one account, one password, everywhere (§2). This drops the SMTP dependency magic-link would have required.
 - **GLADIATORS-SITE "Users & Roles"** → reaffirmed: `instructor`/`admin` are **provisioned, never self-selected** (§3.2).
 - **GLADIATORS-SITE open question "Minors: program assumed 18+"** → **Resolved:** minors are in scope and handled via guardian-owned **family accounts** + `family_members`; training tables gain `family_member_id` (§4, §6).

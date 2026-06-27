@@ -88,7 +88,7 @@ async function run() {
   // Adopt gate copy (logged out)
   {
     const { ctx, page } = await fresh();
-    await page.goto(`${BASE}/letters/give`);
+    await page.goto(`${BASE}/letters`);
     check("adopt gate shows the login-button copy", (await page.textContent("body")).includes("Log in to gift a kid"));
     await ctx.close();
   }
@@ -120,8 +120,8 @@ async function run() {
   const letterA = await makeLetter();
   {
     const { ctx, page } = await fresh();
-    await login(page, donorEmail, password, "/letters/give");
-    check("donor reached the adopt deck", /\/letters\/give/.test(page.url()));
+    await login(page, donorEmail, password, "/letters");
+    check("donor reached the adopt deck", /\/letters(?:[?#]|$)/.test(page.url()));
     const giftBtn = page.getByRole("button", { name: /Gift this/ });
     await giftBtn.waitFor({ timeout: 12000 });
     await giftBtn.click();
@@ -143,7 +143,7 @@ async function run() {
   const letterSelf = await makeLetter({ guardian_user_id: donor?.id, guardian_email: donorEmail });
   {
     const { ctx, page } = await fresh();
-    await login(page, donorEmail, password, "/letters/give");
+    await login(page, donorEmail, password, "/letters");
     const giftBtn = page.getByRole("button", { name: /Gift this/ });
     await giftBtn.waitFor({ timeout: 12000 });
     await giftBtn.click();

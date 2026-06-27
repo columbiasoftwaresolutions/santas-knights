@@ -156,7 +156,7 @@ export async function submitLetter(
     accepted_name: guardianName,
     metadata: {
       user_agent: headerList.get("user-agent"),
-      submitted_via: "letters/submit",
+      submitted_via: "letters?do=submit",
     },
   });
   if (consentError) {

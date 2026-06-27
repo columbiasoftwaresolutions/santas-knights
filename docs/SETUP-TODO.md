@@ -65,7 +65,7 @@ Sign in at `/admin/login` to reach the moderation dashboard.
 
 Tell Claude the backend is live and it can verify the full flow end-to-end:
 submit a letter → moderate at `/admin` → see it in the swipe deck at
-`/letters/give` → mark fulfilled. (`/letters/give?demo=1` previews the swipe
+`/letters` → mark fulfilled. (`/letters?demo=1` previews the swipe
 UI with sample letters at any time.)
 
 ## Notes for later
