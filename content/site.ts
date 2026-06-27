@@ -97,13 +97,7 @@ export const navLinks: NavItem[] = [
     href: "/training",
     gladiators: true,
   },
-  {
-    label: "Letters to Santa",
-    children: [
-      { label: "Adopt a Letter", href: "/letters/give" },
-      { label: "Write a Letter", href: "/letters/give?do=submit" },
-    ],
-  },
+  { label: "Letters to Santa", href: "/letters" },
   { label: "Membership", href: "/membership" },
   { label: "Gallery", href: "/gallery" },
   {
@@ -535,9 +529,8 @@ export const founder = {
   role: "Founder, Santa's Knights",
   photoLabel: "PHOTO: Damion DiGrazia, founder",
   bio: [
-    "Damion DiGrazia is a service-disabled military veteran and fourth-generation New Yorker. He came home from the service badly injured. Martial arts and fitness helped him recover. After more than five years of teaching martial arts, he set out to build a free program where other people could train and improve their health. The idea also drew on a thoughtful gift he received through Operation Santa Claus as a child.",
-    "Damion brought experience from Wall Street and degrees from Ivy League universities to the work. He eventually left finance to run Santa's Knights full time and give other people the support that had helped him recover.",
-    "He started Gladiators NYC in 2013, turning it into the Santa's Knights 501(c)(3) nonprofit. The Letters to Santa program came from his own childhood, adopting a stranger's letter through Operation Santa, and he has been widening it every December since.",
+    "Founded in 2015 by Damion DiGrazia, Santa's Knights is a service-disabled military veteran founded non-profit, 501(c)(3), that is tax-exempt federally and in the State of New York. Damion was inspired to create Santa's Knights by his own experience as an impoverished child that received a very thoughtful gift from Operation Santa Claus (through the U.S. Post Office) and also how when he received a career-altering injury in the line of duty in the military, from which he eventually recovered years later through the pursuit of martial arts, endurance training, and High-Intensity Interval Training (HIIT).",
+    "After a career on Wall Street, and a bachelor's and master's at Ivy League universities, and also teaching martial arts for 5+ years on the side, Damion realized his passion was to create a free platform/program for people to be able to pursue their best-selves through martial arts and fitness. Combining all of these factors was how Santa's Knights was born and continues to thrive and grow every day! We welcome you in any way that you would like to be involved!",
   ],
   quote:
     "I'm ex-military and I got heavily injured while I was in. When I came out I was just a mess. Fitness and sports really saved my life.",

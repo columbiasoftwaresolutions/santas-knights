@@ -13,6 +13,8 @@ import { giftGuidance, privacyInstruction, links } from "@/content/site";
 
 type View = "adopt" | "submit";
 
+const VIEWS: View[] = ["adopt", "submit"];
+
 const ADOPT_NEXT = "/letters/give";
 const SUBMIT_NEXT = "/letters/give?do=submit";
 
@@ -88,11 +90,13 @@ export function LettersPortal({
   letters: SwipeLetter[] | null;
   demo: boolean;
 }) {
-  // `selected` drives the toggle + indicator (moves instantly on click);
-  // `view` drives the content (swapped at the midpoint of the crossfade) so the
-  // panel fades out, swaps while invisible, then fades back in.
-  const [selected, setSelected] = useState<View>(initialView);
+  // `view` drives the hero caption + toggle indicator and updates instantly.
+  // The two captions are stacked (both mounted) so the header column always
+  // reserves the taller side's height — switching never reflows the header, so
+  // the page doesn't jump. `bodyView` is the body, swapped at the midpoint of
+  // its crossfade so the panel fades out, swaps, then fades back in.
   const [view, setView] = useState<View>(initialView);
+  const [bodyView, setBodyView] = useState<View>(initialView);
   const [shown, setShown] = useState(true);
   const timer = useRef<number | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -101,15 +105,14 @@ export function LettersPortal({
 
   const switchView = useCallback(
     (next: View) => {
-      if (next === selected) return;
-      setSelected(next);
-      const href = next === "submit" ? SUBMIT_NEXT : ADOPT_NEXT;
+      if (next === view) return;
+      setView(next);
       // Keep the URL shareable/back-button-friendly without a route change, so
       // the two sides stay one page rather than two navigations.
-      window.history.replaceState(null, "", href);
+      window.history.replaceState(null, "", next === "submit" ? SUBMIT_NEXT : ADOPT_NEXT);
 
       const commit = () => {
-        setView(next);
+        setBodyView(next);
         setShown(true);
         // Move SR focus to the freshly shown panel without yanking scroll.
         window.requestAnimationFrame(() => panelRef.current?.focus({ preventScroll: true }));
@@ -123,10 +126,10 @@ export function LettersPortal({
       if (timer.current) window.clearTimeout(timer.current);
       timer.current = window.setTimeout(commit, FADE_MS);
     },
-    [selected],
+    [view],
   );
 
-  const fade = cn(
+  const bodyFade = cn(
     "transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none",
     shown ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0",
   );
@@ -139,21 +142,26 @@ export function LettersPortal({
         <Container>
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-16">
             <div>
-              <h1
-                className={cn(
-                  "font-display text-[clamp(46px,7vw,104px)] leading-[0.88] font-black tracking-[-0.04em] uppercase [&_em]:font-serif [&_em]:font-normal [&_em]:normal-case [&_em]:italic [&_em]:text-red",
-                  fade,
-                )}
-              >
-                {HERO[view].title}
-              </h1>
-              <div
-                className={cn(
-                  "mt-6 max-w-[44ch] text-[clamp(16px,1.5vw,19px)] leading-[1.6] text-muted",
-                  fade,
-                )}
-              >
-                {HERO[view].intro}
+              {/* Both captions live in one grid cell so the column always keeps
+                  the taller side's height — toggling never reflows the header. */}
+              <div className="grid">
+                {VIEWS.map((v) => (
+                  <div
+                    key={v}
+                    aria-hidden={v !== view}
+                    className={cn(
+                      "[grid-area:1/1] transition-opacity duration-200 ease-out motion-reduce:transition-none",
+                      v === view ? "opacity-100" : "pointer-events-none opacity-0",
+                    )}
+                  >
+                    <h1 className="font-display text-[clamp(46px,7vw,104px)] leading-[0.88] font-black tracking-[-0.04em] uppercase [&_em]:font-serif [&_em]:font-normal [&_em]:normal-case [&_em]:italic [&_em]:text-red">
+                      {HERO[v].title}
+                    </h1>
+                    <div className="mt-6 max-w-[44ch] text-[clamp(16px,1.5vw,19px)] leading-[1.6] text-muted">
+                      {HERO[v].intro}
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {/* The toggle — square poster control with a sliding accent. */}
@@ -166,20 +174,20 @@ export function LettersPortal({
                   aria-hidden
                   className={cn(
                     "pointer-events-none absolute inset-y-0 left-0 z-0 w-1/2 transition-[transform,background-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-                    selected === "adopt" ? "bg-red" : "bg-green",
+                    view === "adopt" ? "bg-red" : "bg-green",
                   )}
-                  style={{ transform: selected === "submit" ? "translateX(100%)" : "translateX(0%)" }}
+                  style={{ transform: view === "submit" ? "translateX(100%)" : "translateX(0%)" }}
                 />
                 <button
                   type="button"
                   role="tab"
                   id="tab-adopt"
-                  aria-selected={selected === "adopt"}
+                  aria-selected={view === "adopt"}
                   aria-controls="letters-panel"
                   onClick={() => switchView("adopt")}
                   className={cn(
                     "relative z-10 px-4 py-[15px] text-center text-[13px] font-bold tracking-[0.07em] uppercase transition-colors duration-200",
-                    selected === "adopt" ? "text-white" : "text-ink hover:text-red",
+                    view === "adopt" ? "text-white" : "text-ink hover:text-red",
                   )}
                 >
                   Adopt a letter
@@ -188,12 +196,12 @@ export function LettersPortal({
                   type="button"
                   role="tab"
                   id="tab-submit"
-                  aria-selected={selected === "submit"}
+                  aria-selected={view === "submit"}
                   aria-controls="letters-panel"
                   onClick={() => switchView("submit")}
                   className={cn(
                     "relative z-10 px-4 py-[15px] text-center text-[13px] font-bold tracking-[0.07em] uppercase transition-colors duration-200",
-                    selected === "submit" ? "text-white" : "text-ink hover:text-green",
+                    view === "submit" ? "text-white" : "text-ink hover:text-green",
                   )}
                 >
                   Submit a letter
@@ -219,10 +227,10 @@ export function LettersPortal({
           ref={panelRef}
           role="tabpanel"
           tabIndex={-1}
-          aria-labelledby={view === "adopt" ? "tab-adopt" : "tab-submit"}
-          className={cn("outline-none", fade)}
+          aria-labelledby={bodyView === "adopt" ? "tab-adopt" : "tab-submit"}
+          className={cn("outline-none", bodyFade)}
         >
-          {view === "adopt" ? (
+          {bodyView === "adopt" ? (
             <AdoptPanel signedIn={signedIn} letters={letters} demo={demo} />
           ) : (
             <SubmitPanel signedIn={signedIn} defaultEmail={defaultEmail} />

@@ -10,25 +10,7 @@ export function GladiatorsTeaser() {
   return (
     <section id="training" className="bg-ink py-26 text-bone">
       <Container>
-        <div className="mb-20 flex flex-wrap gap-[18px]">
-          {gladiatorsMeta.map((item, i) => (
-            <div key={item.value} className="flex flex-col gap-1 border-[1.5px] border-bone/30 px-[26px] py-[18px]">
-              <span
-                className={cn(
-                  "font-display text-[24px] font-black uppercase tracking-[-0.01em]",
-                  CHIP_TONE[i],
-                )}
-              >
-                {item.value}
-              </span>
-              <span className="text-[12px] uppercase tracking-[0.08em] text-bone/60">
-                {item.label}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid items-center gap-14 md:grid-cols-[0.6fr_1.4fr]">
+        <div className="grid items-start gap-14 md:grid-cols-[0.6fr_1.4fr]">
           <Photo
             src="/images/headshot.png"
             alt={`${founder.name}, ${founder.role}`}
@@ -37,15 +19,33 @@ export function GladiatorsTeaser() {
             className="aspect-[4/5]"
           />
           <div>
+            <div className="mb-12 flex flex-wrap gap-[18px]">
+              {gladiatorsMeta.map((item, i) => (
+                <div key={item.value} className="flex flex-col gap-1 border-[1.5px] border-bone/30 px-[26px] py-[18px]">
+                  <span
+                    className={cn(
+                      "font-display text-[24px] font-black uppercase tracking-[-0.01em]",
+                      CHIP_TONE[i],
+                    )}
+                  >
+                    {item.value}
+                  </span>
+                  <span className="text-[12px] uppercase tracking-[0.08em] text-bone/60">
+                    {item.label}
+                  </span>
+                </div>
+              ))}
+            </div>
             <blockquote className="font-serif text-[clamp(28px,3.4vw,46px)] font-normal leading-[1.12] tracking-[-0.02em]">
               <span className="font-semibold text-red">&ldquo;</span>I&apos;m ex-military and I got
-              heavily injured while I was in. When I came out I was just a mess. Fitness and sports
-              really <em className="italic text-amber">saved my life.</em>&rdquo;
+              heavily injured while I was in. And so when I came out I was just a mess. Fitness and
+              sports really <em className="italic text-amber">saved my life.</em> … I&apos;m just so
+              proud we&apos;re becoming a real New York thing.&rdquo;
             </blockquote>
             <div className="mt-7 text-[14px] font-semibold uppercase tracking-[0.1em] text-amber">
               {founder.name}, {founder.role}
               <span className="mt-1 block font-medium tracking-[0.06em] text-bone/55">
-                To CBS New York
+                To Gothamist
               </span>
             </div>
           </div>
