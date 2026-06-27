@@ -11,13 +11,10 @@ const TABS: { key: string; label: string; href: string }[] = [
   { key: "classes", label: "Classes", href: "/admin/classes" },
   { key: "signups", label: "Signups", href: "/admin/signups" },
   { key: "checkin", label: "Check-in", href: "/admin/check-in" },
-  { key: "xp", label: "XP & Levels", href: "/admin/xp" },
   { key: "videos", label: "Videos", href: "/admin/videos" },
-  { key: "gallery", label: "Gallery", href: "/admin/gallery" },
-  { key: "partners", label: "Partners", href: "/admin/partners" },
   { key: "donations", label: "Donations", href: "/admin/donations" },
   { key: "grants", label: "Grant export", href: "/admin/grants" },
-  { key: "roles", label: "Roles", href: "/admin/roles" },
+  { key: "users", label: "Users", href: "/admin/users" },
 ];
 
 /**

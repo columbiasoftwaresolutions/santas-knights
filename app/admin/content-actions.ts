@@ -174,5 +174,5 @@ export async function updateUserRole(formData: FormData): Promise<void> {
   }
 
   await supabase.from("profiles").update({ role }).eq("email", email);
-  revalidatePath("/admin/roles");
+  revalidatePath("/admin/users");
 }

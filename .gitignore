@@ -41,3 +41,5 @@ next-env.d.ts
 # e2e test artifacts (the e2e/ scripts are committed; their outputs aren't)
 /e2e-screenshots/
 /e2e-assets/
+
+dogfood-output/
