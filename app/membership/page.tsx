@@ -112,7 +112,7 @@ export default function MembershipPage() {
             ].map((item) => (
               <div key={item.title}>
                 <span aria-hidden className="mb-4 block h-1 w-12 rounded-pill bg-red" />
-                <h3 className="text-h3">{item.title}</h3>
+                <h3 className="text-h3 text-ink">{item.title}</h3>
                 <p className="mt-2.5 text-muted">{item.body}</p>
               </div>
             ))}

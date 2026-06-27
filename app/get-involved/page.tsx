@@ -50,7 +50,7 @@ export default function GetInvolvedPage() {
                 aria-hidden
                 className={`mb-5 h-1 w-12 rounded-pill ${ACCENT[way.variant].rule}`}
               />
-              <h2 className="font-display text-h3 font-black uppercase">{way.title}</h2>
+              <h2 className="font-display text-h3 font-black uppercase text-ink">{way.title}</h2>
               <p className="mt-2.5 flex-1 text-muted">{way.body}</p>
               <div className="mt-6">
                 <Button

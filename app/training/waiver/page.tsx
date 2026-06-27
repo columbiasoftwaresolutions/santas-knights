@@ -92,7 +92,7 @@ export default async function WaiverPage({
           )}
 
           <Card className="p-[30px] md:p-[38px]">
-            <h2 className="text-h3">Liability waiver &amp; assumption of risk</h2>
+            <h2 className="text-h3 text-ink">Liability waiver &amp; assumption of risk</h2>
             <p className="mt-1 text-[13px] font-semibold text-muted">Version {LIABILITY_WAIVER_VERSION}</p>
             <div className="mt-4 max-h-[320px] overflow-y-auto whitespace-pre-line border border-line bg-paper-raised p-5 text-[14.5px] leading-relaxed text-ink/90">
               {LIABILITY_WAIVER_TEXT}

@@ -189,7 +189,7 @@ export default function DonatePage() {
             {spend.map((item) => (
               <div key={item.title}>
                 <span aria-hidden className="mb-4 block h-1 w-12 rounded-pill bg-red" />
-                <h2 className="text-h3">{item.title}</h2>
+                <h2 className="text-h3 text-ink">{item.title}</h2>
                 <p className="mt-2.5 text-muted">{item.body}</p>
               </div>
             ))}

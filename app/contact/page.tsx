@@ -59,7 +59,7 @@ export default function ContactPage() {
           </div>
 
           <Card className="p-[34px]">
-            <h2 className="text-h3">Reach us directly</h2>
+            <h2 className="text-h3 text-ink">Reach us directly</h2>
             <div className="mt-4">
               <DetailRow label="Visit">
                 <a href={mapLink} className="transition-colors hover:text-red">

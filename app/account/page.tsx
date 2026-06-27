@@ -229,7 +229,7 @@ function ActionCard({
   return (
     <Card hover className="flex flex-col p-[30px]">
       <span aria-hidden className={`mb-4 block h-1 w-10 rounded-pill ${accent}`} />
-      <h2 className="text-h3">{title}</h2>
+      <h2 className="text-h3 text-ink">{title}</h2>
       <p className="mt-2.5 flex-1 text-muted">{body}</p>
       <div className="mt-5">
         <Button href={href} variant={variant} className="px-5 py-3 text-[14.5px]">
