@@ -425,12 +425,12 @@ export const pressLogos: { name: string; src: string; href: string }[] = [
   },
   {
     name: "ABC News",
-    src: "/images/press/abc-news.jpg",
+    src: "/images/press/abc-news.png",
     href: "https://abcnews.go.com/Travel/competing-axe-wielding-bone-crushing-sport-medieval-combat/story?id=24865343",
   },
   {
     name: "Business Insider",
-    src: "/images/press/business-insider.jpg",
+    src: "/images/press/business-insider.png",
     href: "https://www.businessinsider.com/armored-combat-league-warriors-management-consultant-hobby-2017-3",
   },
   {
