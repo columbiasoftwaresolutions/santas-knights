@@ -71,6 +71,12 @@ Add a row to the table for the relevant month. Keep entries one line where possi
 | 2026-06-27 | **Letters: drop the moderation queue.** Submissions now go **live immediately** (status `live`) and admins **delete** problem letters instead of approving them. Simplify `letter_status` to `live`/`fulfilled`/`deleted`; rework the `public_letters` (live + unclaimed), `my_letters` (drops `moderation_note`), and `my_gifts` views; update the submit action, the admin Letters/Gifts dashboards, account status labels, and the Letters-page copy ("You submit, it goes live"); bump guardian consent to `draft-3` ("may remove any submission if needed"). Update CLAUDE.md schema + ACCOUNT-MODEL/SETUP-TODO + e2e; add `docs/sql/2026-06-letters-live-deleted.sql`. **Requires applying that SQL to Supabase.** | Beta | Feature | None — beta stays noindex, not public; behavior: letters go live instantly, lighter admin (delete vs approve) | CSS | tsc + prod build green; **DB migration must be applied separately to Supabase** |
 | _e.g._ 2026-06-XX | _Consolidate social/stream links on Links page_ | Both | Content | _SEO: neutral · Ads: none · Analytics: track click-through delta · UX: fewer dead links_ | Nicolas | _Baseline recorded first; mirror on Wix, then build on new site_ |
 
+## 2026-07
+
+| Date | Change | Where | Type | Impact (SEO / Ads / Analytics / UX) | Owner | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-07-03 | Docs: reflect the Plan v2 split — the Gladiators *operational* training tracker (booking, waivers, check-in, XP, dashboards, videos, admin) plus Shop/Armory now build on the separate `gladiators.nyc` site; this repo keeps the Gladiators *content* pages only. Reword CLAUDE.md + README.md to match; relocate docs from `docs/` to the repo root | Beta | Infra | None — internal docs, no public exposure | CSS | Companion `gladiators.nyc` repo scaffolded + planned separately; no app code changed in this repo |
+
 <!--
 Copy this row to add an entry:
 | YYYY-MM-DD | <what changed> | Wix/Beta/New/Both | Content/Layout/SEO/Ads/Analytics/Feature/Infra | SEO: … · Ads: … · Analytics: … · UX: … | <owner> | <links/notes> |

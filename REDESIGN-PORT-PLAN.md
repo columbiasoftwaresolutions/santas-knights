@@ -55,7 +55,7 @@ existing client components + server actions (reskin only). Real data, not the de
 | `/sponsors` | `sponsors.html` | partner tiles + press strip |
 | `/links` | `links.html` | link-in-bio, minimal centered layout |
 | `/membership` | `membership.html` | 6 tiers; free tier distinct; billing URLs manual |
-| `/training` | `training.html` | class catalog; on-site booking (training tracker built here — Plan v2 §B3). _Booking flow not yet wired; CTAs are placeholders._ |
+| `/training` | `training.html` | class catalog (content); **Book Now** CTAs **link out to `gladiators.nyc`** (training tracker on `gladiators.nyc` — Plan v2 §B3). _Booking flow not wired; CTAs are placeholders until that site is live._ |
 | `/online` | `online.html` | content page; video embeds + (later) uploaded training videos |
 | `/gallery` | `gallery.html` | 4 real photos + honest placeholders |
 

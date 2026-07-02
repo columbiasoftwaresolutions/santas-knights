@@ -1,8 +1,8 @@
 # Gladiators NYC — Combat Program & Training Tracker (spec)
 
-> ⚠️ **See [plan-v2.md](./plan-v2.md) for the build boundary.** The Gladiators NYC **free program is built on this site** (`santasknights.org`): class/program content **and** the full training tracker — booking + waiver, instructor check-in, XP/gamification, participant dashboard, training-video uploads, training admin. The **only** Gladiators features kept off this site are the **commercial Shop and Armory** (item-level armor inventory & rentals), which live on the separate `gladiators.nyc` site because Santa's Knights is a 501(c)(3) and commercial activity stays off the nonprofit domain. This document is the authoritative spec for the training tracker's behavior and data model (built here) **and** the commercial companion (linked out).
+> ⚠️ **See [plan-v2.md](./plan-v2.md) for the build boundary.** The Gladiators NYC **content pages are built on this site** (`santasknights.org`): the Training/Classes catalog + descriptions, `/online` embeds, Team/Fighters, Media/Gallery, Events/Tickets, founder, brand copy. The **operational training tracker** — booking + waiver, instructor check-in, XP/gamification, participant dashboard, training-video uploads, training admin — **and** the **commercial Shop and Armory** (item-level armor inventory & rentals) are built on the separate `gladiators.nyc` site, alongside the store, because Santa's Knights is a 501(c)(3) and operational/commercial activity is consolidated off the nonprofit domain. The two sites **share one identity** (single login). This document remains the authoritative spec for the training tracker's behavior and data model (built on `gladiators.nyc`) **and** the commercial companion.
 
-**Relationship.** **Santa's Knights, Inc.** is the 501(c)(3) nonprofit / parent org. **Gladiators NYC** is its combat program/team brand — the classes *are* the Gladiators program, delivered free by the nonprofit. The free program runs **on this site, under one account system and one deployment**, branded as a Gladiators "steel" sub-brand section. The site **cross-links out** to `gladiators.nyc` only for commercial purchases (merch) and armor rentals; armor-rental *eligibility* is computed here.
+**Relationship.** **Santa's Knights, Inc.** is the 501(c)(3) nonprofit / parent org. **Gladiators NYC** is its combat program/team brand — the classes *are* the Gladiators program, delivered free by the nonprofit. The program's **content** runs **on this site** (branded as a Gladiators "steel" sub-brand section); the program's **operational** side — booking, waivers, check-in, XP, dashboards, training videos, admin — runs on **`gladiators.nyc`**, alongside the commercial store. The two are bound by **one shared identity** (single login across both sites). The site **cross-links out** to `gladiators.nyc` for class booking, commercial purchases (merch), and armor rentals; armor-rental *eligibility* is computed on `gladiators.nyc`.
 
 > Feature requirements remain authoritative in [REQUIREMENTS.md](./REQUIREMENTS.md) (Stage 1 Gladiators pages + all of Stage 2). This doc captures the Gladiators-specific scope, data model, and reference XP values so they aren't lost from the main README.
 
@@ -13,16 +13,16 @@
 | Area | Where | Features (high level) |
 | --- | --- | --- |
 | **Public pages** | **This site** | Training/Classes, Team/Fighters, Media/Gallery, Events/Tickets |
-| **Training tracker** | **This site** | Booking + waiver, instructor check-in, XP/gamification, participant dashboard, training-video uploads, admin config |
+| **Training tracker** | **`gladiators.nyc`** | Booking + waiver, instructor check-in, XP/gamification, participant dashboard, training-video uploads, admin config |
 | **Commercial** | **`gladiators.nyc`** | Merch **Shop**; **Armory** — item-level armor inventory & rentals |
 
-**Payments stay external** (no on-site payments/e-commerce): **Tickets** → Eventbrite; **Shop/Armory** → external store on `gladiators.nyc`. All redirects.
+**Payments stay external** (no on-site payments/e-commerce): **Tickets** → Eventbrite; **Shop/Armory** → external store on `gladiators.nyc`. All redirects. **Class booking and tickets redirect out** — the content pages here render **Book Now / Register** CTAs that deep-link to the booking flow on `gladiators.nyc`.
 
 ---
 
 ## Public pages (built here)
 
-- **Training ("Armored Up") / Classes** — class catalog (Gladiator Bootcamp, Armored Practice, Women's Medieval Combat, Fundamentals, Veterans program, etc.), all free; **on-site booking** (per-class routes; the booking flow itself = Training Tracker, below).
+- **Training ("Armored Up") / Classes** — class catalog (Gladiator Bootcamp, Armored Practice, Women's Medieval Combat, Fundamentals, Veterans program, etc.), all free; per-class **Book Now / Register** CTAs **link out to `gladiators.nyc`** for the actual booking (the booking flow itself = Training Tracker, below, on `gladiators.nyc`).
 - **Team / Fighters** — roster, competition history, combat identity.
 - **Media / Gallery** — photos, press, highlights.
 - **Events / Tickets** — prominent CTA out to Eventbrite (no embed, avoids CLS).
@@ -31,15 +31,15 @@
 
 ---
 
-## Training Tracker & Booking (built here)
+## Training Tracker & Booking (on `gladiators.nyc`)
 
 - **Booking & Waiver** — account registration, one-time digital liability waiver with an immutable signed record, class browsing/registration, capacity enforcement, instructor roster view.
 - **Media release / photo consent** — separate opt-in for use of participant photos/video in marketing (Instagram, etc.), captured at registration and versioned + stored like the liability waiver. Parent/guardian consent for minors.
 - **Instructor Check-In** — elevated-role instructors check in participants; check-ins are timestamped, trigger XP awards, and are stored for grant documentation. Veteran status flagged per participant. Check-in is instructor-initiated only (no self-report).
 - **Strength & Conditioning — Training Video Drop** — instructor/admin upload of training videos/demos to the Training / S&C area; per-video metadata (title, description, category, uploader, date); basic edit/replace/delete. Stored in Supabase Storage (private `training-videos` bucket).
 - **XP & Gamification Engine** — participants earn XP for tracked activities along two configurable tracks (Fighter Path, Instructor Path). All XP values, level names, thresholds, and rewards are **admin-editable data, not hardcoded.**
-- **Participant Dashboard** — current XP and level, progress bar to next unlock, attendance history, badges, **armor rental eligibility status** (computed here; the rental itself happens on the commercial Armory), veteran status. Lives under `/account`.
-- **Admin Configuration Panel** — set XP values/thresholds, view participants & attendance, export CSV for grant applications, manage training videos. In **this repo's** `/admin`.
+- **Participant Dashboard** — current XP and level, progress bar to next unlock, attendance history, badges, **armor rental eligibility status** (computed on `gladiators.nyc`; the rental itself happens on the commercial Armory), veteran status. Lives on `gladiators.nyc`; the `santasknights.org` `/account` links out to it for signed-in participants.
+- **Admin Configuration Panel** — set XP values/thresholds, view participants & attendance, export CSV for grant applications, manage training videos. In the **`gladiators.nyc` admin**.
 
 > **XP design principle:** XP rewards engagement, consistency, volunteering, and learning. It can make a participant *eligible to request* a privilege (e.g. armor rental, sparring) but must **never auto-grant safety-sensitive access**. Those always require instructor/admin certification.
 
@@ -51,7 +51,7 @@
 
 ## Users & Roles
 
-Roles live on this site's `profiles` record (enum `app_role`) and are enforced via Supabase Row Level Security — **one account system across the whole site** (a donor/letter-submitter can be the same person as a participant). Instructor and admin roles are elevated and assigned by an admin.
+Roles live on the shared `profiles` record (enum `app_role`) and are enforced via Supabase Row Level Security — **one shared identity across both sites** (`santasknights.org` + `gladiators.nyc`): a single login where a donor/letter-submitter can be the same person as a participant. `public`/`admin` cover the nonprofit/Letters side here; `participant`/`instructor` gate the `gladiators.nyc` operational app against the same identity. Instructor and admin roles are elevated and assigned by an admin.
 
 | Role (`app_role`) | Capabilities |
 | --- | --- |
@@ -64,7 +64,7 @@ Roles live on this site's `profiles` record (enum `app_role`) and are enforced v
 
 ## Data Model (training tables)
 
-Provisioned in **this project's** Supabase (alongside the nonprofit/Letters tables). Identity is the existing `profiles` table — the participant fields below extend it / reference it.
+**Operated by `gladiators.nyc`** against the shared `profiles` table. Identity is the existing shared `profiles` table (§ Users & Roles) — the participant tables below key their user off it. Whether these tables physically live in the same Supabase project as the nonprofit/Letters tables or a separate project is an **open question** (see Open Questions).
 
 | Table | Key fields |
 | --- | --- |
@@ -116,10 +116,10 @@ Recruit 0 · Trainee 25 · Novice 75 · Squire 150 · Armsman 300 · Knight Cand
 
 ## Commercial companion (`gladiators.nyc`)
 
-The **only** Gladiators features that live off this site. Commercial activity is kept off the nonprofit (501(c)(3)) domain; this site cross-links out to it.
+The commercial pieces sit alongside the operational training tracker on `gladiators.nyc`. Commercial activity is kept off the nonprofit (501(c)(3)) domain; this site cross-links out to it.
 
 - **Shop** — swords, axes, armor, apparel; external e-commerce store.
-- **Armory — Inventory & Rental** — item-level inventory (not just full sets); rental is a privilege unlocked after a configured XP/class threshold **and** instructor certification (not auto-granted by XP); rental log. **Armor-rental eligibility is computed on this site** (from XP + certification) and surfaced on the participant dashboard; the rental transaction and inventory live on the commercial companion.
+- **Armory — Inventory & Rental** — item-level inventory (not just full sets); rental is a privilege unlocked after a configured XP/class threshold **and** instructor certification (not auto-granted by XP); rental log. **Armor-rental eligibility is computed on `gladiators.nyc`** (from XP + certification, which now live there) and surfaced on the participant dashboard; the rental transaction and inventory live on the same commercial companion.
 
 **Commercial-side tables** (on `gladiators.nyc`, not this project):
 
@@ -128,11 +128,13 @@ The **only** Gladiators features that live off this site. Commercial activity is
 | `armor_inventory` | item_id, set_name, item_type, size, condition, status, assigned_to, checkout_time, expected_return, actual_return, damage_notes, repair_notes, photos, admin_notes |
 | `armor_rentals` | user_id, armor_item_id, class_id, rented_at, certified_by |
 
-> Armor is tracked at the **item level**, not just full sets, so individual pieces (size, condition, repair history, photos) can be managed. The rental lifecycle and damage/loss policy are being finalized with the client. **Open question:** how the eligibility flag (computed here) is shared with the commercial Armory (API, shared identity, or manual).
+> Armor is tracked at the **item level**, not just full sets, so individual pieces (size, condition, repair history, photos) can be managed. The rental lifecycle and damage/loss policy are being finalized with the client. Eligibility and the Armory now live in the same `gladiators.nyc` app, so no cross-boundary handoff of the eligibility flag is needed.
 
 ---
 
 ## Admin Tasks
+
+> These training-admin tasks run on the **`gladiators.nyc` admin** (not this repo's `/admin`), against the shared identity.
 
 | Task | How |
 | --- | --- |
@@ -151,7 +153,8 @@ The **only** Gladiators features that live off this site. Commercial activity is
 - **Minors:** Program assumed 18+; if minors are accepted, a parent/guardian co-sign flow is needed.
 - **Waiver:** Final waiver text to be provided before the tracker build. Typed-name e-signature + checkbox consent is acceptable for v1.
 - **Classes:** Class types defined (intro, fitness, weapons, armor intro, sparring, women's, veterans, special events, volunteer shifts). Advanced/armor/sparring/weapons require instructor approval. Cancellations allowed and tracked; no automatic XP penalties or bans in v1.
-- **Armor (commercial):** Rental lifecycle and damage/loss policy still being finalized (coordinating with Shan & Amy). How eligibility (computed here) crosses to the `gladiators.nyc` Armory.
+- **Armor (commercial):** Rental lifecycle and damage/loss policy still being finalized (coordinating with Shan & Amy). (Eligibility and the Armory now both live on `gladiators.nyc`, so there is no cross-boundary eligibility handoff to resolve.)
+- **Shared-identity mechanics:** the two sites share one login (single Supabase Auth + `profiles` + `app_role`) — but *how* physically? Same Supabase project (the `gladiators.nyc` app reads/writes the shared `profiles` + training tables) vs. a separate project with a shared identity provider / SSO. Decide before the `gladiators.nyc` build starts.
 - **Training videos:** Max file size / accepted formats; viewer access (public vs. logged-in); per-class linkage; thumbnail/poster handling; transcoding/streaming vs. direct file serving.
 
 ---

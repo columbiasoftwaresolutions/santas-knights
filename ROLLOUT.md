@@ -18,10 +18,9 @@ Built fresh on the new stack, gated and `noindex`. No public SEO/ads/analytics e
 
 1. **Member accounts + Letters family tracking** — validates the Supabase + Auth + Storage foundation on this repo. No public-site dependency.
 2. **Santa's Letters** — public-facing, launched on its own timeline (mind the **Nov–Dec seasonal spike**).
-3. **Public marketing site** (incl. Gladiators program pages, gallery, donate/membership, partners) — built in parallel, but its **public cutover is the last, coordinated step** (see [Public Cutover](#public-cutover-the-coordinated-event)), not an early deliverable.
-4. **Training tracker** (booking + waiver, check-in, XP, participant dashboard, training videos, training admin) — **built here**, gated behind `participant`/`instructor` roles ([GLADIATORS-SITE.md](./GLADIATORS-SITE.md)). The heaviest chunk; sequence it after the public-site content lands.
+3. **Public marketing site** (incl. Gladiators *content* pages — class catalog, per-class descriptions, `/online` embeds — gallery, donate/membership, partners) — built in parallel, but its **public cutover is the last, coordinated step** (see [Public Cutover](#public-cutover-the-coordinated-event)), not an early deliverable. Class-page **Book Now** CTAs cross-link out to `gladiators.nyc`. Track A here **ends with this public marketing site**.
 
-> **Only the commercial Shop & Armory are a separate `gladiators.nyc` workstream** ([GLADIATORS-SITE.md](./GLADIATORS-SITE.md#commercial-companion-gladiatorsnyc)), not this repo. This site **cross-links out** to them for purchases/rentals.
+> **The operational training tracker is now a separate `gladiators.nyc` workstream, not this repo's Track A.** All operational Gladiators functionality — class booking + scheduling, waivers + media consent, instructor check-in, XP, participant dashboards, training-video management, training admin + CSV grant export — **plus the commercial Shop & Armory** is built on the separate **`gladiators.nyc`** site ([GLADIATORS-SITE.md](./GLADIATORS-SITE.md#commercial-companion-gladiatorsnyc)), gated behind `participant`/`instructor` roles on the **shared identity**. It runs on that site's own track, sequenced independently. This site **cross-links out** to it for booking, purchases, and rentals.
 
 ### Track B — Public mirroring on Wix (content changes)
 
@@ -47,14 +46,14 @@ To track engagement cleanly, public-facing changes that *will* appear on the new
 | **Beta (new stack)** | New platform build + QA, gated behind auth/password | **`noindex`, `robots: disallow`** |
 | **Preview (Vercel)** | Per-PR preview deployments | `noindex` |
 
-**One nonprofit site + a commercial companion** — under **Plan v2** ([plan-v2.md](./plan-v2.md)), `santasknights.org` (this repo) hosts the **whole nonprofit**: nonprofit pages, Letters to Santa, and the **full Gladiators free program** (class content + training tracker — booking, waiver, check-in, XP, dashboard, videos). `gladiators.nyc` is a **separate site** for the **commercial Shop & Armory only**, kept off the nonprofit domain. The two **cross-link**; only commercial actions (shop/rentals) link out.
+**One nonprofit site + a Gladiators operations/commerce companion** — under **Plan v2** ([plan-v2.md](./plan-v2.md)), `santasknights.org` (this repo) hosts the **nonprofit**: nonprofit pages, member accounts, Letters to Santa, and **all Gladiators *content*** (class catalog, per-class descriptions, `/online` embeds, team, media, events, brand copy) — the free-class landing pages on the Ad-Grant-eligible domain. `gladiators.nyc` is a **separate site** (built soon) that owns **all Gladiators *operational* functionality** (class booking + scheduling, waivers + media consent, instructor check-in, XP, participant dashboards, training-video management, training admin + CSV export) **plus the commercial Shop & Armory**. The two share **one identity** (single Supabase Auth + `profiles` + `app_role`; `participant`/`instructor` gate the `gladiators.nyc` app) and **cross-link** — booking, shop purchases, and armor rentals link out to `gladiators.nyc`.
 
 | Domain | Role | Production (Wix) | Beta (new stack) |
 | --- | --- | --- | --- |
-| `santasknights.org` | Nonprofit + Letters + Gladiators free program (content + tracker) | Live | `beta.santasknights.org` |
-| `gladiators.nyc` | Commercial Shop + Armory (**separate site/codebase**) | Live (currently standalone) | separate commercial deployment/cutover |
+| `santasknights.org` | Nonprofit + Letters + Gladiators content | Live | `beta.santasknights.org` |
+| `gladiators.nyc` | Gladiators operational tracker + commercial Shop + Armory (**separate site/codebase, shared identity**) | Live (currently standalone) | separate commercial deployment/cutover |
 
-> Both sites migrate off Wix on **separate cutovers**. Consolidating the free program on `santasknights.org` keeps the free-class landing pages on the Ad-Grant-eligible domain and consolidates SEO authority — use per-class URLs + `Course`/`Event` schema. Coordinate any `gladiators.nyc` redirects and cross-link targets with Nicolas so SEO/links and ad destinations are preserved.
+> Both sites migrate off Wix on **separate cutovers**. Keeping the free-class **content** on `santasknights.org` keeps the landing pages on the Ad-Grant-eligible domain and consolidates SEO authority — use per-class URLs + `Course`/`Event` schema, with **Book Now** deep-linking to the booking flow on `gladiators.nyc`. Coordinate any `gladiators.nyc` redirects and cross-link targets with Nicolas so SEO/links and ad destinations are preserved.
 
 > Beta **must stay `noindex`** until cutover so it never competes with the live Wix site in search or cannibalizes ad landing pages. Confirm `robots.txt` + `X-Robots-Tag` before sharing any beta link.
 

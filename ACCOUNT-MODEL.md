@@ -8,7 +8,7 @@ This document settles **who needs an account, what kind, and how it's created** 
 
 ## 1. Core principle — one identity, many capabilities
 
-**One human = one `profiles` row = one login.** There is a single Santa's Knights account system (Supabase Auth + `profiles`) across the whole site — not separate account systems per function. A donor who is also a parent enrolling a kid is **one account**.
+**One human = one `profiles` row = one login.** There is a single Santa's Knights account system (Supabase Auth + `profiles`) — **one shared identity across both sites** (`santasknights.org` **and** `gladiators.nyc`), not separate account systems per function or per site. A donor who is also a parent enrolling a kid is **one account**, and the same login works on the nonprofit site and the Gladiators operational site. _(How the two apps physically share the session — one Supabase project vs. a shared identity provider — is an open question; "shared for now" means one auth source. See [plan-v2.md §D5](./plan-v2.md).)_
 
 `app_role` (the existing enum `public · participant · instructor · admin`) is the **privilege tier** — what elevated things the account may do. It is *not* a label for every persona:
 
@@ -32,9 +32,9 @@ This document settles **who needs an account, what kind, and how it's created** 
 
 **One auth method everywhere — email + password.** There is a single way to sign in across the whole site; no magic-link / OTP, no per-role auth split. Dropping magic-link removes the dependency on configured email delivery (SMTP) and keeps the mental model trivial: one account, one password, every role. Registration creates an already-confirmed user (server action, admin client) so signup doesn't depend on an email round-trip either.
 
-**Every meaningful action now sits behind one free account.** Submitting a letter, adopting a wish to gift, and booking a class all require signing in. An earlier draft kept gift-giving guest-first to avoid a signup wall; that was **reversed** — adopting a letter links the gift to a real, reachable identity, which is what makes the tax acknowledgment, handoff coordination, and the self-dealing guard (§5) actually enforceable rather than best-effort. The only people who never need an account are anonymous visitors browsing public pages (home, class catalog).
+**Every meaningful action now sits behind one free account.** Submitting a letter, adopting a wish to gift, and booking a class (the last on `gladiators.nyc`, same shared login) all require signing in. An earlier draft kept gift-giving guest-first to avoid a signup wall; that was **reversed** — adopting a letter links the gift to a real, reachable identity, which is what makes the tax acknowledgment, handoff coordination, and the self-dealing guard (§5) actually enforceable rather than best-effort. The only people who never need an account are anonymous visitors browsing public pages (home, class catalog).
 
-**One login for everyone, role decides the landing.** There is a single sign-in form at `/account/login` (the old `/admin/login` just forwards to it). On success the user is routed by role: an `admin` lands in the admin area (`/admin`); everyone else lands on their member dashboard (`/account`). An explicit `?next=` destination (e.g. coming from the adopt gate) is always honored regardless of role. The member dashboard exposes the three member actions — **adopt a letter, book a class (waiver), donate** — plus "My letters", "Gifts I'm sending", and the training panel; the admin area holds management/monitoring (letters, gifts pipeline, class signups, classes, check-in, XP, donations, grant export, roles).
+**One login for everyone, role decides the landing.** There is a single sign-in form at `/account/login` on this site (the old `/admin/login` just forwards to it); `gladiators.nyc` authenticates against the same shared identity. On success the user is routed by role: an `admin` lands in the admin area (`/admin`); everyone else lands on their member dashboard (`/account`). An explicit `?next=` destination (e.g. coming from the adopt gate) is always honored regardless of role. This site's member dashboard exposes the nonprofit member actions — **adopt a letter, donate** — plus "My letters" and "Gifts I'm sending", and **links out to `gladiators.nyc`** to book a class (waiver) and view the training dashboard. This site's admin area holds the nonprofit management/monitoring (letters, gifts pipeline, donations, roles); **class signups, classes, check-in, XP, and grant export live in the `gladiators.nyc` admin**.
 
 ---
 
@@ -88,16 +88,16 @@ Identity lives on the existing `profiles` table; these are the **additions/chang
 | `santa_letters` *(or a new table)* | capture **fulfiller identity** — `fulfilled_by_user_id uuid null references profiles(id)` + `fulfilled_by_email text` | Donor history, receipts, and the self-dealing guard (§5). See open question on a `letter_fulfillments` table for reservation/hold. |
 | `donations` *(planned, plan-v2 §A3)* | add `donor_user_id uuid null references profiles(id)` | Link a donation lead to an account when the donor is signed in; stays null for guests. |
 | `family_members` *(new)* | `id`, `guardian_user_id uuid references profiles(id) on delete cascade`, `first_name`, `dob`, `relationship`, `veteran_status bool default false`, `created_at` | Minor trainees under a guardian account (§4). |
-| `registrations` / `waivers` / `checkins` / `xp_events` *(training, GLADIATORS-SITE)* | add nullable `family_member_id uuid references family_members(id)` alongside the existing `user_id` | The account (`user_id`) is always the responsible party; `family_member_id` set when the trainee is a minor child (null = the account holder trains themselves). |
+| `registrations` / `waivers` / `checkins` / `xp_events` *(training tables — operated by `gladiators.nyc`)* | add nullable `family_member_id uuid references family_members(id)` alongside the existing `user_id` | The account (`user_id`) is always the responsible party; `family_member_id` set when the trainee is a minor child (null = the account holder trains themselves). |
 
-> **No commercial tables here.** `armor_inventory` / `armor_rentals` stay on `gladiators.nyc`; rental *eligibility* is computed here and read off the participant dashboard (unchanged from plan-v2).
+> **No commercial or operational-training tables here.** `armor_inventory` / `armor_rentals` stay on `gladiators.nyc`; rental *eligibility* is computed **on `gladiators.nyc`** (from XP + certification, which live there) and read off the participant dashboard there. The training tables in the rows above are likewise **operated by the `gladiators.nyc` app** against this shared identity — they key off the shared `profiles`/`family_members` here; physical DB location is an open question (see [plan-v2.md §D5](./plan-v2.md)).
 
 ### Data-access boundaries (RLS)
 - `profiles` — user reads own; admin reads all *(existing)*.
 - `santa_letters` — **guardian reads own** (`guardian_user_id = auth.uid()`); admin all; **donors never read raw rows**, only the safe `public_letters` view *(add the guardian self-read policy; everything else unchanged)*.
 - `donations` / fulfillment rows — donor reads own (`donor_user_id`/`fulfilled_by_user_id = auth.uid()`); admin all.
 - `family_members` — guardian reads/writes their own children; instructor reads only children on **their** class rosters (via `registrations`); admin all.
-- training tables — participant reads own; instructor reads their rosters; admin all *(per GLADIATORS-SITE)*.
+- training tables *(operated by the `gladiators.nyc` app on the shared identity)* — participant reads own; instructor reads their rosters; admin all *(per GLADIATORS-SITE)*.
 
 ---
 
@@ -123,4 +123,4 @@ This model **refines** earlier docs; update them to match (don't leave the contr
 
 ---
 
-*Account & Identity Model · Columbia Software Solutions · one account system across the whole nonprofit site, email + password the single auth method; `role` is the privilege tier, guardian/donor are data relationships, coaches/admins are provisioned, minors train under a guardian's family account.*
+*Account & Identity Model · Columbia Software Solutions · one shared account/identity across both sites (`santasknights.org` + `gladiators.nyc`), email + password the single auth method; `role` is the privilege tier, guardian/donor are data relationships, coaches/admins are provisioned, minors train under a guardian's family account.*

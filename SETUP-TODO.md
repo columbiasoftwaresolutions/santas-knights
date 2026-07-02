@@ -59,7 +59,7 @@ Sign in at `/admin/login` to reach the Letters admin dashboard.
 
 - **Resend API key** + `CONTACT_EMAIL_TO` — forwards each contact-form
   message by email. Messages are stored in Supabase regardless.
-- `NEXT_PUBLIC_GLADIATORS_URL` — the commercial **Shop/Armory** site (`gladiators.nyc`) for cross-link-out buttons, once it's live. (The Gladiators *free program* — classes + training tracker — is built on this site, not behind this URL.)
+- `NEXT_PUBLIC_GLADIATORS_URL` — the base URL of the separate **`gladiators.nyc`** site, used for cross-link-out buttons (class **booking**, the participant dashboard, and the commercial **Shop/Armory**), once it's live. (The Gladiators *content* pages — class catalog, descriptions, `/online` — live on this site, but the *operational* training tracker — booking, waivers, check-in, XP, dashboards — lives on `gladiators.nyc` behind this URL, alongside the Shop/Armory. Identity is shared across both sites.)
 
 ## After steps 1–3
 
