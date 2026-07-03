@@ -6,7 +6,7 @@ import { classes, bootcampBlurb, appPromo, links } from "@/content/site";
 
 /**
  * Homepage classes section with 6 class cards (Plan v2 §E2/E3).
- * Each card links to its on-site per-class page at /training/[slug].
+ * Each card links to its canonical Gladiators NYC per-class page.
  */
 export function ClassesSection() {
   return (

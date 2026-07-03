@@ -1,8 +1,8 @@
 # Santa's Knights — Nonprofit & Letters to Santa Platform
 
-A modern, owned technology stack for **Santa's Knights, Inc.** — a New York City 501(c)(3) nonprofit — covering its full public site, the **Gladiators NYC free combat program** (class/program content), member accounts, and its nationwide **Letters to Santa** gifting portal. This platform replaces the organization's legacy Wix presence, **replicating every public feature** of the live site.
+A modern, owned technology stack for **Santa's Knights, Inc.** — a New York City 501(c)(3) nonprofit — covering its public nonprofit site, member accounts, and nationwide **Letters to Santa** gifting portal. Gladiators NYC class marketing, booking, dashboards, videos, Shop, and Armory live on the separate `gladiators.nyc` site.
 
-> **Scope (Plan v2 — the nonprofit + all Gladiators *content* on this site).** This repo builds **everything Santa's Knights does as a 501(c)(3) on `santasknights.org`** — nonprofit pages, member accounts, gallery, donate/membership, partners, the Letters to Santa portal, **and all Gladiators class/program content** (the Training/Classes catalog, per-class descriptions, `/online`, Team/Fighters, Media/Gallery, Events, founder, brand copy) — the free-class **landing pages** that must rank on the Ad-Grant-eligible nonprofit domain. Those class pages' **Book Now / Register** CTAs **link out to `gladiators.nyc`**. **The separate `gladiators.nyc` site (built soon) owns all *operational* Gladiators functionality** — class **booking** + scheduling, **waivers + media consent**, **instructor check-in**, **XP/gamification**, **participant dashboards**, **training-video management**, training admin / CSV grant export — **plus the commercial merch Shop and the Armory** (item-level armor inventory & rentals). This site **cross-links out** to `gladiators.nyc` for booking, shop purchases, and armor rentals (operations + e-commerce stay off the nonprofit domain). **Identity is shared** — one login across both sites. The full build list is **[docs/plan-v2.md](./docs/plan-v2.md)**; the Gladiators program spec is **GLADIATORS-SITE.md (gladiators-nyc repo)**.
+> **Scope.** This repo builds the `santasknights.org` nonprofit site: nonprofit pages, member accounts, gallery, donate/membership, partners, and the Letters to Santa portal. Gladiators NYC public class marketing pages now live on `gladiators.nyc` at `/classes` and `/classes/[slug]`, alongside booking, waivers, check-in, XP/gamification, participant dashboards, direct-to-Supabase training-video management, training admin / CSV grant export, Shop, and Armory. This site redirects/cross-links to `gladiators.nyc` for classes, booking, shop purchases, and armor rentals. **Identity is shared** — one login across both sites. The Gladiators program spec is **GLADIATORS-SITE.md (gladiators-nyc repo)**.
 
 Built by [Columbia Software Solutions](https://columbiasoftwaresolutions.com) · Fall 2026 · PRD v1.0
 
@@ -36,18 +36,18 @@ Built by [Columbia Software Solutions](https://columbiasoftwaresolutions.com) ·
 
 1. Replace the existing Wix presence with a modern, owned stack (Next.js + Supabase) for the nonprofit.
 2. Launch the **Letters to Santa** gifting portal as the platform's flagship, audience-facing feature.
-3. Host all **Gladiators NYC free program** class/program content here — the free-class landing pages that rank on the Ad-Grant-eligible nonprofit domain — **cross-linking out to `gladiators.nyc`** for booking, the operational training tracker (waivers, check-in, XP, dashboards, videos, training admin), and the commercial Shop and Armory.
+3. Cross-link to **Gladiators NYC** for class marketing pages, booking, the operational training tracker (waivers, check-in, XP, dashboards, videos, training admin), and the commercial Shop and Armory.
 
 ---
 
 ## Sites & Brands
 
-**Santa's Knights, Inc.** is the 501(c)(3) nonprofit / parent org; **Gladiators NYC** is its combat program/team brand; **Letters to Santa** is the nonprofit's charitable gift drive. **Plan v2 keeps the nonprofit and all Gladiators *content* on one site, and moves Gladiators *operations* + commerce to the Gladiators brand site:**
+**Santa's Knights, Inc.** is the 501(c)(3) nonprofit / parent org; **Gladiators NYC** is its combat program/team brand; **Letters to Santa** is the nonprofit's charitable gift drive. Current split:
 
 | Domain | Brand | Scope | Where documented |
 | --- | --- | --- | --- |
-| **`santasknights.org`** *(this repo)* | Santa's Knights + Letters to Santa + Gladiators NYC (program content) | Nonprofit pages, member accounts, gallery, donate/membership, partners · the Letters to Santa portal · **all Gladiators class/program content** — Training/Classes catalog, per-class descriptions, `/online`, Team/Fighters, Media/Gallery, Events, founder, brand copy — with **Book Now / Register** CTAs that link out to `gladiators.nyc` | This README + [docs/plan-v2.md](./docs/plan-v2.md) + GLADIATORS-SITE.md (gladiators-nyc repo) |
-| **`gladiators.nyc`** *(separate site — built soon)* | Gladiators NYC (operations + commercial) | **All operational Gladiators functionality** — class booking + scheduling, waivers + media consent, instructor check-in, XP/gamification, participant dashboards, training-video management, training admin / CSV grant export — **plus commercial** merch **Shop** + **Armory** (item-level armor inventory & rentals). Kept off the nonprofit domain (501(c)(3)); operations + e-commerce stay external | GLADIATORS-SITE.md (gladiators-nyc repo) |
+| **`santasknights.org`** *(this repo)* | Santa's Knights + Letters to Santa | Nonprofit pages, member accounts, gallery, donate/membership, partners · the Letters to Santa portal · redirects/cross-links to Gladiators NYC | This README + GLADIATORS-SITE.md (gladiators-nyc repo) |
+| **`gladiators.nyc`** *(separate site)* | Gladiators NYC | Public class marketing pages (`/classes`, `/classes/[slug]`) · booking + scheduling, waivers + media consent, instructor check-in, XP/gamification, participant dashboards, training-video management, training admin / CSV grant export · commercial Shop + Armory | GLADIATORS-SITE.md (gladiators-nyc repo) |
 
 This site **cross-links out** to `gladiators.nyc` for class booking, shop purchases, and armor rentals; armor-rental *eligibility* is computed **on `gladiators.nyc`** (from XP + instructor certification, which now live there), alongside the rental transaction and item inventory. The two are **separate codebases, deployments, and cutovers**, but share **one login** (single Supabase Auth + `profiles`). Keeping the free-class **content** here maximizes SEO/answer-engine authority and keeps the free-class landing pages eligible for the nonprofit's Google Ad Grant. See [docs/plan-v2.md](./docs/plan-v2.md) for the full build list.
 
@@ -69,7 +69,7 @@ This site **cross-links out** to `gladiators.nyc` for class booking, shop purcha
 
 ## Phases
 
-This repo delivers the nonprofit site, member accounts, the Letters portal, and **all Gladiators class/program content**. The **operational training tracker** (booking, waivers, check-in, XP, dashboards, videos, training admin) and the commercial Shop & Armory are a separate `gladiators.nyc` workstream (see GLADIATORS-SITE.md (gladiators-nyc repo)). The full build list is **[docs/plan-v2.md](./docs/plan-v2.md)**.
+This repo delivers the nonprofit site, member accounts, and the Letters portal. Gladiators NYC class pages, booking, waivers, check-in, XP, dashboards, videos, training admin, Shop, and Armory are delivered by the separate `gladiators.nyc` app (see GLADIATORS-SITE.md in that repo).
 
 | Phase | Site | Focus | Deliverable |
 | --- | --- | --- | --- |

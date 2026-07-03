@@ -188,7 +188,7 @@ export default function AboutPage() {
           <SectionHeading
             eyebrow="The training side"
             title="Gladiators NYC"
-            intro="The other half of what we do: full-contact armored combat and fitness, taught free in Harlem. Damion started it in 2013, and it's the oldest league of its kind in the city. Every class and booking lives right here on the site."
+            intro="The other half of what we do: full-contact armored combat and fitness, taught free in Harlem. Damion started it in 2013, and it's the oldest league of its kind in the city. Class pages and booking live on gladiators.nyc."
             introClassName="max-w-[46ch]"
           />
           <div>
