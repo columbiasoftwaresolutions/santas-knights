@@ -4,24 +4,7 @@ import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
-import { ClassBookingList } from "@/components/training/ClassBookingList";
-import { getUpcomingClasses, getMyRegistrations, getTrainingVideos } from "@/lib/training";
-import { getCurrentUser } from "@/lib/auth";
-import { classes, bootcampBlurb, appPromo, links } from "@/content/site";
-
-/** YouTube/Vimeo share URLs → embeddable form (for the Train-online videos). */
-function isExternalEmbed(url: string) {
-  return /youtube\.com|youtu\.be|vimeo\.com/.test(url);
-}
-function toEmbedUrl(url: string): string {
-  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
-  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
-  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
-  return url;
-}
-
-const ONLINE_NEXT = encodeURIComponent("/training#train-online");
+import { classes, bootcampBlurb, appPromo, BOOK_HREF, TRAIN_ONLINE_HREF } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Classes · Santa's Knights",
@@ -29,36 +12,7 @@ export const metadata: Metadata = {
     "All classes are free. Find six programs for adults, teens, women, veterans, and beginners in Harlem and Midtown.",
 };
 
-export const dynamic = "force-dynamic";
-
-const BOOK_BANNER: Record<string, { tone: string; text: string }> = {
-  "booked=1": { tone: "border-green/40 bg-green-soft text-green", text: "You're booked in — see you on the floor. Your reservation is in your account." },
-  "booked=already": { tone: "border-green/40 bg-green-soft text-green", text: "You're already registered for that class." },
-  "error=full": { tone: "border-red/40 bg-red/5 text-red", text: "Sorry — that class just filled up. Try another session." },
-  "error=notfound": { tone: "border-red/40 bg-red/5 text-red", text: "That class is no longer available." },
-  "error=missing": { tone: "border-red/40 bg-red/5 text-red", text: "Something went wrong with that reservation. Please try again." },
-  "error=unconfigured": { tone: "border-red/40 bg-red/5 text-red", text: "Booking isn't available right now. Please try again later." },
-};
-
-export default async function TrainingPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ booked?: string; error?: string }>;
-}) {
-  const sp = await searchParams;
-  const bannerKey = sp.booked ? `booked=${sp.booked}` : sp.error ? `error=${sp.error}` : "";
-  const banner = BOOK_BANNER[bannerKey];
-
-  const [sessions, user, videos] = await Promise.all([
-    getUpcomingClasses(),
-    getCurrentUser(),
-    getTrainingVideos(),
-  ]);
-  const myRegs = user ? await getMyRegistrations(user.id) : [];
-  const myActiveClassIds = new Set(
-    myRegs.filter((r) => ["registered", "attended"].includes(r.status) && r.class).map((r) => r.class!.id),
-  );
-
+export default function TrainingPage() {
   return (
     <>
       <PageHero
@@ -126,31 +80,24 @@ export default async function TrainingPage({
         </Container>
       </section>
 
-      {/* Upcoming sessions — live booking */}
+      {/* Booking — happens on gladiators.nyc (one login works on both sites) */}
       <section id="book" className="scroll-mt-24 border-t border-line py-section">
         <Container>
           <SectionHeading
             eyebrow="Reserve a spot"
-            title="Upcoming sessions"
-            intro="Free to book. You'll sign a quick one-time waiver the first time, then reserve any class in seconds."
+            title="Book on gladiators.nyc"
+            intro="Free to book. Reservations, the quick one-time waiver, and your training dashboard live on our training site — your Santa's Knights login works there too."
             introClassName="max-w-[54ch]"
           />
-          {banner && (
-            <div className={`mt-8 border px-5 py-4 text-[15px] font-semibold ${banner.tone}`}>
-              {banner.text}
-            </div>
-          )}
-          <div className="mt-8">
-            <ClassBookingList
-              sessions={sessions}
-              signedIn={Boolean(user)}
-              myActiveClassIds={Array.from(myActiveClassIds)}
-            />
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button href={BOOK_HREF} variant="red" size="lg" arrow>
+              See upcoming sessions
+            </Button>
           </div>
         </Container>
       </section>
 
-      {/* Train online — "on your own time" + the video library, merged (dark theme) */}
+      {/* Train online — promo for the members video library on gladiators.nyc */}
       <section id="train-online" className="scroll-mt-24 bg-ink py-[clamp(72px,10vw,128px)] text-bone">
         <Container className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:gap-16">
           <div>
@@ -162,69 +109,27 @@ export default async function TrainingPage({
             </h2>
             <p className="mt-6 max-w-[42rem] text-[18px] leading-[1.65] text-bone/75">
               Instructor-made conditioning and technique videos to train between sessions. Free for
-              members — sign in to watch, then come train in person.
+              members — watch them on our training site, then come train in person.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button href="#book" variant="steel" size="lg" arrow>
                 Reserve a class
               </Button>
-              <Button href={links.membership} variant="bone" size="lg">
-                Join free
-              </Button>
             </div>
           </div>
 
-          <div>
-            {!user ? (
-              <div className="border border-bone/15 bg-ink2 p-[34px] text-center">
-                <p className="text-[16px] text-bone/75">
-                  The video library is free for members. Create a free account or sign in to watch.
-                </p>
-                <div className="mt-5 flex flex-wrap justify-center gap-3">
-                  <Button href={`${links.accountRegister}?next=${ONLINE_NEXT}`} variant="steel" arrow>
-                    Create a free account
-                  </Button>
-                  <Button href={`${links.accountLogin}?next=${ONLINE_NEXT}`} variant="bone">
-                    Sign in
-                  </Button>
-                </div>
+          <div className="flex items-center">
+            <div className="w-full border border-bone/15 bg-ink2 p-[34px] text-center">
+              <p className="text-[16px] text-bone/75">
+                The video library is free for members and lives on gladiators.nyc. Your Santa&apos;s
+                Knights login works there — one account, both sites.
+              </p>
+              <div className="mt-5 flex flex-wrap justify-center gap-3">
+                <Button href={TRAIN_ONLINE_HREF} variant="steel" arrow>
+                  Watch the training library
+                </Button>
               </div>
-            ) : videos.length === 0 ? (
-              <div className="border border-bone/15 bg-ink2 p-[34px] text-center text-bone/65">
-                No videos have been posted yet. Instructors are building the library — check back soon.
-              </div>
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-2">
-                {videos.map((v) => (
-                  <div key={v.id} className="flex flex-col overflow-hidden border border-bone/15 bg-ink2">
-                    <div className="aspect-video bg-black">
-                      {v.url && isExternalEmbed(v.url) ? (
-                        <iframe
-                          src={toEmbedUrl(v.url)}
-                          title={v.title}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          className="h-full w-full"
-                        />
-                      ) : v.url ? (
-                        <video src={v.url} controls preload="metadata" className="h-full w-full object-cover" />
-                      ) : (
-                        <div className="grid h-full place-items-center text-bone/40">Unavailable</div>
-                      )}
-                    </div>
-                    <div className="flex flex-1 flex-col p-4">
-                      {v.category && (
-                        <span className="text-[11px] font-bold tracking-[0.14em] text-amber uppercase">
-                          {v.category}
-                        </span>
-                      )}
-                      <h3 className="mt-1 text-[16px] font-extrabold tracking-[-0.02em] text-bone">{v.title}</h3>
-                      {v.description && <p className="mt-1.5 flex-1 text-[14px] text-bone/65">{v.description}</p>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            </div>
           </div>
         </Container>
       </section>

@@ -119,7 +119,7 @@ Live `/groups` is a Wix Groups social feature (the old Wix **Forum** it relied o
 
 ## §B — Gladiators: content pages here, operations + Shop/Armory on `gladiators.nyc`
 
-This site carries the Gladiators **informational content** (REQUIREMENTS.md Stage 1 Gladiators *pages*) — class catalog, descriptions, Online, team, media, events, brand copy. The **operational training tracker** (REQUIREMENTS.md Stage 2 — booking, waiver, check-in, XP, dashboards, video uploads, training admin) **and** the commercial **Shop + Armory** live on the separate **`gladiators.nyc`** site. Behavior/data model for the tracker + commercial pieces are documented in [GLADIATORS-SITE.md](./GLADIATORS-SITE.md); they are built on `gladiators.nyc`, against the shared identity (§A1).
+This site carries the Gladiators **informational content** (REQUIREMENTS.md Stage 1 Gladiators *pages*) — class catalog, descriptions, Online, team, media, events, brand copy. The **operational training tracker** (REQUIREMENTS.md Stage 2 — booking, waiver, check-in, XP, dashboards, video uploads, training admin) **and** the commercial **Shop + Armory** live on the separate **`gladiators.nyc`** site. Behavior/data model for the tracker + commercial pieces are documented in GLADIATORS-SITE.md (gladiators-nyc repo); they are built on `gladiators.nyc`, against the shared identity (§A1).
 
 ### B1. Training / Classes pages — `[v1]` BUILT HERE (content)
 
@@ -134,7 +134,7 @@ This site carries the Gladiators **informational content** (REQUIREMENTS.md Stag
 
 ### B3. Training tracker — `[v1]` ON `gladiators.nyc` (the free-program backend)
 
-Per this revision the operational tracker **lives on `gladiators.nyc`**, gated by `participant`/`instructor`/`admin` roles on the shared identity (§A1). Full spec + data model: [GLADIATORS-SITE.md](./GLADIATORS-SITE.md) + REQUIREMENTS.md Stage 2. Built there, not in this repo:
+Per this revision the operational tracker **lives on `gladiators.nyc`**, gated by `participant`/`instructor`/`admin` roles on the shared identity (§A1). Full spec + data model: GLADIATORS-SITE.md (gladiators-nyc repo) + REQUIREMENTS.md Stage 2. Built there, not in this repo:
 
 - ⛳ **Booking & scheduling** — class registration, capacity enforcement, cancellations/no-show tracking, session management.
 - ⛳ **Digital waiver + media/photo consent** — immutable signed records (waiver version, full text, name/DOB, guardian, typed signature, metadata, PDF). Private `waivers` bucket.
@@ -196,7 +196,7 @@ Reuse existing: `profiles` (already has `app_role`), `santa_letters`, `consent_r
 | `partners` | id, name, logo_path, url, kind(partner/press/sponsor), sort | A5 | **This repo** |
 | `family_members` | guardian_user_id, first_name, dob, relationship, veteran_status | §A1/§C2 (also referenced by the tracker via shared identity) | **This repo** (identity) |
 | `groups` / `group_posts` | (only if A6 is built) | A6 `[stretch]` | **This repo** |
-| **Training tracker** | `classes`, `registrations`, `checkins`, `waivers`, `media_consents`, `xp_config`, `xp_events`, `levels`/`badges`, `training_videos` — full fields in [GLADIATORS-SITE.md](./GLADIATORS-SITE.md#data-model-training-tables) | §B3 | **`gladiators.nyc`** |
+| **Training tracker** | `classes`, `registrations`, `checkins`, `waivers`, `media_consents`, `xp_config`, `xp_events`, `levels`/`badges`, `training_videos` — full fields in GLADIATORS-SITE.md (gladiators-nyc repo) | §B3 | **`gladiators.nyc`** |
 
 Schema changes to existing tables:
 - `santa_letters`: add nullable `guardian_user_id uuid references profiles(id)` for §C2 (family letter-tracking).
@@ -250,7 +250,7 @@ Cross-link out to `gladiators.nyc`: class **booking** + participant dashboard + 
 - **Groups (§A6):** rebuild vs. drop in favor of social links? (Recommend drop/defer.)
 - **Membership/donation processors:** which external recurring-billing URLs back the 6 tiers and the donate presets?
 - **Brand/copy (§E0):** founding year (2015 vs 2016) and founder bio framing to reconcile with Damion.
-- **Training tracker (§B3, on `gladiators.nyc`):** waiver text + retention, class structure/prereqs, full XP values/thresholds, minors/guardian co-sign, training-video specs — see [GLADIATORS-SITE.md](./GLADIATORS-SITE.md#open-questions).
+- **Training tracker (§B3, on `gladiators.nyc`):** waiver text + retention, class structure/prereqs, full XP values/thresholds, minors/guardian co-sign, training-video specs — see GLADIATORS-SITE.md (gladiators-nyc repo).
 - **SEO/ads:** keep `noindex` on beta until a Nicolas-coordinated cutover. The free-class **content** stays on `santasknights.org` (Ad-Grant-eligible, authority-consolidated); use per-class URLs + `Course`/`Event` schema so the class pages rank and are agent-bookable, with **Book Now** deep-linking to `gladiators.nyc`. Coordinate `gladiators.nyc` redirects/cross-link targets with Nicolas (ROLLOUT.md).
 
 ---
@@ -395,6 +395,8 @@ Each "Buy Now" → external recurring-billing URL; the $0 tier → account regis
 - `[v1]` **Verify caption/alt accuracy.** Every image's alt text and surrounding copy must match what the photo actually shows (the live site failed this). Add meaningful `alt` for accessibility.
 
 ### F1. Placement map (slot → asset-library source)
+
+> **Note (2026-07):** the Gladiators-branded source folders referenced below — `photography/combat-training/`, `brand/gladiators-nyc/`, the gladiator/colosseum `graphics/`, `shop-merch/`, `armory/` — moved to the **gladiators-nyc repo's** `asset-library/`. For SK content-page slots that use program photography, export web-optimized copies into this repo's `public/images/` (this staging library is never referenced by app code).
 
 Inspect and pick the best, non-duplicate asset per slot:
 

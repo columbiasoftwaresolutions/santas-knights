@@ -8,10 +8,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { signOutAction } from "@/app/account/actions";
-import { TrainingDashboard } from "@/components/account/TrainingDashboard";
 import { MyGifts, type MyGift } from "@/components/account/MyGifts";
-import { getDashboard, getMyRegistrations } from "@/lib/training";
-import { links } from "@/content/site";
+import { links, BOOK_HREF, DASHBOARD_HREF } from "@/content/site";
 
 export const dynamic = "force-dynamic";
 
@@ -69,20 +67,10 @@ export default async function AccountPage() {
 
   if (!user) return <SignedOut />;
 
-  const [letters, gifts, dashboard, registrations] = await Promise.all([
-    getMyLetters(),
-    getMyGifts(),
-    getDashboard(user.id),
-    getMyRegistrations(user.id),
-  ]);
+  const [letters, gifts] = await Promise.all([getMyLetters(), getMyGifts()]);
 
-  // Show the training panel once the account has engaged with the program.
-  const showTraining =
-    user.role === "participant" ||
-    user.role === "instructor" ||
-    dashboard.waiver.signed ||
-    dashboard.attendance > 0 ||
-    registrations.some((r) => r.status !== "cancelled");
+  // Training lives on gladiators.nyc (shared login) — link participants out.
+  const showTraining = user.role === "participant" || user.role === "instructor";
 
   return (
     <>
@@ -120,9 +108,9 @@ export default async function AccountPage() {
           <ActionCard
             accent="bg-green"
             title="Train with us"
-            body="Reserve a free class. First time, you'll sign a quick one-time waiver, then you're booked."
+            body="Reserve a free class on gladiators.nyc — this login works there too. First time, you'll sign a quick one-time waiver."
             cta="Find a class"
-            href={`${links.training}#book`}
+            href={BOOK_HREF}
             variant="green"
           />
           <ActionCard
@@ -136,9 +124,24 @@ export default async function AccountPage() {
         </Container>
       </section>
 
-      {/* Training / classes — above the letters tracking */}
+      {/* Training / classes — the dashboard lives on gladiators.nyc */}
       {showTraining && (
-        <TrainingDashboard dashboard={dashboard} registrations={registrations} />
+        <section className="border-b border-line py-section">
+          <Container>
+            <Card className="flex flex-col items-start gap-5 p-[34px] md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="text-h3 text-ink">Your training dashboard</h2>
+                <p className="mt-2 max-w-[58ch] text-muted">
+                  XP, rank, badges, attendance, and your upcoming reservations live on
+                  gladiators.nyc — sign in there with this same account.
+                </p>
+              </div>
+              <Button href={DASHBOARD_HREF} variant="red" arrow className="shrink-0">
+                Open my dashboard
+              </Button>
+            </Card>
+          </Container>
+        </section>
       )}
 
       {/* Gifts I'm sending + My letters, side by side */}
@@ -276,8 +279,8 @@ function SignedOut() {
             <span aria-hidden className="mb-4 block h-1 w-10 rounded-pill bg-red" />
             <h2 className="text-h3">Train with us</h2>
             <p className="mt-2.5 flex-1 text-muted">
-              Classes are free and open to everyone. Browse the six Gladiators NYC programs and
-              reserve a spot right here.
+              Classes are free and open to everyone. Browse the six Gladiators NYC programs here,
+              then book on gladiators.nyc — one login works on both sites.
             </p>
             <div className="mt-5">
               <Button href={links.training} variant="red" arrow className="px-5 py-3 text-[14.5px]">

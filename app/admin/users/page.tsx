@@ -14,7 +14,6 @@ type Profile = {
   email: string | null;
   role: string;
   created_at: string;
-  waiver_signed_at: string | null;
 };
 
 export default async function AdminUsersPage() {
@@ -22,20 +21,18 @@ export default async function AdminUsersPage() {
   if (!gate.ok) return gate.node;
 
   // Pull profiles plus the activity needed to summarize each person. Profiles
-  // hold no name, so we derive a display name from their letters/waivers.
-  const [profilesRes, lettersRes, checkinsRes, xpRes, waiversRes] = await Promise.all([
+  // hold no name, so we derive a display name from their letters. Training
+  // activity (classes, XP, waivers) lives in the gladiators.nyc admin.
+  const [profilesRes, lettersRes] = await Promise.all([
     gate.supabase
       .from("profiles")
-      .select("id, email, role, created_at, waiver_signed_at")
+      .select("id, email, role, created_at")
       .order("created_at", { ascending: true })
       .limit(2000),
     gate.supabase
       .from("santa_letters")
       .select("guardian_user_id, fulfilled_by_user_id, guardian_name, fulfilled_by_name, status")
       .limit(10000),
-    gate.supabase.from("checkins").select("user_id").limit(20000),
-    gate.supabase.from("xp_events").select("user_id, xp_value").limit(20000),
-    gate.supabase.from("waivers").select("user_id, typed_name, participant_name").limit(10000),
   ]);
 
   const profiles = (profilesRes.data ?? []) as Profile[];
@@ -56,19 +53,6 @@ export default async function AdminUsersPage() {
     }
   }
 
-  const classesAttended = new Map<string, number>();
-  for (const c of checkinsRes.data ?? [])
-    if (c.user_id) classesAttended.set(c.user_id, (classesAttended.get(c.user_id) ?? 0) + 1);
-
-  const xpTotal = new Map<string, number>();
-  for (const e of xpRes.data ?? [])
-    if (e.user_id) xpTotal.set(e.user_id, (xpTotal.get(e.user_id) ?? 0) + (e.xp_value ?? 0));
-
-  for (const w of waiversRes.data ?? []) {
-    const name = w.typed_name || w.participant_name;
-    if (w.user_id && name && !names.has(w.user_id)) names.set(w.user_id, name);
-  }
-
   const users: UserRow[] = profiles.map((p) => ({
     id: p.id,
     name: names.get(p.id) ?? null,
@@ -77,9 +61,6 @@ export default async function AdminUsersPage() {
     createdAt: p.created_at,
     giftsSubmitted: giftsSubmitted.get(p.id) ?? 0,
     giftsFulfilled: giftsFulfilled.get(p.id) ?? 0,
-    classesAttended: classesAttended.get(p.id) ?? 0,
-    xp: xpTotal.get(p.id) ?? 0,
-    waiverSignedAt: p.waiver_signed_at,
   }));
 
   return (

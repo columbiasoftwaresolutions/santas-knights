@@ -11,9 +11,6 @@ export type UserRow = {
   createdAt: string;
   giftsSubmitted: number;
   giftsFulfilled: number;
-  classesAttended: number;
-  xp: number;
-  waiverSignedAt: string | null;
 };
 
 const ROLES = ["public", "participant", "instructor", "admin"] as const;
@@ -77,21 +74,7 @@ export function UsersTable({ users }: { users: UserRow[] }) {
                   <dl className="grid grow grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
                     <Stat label="Gifts submitted" value={u.giftsSubmitted} />
                     <Stat label="Gifts fulfilled" value={u.giftsFulfilled} />
-                    <Stat label="Classes attended" value={u.classesAttended} />
-                    <Stat label="XP" value={u.xp} />
                     <Stat label="Joined" value={new Date(u.createdAt).toLocaleDateString()} />
-                    <div>
-                      <dt className="text-[10.5px] font-bold tracking-[0.1em] text-bone/40 uppercase">
-                        Waiver
-                      </dt>
-                      <dd
-                        className={`mt-0.5 text-[17px] font-extrabold ${
-                          u.waiverSignedAt ? "text-[#57ad7d]" : "text-[#e7705e]"
-                        }`}
-                      >
-                        {u.waiverSignedAt ? "Signed" : "Not signed"}
-                      </dd>
-                    </div>
                   </dl>
 
                   {/* Role editor: green square SAVE sits at the top-right, above

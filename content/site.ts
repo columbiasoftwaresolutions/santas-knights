@@ -1,11 +1,12 @@
 /**
  * Single source of truth for site copy and links.
  *
- * This is the one nonprofit site: nonprofit pages, the Santa's Letters program,
- * AND the full Gladiators NYC free program (class content + booking). The whole
- * Gladiators free program lives here on santasknights.org — only the commercial
- * Shop + Armory stay on the separate gladiators.nyc site (see SHOP_HREF /
- * ARMORY_HREF below). See docs/EXECUTION-PLAN.md Phase 0.
+ * This is the nonprofit site: nonprofit pages, the Santa's Letters program,
+ * and the Gladiators NYC program CONTENT (class catalog, per-class pages,
+ * team, media). Everything OPERATIONAL — class booking, waivers, check-in,
+ * XP, participant dashboards, training videos — plus the commercial Shop +
+ * Armory lives on the separate gladiators.nyc site (see GLADIATORS_URL
+ * below); this site cross-links out to it. One login works on both sites.
  *
  * Placeholder hrefs ("#") are intentional until the real destinations exist.
  * "Buy now" membership URLs must be added manually in code. See Plan v2 §D5.
@@ -14,18 +15,25 @@
 // Canonical home of the public domain (used for absolute URLs in JSON-LD).
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://santasknights.org";
 
-// The Gladiators NYC program lives on THIS site. TRAINING_HREF is the on-site
-// program hub; per-class pages are /training/[slug]. Full class booking arrives
-// with the training tracker (Execution Plan Phase 5) — pages say "coming soon".
+// The Gladiators NYC program CONTENT lives on this site. TRAINING_HREF is the
+// on-site program hub; per-class pages are /training/[slug]. Booking CTAs on
+// those pages link out to the gladiators.nyc booking flow (BOOK_HREF).
 export const TRAINING_HREF = "/training";
 // Kept for existing imports; both point at the on-site program hub.
 export const GLADIATORS_HREF = TRAINING_HREF;
 
-// Reserved for the COMMERCIAL companion on gladiators.nyc ONLY — the merch Shop
-// and the item-level Armory rentals, which stay off the 501(c)(3) domain. Wired
-// up in Execution Plan Phase 6; not referenced anywhere yet. See Plan v2 §D5.
-export const SHOP_HREF = process.env.NEXT_PUBLIC_GLADIATORS_SHOP_URL || "https://gladiators.nyc";
-export const ARMORY_HREF = process.env.NEXT_PUBLIC_GLADIATORS_ARMORY_URL || "https://gladiators.nyc";
+// The OPERATIONAL + commercial companion site on gladiators.nyc: booking,
+// waivers, dashboards, training videos, and the Shop + Armory, all kept off
+// the 501(c)(3) domain. Same Supabase backend — one login works on both.
+export const GLADIATORS_URL = process.env.NEXT_PUBLIC_GLADIATORS_URL || "https://gladiators.nyc";
+/** Class booking (session picker). Deep-link a class type with `?type=<slug>`. */
+export const BOOK_HREF = `${GLADIATORS_URL}/classes`;
+/** Participant dashboard — XP, rank, registrations. */
+export const DASHBOARD_HREF = `${GLADIATORS_URL}/dashboard`;
+/** Members-only training video library. */
+export const TRAIN_ONLINE_HREF = `${GLADIATORS_URL}/videos`;
+export const SHOP_HREF = process.env.NEXT_PUBLIC_GLADIATORS_SHOP_URL || `${GLADIATORS_URL}/shop`;
+export const ARMORY_HREF = process.env.NEXT_PUBLIC_GLADIATORS_ARMORY_URL || `${GLADIATORS_URL}/armory`;
 
 /** Brand trademark restored per Plan v2 §E0. */
 export const TRADEMARK = "The Gift of Martial Arts™";

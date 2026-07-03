@@ -4,7 +4,7 @@
 
 This plan turns the **revised split** into an ordered build for **this repo**. `santasknights.org` ships the nonprofit pages, Letters, **and the Gladiators *content* pages** (class catalog + descriptions, `/online` embeds, team, media, events, founder, brand copy) — the free-class landing pages on the Ad-Grant-eligible domain. The **operational training tracker** (booking, waivers, check-in, XP, dashboards, video management, training admin) **and** the commercial **Shop + Armory** are built on the separate **`gladiators.nyc`** site (a distinct workstream, built soon), which this site **cross-links out** to — class **Book Now** CTAs, shop, and armor rentals all link there. **Identity is shared:** one login across both sites (single Supabase Auth + `profiles` + `app_role`).
 
-- **Scope source of truth:** [plan-v2.md](./plan-v2.md) (§A nonprofit gaps · §B Gladiators · §C Letters · §E copy/IA · §F media). [REQUIREMENTS.md](./REQUIREMENTS.md) is authoritative for *what each feature does*. [GLADIATORS-SITE.md](./GLADIATORS-SITE.md) specs the training tracker + commercial companion (built on `gladiators.nyc`).
+- **Scope source of truth:** [plan-v2.md](./plan-v2.md) (§A nonprofit gaps · §B Gladiators · §C Letters · §E copy/IA · §F media). [REQUIREMENTS.md](./REQUIREMENTS.md) is authoritative for *what each feature does*. GLADIATORS-SITE.md (gladiators-nyc repo) specs the training tracker + commercial companion (built on `gladiators.nyc`).
 - **Ship discipline:** [ROLLOUT.md](./ROLLOUT.md) — beta stays `noindex`; public cutover is a separate, Nicolas-coordinated event. Commit/push only on request; CHANGELOG row written from the diff at commit time.
 
 ## Guiding principles

@@ -11,6 +11,7 @@ import {
   bootcampBlurb,
   courseSchema,
   links,
+  BOOK_HREF,
   type ClassCard,
 } from "@/content/site";
 
@@ -90,7 +91,7 @@ export default async function ClassDetailPage({
             <p className="text-[18px] leading-[1.7] text-muted">{description}</p>
           </div>
 
-          {/* Booking — live on-site via the training tracker. */}
+          {/* Booking — links out to the gladiators.nyc session picker. */}
           <div id="booking" className="scroll-mt-24">
             <Card className="flex flex-col p-[30px]">
               <span aria-hidden className="mb-4 block h-1 w-10 rounded-pill bg-red" />
@@ -98,11 +99,15 @@ export default async function ClassDetailPage({
                 Reserve a spot
               </h2>
               <p className="mt-3 flex-1 text-[15px] leading-[1.6] text-muted">
-                Booking is free. Pick an upcoming session, sign a quick one-time waiver, and you&apos;re
-                in. Classes are first-come, first-served up to capacity.
+                Booking is free and happens on gladiators.nyc — pick an upcoming session, sign a
+                quick one-time waiver, and you&apos;re in. Your Santa&apos;s Knights login works there too.
               </p>
               <div className="mt-5 flex flex-col gap-2.5">
-                <Button href={`${links.training}#book`} variant="red" className="px-5 py-3 text-[14.5px]">
+                <Button
+                  href={`${BOOK_HREF}?type=${cls.slug}`}
+                  variant="red"
+                  className="px-5 py-3 text-[14.5px]"
+                >
                   See upcoming sessions
                 </Button>
                 <Button href={links.contact} variant="ghost" className="px-5 py-3 text-[14.5px]">

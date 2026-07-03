@@ -1,8 +1,8 @@
 # Account & Identity Model — one Santa's Knights account, role-based capabilities
 
-**Status:** adopted · the canonical account/identity structure. One account system, **email + password the single auth method for every role** (magic-link dropped — see [§7](#7-reconciliation-with-existing-docs)). Refines [plan-v2.md](./plan-v2.md) §A1/§C2 and [GLADIATORS-SITE.md](./GLADIATORS-SITE.md) "Users & Roles".
+**Status:** adopted · the canonical account/identity structure. One account system, **email + password the single auth method for every role** (magic-link dropped — see [§7](#7-reconciliation-with-existing-docs)). Refines [plan-v2.md](./plan-v2.md) §A1/§C2 and GLADIATORS-SITE.md (gladiators-nyc repo) "Users & Roles".
 
-This document settles **who needs an account, what kind, and how it's created** across every person who uses the site: people who **submit letters**, people who **give gifts**, **coaches**, **admins**, and people **taking classes**. It's the source of truth for the auth surface and the identity-related schema; the full training-tracker tables stay specced in [GLADIATORS-SITE.md](./GLADIATORS-SITE.md#data-model-training-tables).
+This document settles **who needs an account, what kind, and how it's created** across every person who uses the site: people who **submit letters**, people who **give gifts**, **coaches**, **admins**, and people **taking classes**. It's the source of truth for the auth surface and the identity-related schema; the full training-tracker tables stay specced in GLADIATORS-SITE.md (gladiators-nyc repo).
 
 ---
 
@@ -80,7 +80,7 @@ Adopting a letter requires a signed-in account. The swipe deck on `/letters` is 
 
 ## 6. Data-model implications
 
-Identity lives on the existing `profiles` table; these are the **additions/changes** the account model requires. Full training-tracker fields remain in [GLADIATORS-SITE.md](./GLADIATORS-SITE.md#data-model-training-tables).
+Identity lives on the existing `profiles` table; these are the **additions/changes** the account model requires. Full training-tracker fields remain in GLADIATORS-SITE.md (gladiators-nyc repo).
 
 | Table | Change | Why |
 | --- | --- | --- |

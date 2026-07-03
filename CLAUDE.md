@@ -8,7 +8,7 @@ The **Santa's Knights** platform — a Next.js + Supabase rebuild of the **Santa
 
 **Scope is Plan v2** ([docs/plan-v2.md](./docs/plan-v2.md)) — **nonprofit + Gladiators *content* on this site; Gladiators *operations* + commerce on `gladiators.nyc`**: this repo replicates **every public feature of the live Wix site** — nonprofit pages, member accounts, gallery, donate/membership, partners, the Letters portal — **and all Gladiators NYC *content* pages** (class catalog, per-class descriptions, Online, team, media, events, founder, brand copy). The Gladiators **operational training tracker** (class **booking**, **waivers + media consent**, **instructor check-in**, **XP/gamification**, **participant dashboards**, **training videos**, training admin / CSV grant export) is built on the separate **`gladiators.nyc`** site, which this site cross-links out to for booking.
 
-**The separate `gladiators.nyc` site** carries all **operational** Gladiators functionality — booking, waivers, check-in, XP, participant dashboards, training videos, training admin — **plus** the commercial **Shop** and **Armory** (item-level armor inventory & rentals). Commerce is kept **off the nonprofit domain** because Santa's Knights is a 501(c)(3); this site **cross-links out** to `gladiators.nyc` for class booking, shop purchases, and armor rentals (bookings/e-commerce stay external). The two sites share **one identity** (one login). [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md) specs the Gladiators training tracker (built on `gladiators.nyc`) and the commercial companion.
+**The separate `gladiators.nyc` site** carries all **operational** Gladiators functionality — booking, waivers, check-in, XP, participant dashboards, training videos, training admin — **plus** the commercial **Shop** and **Armory** (item-level armor inventory & rentals). Commerce is kept **off the nonprofit domain** because Santa's Knights is a 501(c)(3); this site **cross-links out** to `gladiators.nyc` for class booking, shop purchases, and armor rentals (bookings/e-commerce stay external). The two sites share **one identity** (one login). GLADIATORS-SITE.md (gladiators-nyc repo) specs the Gladiators training tracker (built on `gladiators.nyc`) and the commercial companion.
 
 **Deploy (beta):** https://santas-knights.vercel.app/ — internal Vercel beta, auto-deploys from `main`. Not the public production site; keep `noindex` until cutover (see ROLLOUT.md).
 
@@ -18,7 +18,7 @@ Read these before substantial work:
 - **[ROLLOUT.md](./docs/ROLLOUT.md)** — build-≠-cutover strategy, two-track rollout, public cutover checklist.
 - **[CHANGELOG.md](./docs/CHANGELOG.md)** — impact-focused log of every change, maintained for Nicolas (SEO/ads/marketing).
 - **[REQUIREMENTS.md](./docs/REQUIREMENTS.md)** — full feature scope by stage; site architecture & nonprofit-vs-commercial split.
-- **[docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md)** — spec for the Gladiators NYC combat program: the *content* pages (built **here**) and the *operational* training tracker + commercial Shop/Armory (built on **`gladiators.nyc`**), sharing one identity.
+- **GLADIATORS-SITE.md (gladiators-nyc repo)** — spec for the Gladiators NYC combat program: the *content* pages (built **here**) and the *operational* training tracker + commercial Shop/Armory (built on **`gladiators.nyc`**), sharing one identity.
 - **[docs/SETUP-TODO.md](./docs/SETUP-TODO.md)** — remaining manual backend steps (first admin user, donation URLs, consent language, free-tier notes).
 
 ## Repo layout & current state
@@ -75,7 +75,7 @@ Then write the git commit. Keep the CHANGELOG entry and the commit message consi
   square controls/panels, warm near-black grounds, paper contrast sections, red/amber
   flood accents, and no eyebrows/kickers.
 - Santa's Letters: never expose a child's identifying details publicly; gifts must be age-appropriate, legal, and safe.
-- _Gladiators program conventions (training tracker, built on `gladiators.nyc` — [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md)): XP values/levels/thresholds/rewards are admin-editable data, never hardcoded; XP can make a participant eligible to **request** a privilege but never auto-grants safety-sensitive access (armor, sparring) — those require instructor/admin certification. Armor rental eligibility is computed on `gladiators.nyc` (from XP + certification), alongside the rental transaction + item inventory. These conventions govern the `gladiators.nyc` build; this repo only cross-links out to it._
+- _Gladiators program conventions (training tracker, built on `gladiators.nyc` — GLADIATORS-SITE.md (gladiators-nyc repo)): XP values/levels/thresholds/rewards are admin-editable data, never hardcoded; XP can make a participant eligible to **request** a privilege but never auto-grants safety-sensitive access (armor, sparring) — those require instructor/admin certification. Armor rental eligibility is computed on `gladiators.nyc` (from XP + certification), alongside the rental transaction + item inventory. These conventions govern the `gladiators.nyc` build; this repo only cross-links out to it._
 
 ## Environments
 
@@ -86,7 +86,7 @@ Then write the git commit. Keep the CHANGELOG entry and the commit message consi
 
 This is the source of truth for the Postgres schema. Apply it on a fresh Supabase project via the **SQL Editor** (paste and run), then create the first admin (insert an Auth user, then `update profiles set role='admin' where email='<that email>'`). The live beta project already has this applied.
 
-> **The training-tracker tables are operated by the `gladiators.nyc` app, not this repo.** The Gladiators *operational* program (booking, waivers, check-in, XP, dashboards, videos, admin) is built on the separate `gladiators.nyc` site. Because the two sites share **one identity** (one Supabase Auth + `profiles`), the training tables — `classes`, `registrations`, `checkins`, `waivers`, `media_consents`, `xp_config`, `xp_events`, `levels`/`badges`, `training_videos` (+ private `waivers`, `training-videos` buckets), specced in [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md#data-model-training-tables) — key off the same `profiles`. Whether they physically remain in this same Supabase project (the arrangement below, read/written by the `gladiators.nyc` app) or move to a separate project is an open question ([plan-v2.md §D5](./docs/plan-v2.md)); **for now they share this project**. This repo's app builds UI only against the nonprofit/Letters tables. The `app_role` enum includes `participant`/`instructor` for the shared identity. `armor_inventory` / `armor_rentals` stay on the commercial `gladiators.nyc` Armory.
+> **The training-tracker tables are owned, documented, and operated by the `gladiators.nyc` app — not this repo.** The Gladiators *operational* program (booking, waivers, check-in, XP, dashboards, videos, admin) is built on the separate `gladiators.nyc` site. The two sites share **one identity** (one Supabase Auth + `profiles` in this **one shared Supabase project** — resolved 2026-07-02), so the training tables (`classes`, `registrations`, `checkins`, `waivers`, `media_consents`, `xp_config`, `xp_events`, `levels`/`badges`, `training_videos`, + private `waivers`/`training-videos` buckets, and the profile fields `veteran_status`/`waiver_signed_at` + `is_instructor()`) key off the same `profiles`. Their DDL and spec live in the **gladiators-nyc repo** (`sql/2026-06-training.sql` and GLADIATORS-SITE.md there). This repo's app builds UI only against the nonprofit/Letters tables. The `app_role` enum includes `participant`/`instructor` for the shared identity. `armor_inventory` / `armor_rentals` stay on the commercial `gladiators.nyc` Armory.
 
 **Privacy invariant:** a child's identifying details are NEVER exposed publicly. Guardian contact lives on the same `santa_letters` row, but anonymous visitors can only read live, unclaimed letters' safe columns through the `public_letters` view. Letter images sit in a private `letters` storage bucket, served via short-lived signed URLs.
 
@@ -225,18 +225,9 @@ on conflict (id) do nothing;
 
 ### Account model + content tables (applied)
 
-These tables were applied on top of the base schema above (account model + gallery/donations/partners + the Gladiators training tracker). The DDL is idempotent. **Note:** the training-tracker tables in this block are **operated by the `gladiators.nyc` app** against the shared identity — they live in this shared project for now (see the note above); this repo's app builds UI only against the nonprofit/Letters tables.
+These tables were applied on top of the base schema above (account model + gallery/donations/partners). The DDL is idempotent.
 
 ```sql
--- helpers + profile fields ----------------------------------------
-alter table public.profiles add column if not exists veteran_status boolean not null default false;
-alter table public.profiles add column if not exists waiver_signed_at timestamptz;
-
-create or replace function public.is_instructor()
-returns boolean language sql stable security definer set search_path = public as $$
-  select exists (select 1 from public.profiles where id = auth.uid() and role in ('instructor','admin'));
-$$;
-
 -- santa_letters: fulfillment + guardian self-read (account model) --
 alter table public.santa_letters add column if not exists guardian_user_id uuid references public.profiles(id);
 alter table public.santa_letters add column if not exists fulfilled_by_user_id uuid references public.profiles(id);
@@ -298,94 +289,6 @@ create table public.donations (
   created_at timestamptz not null default now()
 );
 
--- training tracker (Gladiators free program) ----------------------
-create table public.classes (
-  id uuid primary key default gen_random_uuid(),
-  title text not null, slug text, class_type text not null default 'standard', description text,
-  instructor_id uuid references public.profiles(id), location text,
-  starts_at timestamptz not null, ends_at timestamptz,
-  capacity int not null default 20 check (capacity >= 0),
-  requires_approval boolean not null default false, is_published boolean not null default true,
-  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
-);
-create table public.registrations (
-  id uuid primary key default gen_random_uuid(),
-  class_id uuid not null references public.classes(id) on delete cascade,
-  user_id uuid not null references public.profiles(id) on delete cascade,
-  family_member_id uuid references public.family_members(id) on delete cascade,
-  status text not null default 'registered'
-    check (status in ('registered','waitlisted','cancelled','attended','no_show')),
-  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
-);  -- unique (class_id, user_id, coalesce(family_member_id, zero-uuid))
-create table public.checkins (
-  id uuid primary key default gen_random_uuid(),
-  registration_id uuid references public.registrations(id) on delete set null,
-  class_id uuid not null references public.classes(id) on delete cascade,
-  user_id uuid not null references public.profiles(id) on delete cascade,
-  family_member_id uuid references public.family_members(id) on delete cascade,
-  checked_in_by uuid references public.profiles(id),
-  checked_in_at timestamptz not null default now(), xp_awarded int not null default 0
-);
-create table public.waivers (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references public.profiles(id) on delete cascade,
-  family_member_id uuid references public.family_members(id) on delete cascade,
-  version text not null, full_text text not null, participant_name text not null,
-  dob date, guardian_name text, typed_name text not null, consent boolean not null default true,
-  ip text, user_agent text, pdf_path text, signed_at timestamptz not null default now()
-);
-create table public.media_consents (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references public.profiles(id) on delete cascade,
-  family_member_id uuid references public.family_members(id) on delete cascade,
-  version text not null, full_text text not null, granted boolean not null default true,
-  typed_name text, guardian_name text, metadata jsonb, signed_at timestamptz not null default now()
-);
-create table public.xp_config (   -- admin-editable XP values; never hardcoded
-  id uuid primary key default gen_random_uuid(),
-  event_type text not null unique, label text not null, xp_value int not null default 0,
-  track text not null default 'fighter' check (track in ('fighter','instructor')),
-  unlock_threshold int, is_active boolean not null default true,
-  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
-);
-create table public.xp_events (   -- immutable XP ledger
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references public.profiles(id) on delete cascade,
-  family_member_id uuid references public.family_members(id) on delete cascade,
-  event_type text not null, xp_value int not null, track text not null default 'fighter',
-  source_type text, source_id uuid, note text,
-  created_by uuid references public.profiles(id), created_at timestamptz not null default now()
-);
-create table public.levels (      -- admin-editable level names/thresholds
-  id uuid primary key default gen_random_uuid(),
-  name text not null, threshold int not null, track text not null default 'fighter',
-  sort_order int not null default 0, unlock text, unique (track, threshold)
-);
-create table public.badges (
-  id uuid primary key default gen_random_uuid(),
-  code text not null unique, name text not null, description text, icon text,
-  created_at timestamptz not null default now()
-);
-create table public.participant_badges (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references public.profiles(id) on delete cascade,
-  family_member_id uuid references public.family_members(id) on delete cascade,
-  badge_id uuid not null references public.badges(id) on delete cascade,
-  awarded_by uuid references public.profiles(id), awarded_at timestamptz not null default now()
-);
-create table public.training_videos (
-  id uuid primary key default gen_random_uuid(),
-  title text not null, description text, category text,
-  uploader_id uuid references public.profiles(id),
-  storage_path text, external_url text, duration_seconds int, thumbnail_path text,
-  is_published boolean not null default true, sort_order int not null default 0,
-  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
-);
-
--- private buckets for the tracker
-insert into storage.buckets (id, name, public) values
-  ('waivers','waivers',false), ('training-videos','training-videos',false)
-on conflict (id) do nothing;
 ```
 
-**RLS summary for the above:** content tables (`gallery_media`/`partners`) are public-read when `is_published`, admin-manage; `donations` admin-read (insert via server action). Training tables: participant reads own rows (`user_id = auth.uid()`), instructors read via `is_instructor()`, admins manage; `classes` are public-read when published; `xp_config`/`levels`/`badges` are public-read, admin-manage; `training_videos` readable by any signed-in member when published, instructor/admin-manage. `family_members` are guardian-owned (`guardian_user_id = auth.uid()`). Seed data: `xp_config` (11 event types), `levels` (Recruit→Legend, 11 tiers), `badges` (5) per [docs/GLADIATORS-SITE.md](./docs/GLADIATORS-SITE.md#reference-v1-xp-values--levels).
+**RLS summary for the above:** content tables (`gallery_media`/`partners`) are public-read when `is_published`, admin-manage; `donations` admin-read (insert via server action). `family_members` are guardian-owned (`guardian_user_id = auth.uid()`) and shared with the training tracker (registrations/waivers key minors off it).
