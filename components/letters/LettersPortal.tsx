@@ -80,12 +80,14 @@ export function LettersPortal({
   initialView,
   signedIn,
   defaultEmail,
+  defaultName,
   letters,
   demo,
 }: {
   initialView: View;
   signedIn: boolean;
   defaultEmail?: string;
+  defaultName?: string;
   /** null when Supabase isn't configured or the drive isn't open yet. */
   letters: SwipeLetter[] | null;
   demo: boolean;
@@ -232,7 +234,7 @@ export function LettersPortal({
           {bodyView === "adopt" ? (
             <AdoptPanel signedIn={signedIn} letters={letters} demo={demo} />
           ) : (
-            <SubmitPanel signedIn={signedIn} defaultEmail={defaultEmail} />
+            <SubmitPanel signedIn={signedIn} defaultEmail={defaultEmail} defaultName={defaultName} />
           )}
         </div>
       </section>
@@ -298,12 +300,20 @@ function AdoptPanel({
 /* Submit side                                                                */
 /* -------------------------------------------------------------------------- */
 
-function SubmitPanel({ signedIn, defaultEmail }: { signedIn: boolean; defaultEmail?: string }) {
+function SubmitPanel({
+  signedIn,
+  defaultEmail,
+  defaultName,
+}: {
+  signedIn: boolean;
+  defaultEmail?: string;
+  defaultName?: string;
+}) {
   return (
     <Container className="grid items-start gap-10 lg:grid-cols-[0.62fr_0.38fr] lg:gap-[54px]">
       <Card className="p-[34px] md:p-[42px]">
         {signedIn ? (
-          <SubmitLetterForm defaultEmail={defaultEmail} />
+          <SubmitLetterForm defaultEmail={defaultEmail} defaultName={defaultName} />
         ) : (
           <SignInGate
             tone="green"

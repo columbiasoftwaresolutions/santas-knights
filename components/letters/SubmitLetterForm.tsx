@@ -17,7 +17,13 @@ function FieldError({ message }: { message?: string }) {
   return <p className="mt-1.5 text-[13.5px] font-semibold text-red">{message}</p>;
 }
 
-export function SubmitLetterForm({ defaultEmail }: { defaultEmail?: string }) {
+export function SubmitLetterForm({
+  defaultEmail,
+  defaultName,
+}: {
+  defaultEmail?: string;
+  defaultName?: string;
+}) {
   const [state, formAction, pending] = useActionState(submitLetter, initialState);
   // One Amazon link by default; families with a few wishes can add more rows.
   const [linkIds, setLinkIds] = useState<number[]>([0]);
@@ -167,6 +173,7 @@ export function SubmitLetterForm({ defaultEmail }: { defaultEmail?: string }) {
               id="guardian_name"
               name="guardian_name"
               required
+              defaultValue={defaultName}
               placeholder="Full name"
               className={fieldBase}
             />

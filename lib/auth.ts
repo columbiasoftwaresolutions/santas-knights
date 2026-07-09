@@ -7,7 +7,12 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
  *  they're data relationships on a `public` account. See docs/ACCOUNT-MODEL.md. */
 export type AppRole = "public" | "participant" | "instructor" | "admin";
 
-export type CurrentUser = { id: string; email: string | null; role: AppRole };
+export type CurrentUser = {
+  id: string;
+  email: string | null;
+  role: AppRole;
+  name: string | null;
+};
 
 /**
  * Resolve the signed-in user (or null). Role-aware gate for the whole site —
@@ -24,11 +29,16 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, name")
     .eq("id", user.id)
     .maybeSingle();
 
-  return { id: user.id, email: user.email ?? null, role: (profile?.role as AppRole) ?? "public" };
+  return {
+    id: user.id,
+    email: user.email ?? null,
+    role: (profile?.role as AppRole) ?? "public",
+    name: (profile?.name as string | null) ?? null,
+  };
 }
 
 export type AdminCheck =

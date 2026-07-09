@@ -167,6 +167,7 @@ export default async function LettersPage({
         initialView={initialView}
         signedIn={!!user}
         defaultEmail={user?.email ?? undefined}
+        defaultName={user?.name ?? undefined}
         letters={letters}
         demo={demo}
       />

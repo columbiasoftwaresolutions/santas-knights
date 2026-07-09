@@ -9,12 +9,29 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 export type AuthState = { error?: string };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PASSWORD = 8;
 
 /** Only allow internal redirects; never an open redirect to another site. */
 function safeNext(next: unknown): string {
   const n = typeof next === "string" ? next : "";
   return n.startsWith("/") && !n.startsWith("//") ? n : "/account";
+}
+
+/**
+ * Validate a `YYYY-MM-01` date of birth and enforce the 18-or-older gate.
+ * Eligibility is the 1st of the birth month + 18 years (e.g. born July 2002 →
+ * eligible from 2020-07-01). Returns an error string, or null when valid.
+ */
+function validateAdultDob(dob: string): string | null {
+  const m = /^(\d{4})-(\d{2})-\d{2}$/.exec(dob);
+  if (!m) return "Please select your birth month and year.";
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  if (month < 1 || month > 12) return "Please select a valid birth month.";
+  const eligible = new Date(year + 18, month - 1, 1);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (eligible > today) return "You must be 18 or older to create an account.";
+  return null;
 }
 
 /**
@@ -24,28 +41,46 @@ function safeNext(next: unknown): string {
  * trigger creates the matching `profiles` row (role `public`).
  */
 export async function registerAccount(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirm_password") ?? "");
+  const dob = String(formData.get("dob") ?? "").trim(); // YYYY-MM-01
   const next = safeNext(formData.get("next"));
 
+  if (!name) return { error: "Please enter your name." };
   if (!EMAIL_RE.test(email)) return { error: "Please enter a valid email address." };
-  if (password.length < MIN_PASSWORD)
-    return { error: `Password must be at least ${MIN_PASSWORD} characters.` };
+  if (!password) return { error: "Please choose a password." };
+  if (password !== confirm) return { error: "Those passwords don't match." };
+  const dobError = validateAdultDob(dob);
+  if (dobError) return { error: dobError };
   if (!isSupabaseConfigured()) return { error: "Accounts aren't available yet." };
 
   const admin = createSupabaseAdminClient();
   if (!admin) return { error: "Accounts aren't available yet." };
 
-  const { error: createError } = await admin.auth.admin.createUser({
+  const { data: created, error: createError } = await admin.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
+    user_metadata: { name },
   });
   if (createError) {
     if (/already|registered|exists/i.test(createError.message))
       return { error: "That email already has an account. Try signing in instead." };
+    if (/password/i.test(createError.message))
+      return { error: createError.message };
     console.error("Account creation failed:", createError.message);
     return { error: "We couldn't create the account. Please try again." };
+  }
+
+  // Persist identity fields on the auto-created profile row (service role bypasses RLS).
+  if (created?.user) {
+    const { error: profileError } = await admin
+      .from("profiles")
+      .update({ name, dob })
+      .eq("id", created.user.id);
+    if (profileError) console.error("Profile identity update failed:", profileError.message);
   }
 
   const supabase = await createSupabaseServerClient();
