@@ -16,11 +16,12 @@ export const metadata: Metadata = {
 /**
  * Donation processing stays external (Plan v2: no on-site payments). This page
  * captures donor intent, then redirects out to PayPal / Venmo / the processor.
- * TODO: Add external processor URLs manually in code when ready, not as env vars.
+ * PayPal + Venmo are live (see content/site.ts links); the generic card
+ * processor is still pending, so its tile hides until NEXT_PUBLIC_DONATE_URL set.
  */
 const PROCESSOR_URL = process.env.NEXT_PUBLIC_DONATE_URL;
-const PAYPAL_URL = process.env.NEXT_PUBLIC_PAYPAL_URL;
-const VENMO_URL = process.env.NEXT_PUBLIC_VENMO_URL;
+const PAYPAL_URL = links.paypal;
+const VENMO_URL = links.venmo;
 
 const externalOptions = [
   {

@@ -1,7 +1,7 @@
 "use server";
 
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { org } from "@/content/site";
+import { links, org } from "@/content/site";
 
 export type DonationState = {
   ok: boolean;
@@ -36,7 +36,9 @@ export async function recordDonationIntent(
     return { ok: false, message: "Enter a donation amount greater than zero." };
   }
 
-  const processorUrl = process.env.NEXT_PUBLIC_DONATE_URL || process.env.NEXT_PUBLIC_PAYPAL_URL;
+  // Prefer a dedicated card processor if one is ever configured; otherwise hand
+  // off to PayPal (the live default) after capturing the lead.
+  const processorUrl = process.env.NEXT_PUBLIC_DONATE_URL || links.paypal;
 
   const supabase = createSupabaseAdminClient();
   if (!supabase) {

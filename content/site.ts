@@ -35,8 +35,9 @@ export const TRADEMARK = "The Gift of Martial Arts™";
 
 export const links = {
   donate: "/donate",
-  paypal: process.env.NEXT_PUBLIC_PAYPAL_URL || "/donate",
-  venmo: process.env.NEXT_PUBLIC_VENMO_URL || "/donate",
+  // Public, stable charity links — kept in code (not env vars) per the donate-page note.
+  paypal: "https://www.paypal.com/us/fundraiser/charity/3355259",
+  venmo: "https://account.venmo.com/u/santasknights",
   volunteer: "/get-involved",
   adoptLetter: "/letters",
   submitLetter: "/letters?do=submit",
