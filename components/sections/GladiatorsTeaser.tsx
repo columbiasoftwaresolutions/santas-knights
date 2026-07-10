@@ -37,15 +37,15 @@ export function GladiatorsTeaser() {
               ))}
             </div>
             <blockquote className="font-serif text-[clamp(28px,3.4vw,46px)] font-normal leading-[1.12] tracking-[-0.02em]">
-              <span className="font-semibold text-red">&ldquo;</span>I&apos;m ex-military and I got
-              heavily injured while I was in. And so when I came out I was just a mess. Fitness and
-              sports really <em className="italic text-amber">saved my life.</em> … I&apos;m just so
-              proud we&apos;re becoming a real New York thing.&rdquo;
+              <span className="font-semibold text-red">&ldquo;</span>One program brings a special type
+              of holiday joy to individuals in need, while the other can help members{" "}
+              <em className="italic text-amber">change their lives entirely</em> by focusing on their
+              health and mental well-being.&rdquo;
             </blockquote>
             <div className="mt-7 text-[14px] font-semibold uppercase tracking-[0.1em] text-amber">
               {founder.name}, {founder.role}
               <span className="mt-1 block font-medium tracking-[0.06em] text-bone/55">
-                To Gothamist
+                On Santa&apos;s Knights
               </span>
             </div>
           </div>
