@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
-import { DonateForm } from "@/components/donate/DonateForm";
 import { links, org, donateCopy } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
 
 /**
  * Donation processing stays external (Plan v2: no on-site payments). This page
- * captures donor intent, then redirects out to PayPal / Venmo / the processor.
+ * sends donors directly to PayPal / Venmo / the processor.
  * PayPal + Venmo are live (see content/site.ts links); the generic card
  * processor is still pending, so its tile hides until NEXT_PUBLIC_DONATE_URL set.
  */
@@ -63,7 +62,6 @@ export default function DonatePage() {
   return (
     <>
       <PageHero
-        eyebrow="Donate"
         title={
           <>
             Help keep classes free and letters{" "}
@@ -86,31 +84,48 @@ export default function DonatePage() {
         </Button>
       </PageHero>
 
-      {/* Give now — lead-capture form, then hand off to the external processor */}
+      {/* Give now — direct handoff to external processors */}
       <section className="py-section">
-        <Container className="grid items-start gap-12 lg:grid-cols-[0.55fr_0.45fr]">
+        <Container className="grid items-start gap-12 lg:grid-cols-[0.58fr_0.42fr]">
           <div>
             <SectionHeading
               className="max-w-[560px]"
-              eyebrow="Give now"
-              title="Make a gift"
-              intro="Choose an amount and tell us where to send your receipt. You'll finish on our secure payment page."
+              title="Give directly"
+              intro="Choose the provider you prefer. Payment happens off-site, and we never collect card details here."
               introClassName="max-w-[48ch]"
             />
-            <ul className="mt-8 grid gap-4">
-              {spend.map((item) => (
-                <li key={item.title} className="flex gap-4">
-                  <span aria-hidden className="mt-1.5 h-1 w-10 flex-none rounded-pill bg-red" />
-                  <div>
-                    <h3 className="text-[17px] font-extrabold tracking-[-0.02em]">{item.title}</h3>
-                    <p className="mt-1 text-[15px] text-muted">{item.body}</p>
-                  </div>
-                </li>
+            <div className="mt-8 grid border-t border-line">
+              {externalOptions.map((option) => (
+                <a
+                  key={option.label}
+                  href={option.href}
+                  className="grid gap-2 border-b border-line py-5 transition-colors hover:bg-paper-raised sm:grid-cols-[180px_1fr_auto] sm:items-center"
+                >
+                  <span className="font-display text-[20px] font-black uppercase tracking-[-0.02em] text-ink">
+                    {option.label}
+                  </span>
+                  <span className="text-[15.5px] text-muted">{option.body}</span>
+                  <span className="text-[13px] font-bold uppercase tracking-[0.04em] text-red">
+                    {option.cta} ↗
+                  </span>
+                </a>
               ))}
-            </ul>
+            </div>
           </div>
           <Card className="p-[30px] md:p-[36px]">
-            <DonateForm />
+            <h2 className="text-h3 text-ink">Receipts and dedications</h2>
+            <p className="mt-3 text-[15.5px] leading-relaxed text-muted">
+              PayPal and Venmo provide their own confirmations. For a formal receipt, a dedication,
+              or a corporate gift, email us with the donation details.
+            </p>
+            <div className="mt-6">
+              <Button
+                href={`mailto:${org.email}?subject=Donation%20receipt%20for%20Santa%27s%20Knights`}
+                variant="ghostInverse"
+              >
+                Email for a receipt
+              </Button>
+            </div>
           </Card>
         </Container>
       </section>
@@ -119,59 +134,62 @@ export default function DonatePage() {
       <section className="border-t border-line py-section">
         <Container>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <SectionHeading eyebrow="Other ways to give" title="More ways to help" />
+            <SectionHeading title="More ways to help" />
             <p className="max-w-[38ch] text-[14.5px] text-muted sm:text-right">
               Payment is handled by the provider you choose. We never collect card details on this
               site.
             </p>
           </div>
-          <div className="mt-10 grid gap-[18px] md:grid-cols-3">
+          <div className="mt-10 border-t border-line">
             {externalOptions.map((option) => (
-              <Card key={option.label} hover className="flex flex-col p-[28px]">
+              <article
+                key={option.label}
+                className="grid gap-4 border-b border-line py-6 md:grid-cols-[190px_1fr_auto] md:items-center"
+              >
                 <h2 className="text-[20px] font-extrabold tracking-[-0.02em]">{option.label}</h2>
-                <p className="mt-2 flex-1 text-[15.5px] text-muted">{option.body}</p>
-                <div className="mt-5">
+                <p className="max-w-[58ch] text-[15.5px] text-muted">{option.body}</p>
+                <div>
                   <Button href={option.href} variant="ghostInverse" className="px-5 py-3 text-[15px]">
                     {option.cta} ↗
                   </Button>
                 </div>
-              </Card>
+              </article>
             ))}
-            <Card hover className="flex flex-col p-[28px]">
+            <article className="grid gap-4 border-b border-line py-6 md:grid-cols-[190px_1fr_auto] md:items-center">
               <h2 className="text-[20px] font-extrabold tracking-[-0.02em]">Adopt a letter</h2>
-              <p className="mt-2 flex-1 text-[15.5px] text-muted">
+              <p className="max-w-[58ch] text-[15.5px] text-muted">
                 Skip the middle step entirely: read a kid&apos;s wish and send the exact gift they
                 asked for.
               </p>
-              <div className="mt-5">
+              <div>
                 <Button href={links.adoptLetter} variant="green" className="px-5 py-3 text-[15px]">
                   Browse the letters
                 </Button>
               </div>
-            </Card>
-            <Card hover className="flex flex-col p-[28px]">
+            </article>
+            <article className="grid gap-4 border-b border-line py-6 md:grid-cols-[190px_1fr_auto] md:items-center">
               <h2 className="text-[20px] font-extrabold tracking-[-0.02em]">Become a member</h2>
-              <p className="mt-2 flex-1 text-[15.5px] text-muted">
+              <p className="max-w-[58ch] text-[15.5px] text-muted">
                 Monthly membership starts at $20. It helps pay for gifts and equipment for kids.
               </p>
-              <div className="mt-5">
+              <div>
                 <Button href={links.membership} variant="ghostInverse" className="px-5 py-3 text-[15px]">
                   Membership tiers
                 </Button>
               </div>
-            </Card>
-            <Card hover className="flex flex-col p-[28px]">
+            </article>
+            <article className="grid gap-4 border-b border-line py-6 md:grid-cols-[190px_1fr_auto] md:items-center">
               <h2 className="text-[20px] font-extrabold tracking-[-0.02em]">Sponsor us</h2>
-              <p className="mt-2 flex-1 text-[15.5px] text-muted">
+              <p className="max-w-[58ch] text-[15.5px] text-muted">
                 Businesses can sponsor a season, an event, or the letter drive. We recognize
                 sponsors publicly.
               </p>
-              <div className="mt-5">
+              <div>
                 <Button href={links.sponsors} variant="ghostInverse" className="px-5 py-3 text-[15px]">
                   Sponsorship
                 </Button>
               </div>
-            </Card>
+            </article>
           </div>
         </Container>
       </section>
@@ -181,7 +199,6 @@ export default function DonatePage() {
         <Container>
           <SectionHeading
             className="max-w-[640px]"
-            eyebrow="Where it goes"
             title="What a donation actually pays for"
             intro="We're small and Harlem-based, and the budget is mostly the programs themselves."
             introClassName="max-w-[52ch]"
@@ -189,7 +206,7 @@ export default function DonatePage() {
           <div className="mt-10 grid gap-[22px] md:grid-cols-3">
             {spend.map((item) => (
               <div key={item.title}>
-                <span aria-hidden className="mb-4 block h-1 w-12 rounded-pill bg-red" />
+                <span aria-hidden className="mb-4 block h-1 w-12 bg-red" />
                 <h2 className="text-h3 text-ink">{item.title}</h2>
                 <p className="mt-2.5 text-muted">{item.body}</p>
               </div>
@@ -211,7 +228,6 @@ export default function DonatePage() {
       <section className="py-section">
         <Container>
           <SectionHeading
-            eyebrow="Tax deductibility"
             title="What you can deduct"
             intro="This is general information, not tax advice. Consult a tax professional for your situation."
             introClassName="max-w-[52ch] text-muted"

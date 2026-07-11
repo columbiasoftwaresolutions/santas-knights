@@ -7,7 +7,7 @@ import { pillars } from "@/content/site";
 export function Pillars() {
   return (
     <section className="grid md:grid-cols-2">
-      {pillars.map((pillar) => {
+      {pillars.map((pillar, i) => {
         const isGive = pillar.variant === "give";
         return (
           <article
@@ -30,7 +30,7 @@ export function Pillars() {
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,14,11,0.45)_0%,rgba(18,14,11,0.97)_72%)]" />
             </div>
 
-            <div className="relative z-10">
+            <div data-reveal style={{ transitionDelay: `${i * 120}ms` }} className="relative z-10">
               <h3 className="mb-4 font-display text-[clamp(34px,3.6vw,52px)] font-black uppercase leading-[0.92] tracking-[-0.02em] text-bone">
                 {pillar.title}
               </h3>

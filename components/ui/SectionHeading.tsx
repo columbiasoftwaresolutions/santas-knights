@@ -12,7 +12,7 @@ const TITLE_SIZE: Record<Size, string> = {
   h3: "text-h3",
 };
 
-/** Tone shifts eyebrow, title, and intro colors together (warm vs steel vs colored band). */
+/** Tone shifts title and intro colors together (warm vs steel vs colored band). */
 const TITLE_TONE: Record<Tone, string> = {
   default: "text-ink",
   onDark: "text-bone",
@@ -25,31 +25,23 @@ const INTRO_TONE: Record<Tone, string> = {
 };
 
 /**
- * Poster heading block with one consistent vertical rhythm. Eyebrow props are
- * accepted during the port but deliberately omitted from rendering.
+ * Poster heading block with one consistent vertical rhythm.
  * Owns the spacing and type scale so sections stop re-deciding them.
- *
- * `size` and `intro` width genuinely vary per section and stay as props;
- * the rhythm and tone are what's concentrated here.
  */
 export function SectionHeading({
-  eyebrow: _eyebrow,
   title,
   intro,
   as: Heading = "h2",
   size = "h2",
   tone = "default",
-  eyebrowClassName: _eyebrowClassName,
   introClassName,
   className,
 }: {
-  eyebrow: React.ReactNode;
   title: React.ReactNode;
   intro?: React.ReactNode;
   as?: "h1" | "h2" | "h3";
   size?: Size;
   tone?: Tone;
-  eyebrowClassName?: string;
   introClassName?: string;
   className?: string;
 }) {

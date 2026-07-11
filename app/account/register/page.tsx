@@ -30,7 +30,6 @@ export default async function AccountRegisterPage({
   return (
     <>
       <PageHero
-        eyebrow="Members Area"
         title="Create an account"
         intro="A free account lets you submit a child's letter and track its status from our team."
       />

@@ -62,7 +62,7 @@ export function UsersTable({ users }: { users: UserRow[] }) {
               </span>
               <span
                 aria-hidden
-                className={`justify-self-end text-bone/50 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+                className={`justify-self-end text-bone/50 transition-colors duration-200 ${open ? "rotate-180" : ""}`}
               >
                 ▾
               </span>

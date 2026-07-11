@@ -99,4 +99,51 @@
     background: var(--color-paper);
     color: var(--color-ink);
   }
+
+  /* ---- Motion: scroll reveal ------------------------------------------
+     `html.reveal-on` is added by a tiny pre-paint script (see layout.tsx),
+     and ONLY when JS runs and the visitor hasn't asked for reduced motion.
+     Without that class every [data-reveal] element renders fully visible —
+     so no-JS visitors, reduced-motion users, and crawlers always see the
+     content. The observer (components/ui/Reveal.tsx) adds `.is-visible`
+     as each element scrolls into view. Easing mirrors the SelectMenu. */
+  html.reveal-on [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Photos/figures reveal with a gentle settle-in scale instead of a rise. */
+  html.reveal-on [data-reveal].reveal-zoom {
+    transform: scale(1.035);
+  }
+  html.reveal-on [data-reveal]:not(.is-visible) {
+    will-change: opacity, transform;
+  }
+  html.reveal-on [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Respect the OS "reduce motion" setting everywhere: no reveals, no lifts,
+     no smooth scroll, no count-ups feeling animated. Content is shown flat. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    html.reveal-on [data-reveal] {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }

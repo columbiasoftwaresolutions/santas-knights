@@ -143,11 +143,11 @@ export default async function AdminPage({
                     <img
                       src={letter.imageUrl}
                       alt={`${letter.child_first_name}'s letter`}
-                      className="max-h-[260px] w-full rounded-[14px] border border-line bg-paper-raised object-contain"
+                      className="max-h-[260px] w-full border border-line bg-paper-raised object-contain"
                     />
                   </a>
                 ) : (
-                  <div className="flex h-[160px] items-center justify-center rounded-[14px] border border-dashed border-line text-[13px] font-bold text-muted uppercase">
+                  <div className="flex h-[160px] items-center justify-center border border-dashed border-line text-[13px] font-bold text-muted uppercase">
                     No image
                   </div>
                 )}
@@ -177,14 +177,14 @@ export default async function AdminPage({
                     · Guardian: {letter.guardian_name} &lt;{letter.guardian_email}&gt;
                   </p>
                   {letter.claimed_at && letter.status === "live" && (
-                    <p className="mt-2 rounded-[10px] bg-gold-soft/60 px-3 py-2 text-[13.5px] text-[#6c5418]">
+                    <p className="mt-2 bg-gold-soft/60 px-3 py-2 text-[13.5px] text-[#6c5418]">
                       <strong className="font-bold">Claimed:</strong>{" "}
                       {letter.fulfilled_by_email ?? "donor"} on{" "}
                       {new Date(letter.claimed_at).toLocaleDateString()}.
                     </p>
                   )}
                   {letter.fulfilled_at && letter.status === "fulfilled" && (
-                    <p className="mt-2 rounded-[10px] bg-green-soft px-3 py-2 text-[13.5px] text-green">
+                    <p className="mt-2 bg-green-soft px-3 py-2 text-[13.5px] text-green">
                       <strong className="font-bold">Fulfilled:</strong>{" "}
                       {new Date(letter.fulfilled_at).toLocaleDateString()}.
                     </p>
@@ -202,7 +202,7 @@ export default async function AdminPage({
                           name="action"
                           value={action}
                           className={cn(
-                            "cursor-pointer border-[1.5px] px-4 py-2 text-[13px] font-bold uppercase tracking-[0.04em] transition-transform hover:-translate-y-0.5",
+                            "cursor-pointer border-[1.5px] px-4 py-2 text-[13px] font-bold uppercase tracking-[0.04em] transition-colors",
                             primary
                               ? "border-green bg-green text-white"
                               : action === "delete"

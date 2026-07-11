@@ -17,7 +17,6 @@ export default function MembershipPage() {
   return (
     <>
       <PageHero
-        eyebrow="Membership"
         title={
           <>
             Be part of something{" "}
@@ -38,7 +37,6 @@ export default function MembershipPage() {
       <section className="py-section">
         <Container>
           <SectionHeading
-            eyebrow="Choose your tier"
             title="Choose a membership"
             intro="The free tier gives you access to class registration. Paid tiers fund gifts, foam swords, equipment, and program costs."
             introClassName="max-w-[56ch]"
@@ -91,7 +89,6 @@ export default function MembershipPage() {
       <section className="border-y border-line bg-paper-raised py-section">
         <Container>
           <SectionHeading
-            eyebrow="Where it goes"
             title="What your membership pays for"
             introClassName="max-w-[52ch]"
           />
@@ -111,7 +108,7 @@ export default function MembershipPage() {
               },
             ].map((item) => (
               <div key={item.title}>
-                <span aria-hidden className="mb-4 block h-1 w-12 rounded-pill bg-red" />
+                <span aria-hidden className="mb-4 block h-1 w-12 bg-red" />
                 <h3 className="text-h3 text-ink">{item.title}</h3>
                 <p className="mt-2.5 text-muted">{item.body}</p>
               </div>

@@ -181,7 +181,7 @@ export function SwipeDeck({
               <div
                 key={letter.id}
                 aria-hidden
-                className="absolute inset-0 border border-line bg-paper-raised shadow-card"
+                className="absolute inset-0 border border-line bg-paper-raised"
                 style={{
                   transform: `translateY(${depth * 14}px) scale(${1 - depth * 0.04})`,
                   zIndex: 1,
@@ -207,11 +207,11 @@ export function SwipeDeck({
           }}
         >
           <div
-            className="relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]"
+            className="relative h-full w-full transition-colors duration-500 [transform-style:preserve-3d]"
             style={{ transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
           >
             {/* Front: the handwritten letter */}
-            <div className="absolute inset-0 flex flex-col overflow-hidden border border-line bg-paper-raised shadow-card [backface-visibility:hidden]">
+            <div className="absolute inset-0 flex flex-col overflow-hidden border border-line bg-paper-raised [backface-visibility:hidden]">
               {current.imageUrl ? (
                 // The signed Supabase URL domain is not known at build time, so use img.
                 // eslint-disable-next-line @next/next/no-img-element
@@ -242,7 +242,7 @@ export function SwipeDeck({
             </div>
 
             {/* Back: the wish and Amazon CTA */}
-            <div className="absolute inset-0 flex [transform:rotateY(180deg)] flex-col overflow-hidden border border-line bg-red-deep p-7 text-paper shadow-card [backface-visibility:hidden]">
+            <div className="absolute inset-0 flex [transform:rotateY(180deg)] flex-col overflow-hidden border border-line bg-red-deep p-7 text-paper [backface-visibility:hidden]">
               <p className="text-[13px] font-bold uppercase tracking-[0.16em] text-gold-soft">
                 The wish
               </p>
@@ -267,7 +267,7 @@ export function SwipeDeck({
                       advance("right");
                     }}
                     onPointerDown={(event) => event.stopPropagation()}
-                    className="flex min-h-[92px] items-center gap-3 bg-paper p-3 text-red-deep transition-transform duration-150 hover:-translate-y-0.5"
+                    className="flex min-h-[92px] items-center gap-3 bg-paper p-3 text-red-deep transition-colors duration-150"
                   >
                     <span className="flex h-[68px] w-[78px] shrink-0 items-center justify-center bg-white">
                       {item.imageUrl ? (

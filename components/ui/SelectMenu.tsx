@@ -165,7 +165,7 @@ export function SelectMenu({
           aria-hidden
           viewBox="0 0 20 20"
           className={cn(
-            "h-4 w-4 flex-none text-muted transition-transform duration-200",
+            "h-4 w-4 flex-none text-muted transition-colors duration-200",
             open && "rotate-180",
           )}
         >

@@ -15,7 +15,7 @@ export type ButtonVariant =
   | "bone"; // Gladiators
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  red: "bg-red text-white shadow-cta hover:bg-red-deep",
+  red: "bg-red text-white hover:bg-red-deep hover:shadow-cta",
   ink: "bg-ink text-paper hover:bg-black",
   ghost: "bg-transparent text-ink border-ink hover:bg-ink hover:text-paper",
   ghostInverse: "bg-ink text-paper border-ink hover:bg-transparent hover:text-ink",
@@ -27,8 +27,10 @@ const VARIANTS: Record<ButtonVariant, string> = {
   bone: "bg-transparent text-bone border-[rgba(232,226,212,0.4)] hover:bg-bone hover:text-steel",
 };
 
+// Hover = lift (DESIGN.md): the button rises 2px and settles on press. Colors,
+// transform, and the red CTA glow all share one 150ms ease.
 const BASE =
-  "group inline-flex cursor-pointer items-center gap-[10px] whitespace-nowrap border-[1.5px] border-transparent font-bold uppercase tracking-[0.04em] transition-all duration-150 hover:-translate-y-0.5";
+  "group inline-flex cursor-pointer items-center gap-[10px] whitespace-nowrap border-[1.5px] border-transparent font-bold uppercase tracking-[0.04em] transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0";
 
 const SIZES = {
   md: "px-[22px] py-[11px] text-[13px]",

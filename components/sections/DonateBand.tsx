@@ -7,7 +7,10 @@ export function DonateBand() {
   return (
     <section id="donate" className="bg-ink py-[110px] text-bone">
       <Container>
-        <h2 className="font-display text-[clamp(72px,11vw,168px)] font-black uppercase leading-[0.82] tracking-[-0.04em]">
+        <h2
+          data-reveal
+          className="font-display text-[clamp(72px,11vw,168px)] font-black uppercase leading-[0.82] tracking-[-0.04em]"
+        >
           Adopt a letter
           <br />
           <span className="text-red">&amp;</span>{" "}
@@ -15,7 +18,11 @@ export function DonateBand() {
             give.
           </em>
         </h2>
-        <div className="mt-12 flex flex-wrap items-center gap-[18px]">
+        <div
+          data-reveal
+          style={{ transitionDelay: "120ms" }}
+          className="mt-12 flex flex-wrap items-center gap-[18px]"
+        >
           <Button href={links.adoptLetter} variant="red" size="lg">
             Adopt a letter
           </Button>
@@ -23,7 +30,11 @@ export function DonateBand() {
             Donate
           </Button>
         </div>
-        <p className="mt-[30px] font-serif text-[17px] italic text-bone/70">
+        <p
+          data-reveal
+          style={{ transitionDelay: "200ms" }}
+          className="mt-[30px] font-serif text-[17px] italic text-bone/70"
+        >
           Donations pay for gifts, classes, equipment, and community events.
         </p>
       </Container>

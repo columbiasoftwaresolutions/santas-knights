@@ -50,7 +50,7 @@ export function Footer() {
                 key={social.label}
                 href={social.href}
                 aria-label={social.label}
-                className="grid h-9 w-9 place-items-center rounded-full bg-bone/[0.08] text-[13px] transition-colors hover:bg-red hover:text-paper"
+                className="grid h-9 w-9 place-items-center bg-bone/[0.08] text-[13px] transition-colors hover:bg-red hover:text-paper"
               >
                 <span aria-hidden>{social.glyph}</span>
               </a>

@@ -87,7 +87,7 @@ export default async function AdminGiftsPage() {
                     <td className="px-4 py-2.5 whitespace-nowrap">{maskEmail(r.fulfilled_by_email)}</td>
                     <td className="px-4 py-2.5">
                       <span
-                        className={`rounded-pill px-2.5 py-1 text-[12px] font-bold ${
+                        className={` px-2.5 py-1 text-[12px] font-bold ${
                           gifted ? "bg-green/15 text-green" : "bg-amber/15 text-amber"
                         }`}
                       >
@@ -104,13 +104,13 @@ export default async function AdminGiftsPage() {
                         <div className="flex gap-2">
                           <form action={adminMarkGifted}>
                             <input type="hidden" name="letter_id" value={r.id} />
-                            <button type="submit" className="cursor-pointer rounded-pill bg-green px-3 py-1 text-[12px] font-bold text-white">
+                            <button type="submit" className="cursor-pointer bg-green px-3 py-1 text-[12px] font-bold text-white">
                               Mark gifted
                             </button>
                           </form>
                           <form action={adminReleaseClaim}>
                             <input type="hidden" name="letter_id" value={r.id} />
-                            <button type="submit" className="cursor-pointer rounded-pill border border-bone/25 px-3 py-1 text-[12px] font-bold text-bone">
+                            <button type="submit" className="cursor-pointer border border-bone/25 px-3 py-1 text-[12px] font-bold text-bone">
                               Release
                             </button>
                           </form>

@@ -9,15 +9,26 @@ export function Hero() {
     <section className="border-b border-line bg-paper text-ink">
       <Container className="grid items-center gap-9 py-[86px] md:grid-cols-[1fr_1.05fr] md:gap-16">
         <div>
-          <h1 className="font-serif text-[clamp(40px,5vw,70px)] font-medium leading-[1.04] tracking-[-0.02em]">
+          <h1
+            data-reveal
+            className="font-serif text-[clamp(40px,5vw,70px)] font-medium leading-[1.04] tracking-[-0.02em]"
+          >
             Strengthening kids and lifting{" "}
             <em className="font-medium italic text-red">communities</em>.
           </h1>
-          <p className="mt-[26px] max-w-[520px] text-[19px] leading-relaxed text-muted">
+          <p
+            data-reveal
+            style={{ transitionDelay: "90ms" }}
+            className="mt-[26px] max-w-[520px] text-[19px] leading-relaxed text-muted"
+          >
             A nonprofit that teaches armored combat and fitness at no cost, and helps answer local
             kids&apos; letters to Santa at the holidays.
           </p>
-          <div className="mt-[34px] flex flex-wrap items-center gap-3.5">
+          <div
+            data-reveal
+            style={{ transitionDelay: "180ms" }}
+            className="mt-[34px] flex flex-wrap items-center gap-3.5"
+          >
             <Button href={links.adoptLetter} variant="red" size="lg" arrow>
               Adopt a letter
             </Button>
@@ -27,7 +38,7 @@ export function Hero() {
           </div>
         </div>
 
-        <figure className="relative">
+        <figure data-reveal className="reveal-zoom relative" style={{ transitionDelay: "120ms" }}>
           <Photo
             src="/images/santa-gift.png"
             alt="A child holding a wrapped gift next to Santa at a Santa's Knights holiday event"

@@ -1,19 +1,13 @@
 import { Container } from "@/components/ui/Container";
 import { cn } from "@/lib/cn";
 
-/**
- * Poster-system header for inner pages. `eyebrow` remains in the API while the
- * route migration lands, but is intentionally not rendered: the approved
- * system has no kickers or eyebrows.
- */
+/** Poster-system header for inner pages. */
 export function PageHero({
-  eyebrow: _eyebrow,
   title,
   intro,
   media,
   children,
 }: {
-  eyebrow: React.ReactNode;
   title: React.ReactNode;
   intro?: React.ReactNode;
   /** Optional image/visual shown above the lede in the right column. */

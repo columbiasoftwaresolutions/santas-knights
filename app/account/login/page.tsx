@@ -31,7 +31,6 @@ export default async function AccountLoginPage({
   return (
     <>
       <PageHero
-        eyebrow="Members Area"
         title="Sign in"
         intro="Access your account to track submitted letters and manage your membership."
       />

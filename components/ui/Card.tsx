@@ -28,8 +28,9 @@ export function Card({
   const classes = cn(
     "border border-line",
     TONE[tone],
+    // Hover = lift (DESIGN.md): cards rise 4px and gain the warm card shadow.
     hover &&
-      "transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-card",
+      "transition-[transform,box-shadow,border-color] duration-200 ease-out hover:-translate-y-1 hover:border-red/50 hover:shadow-card",
     className,
   );
 

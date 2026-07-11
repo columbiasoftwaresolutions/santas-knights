@@ -35,7 +35,6 @@ export default function ContactPage() {
   return (
     <>
       <PageHero
-        eyebrow="Contact"
         title={
           <>
             Get in <em className="font-serif font-medium italic text-red">touch</em>.
@@ -50,7 +49,6 @@ export default function ContactPage() {
           <div>
             <SectionHeading
               className="mb-8"
-              eyebrow="Send a message"
               title="Drop us a line"
               intro="We read everything that comes in and usually write back within a few days. If it's about Santa's Letters, say so and we'll get you the details."
               introClassName="max-w-[46ch]"
@@ -102,7 +100,7 @@ export default function ContactPage() {
                     key={social.label}
                     href={social.href}
                     aria-label={social.label}
-                    className="grid h-10 w-10 place-items-center rounded-full bg-ink text-[14px] text-paper transition-colors hover:bg-red"
+                    className="grid h-10 w-10 place-items-center bg-ink text-[14px] text-paper transition-colors hover:bg-red"
                   >
                     <span aria-hidden>{social.glyph}</span>
                   </a>
@@ -110,7 +108,7 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <p className="mt-6 flex items-center gap-2 rounded-[14px] bg-green-soft px-4 py-3 text-[14px] font-semibold text-green">
+            <p className="mt-6 flex items-center gap-2 bg-green-soft px-4 py-3 text-[14px] font-semibold text-green">
               <span aria-hidden>♥</span>
               501(c)(3) nonprofit · every class is 100% free
             </p>
@@ -123,7 +121,6 @@ export default function ContactPage() {
         <Container className="py-section">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <SectionHeading
-              eyebrow="Find us"
               title="Manhattanville Community Center, Harlem"
               intro="We're at 530 West 133rd Street, between Broadway and Amsterdam."
               introClassName="max-w-[46ch]"
@@ -132,7 +129,7 @@ export default function ContactPage() {
               Get directions ↗
             </Button>
           </div>
-          <div className="mt-8 overflow-hidden rounded-card border border-line shadow-card">
+          <div className="mt-8 overflow-hidden border border-line">
             <iframe
               title={`Map to ${org.venue}`}
               src={mapEmbed}
@@ -149,7 +146,6 @@ export default function ContactPage() {
         <Container className="grid items-start gap-10 md:grid-cols-[0.85fr_1.15fr] md:gap-[54px]">
           <div className="md:sticky md:top-[110px]">
             <SectionHeading
-              eyebrow="Before you ask"
               title="Common questions"
               intro="If it's not here, send a message above and we'll sort it out."
               introClassName="max-w-[40ch]"

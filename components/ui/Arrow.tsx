@@ -9,7 +9,10 @@ export function Arrow({ className }: { className?: string }) {
   return (
     <span
       aria-hidden
-      className={cn("transition-transform duration-200 group-hover:translate-x-[3px]", className)}
+      className={cn(
+        "transition-[transform,color] duration-200 ease-out group-hover:translate-x-[3px]",
+        className,
+      )}
     >
       →
     </span>

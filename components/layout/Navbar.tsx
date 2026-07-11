@@ -135,7 +135,7 @@ function DropdownItem({
       >
         {item.label}
         <span
-          className={cn("text-[10px] transition-transform duration-200", open && "rotate-180")}
+          className={cn("text-[10px] transition-colors duration-200", open && "rotate-180")}
           aria-hidden
         >
           ▾
@@ -185,7 +185,7 @@ function MobileNav({ items, onClose }: { items: NavItem[]; onClose: () => void }
                 {item.label}
                 <span
                   className={cn(
-                    "text-[11px] transition-transform duration-200",
+                    "text-[11px] transition-colors duration-200",
                     openSection === item.label && "rotate-180",
                   )}
                   aria-hidden

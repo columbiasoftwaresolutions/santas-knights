@@ -19,7 +19,6 @@ export default function AboutPage() {
   return (
     <>
       <PageHero
-        eyebrow="About Santa's Knights"
         title={
           <>
             What Santa&apos;s Knights is, and{" "}
@@ -31,7 +30,7 @@ export default function AboutPage() {
             src="/images/gallery/6b7494_da7cab87beee4becb1fa08dd5b8bb6b9_mv2.webp"
             alt="Kids training with foam weapons in the gym at a Santa's Knights class"
             sizes="(min-width: 1024px) 32vw, 100vw"
-            className="aspect-[5/4] rounded-[16px]"
+            className="aspect-[5/4]"
           />
         }
         intro="We're a 501(c)(3) nonprofit in Harlem. We answer kids' letters to Santa every December, and teach martial arts and fitness for free all year."
@@ -66,7 +65,6 @@ export default function AboutPage() {
         <Container className="grid items-start gap-10 md:grid-cols-[0.95fr_1.05fr] md:gap-[54px]">
           <div className="md:sticky md:top-[110px]">
             <SectionHeading
-              eyebrow="Our story"
               title="It started with a letter."
               intro="Two threads run through the organization: the giving Damion grew up doing, and the training he built as an adult. Here's how they ended up under one roof."
               introClassName="max-w-[42ch]"
@@ -75,7 +73,7 @@ export default function AboutPage() {
               src="/images/hero-community.jpg"
               alt="Santa's Knights members and families together"
               sizes="(min-width: 768px) 45vw, 100vw"
-              className="mt-7 aspect-4/5 rounded-[20px]"
+              className="mt-7 aspect-4/5"
             />
           </div>
           <ol className="grid gap-6">
@@ -104,12 +102,11 @@ export default function AboutPage() {
               src="/images/headshot.png"
               alt={`${founder.name}, founder of Santa's Knights`}
               sizes="(min-width: 768px) 32vw, 100vw"
-              className="aspect-4/5 rounded-[20px]"
+              className="aspect-4/5"
             />
           </div>
           <div>
             <SectionHeading
-              eyebrow="The founder"
               title={founder.name}
               intro={founder.role}
               introClassName="font-semibold text-ink"
@@ -126,18 +123,11 @@ export default function AboutPage() {
       {/* Santa's Letters */}
       <section className="bg-paper-raised border-y border-line py-section">
         <Container>
-          <div className="relative grid items-center gap-8 overflow-hidden rounded-card-lg bg-green bg-[linear-gradient(160deg,var(--color-green),#1f3f2e)] p-[34px] text-[#eef4ef] md:grid-cols-[1.05fr_0.95fr] md:gap-[46px] md:p-[50px]">
-            <span
-              aria-hidden
-              className="pointer-events-none absolute -top-[30px] -right-5 text-[200px] leading-none text-white/[0.06]"
-            >
-              ✶
-            </span>
-            <div className="relative">
+          <div className="grid items-center gap-8 overflow-hidden bg-green p-[34px] text-[#eef4ef] md:grid-cols-[1.05fr_0.95fr] md:gap-[46px] md:p-[50px]">
+            <div>
               <SectionHeading
                 tone="onColor"
                 size="band"
-                eyebrow="Santa's Letters"
                 title="Our holiday letter program"
                 intro={letters.intro}
                 introClassName="max-w-[44ch]"
@@ -151,7 +141,7 @@ export default function AboutPage() {
                 </Button>
               </div>
             </div>
-            <p className="relative font-serif text-[19px] italic leading-[1.5] text-[#eef4ef]/95">
+            <p className="font-serif text-[19px] italic leading-[1.5] text-[#eef4ef]/95">
               {letters.origin}
             </p>
           </div>
@@ -163,7 +153,6 @@ export default function AboutPage() {
         <Container>
           <SectionHeading
             className="max-w-[640px]"
-            eyebrow="What we stand for"
             title="Four things we don't bend on"
           />
           <div className="mt-10 grid gap-[22px] sm:grid-cols-2">
@@ -186,21 +175,20 @@ export default function AboutPage() {
       <section className="bg-paper-raised border-y border-line py-section">
         <Container className="grid items-center gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-[54px]">
           <SectionHeading
-            eyebrow="The training side"
             title="Gladiators NYC"
             intro="The other half of what we do: full-contact armored combat and fitness, taught free in Harlem. Damion started it in 2013, and it's the oldest league of its kind in the city. Class pages and booking live on gladiators.nyc."
             introClassName="max-w-[46ch]"
           />
           <div>
-            <div className="flex flex-wrap gap-2.5">
+            <div className="grid border-t border-line sm:grid-cols-2">
               {programs.map((program) => (
-                <span
+                <div
                   key={program.name}
-                  className="rounded-pill border border-line bg-card px-4 py-2 text-[14.5px] font-semibold text-ink"
+                  className="border-r border-b border-line bg-card px-4 py-3 text-[14.5px] font-semibold text-ink even:border-r-0"
                 >
                   {program.name}
                   <span className="ml-2 text-[13px] font-normal text-muted">{program.audience}</span>
-                </span>
+                </div>
               ))}
             </div>
             <div className="mt-7 flex flex-wrap gap-3">

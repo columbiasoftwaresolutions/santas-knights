@@ -15,7 +15,6 @@ export function ClassesSection() {
       <section className="py-section">
         <Container>
           <SectionHeading
-            eyebrow="Classes with Santa's Knights!"
             title={
               <>
                 All classes are <span className="text-red">100% FREE</span>, 100% of the time,
@@ -28,7 +27,7 @@ export function ClassesSection() {
           <div className="mt-10 grid gap-[18px] sm:grid-cols-2 lg:grid-cols-3">
             {classes.map((cls) => (
               <Card key={cls.name} hover className="flex flex-col p-[28px]">
-                <span aria-hidden className="mb-3 block h-1 w-10 rounded-pill bg-red" />
+                <span aria-hidden className="mb-3 block h-1 w-10 bg-red" />
                 <h2 className="text-[17px] font-extrabold leading-[1.25] tracking-[-0.02em]">
                   {cls.name}
                 </h2>
@@ -71,7 +70,6 @@ export function ClassesSection() {
       <section className="border-y border-line bg-paper-raised py-section">
         <Container className="grid items-center gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-[54px]">
           <SectionHeading
-            eyebrow="Modern methods · Gladiatorial awakening · Undeniable results"
             title="What Gladiator Bootcamp actually is"
           />
           <p className="text-[16px] leading-[1.7] text-muted">{bootcampBlurb}</p>
@@ -81,7 +79,7 @@ export function ClassesSection() {
       {/* App promo */}
       <section className="py-section">
         <Container>
-          <div className="flex flex-col items-center gap-5 rounded-card-lg border border-line bg-card p-[42px] text-center">
+          <div className="flex flex-col items-center gap-5 border border-line bg-card p-[42px] text-center">
             <span
               aria-hidden
               className="text-[38px]"

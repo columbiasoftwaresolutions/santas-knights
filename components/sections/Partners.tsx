@@ -11,7 +11,10 @@ export function Partners() {
   return (
     <section className="bg-paper py-[84px] text-ink">
       <Container>
-        <div className="mb-[34px] flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+        <div
+          data-reveal
+          className="mb-[34px] flex flex-wrap items-center justify-between gap-x-6 gap-y-4"
+        >
           <p className="font-serif text-[clamp(26px,2.8vw,38px)] font-medium italic tracking-[-0.01em]">
             In good company.
           </p>
@@ -19,7 +22,7 @@ export function Partners() {
             See all sponsors
           </Button>
         </div>
-        <div className="flex flex-wrap">
+        <div data-reveal style={{ transitionDelay: "100ms" }} className="flex flex-wrap">
           {featured.map((sponsor, i) => (
             <span
               key={sponsor.name}

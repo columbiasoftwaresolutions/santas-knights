@@ -421,7 +421,15 @@ export const sponsors: { name: string; logo?: string; href?: string; featured?: 
  * dropped — no traceable article exists for either, so the logos can't back a
  * coverage claim. Re-add with an `href` if a real article surfaces.
  */
-export const pressLogos: { name: string; src: string; href: string }[] = [
+export const pressLogos: {
+  name: string;
+  src: string;
+  href: string;
+  width?: number;
+  height?: number;
+  displayHeight?: number;
+  maxWidth?: number;
+}[] = [
   {
     name: "Gothamist",
     src: "/images/press/gothamist.png",
@@ -444,13 +452,35 @@ export const pressLogos: { name: string; src: string; href: string }[] = [
   },
   {
     name: "Yahoo",
-    src: "/images/press/yahoo-news.jpg",
+    src: "/images/press/yahoo-news.webp",
     href: "https://sports.yahoo.com/knights-shining-armor-them-doing-162058863.html",
+    width: 1500,
+    height: 550,
+    displayHeight: 34,
+    maxWidth: 188,
   },
   {
     name: "Gizmodo",
     src: "/images/press/gizmodo.jpg",
     href: "https://gizmodo.com/harlem-knight-fight-shows-off-the-appeal-of-the-armored-1774117164",
+  },
+  {
+    name: "Los Angeles Times",
+    src: "/images/press/los-angeles-times.webp",
+    href: "https://www.latimes.com/entertainment-arts/movies/story/2020-12-05/dear-santa-documentary-usps-operation-santa",
+    width: 960,
+    height: 121,
+    displayHeight: 26,
+    maxWidth: 190,
+  },
+  {
+    name: "NPR",
+    src: "/images/press/npr.png",
+    href: "https://www.npr.org/2020/12/20/947119957/could-you-help-santa-in-christmas-wishlists-children-write-of-pandemic-hardships",
+    width: 612,
+    height: 204,
+    displayHeight: 28,
+    maxWidth: 112,
   },
 ];
 

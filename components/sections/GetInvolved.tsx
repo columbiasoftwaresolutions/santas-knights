@@ -14,7 +14,6 @@ export function GetInvolved() {
             className="flex-1"
             as="h3"
             size="h3"
-            eyebrow="Get involved"
             title="Lend a hand"
             intro="Adopt a letter, sort the holiday mail, help run the gift event, or coach a class. Most of it takes no experience, just some time."
           />
@@ -32,8 +31,6 @@ export function GetInvolved() {
           <SectionHeading
             as="h3"
             size="h3"
-            eyebrow="Stay in the loop"
-            eyebrowClassName="text-[#8a6420]"
             title="Newsletter"
             intro="Class schedules, news, and ways to help, straight to your inbox."
           />

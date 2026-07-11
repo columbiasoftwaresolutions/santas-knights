@@ -32,7 +32,6 @@ export default function SponsorsPage() {
   return (
     <>
       <PageHero
-        eyebrow="Sponsors"
         title={
           <>
             The people who <em className="font-serif font-medium italic text-red">make it free</em>.
@@ -54,7 +53,6 @@ export default function SponsorsPage() {
         <Container>
           <SectionHeading
             className="max-w-[640px]"
-            eyebrow="Our sponsors"
             title="Thank you"
             intro="Organizations currently backing the programs."
           />
@@ -87,7 +85,7 @@ export default function SponsorsPage() {
             {/* Standing invitation slot */}
             <a
               href={`mailto:${org.email}?subject=Sponsoring%20Santa%27s%20Knights`}
-              className="flex h-[120px] items-center justify-center rounded-card border-[1.5px] border-dashed border-gold bg-gold-soft/40 p-6 text-center text-[14.5px] font-bold text-[#8a6420] transition-transform duration-150 hover:-translate-y-0.5"
+              className="flex h-[120px] items-center justify-center border-[1.5px] border-dashed border-gold bg-gold-soft/40 p-6 text-center text-[14.5px] font-bold text-[#8a6420] transition-colors duration-150"
             >
               Sponsor Santa&apos;s Knights
             </a>
@@ -100,7 +98,6 @@ export default function SponsorsPage() {
         <Container>
           <SectionHeading
             className="max-w-[640px]"
-            eyebrow="Sponsorship"
             title="Ways a business can help"
             intro="Sponsors can support the letter drive, a class season, or a public event. Sponsorships are tax-deductible and publicly recognized."
             introClassName="max-w-[54ch]"
@@ -108,7 +105,7 @@ export default function SponsorsPage() {
           <div className="mt-10 grid gap-[22px] md:grid-cols-3">
             {tiers.map((tier) => (
               <Card key={tier.title} hover className="p-[32px]">
-                <span aria-hidden className="mb-5 block h-1 w-12 rounded-pill bg-gold" />
+                <span aria-hidden className="mb-5 block h-1 w-12 bg-gold" />
                 <h2 className="text-h3 text-ink">{tier.title}</h2>
                 <p className="mt-2.5 text-ink/80">{tier.body}</p>
               </Card>

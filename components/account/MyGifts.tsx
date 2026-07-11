@@ -23,7 +23,6 @@ export function MyGifts({ gifts }: { gifts: MyGift[] }) {
     return (
       <div>
         <SectionHeading
-          eyebrow="Santa's Letters"
           title="Gifts I'm sending"
           intro="Letters you've picked to gift will show up here so you can keep track."
           introClassName="max-w-[52ch]"
@@ -43,7 +42,6 @@ export function MyGifts({ gifts }: { gifts: MyGift[] }) {
   return (
     <div>
       <SectionHeading
-        eyebrow="Santa's Letters"
         title="Gifts I'm sending"
         intro="The letters you've adopted. Mark one as sent once you've bought and shipped the gift."
         introClassName="max-w-[52ch]"
@@ -58,7 +56,7 @@ export function MyGifts({ gifts }: { gifts: MyGift[] }) {
                     {g.child_first_name}, age {g.child_age}
                   </h3>
                   <span
-                    className={`rounded-pill px-3 py-1 text-[12px] font-bold ${
+                    className={` px-3 py-1 text-[12px] font-bold ${
                       gifted ? "bg-green-soft text-green" : "bg-gold-soft text-[#6c5418]"
                     }`}
                   >
@@ -74,7 +72,7 @@ export function MyGifts({ gifts }: { gifts: MyGift[] }) {
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-pill border border-line px-3 py-1.5 text-[12.5px] font-bold text-red underline"
+                      className=" border border-line px-3 py-1.5 text-[12.5px] font-bold text-red underline"
                     >
                       {g.amazon_urls.length > 1 ? `Gift ${i + 1} ↗` : "Open Amazon ↗"}
                     </a>
@@ -87,7 +85,7 @@ export function MyGifts({ gifts }: { gifts: MyGift[] }) {
                       <input type="hidden" name="letter_id" value={g.id} />
                       <button
                         type="submit"
-                        className="cursor-pointer rounded-pill bg-green px-4 py-2 text-[13px] font-bold text-white"
+                        className="cursor-pointer bg-green px-4 py-2 text-[13px] font-bold text-white"
                       >
                         I sent it
                       </button>
@@ -96,7 +94,7 @@ export function MyGifts({ gifts }: { gifts: MyGift[] }) {
                       <input type="hidden" name="letter_id" value={g.id} />
                       <button
                         type="submit"
-                        className="cursor-pointer rounded-pill border border-line px-4 py-2 text-[13px] font-bold text-muted hover:border-red hover:text-red"
+                        className="cursor-pointer border border-line px-4 py-2 text-[13px] font-bold text-muted hover:border-red hover:text-red"
                       >
                         Release
                       </button>

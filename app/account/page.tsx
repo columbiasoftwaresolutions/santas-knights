@@ -75,7 +75,6 @@ export default async function AccountPage() {
   return (
     <>
       <PageHero
-        eyebrow="Members Area"
         title={
           <>
             Your{" "}
@@ -94,33 +93,31 @@ export default async function AccountPage() {
         </form>
       </PageHero>
 
-      {/* What you can do — the three member actions */}
       <section className="border-b border-line py-section">
-        <Container className="grid gap-[18px] md:grid-cols-3">
-          <ActionCard
-            accent="bg-red"
+        <Container>
+          <div className="border-t border-line">
+          <ActionRow
             title="Gift a kid"
             body="Read the letters one at a time and pick a wish to send. We keep the child's details private."
             cta="Adopt a letter"
             href={links.adoptLetter}
             variant="red"
           />
-          <ActionCard
-            accent="bg-green"
+          <ActionRow
             title="Train with us"
             body="Reserve a free class on gladiators.nyc — this login works there too. First time, you'll sign a quick one-time waiver."
             cta="Find a class"
             href={BOOK_HREF}
             variant="green"
           />
-          <ActionCard
-            accent="bg-gold"
+          <ActionRow
             title="Donate"
             body="Help keep classes free and the gifts coming. Every dollar is tax-deductible."
             cta="Donate"
             href={links.donate}
             variant="ghostInverse"
           />
+          </div>
         </Container>
       </section>
 
@@ -154,7 +151,6 @@ export default async function AccountPage() {
             {/* My letters (Phase 3 / §C2) */}
             <div>
               <SectionHeading
-                eyebrow="Santa's Letters"
                 title="My letters"
                 intro="Every letter you've submitted and where it stands. Only you can see this."
                 introClassName="max-w-[52ch]"
@@ -183,7 +179,7 @@ export default async function AccountPage() {
                             {letter.child_first_name}, age {letter.child_age}
                           </h3>
                           <span
-                            className={`rounded-pill px-3 py-1 text-[12px] font-bold ${badge.tone}`}
+                            className={` px-3 py-1 text-[12px] font-bold ${badge.tone}`}
                           >
                             {badge.label}
                           </span>
@@ -209,32 +205,29 @@ export default async function AccountPage() {
   );
 }
 
-function ActionCard({
-  accent,
+function ActionRow({
   title,
   body,
   cta,
   href,
   variant,
 }: {
-  accent: string;
   title: string;
-  body: string;
+  body: React.ReactNode;
   cta: string;
   href: string;
   variant: "red" | "green" | "ghost" | "ghostInverse";
 }) {
   return (
-    <Card hover className="flex flex-col p-[30px]">
-      <span aria-hidden className={`mb-4 block h-1 w-10 rounded-pill ${accent}`} />
+    <article className="grid gap-4 border-b border-line py-7 md:grid-cols-[220px_1fr_auto] md:items-center">
       <h2 className="text-h3 text-ink">{title}</h2>
-      <p className="mt-2.5 flex-1 text-muted">{body}</p>
-      <div className="mt-5">
+      <p className="max-w-[58ch] text-muted">{body}</p>
+      <div>
         <Button href={href} variant={variant} className="px-5 py-3 text-[14.5px]">
           {cta}
         </Button>
       </div>
-    </Card>
+    </article>
   );
 }
 
@@ -242,7 +235,6 @@ function SignedOut() {
   return (
     <>
       <PageHero
-        eyebrow="Members Area"
         title={
           <>
             Your Santa&apos;s Knights{" "}
@@ -260,47 +252,40 @@ function SignedOut() {
       </PageHero>
 
       <section className="py-section">
-        <Container className="grid gap-[22px] md:grid-cols-3">
-          <Card hover className="flex flex-col p-[30px]">
-            <span aria-hidden className="mb-4 block h-1 w-10 rounded-pill bg-green" />
-            <h2 className="text-h3">Submit &amp; track letters</h2>
-            <p className="mt-2.5 flex-1 text-muted">
-              An account is required to submit a child&apos;s letter, so we can reach you and you can
-              follow its status.
-            </p>
-            <div className="mt-5">
-              <Button href={links.accountRegister} variant="green" className="px-5 py-3 text-[14.5px]">
-                Get started
-              </Button>
-            </div>
-          </Card>
-
-          <Card hover className="flex flex-col p-[30px]">
-            <span aria-hidden className="mb-4 block h-1 w-10 rounded-pill bg-red" />
-            <h2 className="text-h3">Train with us</h2>
-            <p className="mt-2.5 flex-1 text-muted">
-              Classes are free and open to everyone. Browse the six Gladiators NYC programs here,
-              then book on gladiators.nyc — one login works on both sites.
-            </p>
-            <div className="mt-5">
-              <Button href={links.training} variant="red" arrow className="px-5 py-3 text-[14.5px]">
-                Browse classes
-              </Button>
-            </div>
-          </Card>
-
-          <Card hover className="flex flex-col p-[30px]">
-            <span aria-hidden className="mb-4 block h-1 w-10 rounded-pill bg-gold" />
-            <h2 className="text-h3">Membership</h2>
-            <p className="mt-2.5 flex-1 text-muted">
-              Membership ranges from free class registration to a $500 monthly corporate tier.
-            </p>
-            <div className="mt-5">
-              <Button href={links.membership} variant="ghost" className="px-5 py-3 text-[14.5px]">
-                View tiers
-              </Button>
-            </div>
-          </Card>
+        <Container>
+          <div className="border-t border-line">
+            <ActionRow
+              title="Submit & track letters"
+              body={
+                <>
+                  An account is required to submit a child&apos;s letter, so we can reach you and you
+                  can follow its status.
+                </>
+              }
+              cta="Get started"
+              href={links.accountRegister}
+              variant="green"
+            />
+            <ActionRow
+              title="Train with us"
+              body={
+                <>
+                  Classes are free and open to everyone. Browse the six Gladiators NYC programs
+                  here, then book on gladiators.nyc — one login works on both sites.
+                </>
+              }
+              cta="Browse classes"
+              href={links.training}
+              variant="red"
+            />
+            <ActionRow
+              title="Membership"
+              body="Membership ranges from free class registration to a $500 monthly corporate tier."
+              cta="View tiers"
+              href={links.membership}
+              variant="ghost"
+            />
+          </div>
         </Container>
       </section>
     </>

@@ -14,18 +14,16 @@ export const metadata: Metadata = {
     "Adopt a kid's letter to Santa, volunteer, or donate. Santa's Knights is a Harlem 501(c)(3); everything we run is free to the people we serve and paid for by people who chip in.",
 };
 
-/** Accent classes per "way to help" card, keeping color roles consistent. */
-const ACCENT: Record<(typeof waysToHelp)[number]["variant"], { chip: string; rule: string }> = {
-  red: { chip: "bg-red/10 text-red", rule: "bg-red" },
-  green: { chip: "bg-green-soft text-green", rule: "bg-green" },
-  gold: { chip: "bg-gold-soft text-[#8a6420]", rule: "bg-gold" },
+const ACTION_VARIANT: Record<(typeof waysToHelp)[number]["variant"], "red" | "green" | "ink"> = {
+  red: "red",
+  green: "green",
+  gold: "ink",
 };
 
 export default function GetInvolvedPage() {
   return (
     <>
       <PageHero
-        eyebrow="Get involved"
         title={
           <>
             Ways to <em className="font-serif font-medium italic text-red">take part</em>.
@@ -41,28 +39,28 @@ export default function GetInvolvedPage() {
         </Button>
       </PageHero>
 
-      {/* Three ways to help */}
       <section className="py-section">
-        <Container className="grid gap-[22px] md:grid-cols-3">
+        <Container>
+          <div className="border-t border-line">
           {waysToHelp.map((way) => (
-            <Card key={way.title} hover className="flex flex-col p-[32px]">
-              <span
-                aria-hidden
-                className={`mb-5 h-1 w-12 rounded-pill ${ACCENT[way.variant].rule}`}
-              />
+            <article
+              key={way.title}
+              className="grid gap-4 border-b border-line py-7 md:grid-cols-[220px_1fr_auto] md:items-center"
+            >
               <h2 className="font-display text-h3 font-black uppercase text-ink">{way.title}</h2>
-              <p className="mt-2.5 flex-1 text-muted">{way.body}</p>
-              <div className="mt-6">
+              <p className="max-w-[58ch] text-muted">{way.body}</p>
+              <div>
                 <Button
                   href={way.href}
-                  variant={way.variant === "green" ? "green" : way.variant === "gold" ? "ink" : "red"}
+                  variant={ACTION_VARIANT[way.variant]}
                   arrow
                 >
                   {way.cta}
                 </Button>
               </div>
-            </Card>
+            </article>
           ))}
+          </div>
         </Container>
       </section>
 
@@ -71,7 +69,6 @@ export default function GetInvolvedPage() {
         <Container className="grid items-start gap-10 md:grid-cols-[1fr_1fr] md:gap-[54px]">
           <div className="md:sticky md:top-[110px]">
             <SectionHeading
-              eyebrow="Volunteer"
               title="You don't have to fight to be useful"
               intro="People sort the holiday letters, run the gift event, keep the books, handle the social accounts, and coach classes. Pick what fits. Most of it works around a job."
               introClassName="max-w-[44ch]"
@@ -116,18 +113,11 @@ export default function GetInvolvedPage() {
       {/* Letters to Santa highlight */}
       <section className="py-section">
         <Container>
-          <div className="relative grid items-center gap-8 overflow-hidden rounded-card-lg bg-green bg-[linear-gradient(160deg,var(--color-green),#1f3f2e)] p-[34px] text-[#eef4ef] md:grid-cols-[1.1fr_0.9fr] md:gap-[46px] md:p-[50px]">
-            <span
-              aria-hidden
-              className="pointer-events-none absolute -top-[30px] -right-5 text-[200px] leading-none text-white/[0.06]"
-            >
-              ✶
-            </span>
-            <div className="relative">
+          <div className="grid items-center gap-8 overflow-hidden bg-green p-[34px] text-[#eef4ef] md:grid-cols-[1.1fr_0.9fr] md:gap-[46px] md:p-[50px]">
+            <div>
               <SectionHeading
                 tone="onColor"
                 size="band"
-                eyebrow="Santa's Letters"
                 title="Adopt a letter this December"
                 intro="Pick a kid's wish off the pile and send the gift they asked for. We keep the child's details private the whole way through. You just make sure the present shows up."
                 introClassName="max-w-[42ch]"
@@ -145,7 +135,7 @@ export default function GetInvolvedPage() {
               src="/images/hero-community.jpg"
               alt="Santa's Knights members of all ages together"
               sizes="(min-width: 768px) 40vw, 100vw"
-              className="aspect-[4/3] rounded-2xl"
+              className="aspect-[4/3]"
             />
           </div>
         </Container>
@@ -156,22 +146,24 @@ export default function GetInvolvedPage() {
         <Container>
           <SectionHeading
             className="max-w-[640px]"
-            eyebrow="Donate"
             title="Where your money goes"
             intro="We're a 501(c)(3), so every gift is tax-deductible. It pays for the holiday presents, the free classes, and the events that keep the neighborhood showing up."
             introClassName="max-w-[52ch]"
           />
-          <div className="mt-10 grid gap-[18px] md:grid-cols-3">
+          <div className="mt-10 border-t border-line">
             {waysToGive.map((way) => (
-              <Card key={way.label} className="flex flex-col p-[28px]">
+              <article
+                key={way.label}
+                className="grid gap-4 border-b border-line py-6 md:grid-cols-[220px_1fr_auto] md:items-center"
+              >
                 <h3 className="text-[20px] font-extrabold tracking-[-0.02em]">{way.label}</h3>
-                <p className="mt-2 flex-1 text-[15.5px] text-muted">{way.body}</p>
-                <div className="mt-5">
+                <p className="max-w-[58ch] text-[15.5px] text-muted">{way.body}</p>
+                <div>
                   <Button href={way.href} variant="ghost" className="px-5 py-3 text-[15px]">
                     {way.cta}
                   </Button>
                 </div>
-              </Card>
+              </article>
             ))}
           </div>
         </Container>
@@ -182,8 +174,6 @@ export default function GetInvolvedPage() {
         <Container>
           <Card tone="goldSoft" className="grid items-center gap-8 p-[38px] md:grid-cols-[1.1fr_0.9fr] md:p-[46px]">
             <SectionHeading
-              eyebrow="Stay in the loop"
-              eyebrowClassName="text-[#8a6420]"
               title="News, and ways to help"
               intro="We send occasional updates about the letter drive, events, and volunteer needs."
             />

@@ -71,19 +71,19 @@ export function GalleryGrid({ items }: { items: GalleryTile[] }) {
                 muted
                 playsInline
                 preload="metadata"
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                className="h-full w-full object-cover transition-colors duration-500 group-hover:scale-[1.03]"
               />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={item.url ?? undefined}
                 alt={item.alt}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                className="h-full w-full object-cover transition-colors duration-500 group-hover:scale-[1.03]"
               />
             )}
             <div className="absolute inset-0 bg-linear-to-t from-ink/85 via-transparent to-transparent" />
             {item.type === "video" && (
-              <span className="absolute top-3 right-3 grid h-9 w-9 place-items-center rounded-full bg-ink/70 text-paper">
+              <span className="absolute top-3 right-3 grid h-9 w-9 place-items-center bg-ink/70 text-paper">
                 ▶
               </span>
             )}

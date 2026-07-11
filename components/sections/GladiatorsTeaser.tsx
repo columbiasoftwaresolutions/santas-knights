@@ -8,14 +8,16 @@ export function GladiatorsTeaser() {
     <section id="training" className="bg-ink py-26 text-bone">
       <Container>
         <div className="grid items-start gap-14 md:grid-cols-[0.6fr_1.4fr]">
-          <Photo
-            src="/images/headshot.png"
-            alt={`${founder.name}, ${founder.role}`}
-            duotone="cool"
-            sizes="(min-width: 768px) 24vw, 100vw"
-            className="aspect-[4/5]"
-          />
-          <div>
+          <div data-reveal className="reveal-zoom">
+            <Photo
+              src="/images/headshot.png"
+              alt={`${founder.name}, ${founder.role}`}
+              duotone="cool"
+              sizes="(min-width: 768px) 24vw, 100vw"
+              className="aspect-[4/5]"
+            />
+          </div>
+          <div data-reveal style={{ transitionDelay: "120ms" }}>
             <blockquote className="font-serif text-[clamp(28px,3.4vw,46px)] font-normal leading-[1.12] tracking-[-0.02em]">
               <span className="font-semibold text-red">&ldquo;</span>One program brings a special type
               of holiday joy to individuals in need, while the other can help members{" "}

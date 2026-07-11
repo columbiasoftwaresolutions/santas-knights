@@ -38,7 +38,7 @@ export default function LinksPage() {
         <div className="text-center">
           <span
             aria-hidden
-            className="mx-auto flex h-[64px] w-[64px] items-center justify-center rounded-full bg-red text-[30px] text-white shadow-cta"
+            className="mx-auto flex h-[64px] w-[64px] items-center justify-center bg-red text-[30px] text-white"
           >
             ♔
           </span>
@@ -60,8 +60,8 @@ export default function LinksPage() {
                 {...(internal ? {} : { target: "_blank", rel: "noopener noreferrer" })}
                 className={
                   link.primary
-                    ? "block rounded-card border border-transparent bg-red px-7 py-[18px] text-center shadow-cta transition-transform duration-150 hover:-translate-y-0.5 hover:bg-red-deep"
-                    : "block rounded-card border border-line bg-card px-7 py-[18px] text-center transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-card"
+                    ? "block border border-transparent bg-red px-7 py-[18px] text-center transition-colors duration-150 hover:bg-red-deep"
+                    : "block border border-line bg-card px-7 py-[18px] text-center transition-colors duration-150 hover:bg-paper-raised"
                 }
               >
                 <span
@@ -93,7 +93,7 @@ export default function LinksPage() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={social.label}
-              className="flex h-[44px] w-[44px] items-center justify-center rounded-full border border-line bg-card text-[17px] text-ink transition-transform duration-150 hover:-translate-y-0.5 hover:shadow-card"
+              className="flex h-[44px] w-[44px] items-center justify-center border border-line bg-card text-[17px] text-ink transition-colors duration-150 hover:bg-paper-raised"
             >
               <span aria-hidden>{social.glyph}</span>
             </a>

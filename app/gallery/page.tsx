@@ -15,7 +15,6 @@ export default function GalleryPage() {
   return (
     <>
       <PageHero
-        eyebrow="Gallery"
         title={
           <>
             The community in{" "}
@@ -37,12 +36,14 @@ export default function GalleryPage() {
           matches the CTA band below so the page flows into one red field. */}
       <section className="bg-red-deep">
         <div className="columns-2 gap-0 sm:columns-3 lg:columns-4">
-          {galleryPhotos.map((file) => (
+          {galleryPhotos.map((photo, index) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              key={file}
-              src={`/images/gallery/${encodeURIComponent(file)}`}
-              alt="Santa's Knights"
+              key={photo.file}
+              src={`/images/gallery/${encodeURIComponent(photo.file)}`}
+              alt={`Santa's Knights community photo ${index + 1}`}
+              width={photo.width}
+              height={photo.height}
               loading="lazy"
               decoding="async"
               className="block w-full break-inside-avoid align-top"

@@ -177,7 +177,6 @@ export default async function LettersPage({
         <Container>
           <SectionHeading
             className="max-w-[640px]"
-            eyebrow="Privacy & safety"
             title="How we protect the kids"
             intro="The whole program is built so that generosity never costs a family their privacy."
             introClassName="max-w-[52ch]"

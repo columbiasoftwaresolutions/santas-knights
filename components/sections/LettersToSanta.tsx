@@ -10,7 +10,7 @@ export function LettersToSanta() {
   return (
     <section id="letters" className="scroll-mt-20 bg-red-deep py-26 text-paper">
       <Container>
-        <div className="max-w-[980px]">
+        <div data-reveal className="max-w-[980px]">
           <h2 className="font-display text-[clamp(48px,6.4vw,96px)] font-black uppercase leading-[0.9] tracking-[-0.03em]">
             Every kid deserves an{" "}
             <em className="font-serif text-amber italic [text-transform:none] [font-weight:400]">
@@ -34,6 +34,8 @@ export function LettersToSanta() {
           {letters.steps.map((step, i) => (
             <div
               key={step.title}
+              data-reveal
+              style={{ transitionDelay: `${i * 100}ms` }}
               className="border-paper/[0.18] py-11 md:border-r md:pr-9 md:[&:not(:first-child)]:pl-9 md:[&:last-child]:border-r-0"
             >
               <div className="font-display text-[clamp(56px,6vw,84px)] font-black leading-[0.8] tracking-[-0.04em] text-amber">

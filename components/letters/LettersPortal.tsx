@@ -215,7 +215,7 @@ export function LettersPortal({
               alt="A smiling child holding a wrapped gift beside Santa at a Santa's Knights holiday event"
               sizes="(min-width: 1024px) 40vw, 100vw"
               priority
-              className="aspect-[3/2] rounded-[16px]"
+              className="aspect-[3/2]"
             />
           </div>
         </Container>
@@ -327,10 +327,10 @@ function SubmitPanel({
       </Card>
 
       <div className="grid gap-7 lg:sticky lg:top-[110px]">
-        <div className="rounded-card border border-green/30 bg-green-soft/40 p-6 text-[14.5px] text-[#1f4a2f]">
+        <div className=" border border-green/30 bg-green-soft/40 p-6 text-[14.5px] text-[#1f4a2f]">
           <strong className="font-extrabold">Gift value guidance:</strong> {giftGuidance.submit}
         </div>
-        <div className="rounded-card border border-red/20 bg-red/5 p-6 text-[14.5px] text-[#6b1a1a]">
+        <div className=" border border-red/20 bg-red/5 p-6 text-[14.5px] text-[#6b1a1a]">
           <strong className="font-extrabold">Privacy reminder:</strong> {privacyInstruction}
         </div>
         {SUBMIT_EXPECTATIONS.map((item) => (
@@ -344,7 +344,7 @@ function SubmitPanel({
             </div>
           </div>
         ))}
-        <div className="rounded-card border border-line bg-gold-soft/50 p-6 text-[14.5px] text-[#6c5418]">
+        <div className=" border border-line bg-gold-soft/50 p-6 text-[14.5px] text-[#6c5418]">
           <strong className="font-extrabold">Before you upload:</strong> check the letter photo for
           identifying details such as last names, addresses, school names, or phone numbers. Crop or
           cover them before uploading.
