@@ -69,6 +69,13 @@ const SUBMIT_EXPECTATIONS: { title: string; body: string }[] = [
 
 const FADE_MS = 190;
 
+/**
+ * Faint grayscale paper grain, generated procedurally (no image asset), layered
+ * under the letters flow so the swipe surface reads as warm paper rather than
+ * flat cream. Multiplied at low opacity — a whisper of texture, not a scene.
+ */
+const PAPER_GRAIN = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='pg'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23pg)'/%3E%3C/svg%3E")`;
+
 function prefersReducedMotion() {
   return (
     typeof window !== "undefined" &&
@@ -221,15 +228,24 @@ export function LettersPortal({
         </Container>
       </section>
 
-      {/* Body: the active flow, crossfaded with the hero copy above. */}
-      <section className="bg-paper pt-[46px] pb-section text-ink">
+      {/* Body: the active flow, crossfaded with the hero copy above. A faint
+          procedural paper grain warms the swipe surface into a "desk" — no
+          literal photo. It sits behind the panel; the opaque letter cards keep
+          the content perfectly legible. No overflow-hidden here: the submit
+          side's sticky sidebar must keep working. */}
+      <section className="relative bg-paper pt-[46px] pb-section text-ink">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0 mix-blend-multiply"
+          style={{ backgroundImage: PAPER_GRAIN, backgroundSize: "160px 160px", opacity: 0.09 }}
+        />
         <div
           id="letters-panel"
           ref={panelRef}
           role="tabpanel"
           tabIndex={-1}
           aria-labelledby={bodyView === "adopt" ? "tab-adopt" : "tab-submit"}
-          className={cn("outline-none", bodyFade)}
+          className={cn("relative z-10 outline-none", bodyFade)}
         >
           {bodyView === "adopt" ? (
             <AdoptPanel signedIn={signedIn} letters={letters} demo={demo} />
