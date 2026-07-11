@@ -76,6 +76,7 @@ Add a row to the table for the relevant month. Keep entries one line where possi
 | Date | Change | Where | Type | Impact (SEO / Ads / Analytics / UX) | Owner | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-07-03 | Docs: reflect the Plan v2 split — the Gladiators *operational* training tracker (booking, waivers, check-in, XP, dashboards, videos, admin) plus Shop/Armory now build on the separate `gladiators.nyc` site; this repo keeps the Gladiators *content* pages only. Reword CLAUDE.md + README.md to match; relocate docs from `docs/` to the repo root | Beta | Infra | None — internal docs, no public exposure | CSS | Companion `gladiators.nyc` repo scaffolded + planned separately; no app code changed in this repo |
+| 2026-07-11 | Founder-quote section (`GladiatorsTeaser`, home `#training`): removed the three training stat chips (Full-contact / Free / Since 2013) — Gladiators-specific and factually off (wrong year, unverified superlative) on a quote that spans the whole nonprofit; fixed a tight italic-to-upright gap in the pull-quote ("entirely by"); dropped the now-unused `gladiatorsMeta` data | Beta | Layout/UX | SEO: none · Ads: none · Analytics: none · UX: cleaner quote block, removes inaccurate stats — all beta/noindex | CSS | Home `#training` section |
 
 <!--
 Copy this row to add an entry:

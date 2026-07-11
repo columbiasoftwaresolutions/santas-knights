@@ -208,12 +208,6 @@ export const privacyInstruction =
  * Training (Gladiators NYC): the free program, built and booked on gladiators.nyc
  * ------------------------------------------------------------------ */
 
-export const gladiatorsMeta: { value: string; label: string }[] = [
-  { value: "Full-contact", label: "Steel weapons and armor" },
-  { value: "Free", label: "No cost to train" },
-  { value: "Since 2013", label: "Oldest league in NYC" },
-];
-
 /**
  * Class catalog mirror used only for cross-links. Canonical pages live on
  * gladiators.nyc at /classes/[slug].
