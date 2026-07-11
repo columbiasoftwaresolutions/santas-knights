@@ -70,13 +70,7 @@ export function ImpactStrip() {
 function Metric({ value, arm, count }: { value: string; arm: boolean; count: boolean }) {
   const target = /^\d{1,3}$/.test(value) ? parseInt(value, 10) : null;
   const willCount = target !== null && arm;
-  const [display, setDisplay] = useState(value);
-
-  // Once armed (and off-screen), reset countable metrics to 0 so the reveal
-  // shows a clean 0→target run. Non-countable values stay verbatim.
-  useEffect(() => {
-    setDisplay(willCount ? "0" : value);
-  }, [willCount, value]);
+  const [display, setDisplay] = useState("0");
 
   useEffect(() => {
     if (!willCount || !count || target === null) return;
@@ -94,5 +88,6 @@ function Metric({ value, arm, count }: { value: string; arm: boolean; count: boo
     return () => cancelAnimationFrame(raf);
   }, [willCount, count, target]);
 
-  return <>{display}</>;
+  if (!willCount) return <>{value}</>;
+  return <>{count ? display : "0"}</>;
 }

@@ -211,8 +211,8 @@ export function LettersPortal({
             </div>
 
             <Photo
-              src="/images/gallery/DSC_5880_JPG.webp"
-              alt="A smiling child holding a wrapped gift beside Santa at a Santa's Knights holiday event"
+              src="/images/gallery/48362591_10161478136885422_5477524744964145152_o.jpg"
+              alt="A child opening a wrapped gift at a Santa's Knights holiday event"
               sizes="(min-width: 1024px) 40vw, 100vw"
               priority
               className="aspect-[3/2]"
