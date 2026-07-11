@@ -11,21 +11,24 @@ export function Press() {
           {pressLogos.map((logo) => (
             <li key={logo.name}>
               {/* White chip + multiply blend so each logo's own (white) background
-                  disappears into the chip — works for opaque JPEGs and PNGs alike. */}
+                  disappears into the chip — works for opaque JPEGs and PNGs alike.
+                  At rest the marks sit greyscale so the row reads as one calm press
+                  wall; on hover the outlet blooms to full colour and the chip lifts
+                  (the site's "hover = lift" language). Reduced-motion makes it instant. */}
               <a
                 href={logo.href}
                 target="_blank"
                 rel="noopener noreferrer"
                 title={`${logo.name} — read the story`}
                 aria-label={`${logo.name}: read the article (opens in a new tab)`}
-                className="flex h-[56px] items-center justify-center bg-white px-5 transition-colors hover:bg-paper-raised"
+                className="group flex h-[56px] items-center justify-center bg-white px-5 transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_12px_30px_-8px_rgba(255,255,255,0.2)]"
               >
                 <Image
                   src={logo.src}
                   alt={logo.name}
                   width={logo.width ?? 160}
                   height={logo.height ?? 44}
-                  className="h-[26px] w-auto object-contain mix-blend-multiply"
+                  className="h-[26px] w-auto object-contain opacity-90 mix-blend-multiply grayscale transition-[filter,opacity] duration-500 ease-out group-hover:opacity-100 group-hover:grayscale-0"
                   style={{
                     height: logo.displayHeight ? `${logo.displayHeight}px` : undefined,
                     maxWidth: logo.maxWidth ? `${logo.maxWidth}px` : undefined,
