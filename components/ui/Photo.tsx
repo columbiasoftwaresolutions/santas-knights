@@ -17,6 +17,7 @@ export function Photo({
   sizes = "100vw",
   priority = false,
   duotone,
+  objectPosition,
 }: {
   src: string;
   alt: string;
@@ -24,7 +25,11 @@ export function Photo({
   sizes?: string;
   priority?: boolean;
   duotone?: "cool" | "warm";
+  /** CSS object-position for the cover crop (default center). Use to keep the
+   *  subject framed when a wide photo is cropped into a tall/narrow box. */
+  objectPosition?: string;
 }) {
+  const position = objectPosition ? { objectPosition } : undefined;
   if (duotone) {
     return (
       <div className={cn("relative overflow-hidden", className)}>
@@ -43,6 +48,7 @@ export function Photo({
           fill
           sizes={sizes}
           priority={priority}
+          style={position}
           className="relative z-[2] object-cover mix-blend-luminosity [filter:grayscale(1)_contrast(1.18)_brightness(0.86)]"
         />
         <div
@@ -55,7 +61,15 @@ export function Photo({
 
   return (
     <div className={cn("relative overflow-hidden", className)}>
-      <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className="object-cover" />
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes={sizes}
+        priority={priority}
+        style={position}
+        className="object-cover"
+      />
     </div>
   );
 }

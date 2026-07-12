@@ -133,6 +133,9 @@ export const pillars: {
   href: string;
   image?: string;
   imageAlt?: string;
+  /** object-position for the cover crop; keeps the subject centered when the
+   *  wide photo is cropped into a tall/narrow block (esp. on mobile). */
+  imagePosition?: string;
   photo: string;
 }[] = [
   {
@@ -144,6 +147,9 @@ export const pillars: {
     href: "/letters",
     image: "/images/gallery/48424779_10161478137715422_7170425562547093504_o.jpg",
     imageAlt: "Santa sitting with a smiling child holding a wrapped gift at a Santa's Knights holiday event",
+    // Santa + child sit right-of-centre in the frame — pull the crop right so
+    // they stay centred in the narrow block.
+    imagePosition: "62% center",
     photo: "PHOTO: kids and volunteers at the holiday gift event",
   },
   {

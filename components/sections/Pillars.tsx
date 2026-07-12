@@ -33,6 +33,7 @@ export function Pillars() {
                   alt={pillar.imageAlt ?? pillar.title}
                   duotone={isGive ? "warm" : "cool"}
                   sizes="(min-width: 768px) 50vw, 100vw"
+                  objectPosition={pillar.imagePosition}
                   className="h-full w-full"
                 />
                 {/* Base darken + bottom gradient so the text reads at rest. */}
