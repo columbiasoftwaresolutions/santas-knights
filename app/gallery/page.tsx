@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { PageHero } from "@/components/sections/PageHero";
+import { HorizontalScrollGallery } from "@/components/gallery/HorizontalScrollGallery";
 import { galleryPhotos } from "@/content/galleryPhotos";
 import { links } from "@/content/site";
 
@@ -14,43 +14,7 @@ export const metadata: Metadata = {
 export default function GalleryPage() {
   return (
     <>
-      <PageHero
-        title={
-          <>
-            The community in{" "}
-            <em className="font-serif font-medium italic text-red">motion</em>.
-          </>
-        }
-        intro="Photos from training sessions, the Letters to Santa event, and life at the Manhattanville Community Center."
-      >
-        <Button href={links.getInvolved} variant="red" arrow>
-          Get involved
-        </Button>
-        <Button href={links.adoptLetter} variant="ghost">
-          Adopt a letter
-        </Button>
-      </PageHero>
-
-      {/* Full-bleed photo wall: every gallery photo, whole and unedited, packed
-          edge-to-edge with no gaps, captions, or categories. The red ground
-          matches the CTA band below so the page flows into one red field. */}
-      <section className="bg-red-deep">
-        <div className="columns-2 gap-0 sm:columns-3 lg:columns-4">
-          {galleryPhotos.map((photo, index) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={photo.file}
-              src={`/images/gallery/${encodeURIComponent(photo.file)}`}
-              alt={`Santa's Knights community photo ${index + 1}`}
-              width={photo.width}
-              height={photo.height}
-              loading="lazy"
-              decoding="async"
-              className="block w-full break-inside-avoid align-top"
-            />
-          ))}
-        </div>
-      </section>
+      <HorizontalScrollGallery photos={galleryPhotos} />
 
       <section className="bg-red-deep py-[clamp(72px,9vw,120px)] text-paper">
         <Container>
