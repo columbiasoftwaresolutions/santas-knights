@@ -147,3 +147,26 @@
     }
   }
 }
+
+/* ---- Gallery image skeleton -----------------------------------------
+   A subtle bone-tinted sweep over a raised near-black panel, shown while
+   each photo loads. The wrapper carries the photo's exact aspect-ratio, so
+   the horizontal track has its full width immediately — no reflow as images
+   arrive. The global reduced-motion rule above already freezes the sweep. */
+@keyframes img-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+.img-skeleton {
+  background: var(--color-ink2);
+  overflow: hidden;
+}
+.img-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(232, 226, 212, 0.07), transparent);
+  animation: img-shimmer 1.6s ease-in-out infinite;
+}

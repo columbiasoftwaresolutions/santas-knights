@@ -14,6 +14,14 @@ export const metadata: Metadata = {
 export default function GalleryPage() {
   return (
     <>
+      <section className="bg-ink pt-[clamp(28px,6vw,64px)] pb-[clamp(20px,3vw,32px)] text-paper">
+        <Container>
+          <h1 className="font-display text-[clamp(56px,12vw,150px)] leading-[0.85] font-black tracking-[-0.04em] uppercase text-paper">
+            Gallery
+          </h1>
+        </Container>
+      </section>
+
       <HorizontalScrollGallery photos={galleryPhotos} />
 
       <section className="bg-red-deep py-[clamp(72px,9vw,120px)] text-paper">
