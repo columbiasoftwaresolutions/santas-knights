@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { HorizontalScrollGallery } from "@/components/gallery/HorizontalScrollGallery";
 import { galleryPhotos } from "@/content/galleryPhotos";
@@ -24,20 +23,39 @@ export default function GalleryPage() {
 
       <HorizontalScrollGallery photos={galleryPhotos} />
 
-      <section className="bg-red-deep py-[clamp(72px,9vw,120px)] text-paper">
-        <Container>
-          <h2 className="max-w-[960px] font-display text-[clamp(48px,8vw,112px)] leading-[0.86] font-black tracking-[-0.04em] uppercase">
-            Join us <em className="font-serif font-normal normal-case italic text-amber">in person.</em>
-          </h2>
-          <p className="mt-7 max-w-[38rem] text-[19px] text-paper/85">
-            We are still organizing the full archive. Volunteer, train, or help with Santa&apos;s
-            Letters to take part in the next event.
-          </p>
-          <div className="mt-9 flex flex-wrap gap-3">
-            <Button href={links.getInvolved} variant="cream">Get involved</Button>
-            <Button href="https://www.instagram.com/santasknights/" variant="clear">Instagram ↗</Button>
-          </div>
-        </Container>
+      <section className="text-paper">
+        <a
+          href={links.getInvolved}
+          aria-label="Join us in person — get involved"
+          className="group block bg-red-deep py-[clamp(72px,9vw,120px)] outline-none transition-colors duration-200 ease-out hover:bg-[#8e2130] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-paper"
+        >
+          <Container>
+            <div className="flex flex-col items-start gap-10 sm:flex-row sm:items-center sm:justify-between">
+              <div className="max-w-[900px]">
+                <h2 className="font-display text-[clamp(48px,8vw,112px)] leading-[0.86] font-black tracking-[-0.04em] uppercase">
+                  Join us <em className="font-serif font-normal normal-case italic text-amber">in person.</em>
+                </h2>
+                <p className="mt-7 max-w-[38rem] text-[19px] text-paper/85">
+                  Volunteer, train, or help with Santa&apos;s Letters to take part in the next event.
+                </p>
+              </div>
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="hidden h-[clamp(64px,8vw,140px)] w-[clamp(64px,8vw,140px)] shrink-0 text-paper transition-transform duration-200 ease-out group-hover:translate-x-3 sm:block"
+              >
+                <path
+                  d="M5 12h14M12 5l7 7-7 7"
+                  stroke="currentColor"
+                  strokeWidth="1.25"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+          </Container>
+        </a>
       </section>
     </>
   );
