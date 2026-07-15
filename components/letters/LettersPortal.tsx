@@ -327,20 +327,20 @@ function SubmitPanel({
 }) {
   return (
     <Container className="grid items-start gap-10 lg:grid-cols-[0.62fr_0.38fr] lg:gap-[54px]">
-      <Card className="p-[34px] md:p-[42px]">
-        {signedIn ? (
+      {signedIn ? (
+        <Card className="p-[34px] md:p-[42px]">
           <SubmitLetterForm defaultEmail={defaultEmail} defaultName={defaultName} />
-        ) : (
-          <SignInGate
-            tone="green"
-            title="Sign in to submit a letter"
-            body="A free account lets us reach you about the letter and lets you track its status. It only takes a minute."
-            cta="Create a free account"
-            ctaHref={`${links.accountRegister}?next=${encodeURIComponent(SUBMIT_NEXT)}`}
-            next={SUBMIT_NEXT}
-          />
-        )}
-      </Card>
+        </Card>
+      ) : (
+        <SignInGate
+          tone="green"
+          title="Sign in to submit a letter"
+          body="A free account lets us reach you about the letter and lets you track its status. It only takes a minute."
+          cta="Create a free account"
+          ctaHref={`${links.accountRegister}?next=${encodeURIComponent(SUBMIT_NEXT)}`}
+          next={SUBMIT_NEXT}
+        />
+      )}
 
       <div className="grid gap-7 lg:sticky lg:top-[110px]">
         <div className=" border border-green/30 bg-green-soft/40 p-6 text-[14.5px] text-[#1f4a2f]">

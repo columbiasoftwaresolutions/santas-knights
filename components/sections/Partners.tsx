@@ -9,7 +9,7 @@ export function Partners() {
   const featured = sponsors.filter((s) => s.featured);
 
   return (
-    <section className="bg-paper py-[84px] text-ink">
+    <section className="bg-paper py-14 text-ink md:py-[84px]">
       <Container>
         <div
           data-reveal
@@ -22,14 +22,22 @@ export function Partners() {
             See all sponsors
           </Button>
         </div>
-        <div data-reveal style={{ transitionDelay: "100ms" }} className="flex flex-wrap">
+        <div
+          data-reveal
+          style={{ transitionDelay: "100ms" }}
+          className="flex flex-col gap-2 sm:flex-row sm:flex-wrap"
+        >
           {featured.map((sponsor, i) => (
             <span
               key={sponsor.name}
-              className="py-1.5 pr-7 font-display text-[clamp(22px,2.4vw,34px)] font-extrabold uppercase leading-tight tracking-[-0.01em]"
+              className="font-display text-[clamp(22px,2.4vw,34px)] font-extrabold uppercase leading-tight tracking-[-0.01em] sm:py-1.5 sm:pr-7"
             >
               {sponsor.name}
-              {i < featured.length - 1 && <span className="ml-7 font-black text-red">·</span>}
+              {i < featured.length - 1 && (
+                <span className="ml-3 hidden font-black text-red sm:ml-7 sm:inline" aria-hidden="true">
+                  ·
+                </span>
+              )}
             </span>
           ))}
         </div>
