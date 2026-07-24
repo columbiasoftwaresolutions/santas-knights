@@ -1,7 +1,7 @@
 # Redesign port plan — "Poster" system → Next.js frontend
 
 Porting the approved **"Poster"** visual design (warm near-black grounds, Archivo 900
-uppercase display, Fraunces italic serif accents, Hanken body; red/amber accents on warm
+uppercase display, Cormorant italic serif accents, Hanken body; red/amber accents on warm
 paper; duotone photography; flood-color emphasis bands) **with the homepage hero from
 "Design A"** (warm-paper, serif headline + italic-red accent + community photo) into the
 real app.
@@ -19,7 +19,7 @@ real app.
 ## Phase status
 
 ### Phase 0 — Foundation ✅ DONE
-- `app/layout.tsx`: added `Archivo` via `next/font` (`--font-archivo`); Fraunces gained weight 400.
+- `app/layout.tsx`: added `Archivo` via `next/font` (`--font-archivo`); Cormorant gained weight 400.
 - `app/globals.css` `@theme`: repointed `--color-ink #16120f`, added `--color-ink2 #1a1512`,
   promoted `--color-bone`, `--color-red #c2331f`, `--color-red-deep #9e2536`, `--color-amber #c98a3a`,
   added `--font-display` (→ `font-display` utility). Body flipped to `bg-ink text-bone`.

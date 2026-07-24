@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Hanken_Grotesk, Fraunces, Archivo } from "next/font/google";
+import { Hanken_Grotesk, Cormorant, Archivo } from "next/font/google";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { JsonLd } from "@/components/ui/JsonLd";
@@ -15,11 +15,11 @@ const hanken = Hanken_Grotesk({
   display: "swap",
 });
 
-const fraunces = Fraunces({
+const cormorant = Cormorant({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   style: ["normal", "italic"],
-  variable: "--font-fraunces",
+  variable: "--font-cormorant",
   display: "swap",
 });
 
@@ -56,7 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       // The pre-paint reveal script adds `reveal-on` to <html> before hydration,
       // so its className intentionally differs from the server render.
       suppressHydrationWarning
-      className={`${hanken.variable} ${fraunces.variable} ${archivo.variable}`}
+      className={`${hanken.variable} ${cormorant.variable} ${archivo.variable}`}
     >
       <body>
         {/* Arm scroll-reveal before first paint, so [data-reveal] elements start

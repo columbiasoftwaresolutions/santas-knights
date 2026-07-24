@@ -33,7 +33,7 @@
 
   /* Type — families come from next/font (see app/layout.tsx) */
   --font-sans: var(--font-hanken), system-ui, sans-serif;
-  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-serif: var(--font-cormorant), Georgia, serif;
   --font-display: var(--font-archivo), "Archivo", system-ui, sans-serif;
 
   /* Radii */

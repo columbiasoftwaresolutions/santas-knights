@@ -34,7 +34,7 @@ typography:
   families:
     sans:    '"Hanken Grotesk", system-ui, sans-serif' # UI + body
     display: '"Archivo", system-ui, sans-serif'         # uppercase poster display
-    serif:   '"Fraunces", Georgia, serif'               # italic emphasis
+    serif:   '"Cormorant", Georgia, serif'               # italic emphasis
   base:
     size: "18px"
     lineHeight: 1.55
@@ -103,7 +103,7 @@ components:
 
 Santa's Knights is a 501(c)(3) nonprofit bringing **free** martial arts, fitness, and community to Harlem. The design system carries **two tones in one product**:
 
-- **Santa's Knights (default / wrapper)** — warm, hopeful, trustworthy. A cream "paper" canvas, deep brand red, community green, and gold accents. Editorial serif (Fraunces) used in italic for emotional emphasis. This is the charitable, welcoming voice that fronts the org, donations, and Letters to Santa.
+- **Santa's Knights (default / wrapper)** — warm, hopeful, trustworthy. A cream "paper" canvas, deep brand red, community green, and gold accents. Editorial serif (Cormorant) used in italic for emotional emphasis. This is the charitable, welcoming voice that fronts the org, donations, and Letters to Santa.
 - **Gladiators NYC (sub-brand section)** — gritty, intense, medieval-meets-modern. Near-black steel surfaces, a hotter orange-red, bone-colored text. Used only for the combat program's section as a deliberate *tonal bridge* into "the steel world."
 
 The approved “Poster” system uses near-black grounds as the main identity, interrupted by warm paper, red, and amber flood sections. Geometry is square and editorial; rounded cards are not part of the system.
@@ -142,7 +142,7 @@ Steel sub-brand palette (Gladiators NYC):
 
 - **Archivo** is the display face: 800–900, uppercase, very tight tracking, and compressed line-height.
 - **Hanken Grotesk** is the workhorse for body copy, navigation, and UI controls.
-- **Fraunces**, usually italic at 400–500, provides one emotional emphasis beat inside large headings and quotes.
+- **Cormorant**, usually italic at 400–500, provides one emotional emphasis beat inside large headings and quotes.
 - **No eyebrows or kickers.** Hierarchy comes from scale, spacing, rules, and color.
 - Base body is **18px / 1.55** for comfortable reading; ledes step up to 20px in `muted`.
 
@@ -187,13 +187,13 @@ Steel sub-brand palette (Gladiators NYC):
 **Do**
 - Keep the warm `paper` canvas as the default; reserve `steel` strictly for Gladiators content.
 - Use `red` for primary actions, `green` for giving/community, `gold` for accent only.
-- Use Archivo uppercase display headings and Fraunces italic sparingly for one emphasis beat per block.
+- Use Archivo uppercase display headings and Cormorant italic sparingly for one emphasis beat per block.
 - Maintain square controls/panels and the 1440px / 24–56px layout frame across new pages.
 - Reinforce "100% free · 501(c)(3) · tax-deductible" wherever donations or classes appear.
 
 **Don't**
 - Don't mix the steel palette into warm sections (or vice-versa) — the hand-off should be a clean, intentional band.
-- Don't set body copy or UI controls in Fraunces; don't use gold as a primary action color.
+- Don't set body copy or UI controls in Cormorant; don't use gold as a primary action color.
 - Don't introduce hard, high-contrast drop shadows — keep elevation soft and warm.
 - Don't rely on color alone to signal meaning; keep labels/icons.
 - Don't add on-site payment/e-commerce UI — Donate/Shop/Tickets/Gifts are external redirects (see REQUIREMENTS.md).
@@ -204,7 +204,7 @@ When generating new screens or components for this product:
 
 - Default to the **Santa's Knights warm theme** (`paper` background, `ink` text, `red` primary). Only switch to the **Gladiators steel theme** (`steel` background, `bone` text, `gladRed` primary) for combat-program screens, and mark the transition with a full-bleed band.
 - Pull all colors, type, spacing, radii, and shadows from the YAML tokens above — do not invent values.
-- Headings: Archivo 800–900 uppercase, tight tracking; one optional Fraunces-italic emphasis word in red or amber.
+- Headings: Archivo 800–900 uppercase, tight tracking; one optional Cormorant-italic emphasis word in red or amber.
 - Never add eyebrows/kickers. Primary CTAs are square red controls.
 - Layout: 1440px max width, 24–56px gutters, two-column grids that collapse to one column on mobile.
 - Always surface the nonprofit framing (free / 501(c)(3) / tax-deductible) near classes or donations.

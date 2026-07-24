@@ -71,7 +71,7 @@ Then write the git commit. Keep the CHANGELOG entry and the commit message consi
 - `SUPABASE_SECRET_KEY` is **server-only** — never import it into client components.
 - Mobile-first responsive design (audience is heavily social-media-driven).
 - Visual source of truth: `design-demos/home.html` + `design-demos/styles.css`. Use the
-  poster system: Archivo 900 uppercase display, Fraunces italic accents, Hanken body,
+  poster system: Archivo 900 uppercase display, Cormorant italic accents, Hanken body,
   square controls/panels, warm near-black grounds, paper contrast sections, red/amber
   flood accents, and no eyebrows/kickers.
 - Santa's Letters: never expose a child's identifying details publicly; gifts must be age-appropriate, legal, and safe.
