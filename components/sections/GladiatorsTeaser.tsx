@@ -21,7 +21,7 @@ export function GladiatorsTeaser() {
             <blockquote className="font-serif text-[clamp(28px,3.4vw,46px)] font-normal leading-[1.12] tracking-[-0.02em]">
               <span className="font-semibold text-red">&ldquo;</span>One program brings a special type
               of holiday joy to individuals in need, while the other can help members{" "}
-              <em className="italic text-amber mr-[0.12em]">change their lives entirely</em> by focusing on their
+              <em className="italic text-amber mr-[0.12em] font-semibold">change their lives entirely</em> by focusing on their
               health and mental well-being.&rdquo;
             </blockquote>
             <div className="mt-7 text-[14px] font-semibold uppercase tracking-[0.1em] text-amber">

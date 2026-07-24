@@ -13,7 +13,7 @@ export function LettersToSanta() {
         <div data-reveal className="max-w-[980px]">
           <h2 className="font-display text-[clamp(48px,6.4vw,96px)] font-black uppercase leading-[0.9] tracking-[-0.03em]">
             Every kid deserves an{" "}
-            <em className="font-serif text-amber italic [text-transform:none] [font-weight:400]">
+            <em className="font-serif text-amber italic [text-transform:none] [font-weight:700]">
               answer.
             </em>
           </h2>

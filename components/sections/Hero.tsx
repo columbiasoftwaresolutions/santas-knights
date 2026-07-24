@@ -11,10 +11,10 @@ export function Hero() {
         <div>
           <h1
             data-reveal
-            className="font-serif text-[clamp(40px,5vw,70px)] font-medium leading-[1.04] tracking-[-0.02em]"
+            className="font-serif text-[clamp(40px,5vw,70px)] font-bold leading-[1.04] tracking-[-0.02em]"
           >
             Strengthening kids and lifting{" "}
-            <em className="font-medium italic text-red">communities</em>.
+            <em className="font-bold italic text-red">communities</em>.
           </h1>
           <p
             data-reveal

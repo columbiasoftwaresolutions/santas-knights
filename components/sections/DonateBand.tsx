@@ -14,7 +14,7 @@ export function DonateBand() {
           Adopt a letter
           <br />
           <span className="text-red">&amp;</span>{" "}
-          <em className="font-serif text-amber italic [text-transform:none] [font-weight:400]">
+          <em className="font-serif text-amber italic [text-transform:none] [font-weight:500]">
             give.
           </em>
         </h2>

@@ -6,22 +6,22 @@ export function Press() {
   return (
     <section className="border-y border-bone/12 bg-ink2 py-[54px]">
       <Container className="flex flex-col items-start gap-7 md:flex-row md:items-center md:gap-12">
-        <p className="shrink-0 font-serif text-[19px] italic text-bone/70">Seen in</p>
+        <p className="shrink-0 font-serif text-[19px] font-semibold italic text-bone/70">Seen in</p>
         <ul data-reveal className="flex flex-wrap items-center gap-3 md:gap-3.5">
           {pressLogos.map((logo) => (
             <li key={logo.name}>
               {/* White chip + multiply blend so each logo's own (white) background
                   disappears into the chip — works for opaque JPEGs and PNGs alike.
                   At rest the marks sit greyscale so the row reads as one calm press
-                  wall; on hover the outlet blooms to full colour and the chip lifts
-                  (the site's "hover = lift" language). Reduced-motion makes it instant. */}
+                  wall; on hover the outlet blooms to full colour only (no lift —
+                  movement here read as distracting). Reduced-motion makes it instant. */}
               <a
                 href={logo.href}
                 target="_blank"
                 rel="noopener noreferrer"
                 title={`${logo.name} — read the story`}
                 aria-label={`${logo.name}: read the article (opens in a new tab)`}
-                className="group flex h-[56px] items-center justify-center bg-white px-5 transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_12px_30px_-8px_rgba(255,255,255,0.2)]"
+                className="group flex h-[56px] items-center justify-center bg-white px-5"
               >
                 <Image
                   src={logo.src}
