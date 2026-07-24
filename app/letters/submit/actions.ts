@@ -5,7 +5,6 @@ import { headers } from "next/headers";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { LETTERS_BUCKET } from "@/lib/supabase/config";
 import { getCurrentUser } from "@/lib/auth";
-import { fetchAmazonImagePreviews } from "@/lib/amazonPreview";
 import { GUARDIAN_CONSENT_TEXT, GUARDIAN_CONSENT_VERSION } from "@/content/consent";
 
 export type SubmitLetterState = {
@@ -17,7 +16,6 @@ export type SubmitLetterState = {
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
-const MAX_AMAZON_LINKS = 20;
 
 /**
  * True only for an Amazon link. Fulfillment is Amazon-only by design. Accepts
@@ -79,13 +77,8 @@ export async function submitLetter(
   const childFirstName = String(formData.get("child_first_name") ?? "").trim();
   const childAgeRaw = String(formData.get("child_age") ?? "").trim();
   const wishNote = String(formData.get("wish_note") ?? "").trim();
-  // Gift source: a single Amazon wishlist link, or individual product links.
-  const giftMode = String(formData.get("gift_mode") ?? "wishlist") === "links" ? "links" : "wishlist";
+  // Gifts are shopped via a single Amazon wishlist link (guardian-owned).
   const wishlistUrl = String(formData.get("wishlist_url") ?? "").trim();
-  const amazonUrls = formData
-    .getAll("amazon_url")
-    .map((value) => String(value).trim())
-    .filter(Boolean);
   const guardianName = String(formData.get("guardian_name") ?? "").trim();
   const guardianEmail = String(formData.get("guardian_email") ?? "").trim();
   const consent = formData.get("consent") === "on";
@@ -100,18 +93,10 @@ export async function submitLetter(
   if (!childAgeRaw || !Number.isInteger(childAge) || childAge < 0 || childAge > 17)
     errors.child_age = "Age must be a whole number between 0 and 17.";
   if (!wishNote) errors.wish_note = "Tell us in a line or two what they're wishing for.";
-  if (giftMode === "wishlist") {
-    if (!wishlistUrl) errors.wishlist_url = "Please paste the link to the child's Amazon wishlist.";
-    else if (!isAmazonWishlistUrl(wishlistUrl))
-      errors.wishlist_url =
-        "That doesn't look like an Amazon wishlist link. Copy the list's share link (amazon.com/…/wishlist/… or an a.co short link).";
-  } else if (amazonUrls.length === 0) {
-    errors.amazon_url = "Please add at least one Amazon link.";
-  } else if (amazonUrls.length > MAX_AMAZON_LINKS) {
-    errors.amazon_url = `Please add no more than ${MAX_AMAZON_LINKS} links.`;
-  } else if (!amazonUrls.every(isAmazonUrl)) {
-    errors.amazon_url = "Each one has to be an Amazon link (amazon.com or any country's Amazon, amzn.to, or a.co).";
-  }
+  if (!wishlistUrl) errors.wishlist_url = "Please paste the link to the child's Amazon wishlist.";
+  else if (!isAmazonWishlistUrl(wishlistUrl))
+    errors.wishlist_url =
+      "That doesn't look like an Amazon wishlist link. Copy the list's share link (amazon.com/…/wishlist/… or an a.co short link).";
   if (!guardianName) errors.guardian_name = "We need a parent or guardian's name.";
   if (!guardianEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guardianEmail))
     errors.guardian_email = "Please enter a valid email so we can reach you about this letter.";
@@ -150,12 +135,8 @@ export async function submitLetter(
     return { ok: false, message: "We couldn't save the letter image. Please try again in a minute." };
   }
 
-  // Wishlist letters have no individual product URLs, so there's nothing to
-  // preview — the deck shows a single "see their wishlist" button instead.
-  const useWishlist = giftMode === "wishlist";
-  const finalAmazonUrls = useWishlist ? [] : amazonUrls;
-  const amazonImageUrls = useWishlist ? [] : await fetchAmazonImagePreviews(amazonUrls);
-
+  // Wishlist letters have no individual product URLs — the deck shows a single
+  // "see their wishlist" button instead — so there's nothing to preview.
   const letterBase = {
     child_first_name: childFirstName,
     child_age: childAge,
@@ -171,9 +152,9 @@ export async function submitLetter(
     .from("santa_letters")
     .insert({
       ...letterBase,
-      amazon_urls: finalAmazonUrls,
-      amazon_image_urls: amazonImageUrls,
-      wishlist_url: useWishlist ? wishlistUrl : null,
+      amazon_urls: [],
+      amazon_image_urls: [],
+      wishlist_url: wishlistUrl,
     })
     .select("id")
     .single();
