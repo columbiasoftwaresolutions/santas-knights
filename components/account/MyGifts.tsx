@@ -10,6 +10,7 @@ export type MyGift = {
   child_age: number;
   wish_note: string;
   amazon_urls: string[];
+  wishlist_url: string | null;
   status: string;
   claimed_at: string | null;
   fulfilled_at: string | null;
@@ -66,17 +67,28 @@ export function MyGifts({ gifts }: { gifts: MyGift[] }) {
                 <p className="mt-3 line-clamp-3 flex-1 text-[14.5px] text-muted">{g.wish_note}</p>
 
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {g.amazon_urls.map((url, i) => (
+                  {g.wishlist_url ? (
                     <a
-                      key={url}
-                      href={url}
+                      href={g.wishlist_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className=" border border-line px-3 py-1.5 text-[12.5px] font-bold text-red underline"
                     >
-                      {g.amazon_urls.length > 1 ? `Gift ${i + 1} ↗` : "Open Amazon ↗"}
+                      Open wishlist ↗
                     </a>
-                  ))}
+                  ) : (
+                    g.amazon_urls.map((url, i) => (
+                      <a
+                        key={url}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className=" border border-line px-3 py-1.5 text-[12.5px] font-bold text-red underline"
+                      >
+                        {g.amazon_urls.length > 1 ? `Gift ${i + 1} ↗` : "Open Amazon ↗"}
+                      </a>
+                    ))
+                  )}
                 </div>
 
                 {!gifted && (

@@ -13,6 +13,9 @@ export type SwipeLetter = {
   wishNote: string;
   amazonUrls: string[];
   amazonImageUrls: string[];
+  /** A single Amazon wishlist link (guardian-owned). When set, the card shows a
+   *  "see their wishlist" button instead of per-item Amazon links. */
+  wishlistUrl: string | null;
   imageUrl: string | null;
 };
 
@@ -22,9 +25,11 @@ const FLING_MS = 280;
 
 /**
  * The swipe/card donor UI. One letter per card: the handwritten letter is the
- * card front, tapping flips to the wish + Amazon CTA. Right swipe (or the
- * "Gift this" button) = purchase intent → opens the Amazon link in a new tab
- * and advances; left swipe passes. Works with pointer, buttons, and keyboard.
+ * card front, tapping flips to the wish + gift CTA. Right swipe (or the
+ * "Gift this" button) = claim intent → records the claim and advances; left
+ * swipe passes. Actually opening Amazon is a separate, explicit tap on the
+ * wishlist / product link on the back of the card. Works with pointer, buttons,
+ * and keyboard.
  */
 export function SwipeDeck({
   letters,
@@ -73,8 +78,8 @@ export function SwipeDeck({
   const gift = useCallback(() => {
     if (!current || leaving) return;
     setNotice(null);
-    // Open Amazon synchronously (preserve the user gesture), then record the claim.
-    if (current.amazonUrls[0]) window.open(current.amazonUrls[0], "_blank", "noopener,noreferrer");
+    // Right swipe just records the claim (tags it as "to send"). Buying is a
+    // separate, explicit tap on the wishlist/product link on the card back.
     claimCurrent();
     advance("right");
   }, [current, leaving, advance, claimCurrent]);
@@ -253,51 +258,83 @@ export function SwipeDeck({
                 “{current.wishNote}”
               </p>
               <div className="mt-5 min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
-                {giftItems.map((item, i) => (
-                  <a
-                    key={item.url}
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(event) => {
-                      // The anchor's href opens this specific item natively; record the claim too.
-                      event.stopPropagation();
-                      setNotice(null);
-                      claimCurrent();
-                      advance("right");
-                    }}
-                    onPointerDown={(event) => event.stopPropagation()}
-                    className="flex min-h-[92px] items-center gap-3 bg-paper p-3 text-red-deep transition-colors duration-150"
-                  >
-                    <span className="flex h-[68px] w-[78px] shrink-0 items-center justify-center bg-white">
-                      {item.imageUrl ? (
-                        // Amazon image hosts are remote and dynamic, so use img here.
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={item.imageUrl}
-                          alt=""
-                          className="h-full w-full object-contain"
-                          loading="lazy"
-                          draggable={false}
-                        />
-                      ) : (
-                        <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-red-deep/45">
-                          Amazon
+                {current.wishlistUrl ? (
+                  <>
+                    <a
+                      href={current.wishlistUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(event) => {
+                        // Opens their wishlist natively; record the claim too.
+                        event.stopPropagation();
+                        setNotice(null);
+                        claimCurrent();
+                        advance("right");
+                      }}
+                      onPointerDown={(event) => event.stopPropagation()}
+                      className="flex min-h-[92px] items-center gap-3 bg-paper p-3 text-red-deep transition-colors duration-150"
+                    >
+                      <span className="flex h-[68px] w-[78px] shrink-0 items-center justify-center bg-white text-[11px] font-bold uppercase tracking-[0.08em] text-red-deep/45">
+                        List
+                      </span>
+                      <span className="min-w-0 flex-1 text-left text-[15px] font-bold leading-tight">
+                        See their Amazon wishlist ↗
+                      </span>
+                    </a>
+                    <p className="text-center text-[12.5px] opacity-80">
+                      Opens their Amazon wishlist in a new tab. Pick anything on it — we never handle
+                      payment.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    {giftItems.map((item, i) => (
+                      <a
+                        key={item.url}
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(event) => {
+                          // The anchor's href opens this specific item natively; record the claim too.
+                          event.stopPropagation();
+                          setNotice(null);
+                          claimCurrent();
+                          advance("right");
+                        }}
+                        onPointerDown={(event) => event.stopPropagation()}
+                        className="flex min-h-[92px] items-center gap-3 bg-paper p-3 text-red-deep transition-colors duration-150"
+                      >
+                        <span className="flex h-[68px] w-[78px] shrink-0 items-center justify-center bg-white">
+                          {item.imageUrl ? (
+                            // Amazon image hosts are remote and dynamic, so use img here.
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={item.imageUrl}
+                              alt=""
+                              className="h-full w-full object-contain"
+                              loading="lazy"
+                              draggable={false}
+                            />
+                          ) : (
+                            <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-red-deep/45">
+                              Amazon
+                            </span>
+                          )}
                         </span>
-                      )}
-                    </span>
-                    <span className="min-w-0 flex-1 text-left text-[15px] font-bold leading-tight">
+                        <span className="min-w-0 flex-1 text-left text-[15px] font-bold leading-tight">
+                          {current.amazonUrls.length > 1
+                            ? `Gift item ${i + 1} on Amazon ↗`
+                            : "Gift this on Amazon ↗"}
+                        </span>
+                      </a>
+                    ))}
+                    <p className="text-center text-[12.5px] opacity-80">
                       {current.amazonUrls.length > 1
-                        ? `Gift item ${i + 1} on Amazon ↗`
-                        : "Gift this on Amazon ↗"}
-                    </span>
-                  </a>
-                ))}
-                <p className="text-center text-[12.5px] opacity-80">
-                  {current.amazonUrls.length > 1
-                    ? "Each link opens Amazon in a new tab. Gift one item or all of them. We never handle payment."
-                    : "This opens Amazon in a new tab. We never handle payment."}
-                </p>
+                        ? "Each link opens Amazon in a new tab. Gift one item or all of them. We never handle payment."
+                        : "This opens Amazon in a new tab. We never handle payment."}
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -333,7 +370,7 @@ export function SwipeDeck({
           {flipped ? "See the letter" : "See the wish"}
         </Button>
         <Button variant="red" onClick={gift} className="px-5 py-3 text-[15px]">
-          Gift this ↗
+          Gift this
         </Button>
       </div>
       <p className="mt-4 text-center text-[13.5px] font-semibold text-muted">

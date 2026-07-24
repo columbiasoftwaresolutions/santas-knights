@@ -32,7 +32,9 @@ async function getLetters(): Promise<SwipeLetter[] | null> {
 
   const { data, error } = await supabase
     .from("public_letters")
-    .select("id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, created_at, amazon_image_urls")
+    .select(
+      "id, child_first_name, child_age, wish_note, amazon_urls, wishlist_url, letter_image_path, created_at, amazon_image_urls",
+    )
     .order("created_at", { ascending: true })
     .limit(150);
 
@@ -84,6 +86,7 @@ async function getLetters(): Promise<SwipeLetter[] | null> {
     wishNote: row.wish_note,
     amazonUrls: row.amazon_urls ?? [],
     amazonImageUrls: previewByLetterId.get(row.id) ?? row.amazon_image_urls ?? [],
+    wishlistUrl: row.wishlist_url ?? null,
     imageUrl: row.letter_image_path ? (signedByPath.get(row.letter_image_path) ?? null) : null,
   }));
 }
@@ -104,6 +107,7 @@ const DEMO_LETTERS: SwipeLetter[] = [
       "https://www.amazon.com/LEGO-Technic-Lamborghini-Advanced-Building/dp/B0CPQ54PQ5/ref=sr_1_9?crid=1G8XMOFGVLN5C&dib=eyJ2IjoiMSJ9.cEtfmrGy_T40hphH4Ih9xNRkh7R263UBsFqsEwGXZ4FbI6hrZ7rS6lMS--6s_NeSDPdXr0WwqgLX9bpuD3jPTF6Q63sGM1RyATMaey8NJX24H7q24IOhtu749uxaqNCko6lPvIfiSt4hT6RAGN9AsLXppWceNXkb22YT3pQ7MyuFAFUTU_74unWBSLMzHbOOobkk-0aQ66nc_H7xRvxNUt9I_VapITm_3UE55CYTEmCuresm3flZwANr80N5jeF8KhvWRzSmNPCzY3K5QWwLmhHOtoN5pW_yg5L7ZEAJYwo.BEXCwJldfrIU8QcIHzu3XSdrOLzeA9R5mXiqaOV8kZA&dib_tag=se&keywords=lego&qid=1782588029&sprefix=lego+set%2Caps%2C339&sr=8-9&ufe=app_do%3Aamzn1.fos.9fe8cbfa-bf43-43d1-a707-3f4e65a4b666",
     ],
     amazonImageUrls: ["https://m.media-amazon.com/images/I/81w4luhxYqL._AC_SL1500_.jpg"],
+    wishlistUrl: null,
     imageUrl: null,
   },
   {
@@ -114,6 +118,7 @@ const DEMO_LETTERS: SwipeLetter[] = [
       "Hi Santa! My sneakers are too small now. Size 5 please, any color but mostly blue. Thank you and say hi to the reindeer.",
     amazonUrls: ["https://www.amazon.com/s?k=kids+sneakers+size+5"],
     amazonImageUrls: [],
+    wishlistUrl: null,
     imageUrl: null,
   },
   {
@@ -121,8 +126,9 @@ const DEMO_LETTERS: SwipeLetter[] = [
     childFirstName: "Sofia",
     childAge: 5,
     wishNote: "deer santa. a stuffed dog pleese. a big one. i wil name him biscit.",
-    amazonUrls: ["https://www.amazon.com/s?k=large+stuffed+dog+plush"],
+    amazonUrls: [],
     amazonImageUrls: [],
+    wishlistUrl: "https://www.amazon.com/hz/wishlist/ls/DEMO12345",
     imageUrl: null,
   },
 ];

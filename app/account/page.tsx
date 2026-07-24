@@ -53,7 +53,9 @@ async function getMyGifts(): Promise<MyGift[]> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("my_gifts")
-    .select("id, child_first_name, child_age, wish_note, amazon_urls, status, claimed_at, fulfilled_at")
+    .select(
+      "id, child_first_name, child_age, wish_note, amazon_urls, wishlist_url, status, claimed_at, fulfilled_at",
+    )
     .order("claimed_at", { ascending: false });
   if (error) {
     console.error("Failed to load my gifts:", error.message);

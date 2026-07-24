@@ -25,6 +25,9 @@ export function SubmitLetterForm({
   defaultName?: string;
 }) {
   const [state, formAction, pending] = useActionState(submitLetter, initialState);
+  // Default to a single Amazon wishlist link; guardians can switch to pasting
+  // individual product links instead.
+  const [giftMode, setGiftMode] = useState<"wishlist" | "links">("wishlist");
   // One Amazon link by default; families with a few wishes can add more rows.
   const [linkIds, setLinkIds] = useState<number[]>([0]);
   const nextLinkId = useRef(1);
@@ -96,48 +99,102 @@ export function SubmitLetterForm({
           />
           <FieldError message={state.errors?.wish_note} />
         </div>
-        <div>
-          <label htmlFor="amazon_url" className={labelBase}>
-            Gift links (Amazon)
-          </label>
-          <div className="grid gap-2.5">
-            {linkIds.map((id, i) => (
-              <div key={id} className="flex gap-2">
-                <input
-                  id={i === 0 ? "amazon_url" : undefined}
-                  name="amazon_url"
-                  type="url"
-                  required={i === 0}
-                  placeholder="https://www.amazon.com/…"
-                  className={fieldBase}
-                />
-                {linkIds.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => setLinkIds((ids) => ids.filter((x) => x !== id))}
-                    aria-label={`Remove link ${i + 1}`}
-                    className="flex-none border-[1.5px] border-line px-4 text-[14px] font-bold text-muted hover:border-red hover:text-red"
-                  >
-                    Remove
-                  </button>
-                )}
+        <div className="grid gap-4">
+          <div>
+            <span className={labelBase}>How should donors shop this gift?</span>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {(
+                [
+                  ["wishlist", "A single Amazon wishlist link"],
+                  ["links", "Individual product links"],
+                ] as const
+              ).map(([value, label]) => (
+                <label
+                  key={value}
+                  className={`flex cursor-pointer items-center gap-2.5 border-[1.5px] px-[16px] py-[12px] text-[14.5px] font-semibold ${
+                    giftMode === value ? "border-red bg-red/5 text-ink" : "border-line text-muted"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="gift_mode"
+                    value={value}
+                    checked={giftMode === value}
+                    onChange={() => setGiftMode(value)}
+                    className="h-[16px] w-[16px] accent-red"
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {giftMode === "wishlist" ? (
+            <div>
+              <label htmlFor="wishlist_url" className={labelBase}>
+                Amazon wishlist link
+              </label>
+              <input
+                id="wishlist_url"
+                name="wishlist_url"
+                type="url"
+                required
+                placeholder="https://www.amazon.com/hz/wishlist/ls/…"
+                className={fieldBase}
+              />
+              <p className="mt-1.5 text-[13.5px] text-muted">
+                Paste your list&apos;s <strong>share link</strong> (Amazon → Lists → the list →
+                Invite/Share), set to <em>public</em> or <em>anyone with the link</em> so donors can
+                open it. To keep your home address private, ship the list to a P.O. box or a
+                non-residential address.
+              </p>
+              <FieldError message={state.errors?.wishlist_url} />
+            </div>
+          ) : (
+            <div>
+              <label htmlFor="amazon_url" className={labelBase}>
+                Gift links (Amazon)
+              </label>
+              <div className="grid gap-2.5">
+                {linkIds.map((id, i) => (
+                  <div key={id} className="flex gap-2">
+                    <input
+                      id={i === 0 ? "amazon_url" : undefined}
+                      name="amazon_url"
+                      type="url"
+                      required={i === 0}
+                      placeholder="https://www.amazon.com/…"
+                      className={fieldBase}
+                    />
+                    {linkIds.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setLinkIds((ids) => ids.filter((x) => x !== id))}
+                        aria-label={`Remove link ${i + 1}`}
+                        className="flex-none border-[1.5px] border-line px-4 text-[14px] font-bold text-muted hover:border-red hover:text-red"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[13.5px] text-muted">
-              Donors buy the gift from these links, so check each one before submitting. Any
-              Amazon country site is fine.
-            </p>
-            <button
-              type="button"
-              onClick={() => setLinkIds((ids) => [...ids, nextLinkId.current++])}
-              className="text-[13.5px] font-bold text-green hover:underline"
-            >
-              + Add gift
-            </button>
-          </div>
-          <FieldError message={state.errors?.amazon_url} />
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                <p className="text-[13.5px] text-muted">
+                  Donors buy the gift from these links, so check each one before submitting. Any
+                  Amazon country site is fine.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setLinkIds((ids) => [...ids, nextLinkId.current++])}
+                  className="text-[13.5px] font-bold text-green hover:underline"
+                >
+                  + Add gift
+                </button>
+              </div>
+              <FieldError message={state.errors?.amazon_url} />
+            </div>
+          )}
         </div>
         <div>
           <label htmlFor="letter_image" className={labelBase}>

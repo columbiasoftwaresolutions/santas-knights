@@ -43,6 +43,25 @@ function isAmazonUrl(value: string): boolean {
   }
 }
 
+const AMAZON_SHORT_HOSTS = new Set(["a.co", "amzn.to", "amzn.eu", "amzn.asia", "amzn.com"]);
+
+/**
+ * True for an Amazon link that looks like a shareable wishlist/registry link.
+ * Short links (a.co / amzn.to …) hide their path, so we accept them and trust
+ * the guardian; full amazon.* URLs must carry a wishlist/registry path segment.
+ */
+function isAmazonWishlistUrl(value: string): boolean {
+  if (!isAmazonUrl(value)) return false;
+  try {
+    const url = new URL(value);
+    if (AMAZON_SHORT_HOSTS.has(url.hostname.toLowerCase())) return true;
+    const path = url.pathname.toLowerCase();
+    return path.includes("wishlist") || path.includes("registry");
+  } catch {
+    return false;
+  }
+}
+
 export async function submitLetter(
   _prev: SubmitLetterState,
   formData: FormData,
@@ -60,6 +79,9 @@ export async function submitLetter(
   const childFirstName = String(formData.get("child_first_name") ?? "").trim();
   const childAgeRaw = String(formData.get("child_age") ?? "").trim();
   const wishNote = String(formData.get("wish_note") ?? "").trim();
+  // Gift source: a single Amazon wishlist link, or individual product links.
+  const giftMode = String(formData.get("gift_mode") ?? "wishlist") === "links" ? "links" : "wishlist";
+  const wishlistUrl = String(formData.get("wishlist_url") ?? "").trim();
   const amazonUrls = formData
     .getAll("amazon_url")
     .map((value) => String(value).trim())
@@ -78,12 +100,18 @@ export async function submitLetter(
   if (!childAgeRaw || !Number.isInteger(childAge) || childAge < 0 || childAge > 17)
     errors.child_age = "Age must be a whole number between 0 and 17.";
   if (!wishNote) errors.wish_note = "Tell us in a line or two what they're wishing for.";
-  if (amazonUrls.length === 0)
+  if (giftMode === "wishlist") {
+    if (!wishlistUrl) errors.wishlist_url = "Please paste the link to the child's Amazon wishlist.";
+    else if (!isAmazonWishlistUrl(wishlistUrl))
+      errors.wishlist_url =
+        "That doesn't look like an Amazon wishlist link. Copy the list's share link (amazon.com/…/wishlist/… or an a.co short link).";
+  } else if (amazonUrls.length === 0) {
     errors.amazon_url = "Please add at least one Amazon link.";
-  else if (amazonUrls.length > MAX_AMAZON_LINKS)
+  } else if (amazonUrls.length > MAX_AMAZON_LINKS) {
     errors.amazon_url = `Please add no more than ${MAX_AMAZON_LINKS} links.`;
-  else if (!amazonUrls.every(isAmazonUrl))
+  } else if (!amazonUrls.every(isAmazonUrl)) {
     errors.amazon_url = "Each one has to be an Amazon link (amazon.com or any country's Amazon, amzn.to, or a.co).";
+  }
   if (!guardianName) errors.guardian_name = "We need a parent or guardian's name.";
   if (!guardianEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guardianEmail))
     errors.guardian_email = "Please enter a valid email so we can reach you about this letter.";
@@ -122,7 +150,11 @@ export async function submitLetter(
     return { ok: false, message: "We couldn't save the letter image. Please try again in a minute." };
   }
 
-  const amazonImageUrls = await fetchAmazonImagePreviews(amazonUrls);
+  // Wishlist letters have no individual product URLs, so there's nothing to
+  // preview — the deck shows a single "see their wishlist" button instead.
+  const useWishlist = giftMode === "wishlist";
+  const finalAmazonUrls = useWishlist ? [] : amazonUrls;
+  const amazonImageUrls = useWishlist ? [] : await fetchAmazonImagePreviews(amazonUrls);
 
   const letterBase = {
     child_first_name: childFirstName,
@@ -139,8 +171,9 @@ export async function submitLetter(
     .from("santa_letters")
     .insert({
       ...letterBase,
-      amazon_urls: amazonUrls,
+      amazon_urls: finalAmazonUrls,
       amazon_image_urls: amazonImageUrls,
+      wishlist_url: useWishlist ? wishlistUrl : null,
     })
     .select("id")
     .single();

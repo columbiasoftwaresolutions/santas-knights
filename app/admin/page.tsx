@@ -43,6 +43,7 @@ type AdminLetter = {
   child_age: number;
   wish_note: string;
   amazon_urls: string[];
+  wishlist_url: string | null;
   letter_image_path: string | null;
   status: LetterStatus;
   guardian_name: string;
@@ -77,7 +78,7 @@ export default async function AdminPage({
   const { data: letterRows, error: letterError } = await supabase
     .from("santa_letters")
     .select(
-      "id, child_first_name, child_age, wish_note, amazon_urls, letter_image_path, status, guardian_name, guardian_email, fulfilled_by_email, claimed_at, fulfilled_at, created_at",
+      "id, child_first_name, child_age, wish_note, amazon_urls, wishlist_url, letter_image_path, status, guardian_name, guardian_email, fulfilled_by_email, claimed_at, fulfilled_at, created_at",
     )
     .eq("status", activeStatus)
     .order("created_at", { ascending: true })
@@ -163,17 +164,28 @@ export default async function AdminPage({
                   </div>
                   <p className="mt-2 font-serif text-[15.5px] italic text-bone">“{letter.wish_note}”</p>
                   <p className="mt-2 text-[14px] text-bone/60">
-                    {letter.amazon_urls.map((url, i) => (
+                    {letter.wishlist_url ? (
                       <a
-                        key={url}
-                        href={url}
+                        href={letter.wishlist_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mr-2 font-semibold text-red underline"
                       >
-                        Amazon link{letter.amazon_urls.length > 1 ? ` ${i + 1}` : ""} ↗
+                        Amazon wishlist ↗
                       </a>
-                    ))}
+                    ) : (
+                      letter.amazon_urls.map((url, i) => (
+                        <a
+                          key={url}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mr-2 font-semibold text-red underline"
+                        >
+                          Amazon link{letter.amazon_urls.length > 1 ? ` ${i + 1}` : ""} ↗
+                        </a>
+                      ))
+                    )}
                     · Guardian: {letter.guardian_name} &lt;{letter.guardian_email}&gt;
                   </p>
                   {letter.claimed_at && letter.status === "live" && (
