@@ -6,6 +6,7 @@ import { requireAdmin } from "@/components/admin/guard";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { LETTERS_BUCKET } from "@/lib/supabase/config";
 import { updateLetterStatus, type LetterAction } from "@/app/admin/actions";
+import { formatSiteDate } from "@/lib/dates";
 
 export const metadata: Metadata = {
   title: "Letters · Santa's Knights Admin",
@@ -119,8 +120,8 @@ export default async function AdminPage({
               className={cn(
                 "border-b-2 pb-1.5 text-[13.5px] font-bold tracking-[0.05em] uppercase transition-colors",
                 status === activeStatus
-                  ? "border-red text-bone"
-                  : "border-transparent text-bone/45 hover:text-bone",
+                  ? "border-red text-ink"
+                  : "border-transparent text-muted hover:text-ink",
               )}
             >
               {STATUS_LABEL[status]} · {counts.get(status) ?? 0}
@@ -131,12 +132,12 @@ export default async function AdminPage({
         {/* Letters */}
         <div className="mt-7 grid gap-[18px]">
           {letters.length === 0 ? (
-            <Card className="border-bone/15 bg-ink2 p-[34px] text-center text-bone/60">
+            <Card className="p-[34px] text-center text-muted">
               Nothing with status “{STATUS_LABEL[activeStatus]}”.
             </Card>
           ) : (
             letters.map((letter) => (
-              <Card key={letter.id} className="grid gap-6 border-bone/15 bg-ink2 p-[26px] lg:grid-cols-[220px_1fr]">
+              <Card key={letter.id} className="grid gap-6 p-[26px] lg:grid-cols-[220px_1fr]">
                 {letter.imageUrl ? (
                   <a href={letter.imageUrl} target="_blank" rel="noopener noreferrer">
                     {/* Signed URL from Supabase Storage. */}
@@ -159,11 +160,11 @@ export default async function AdminPage({
                       {letter.child_first_name}, {letter.child_age}
                     </h2>
                     <span className="text-[13px] font-semibold text-muted">
-                      submitted {new Date(letter.created_at).toLocaleDateString()}
+                      submitted {formatSiteDate(letter.created_at)}
                     </span>
                   </div>
-                  <p className="mt-2 font-serif text-[15.5px] italic text-bone">“{letter.wish_note}”</p>
-                  <p className="mt-2 text-[14px] text-bone/60">
+                  <p className="mt-2 font-serif text-[15.5px] italic text-ink">“{letter.wish_note}”</p>
+                  <p className="mt-2 text-[14px] text-muted">
                     {letter.wishlist_url ? (
                       <a
                         href={letter.wishlist_url}
@@ -192,13 +193,13 @@ export default async function AdminPage({
                     <p className="mt-2 bg-gold-soft/60 px-3 py-2 text-[13.5px] text-[#6c5418]">
                       <strong className="font-bold">Claimed:</strong>{" "}
                       {letter.fulfilled_by_email ?? "donor"} on{" "}
-                      {new Date(letter.claimed_at).toLocaleDateString()}.
+                      {formatSiteDate(letter.claimed_at)}.
                     </p>
                   )}
                   {letter.fulfilled_at && letter.status === "fulfilled" && (
                     <p className="mt-2 bg-green-soft px-3 py-2 text-[13.5px] text-green">
                       <strong className="font-bold">Fulfilled:</strong>{" "}
-                      {new Date(letter.fulfilled_at).toLocaleDateString()}.
+                      {formatSiteDate(letter.fulfilled_at)}.
                     </p>
                   )}
 
@@ -218,8 +219,8 @@ export default async function AdminPage({
                             primary
                               ? "border-green bg-green text-white"
                               : action === "delete"
-                                ? "border-red/60 bg-transparent text-[#e7705e]"
-                                : "border-bone/25 bg-transparent text-bone",
+                                ? "border-red/60 bg-transparent text-red"
+                                : "border-line bg-transparent text-ink",
                           )}
                         >
                           {label}
@@ -239,9 +240,9 @@ export default async function AdminPage({
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <Card className="border-bone/15 bg-ink2 p-5">
-      <p className="font-display text-[34px] font-black tracking-[-0.03em] text-amber">{value}</p>
-      <p className="text-[11px] font-bold text-bone/55 uppercase tracking-[0.12em]">{label}</p>
+    <Card className="p-5">
+      <p className="font-display text-[34px] font-black tracking-[-0.03em] text-red">{value}</p>
+      <p className="text-[11px] font-bold text-muted uppercase tracking-[0.12em]">{label}</p>
     </Card>
   );
 }

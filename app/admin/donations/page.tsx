@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Card } from "@/components/ui/Card";
 import { requireAdmin } from "@/components/admin/guard";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { formatSiteDate } from "@/lib/dates";
 
 export const metadata: Metadata = {
   title: "Donations · Admin",
@@ -49,12 +50,12 @@ export default async function AdminDonationsPage() {
         <Stat label="Monthly pledges" value={String(monthly)} />
       </div>
 
-      <Card className="mt-7 overflow-x-auto border-bone/15 bg-ink2 p-0">
+      <Card className="mt-7 overflow-x-auto p-0">
         {rows.length === 0 ? (
-          <p className="p-6 text-bone/60">No donation leads yet.</p>
+          <p className="p-6 text-muted">No donation leads yet.</p>
         ) : (
           <table className="w-full text-left text-[13.5px]">
-            <thead className="border-b border-bone/15 text-[11px] uppercase tracking-[0.1em] text-bone/45">
+            <thead className="border-b border-line text-[11px] uppercase tracking-[0.1em] text-muted">
               <tr>
                 <th className="px-4 py-3">Donor</th>
                 <th className="px-4 py-3">Email</th>
@@ -65,23 +66,23 @@ export default async function AdminDonationsPage() {
                 <th className="px-4 py-3">Date</th>
               </tr>
             </thead>
-            <tbody className="text-bone/80">
+            <tbody className="text-ink/80">
               {rows.map((r) => (
-                <tr key={r.id} className="border-b border-bone/10">
-                  <td className="px-4 py-2.5 font-semibold text-bone">{r.first_name} {r.last_name}</td>
+                <tr key={r.id} className="border-b border-line">
+                  <td className="px-4 py-2.5 font-semibold text-ink">{r.first_name} {r.last_name}</td>
                   <td className="px-4 py-2.5">{r.email}</td>
                   <td className="px-4 py-2.5">{r.amount != null ? `$${r.amount}` : "—"}</td>
                   <td className="px-4 py-2.5">{r.frequency === "monthly" ? "Monthly" : "Once"}</td>
                   <td className="px-4 py-2.5">{r.designation ? (DESIGNATION_LABEL[r.designation] ?? r.designation) : "—"}</td>
                   <td className="px-4 py-2.5">{r.dedicate_to ?? "—"}</td>
-                  <td className="px-4 py-2.5">{new Date(r.created_at).toLocaleDateString()}</td>
+                  <td className="px-4 py-2.5">{formatSiteDate(r.created_at)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
       </Card>
-      <p className="mt-4 text-[13px] text-bone/45">
+      <p className="mt-4 text-[13px] text-muted">
         Leads captured from the donate form. Payment is processed externally; these rows record
         donor intent and designation for receipts and follow-up.
       </p>
@@ -91,9 +92,9 @@ export default async function AdminDonationsPage() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <Card className="border-bone/15 bg-ink2 p-5">
-      <p className="font-display text-[30px] font-black tracking-[-0.03em] text-amber">{value}</p>
-      <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-bone/55">{label}</p>
+    <Card className="p-5">
+      <p className="font-display text-[30px] font-black tracking-[-0.03em] text-red">{value}</p>
+      <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted">{label}</p>
     </Card>
   );
 }

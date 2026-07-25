@@ -30,11 +30,11 @@ export function AdminShell({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-h-screen bg-ink py-[46px] text-bone">
+    <section className="min-h-screen bg-paper py-[46px] text-ink">
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-[12px] font-semibold tracking-[0.1em] text-amber uppercase">
+            <p className="text-[12px] font-semibold tracking-[0.1em] text-red uppercase">
               Signed in as {email ?? "admin"}
             </p>
             <h1 className="mt-2 font-display text-h2 font-black uppercase">{title}</h1>
@@ -42,7 +42,7 @@ export function AdminShell({
           <form action={signOut}>
             <button
               type="submit"
-              className="cursor-pointer border-[1.5px] border-red bg-transparent px-5 py-[10px] text-[14px] font-bold tracking-[0.04em] text-red uppercase transition-colors hover:bg-red hover:text-white"
+              className="cursor-pointer border-[1.5px] border-red bg-transparent px-5 py-[10px] text-[14px] font-bold tracking-[0.04em] text-red uppercase transition-colors hover:bg-red hover:text-paper"
             >
               Sign out
             </button>
@@ -51,7 +51,7 @@ export function AdminShell({
 
         {/* Editorial underline tab bar — square geometry, color + rule for
             hierarchy (no pills). Scrolls horizontally only (never vertically). */}
-        <nav className="mt-8 flex gap-7 overflow-x-auto overflow-y-hidden border-b border-bone/15">
+        <nav className="mt-8 flex gap-7 overflow-x-auto overflow-y-hidden border-b border-line">
           {TABS.map((tab) => (
             <Link
               key={tab.key}
@@ -59,8 +59,8 @@ export function AdminShell({
               className={cn(
                 "-mb-px shrink-0 border-b-2 pt-1 pb-3 text-[12.5px] font-bold tracking-[0.08em] whitespace-nowrap uppercase transition-colors",
                 tab.key === active
-                  ? "border-red text-bone"
-                  : "border-transparent text-bone/45 hover:text-bone",
+                  ? "border-red text-ink"
+                  : "border-transparent text-muted hover:text-ink",
               )}
             >
               {tab.label}
@@ -74,7 +74,7 @@ export function AdminShell({
   );
 }
 
-/* Shared admin form field styles (dark theme). */
+/* Shared admin form field styles (light theme, matching the public-site forms). */
 export const adminField =
-  "w-full border border-bone/20 bg-[#0f0c0a] px-3.5 py-2.5 text-[14px] text-bone placeholder:text-bone/35 focus:border-amber focus:outline-none";
-export const adminLabel = "mb-1.5 block text-[12px] font-bold uppercase tracking-[0.1em] text-bone/55";
+  "w-full border-[1.5px] border-line bg-paper-raised px-3.5 py-2.5 text-[14px] text-ink placeholder:text-muted/70 focus:border-red focus:outline-2 focus:outline-offset-1 focus:outline-red";
+export const adminLabel = "mb-1.5 block text-[12px] font-bold uppercase tracking-[0.1em] text-muted";

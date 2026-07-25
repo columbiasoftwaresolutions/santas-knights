@@ -632,7 +632,6 @@ export const values: { title: string; body: string }[] = [
 
 export const waysToHelp: {
   variant: "green" | "red" | "gold";
-  eyebrow: string;
   title: string;
   body: string;
   cta: string;
@@ -640,7 +639,6 @@ export const waysToHelp: {
 }[] = [
   {
     variant: "green",
-    eyebrow: "Santa's Letters",
     title: "Adopt a letter",
     body: "Read a kid's wish, pick one, and send the gift. It's the most direct thing you can do here, and it lands on Christmas morning.",
     cta: "See how it works",
@@ -648,7 +646,6 @@ export const waysToHelp: {
   },
   {
     variant: "red",
-    eyebrow: "Volunteer",
     title: "Give us a hand",
     body: "Help sort letters, run the holiday event, coach a class, or keep the books. Most of it fits around a regular schedule.",
     cta: "Volunteer roles",
@@ -656,7 +653,6 @@ export const waysToHelp: {
   },
   {
     variant: "gold",
-    eyebrow: "Donate",
     title: "Cover the cost",
     body: "Donations are what keep the gifts coming and the classes free. Every dollar is tax-deductible.",
     cta: "Ways to give",
@@ -664,17 +660,18 @@ export const waysToHelp: {
   },
 ];
 
+// Volunteer application role options — checkboxes on the Get Involved form.
 export const volunteerRoles: string[] = [
-  "Santa's Letters helper",
+  "Martial Art Instructor",
+  "Martial Art Assistant Instructor",
   "Event Management",
-  "Martial Arts Instructor",
-  "Assistant Instructor",
+  "Admin - General",
   "Relationship Management",
   "Social Media",
   "Marketing",
-  "Admin / General",
-  "Internship",
-  "Something else",
+  "Intership",
+  "Santa's Elf",
+  "Other",
 ];
 
 export const waysToGive: { label: string; body: string; cta: string; href: string }[] = [
@@ -705,6 +702,7 @@ export const waysToGive: { label: string; body: string; cta: string; href: strin
 export const contactReasons: { value: string; label: string }[] = [
   { value: "letters", label: "Santa's Letters" },
   { value: "volunteer", label: "Volunteering" },
+  { value: "employment", label: "Employment" },
   { value: "donate", label: "Donating or sponsorship" },
   { value: "training", label: "Training and classes" },
   { value: "press", label: "Press or media" },

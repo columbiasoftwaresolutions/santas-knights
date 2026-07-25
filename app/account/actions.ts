@@ -41,19 +41,25 @@ function validateAdultDob(dob: string): string | null {
  * trigger creates the matching `profiles` row (role `public`).
  */
 export async function registerAccount(_prev: AuthState, formData: FormData): Promise<AuthState> {
-  const name = String(formData.get("name") ?? "").trim();
+  const firstName = String(formData.get("first_name") ?? "").trim();
+  const lastName = String(formData.get("last_name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const phone = String(formData.get("phone") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm_password") ?? "");
   const dob = String(formData.get("dob") ?? "").trim(); // YYYY-MM-01
+  const zipcode = String(formData.get("zipcode") ?? "").trim();
   const next = safeNext(formData.get("next"));
 
-  if (!name) return { error: "Please enter your name." };
+  if (!firstName) return { error: "Please enter your first name." };
+  if (!lastName) return { error: "Please enter your last name." };
   if (!EMAIL_RE.test(email)) return { error: "Please enter a valid email address." };
+  if (!phone) return { error: "Please enter your phone number." };
   if (!password) return { error: "Please choose a password." };
   if (password !== confirm) return { error: "Those passwords don't match." };
   const dobError = validateAdultDob(dob);
   if (dobError) return { error: dobError };
+  if (!zipcode) return { error: "Please enter your home zip code." };
   if (!isSupabaseConfigured()) return { error: "Accounts aren't available yet." };
 
   const admin = createSupabaseAdminClient();
@@ -63,7 +69,7 @@ export async function registerAccount(_prev: AuthState, formData: FormData): Pro
     email,
     password,
     email_confirm: true,
-    user_metadata: { name },
+    user_metadata: { first_name: firstName, last_name: lastName },
   });
   if (createError) {
     if (/already|registered|exists/i.test(createError.message))
@@ -78,7 +84,7 @@ export async function registerAccount(_prev: AuthState, formData: FormData): Pro
   if (created?.user) {
     const { error: profileError } = await admin
       .from("profiles")
-      .update({ name, dob })
+      .update({ first_name: firstName, last_name: lastName, dob, phone, zipcode })
       .eq("id", created.user.id);
     if (profileError) console.error("Profile identity update failed:", profileError.message);
   }

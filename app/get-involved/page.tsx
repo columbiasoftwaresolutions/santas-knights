@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Arrow } from "@/components/ui/Arrow";
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { Photo } from "@/components/ui/Photo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ImpactStrip } from "@/components/sections/ImpactStrip";
 import { NewsletterForm } from "@/components/sections/NewsletterForm";
-import { links, volunteerRoles, waysToGive, waysToHelp } from "@/content/site";
+import { VolunteerForm } from "@/components/sections/VolunteerForm";
+import { waysToGive, waysToHelp } from "@/content/site";
 import { getCurrentUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -18,18 +18,17 @@ export const metadata: Metadata = {
 
 /**
  * Full-bleed poster panels (one per way to help), ported from the Gladiators
- * NYC "ways to use the site" band: big title anchored to the bottom, an accent
- * bar that grows across the top on hover, and body copy that expands into view
- * on hover (desktop) / sits open (mobile). Recolored to the three brand
- * accents — green / red / gold — one per panel.
+ * NYC "ways to use the site" band: big title anchored to the bottom, with body
+ * copy that expands into view on hover (desktop) / sits open (mobile). Recolored
+ * to the three brand accents — green / red / gold — one per panel.
  */
 const PANEL: Record<
   (typeof waysToHelp)[number]["variant"],
-  { bg: string; hover: string; text: string; sub: string; bar: string }
+  { bg: string; hover: string; text: string; sub: string }
 > = {
-  green: { bg: "bg-green", hover: "hover:bg-[#284f3b]", text: "text-paper", sub: "text-paper/75", bar: "bg-paper" },
-  red: { bg: "bg-red", hover: "hover:bg-[#a82a18]", text: "text-paper", sub: "text-paper/85", bar: "bg-paper" },
-  gold: { bg: "bg-gold", hover: "hover:bg-[#b0841f]", text: "text-ink", sub: "text-ink/70", bar: "bg-ink" },
+  green: { bg: "bg-green", hover: "hover:bg-[#284f3b]", text: "text-paper", sub: "text-paper/75" },
+  red: { bg: "bg-red", hover: "hover:bg-[#a82a18]", text: "text-paper", sub: "text-paper/85" },
+  gold: { bg: "bg-gold", hover: "hover:bg-[#b0841f]", text: "text-ink", sub: "text-ink/70" },
 };
 
 export default async function GetInvolvedPage() {
@@ -77,14 +76,7 @@ export default async function GetInvolvedPage() {
                 href={way.href}
                 className={`group relative flex min-h-[260px] flex-col justify-end overflow-hidden px-8 py-10 transition-colors duration-300 md:min-h-[58vh] md:px-12 md:py-14 ${p.bg} ${p.hover} ${p.text}`}
               >
-                <span
-                  aria-hidden
-                  className={`absolute left-0 top-0 h-[3px] w-0 transition-[width] duration-500 ease-out group-hover:w-full ${p.bar}`}
-                />
-                <span className="text-[12px] font-bold uppercase tracking-[0.16em] opacity-80">
-                  {way.eyebrow}
-                </span>
-                <h2 className="mt-3 font-display text-[clamp(34px,3.4vw,52px)] font-black uppercase leading-[0.95] tracking-[-0.02em] transition-transform duration-300 group-hover:-translate-y-1">
+                <h2 className="font-display text-[clamp(34px,3.4vw,52px)] font-black uppercase leading-[0.95] tracking-[-0.02em] transition-transform duration-300 group-hover:-translate-y-1">
                   {way.title}
                 </h2>
                 <div className="transition-all duration-300 ease-out md:max-h-0 md:translate-y-2 md:overflow-hidden md:opacity-0 md:group-hover:max-h-52 md:group-hover:translate-y-0 md:group-hover:opacity-100">
@@ -101,49 +93,24 @@ export default async function GetInvolvedPage() {
         </div>
       </section>
 
-      {/* Volunteer roles */}
+      {/* Volunteer application */}
       <section id="volunteer" className="scroll-mt-24 bg-paper-raised border-y border-line py-section">
-        <Container className="grid items-start gap-10 md:grid-cols-[1fr_1fr] md:gap-[54px]">
+        <Container className="grid items-start gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-[54px]">
           <div data-reveal className="md:sticky md:top-[110px]">
             <SectionHeading
-              title="You don't have to fight to be useful"
-              intro="People sort the holiday letters, run the gift event, keep the books, handle the social accounts, and coach classes. Pick what fits. Most of it works around a job."
+              title="Apply to volunteer"
+              intro="Tell us who you are and where you'd like to help. Pick as many roles as you're open to — we'll follow up about what fits."
               introClassName="max-w-[44ch]"
             />
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Button href={links.contact} variant="ink" arrow>
-                Apply to volunteer
-              </Button>
-              <Button href={links.donate} variant="ghost">
-                Or donate instead
-              </Button>
-            </div>
-            <p className="mt-5 flex items-center gap-2 text-[14.5px] text-muted">
-              <span aria-hidden className="text-green">
-                ♥
-              </span>
-              Most roles ask for time, not experience.
-            </p>
           </div>
 
           <div data-reveal style={{ transitionDelay: "120ms" }}>
             <Card className="p-[34px]">
-              <h3 className="text-[13px] font-bold uppercase tracking-[0.12em] text-muted">
-                Roles we&apos;re looking for
-              </h3>
-              <ul className="mt-5 grid gap-x-6 gap-y-1 sm:grid-cols-2">
-                {volunteerRoles.map((role) => (
-                  <li
-                    key={role}
-                    className="flex items-center gap-3 border-b border-line py-3 text-[15.5px] font-semibold text-ink last:border-b-0"
-                  >
-                    <span aria-hidden className="text-red">
-                      ✦
-                    </span>
-                    {role}
-                  </li>
-                ))}
-              </ul>
+              <VolunteerForm
+                defaultName={user?.name}
+                defaultEmail={user?.email}
+                defaultPhone={user?.phone}
+              />
             </Card>
           </div>
         </Container>

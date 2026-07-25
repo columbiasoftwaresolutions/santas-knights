@@ -72,6 +72,86 @@ export async function sendContactMessage(
   return { ok: true };
 }
 
+/**
+ * Volunteer application: stored in the same `contact_messages` inbox as the
+ * contact form, tagged `reason: "employment"`. The table has no dedicated
+ * phone/roles columns, so both are folded into the message body (kept out of a
+ * schema migration on the shared prod DB). Forwards by email when Resend is set.
+ */
+export async function sendVolunteerApplication(
+  _prev: EngagementState,
+  formData: FormData,
+): Promise<EngagementState> {
+  const name = String(formData.get("name") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+  const roles = formData
+    .getAll("roles")
+    .map((r) => String(r).trim())
+    .filter(Boolean);
+  const note = String(formData.get("message") ?? "").trim();
+
+  if (!name || !email) {
+    return { ok: false, message: "Please fill in your name and email." };
+  }
+  if (roles.length === 0) {
+    return { ok: false, message: "Please pick at least one role you'd like to help with." };
+  }
+
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) {
+    return {
+      ok: false,
+      message: `The volunteer form is not available yet. Please email us directly at ${org.email}.`,
+    };
+  }
+
+  const message = [
+    `Roles: ${roles.join(", ")}`,
+    phone ? `Phone: ${phone}` : null,
+    note ? `\n${note}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  const { error } = await supabase
+    .from("contact_messages")
+    .insert({ name, email, reason: "employment", message });
+  if (error) {
+    console.error("Volunteer application insert failed:", error.message);
+    return {
+      ok: false,
+      message: `Something went wrong sending that. Please try again, or email ${org.email}.`,
+    };
+  }
+
+  // Optional email routing. A failure here never loses the stored application.
+  const resendKey = process.env.RESEND_API_KEY;
+  const to = process.env.CONTACT_EMAIL_TO;
+  if (resendKey && to) {
+    try {
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${resendKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "Santa's Knights site <onboarding@resend.dev>",
+          to: [to],
+          reply_to: email,
+          subject: `[santasknights.org] Volunteer application: ${name}`,
+          text: `From: ${name} <${email}>\nReason: Employment\n\n${message}`,
+        }),
+      });
+    } catch (error) {
+      console.error("Volunteer application email forward failed:", error);
+    }
+  }
+
+  return { ok: true };
+}
+
 /** Newsletter signup, stored in Supabase until a newsletter provider is chosen. */
 export async function subscribeNewsletter(
   _prev: EngagementState,

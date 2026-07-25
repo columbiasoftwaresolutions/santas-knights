@@ -12,6 +12,7 @@ export type CurrentUser = {
   email: string | null;
   role: AppRole;
   name: string | null;
+  phone: string | null;
 };
 
 /**
@@ -29,15 +30,19 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, name")
+    .select("role, first_name, last_name, phone")
     .eq("id", user.id)
     .maybeSingle();
+
+  const name =
+    [profile?.first_name, profile?.last_name].filter(Boolean).join(" ").trim() || null;
 
   return {
     id: user.id,
     email: user.email ?? null,
     role: (profile?.role as AppRole) ?? "public",
-    name: (profile?.name as string | null) ?? null,
+    name,
+    phone: profile?.phone ?? null,
   };
 }
 

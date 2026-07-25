@@ -9,6 +9,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { signOutAction } from "@/app/account/actions";
 import { MyGifts, type MyGift } from "@/components/account/MyGifts";
+import { formatSiteDate } from "@/lib/dates";
 import { links, BOOK_HREF, DASHBOARD_HREF } from "@/content/site";
 
 export const dynamic = "force-dynamic";
@@ -192,7 +193,7 @@ export default async function AccountPage() {
                         <p className="mt-3 text-[12.5px] font-semibold text-muted">
                           {letter.amazon_urls.length} gift
                           {letter.amazon_urls.length === 1 ? "" : "s"} ·{" "}
-                          {new Date(letter.created_at).toLocaleDateString()}
+                          {formatSiteDate(letter.created_at)}
                         </p>
                   </Card>
                 );

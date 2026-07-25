@@ -132,25 +132,35 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next: str
     <form action={formAction} onSubmit={handleSubmit} className="grid gap-5">
       <input type="hidden" name="next" value={next} />
 
+      {/* First name, last name, email, phone — one row on registration. */}
       {isRegister && (
-        <div>
-          <label htmlFor="name" className={labelBase}>
-            Name
-          </label>
-          <input
-            id="name"
-            name="name"
-            required
-            autoComplete="name"
-            placeholder="Your full name"
-            className={fieldBase}
-          />
-        </div>
-      )}
-
-      {/* Email — paired with date of birth on registration. */}
-      {isRegister ? (
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
+          <div>
+            <label htmlFor="first_name" className={labelBase}>
+              First name
+            </label>
+            <input
+              id="first_name"
+              name="first_name"
+              required
+              autoComplete="given-name"
+              placeholder="First name"
+              className={fieldBase}
+            />
+          </div>
+          <div>
+            <label htmlFor="last_name" className={labelBase}>
+              Last name
+            </label>
+            <input
+              id="last_name"
+              name="last_name"
+              required
+              autoComplete="family-name"
+              placeholder="Last name"
+              className={fieldBase}
+            />
+          </div>
           <div>
             <label htmlFor="email" className={labelBase}>
               Email
@@ -165,6 +175,26 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next: str
               className={fieldBase}
             />
           </div>
+          <div>
+            <label htmlFor="phone" className={labelBase}>
+              Phone
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              required
+              autoComplete="tel"
+              placeholder="(555) 555-5555"
+              className={fieldBase}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Date of birth — paired with home zip code on registration. */}
+      {isRegister ? (
+        <div className="grid gap-5 sm:grid-cols-2">
           <div>
             <span className={labelBase}>Date of birth</span>
             <input type="hidden" name="dob" value={dob} />
@@ -193,6 +223,20 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next: str
               />
             </div>
             <InlineNote message={dobError} />
+          </div>
+          <div>
+            <label htmlFor="zipcode" className={labelBase}>
+              Zip code
+            </label>
+            <input
+              id="zipcode"
+              name="zipcode"
+              required
+              inputMode="numeric"
+              autoComplete="postal-code"
+              placeholder="10027"
+              className={fieldBase}
+            />
           </div>
         </div>
       ) : (

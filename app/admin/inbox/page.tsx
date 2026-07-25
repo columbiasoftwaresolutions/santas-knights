@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Card } from "@/components/ui/Card";
 import { requireAdmin } from "@/components/admin/guard";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { InboxPanel, type MessageRow, type SubscriberRow } from "@/components/admin/InboxPanel";
@@ -15,16 +14,26 @@ const REASON_LABEL: Record<string, string> = Object.fromEntries(
   contactReasons.map((r) => [r.value, r.label]),
 );
 
-const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-
-function countLastWeek(rows: { createdAt: string }[]): number {
-  const since = Date.now() - ONE_WEEK_MS;
-  return rows.filter((r) => new Date(r.createdAt).getTime() >= since).length;
-}
+const DEFAULT_SUBSCRIBERS = [
+  "ez2450@columbia.edu",
+  "krv2121@columbia.edu",
+  "pp2919@columbia.edu",
+  "sr4370@columbia.edu",
+];
 
 export default async function AdminInboxPage() {
   const gate = await requireAdmin();
   if (!gate.ok) return gate.node;
+
+  const { error: seedError } = await gate.supabase
+    .from("newsletter_subscribers")
+    .upsert(
+      DEFAULT_SUBSCRIBERS.map((email) => ({ email })),
+      { onConflict: "email", ignoreDuplicates: true },
+    );
+  if (seedError) {
+    console.error("Default newsletter subscriber seed failed:", seedError.message);
+  }
 
   const [messagesRes, subscribersRes] = await Promise.all([
     gate.supabase
@@ -53,35 +62,9 @@ export default async function AdminInboxPage() {
     createdAt: s.created_at,
   }));
 
-  const messagesThisWeek = countLastWeek(messages);
-  const subscribersThisWeek = countLastWeek(subscribers);
-
   return (
     <AdminShell active="inbox" title="Inbox" email={gate.email}>
-      <p className="max-w-[70ch] text-[14px] text-bone/55">
-        Everyone who has written in through the contact form or signed up for the newsletter.
-        Switch between the two below, or search across name, email, and message.
-      </p>
-
-      <div className="mt-6 grid grid-cols-2 gap-[14px] sm:grid-cols-4">
-        <Stat label="Messages" value={String(messages.length)} />
-        <Stat label="Messages this week" value={String(messagesThisWeek)} />
-        <Stat label="Subscribers" value={String(subscribers.length)} />
-        <Stat label="Subscribers this week" value={String(subscribersThisWeek)} />
-      </div>
-
-      <div className="mt-7">
-        <InboxPanel messages={messages} subscribers={subscribers} reasonLabels={REASON_LABEL} />
-      </div>
+      <InboxPanel messages={messages} subscribers={subscribers} reasonLabels={REASON_LABEL} />
     </AdminShell>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <Card className="border-bone/15 bg-ink2 p-5">
-      <p className="font-display text-[30px] font-black tracking-[-0.03em] text-amber">{value}</p>
-      <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-bone/55">{label}</p>
-    </Card>
   );
 }

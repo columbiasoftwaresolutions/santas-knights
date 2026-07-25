@@ -65,7 +65,7 @@ export default async function AdminUsersPage() {
 
   return (
     <AdminShell active="users" title="Users" email={gate.email}>
-      <p className="max-w-[70ch] text-[14px] text-bone/55">
+      <p className="max-w-[70ch] text-[14px] text-muted">
         Everyone with an account. Expand a row to see their activity and set their role — coaches
         and admins are provisioned here, never self-selected at signup.
       </p>

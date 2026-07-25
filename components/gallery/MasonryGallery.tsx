@@ -33,15 +33,11 @@ function Tile({
       type="button"
       onClick={onOpen}
       aria-label={`Open photo ${index + 1} full size`}
-      data-reveal
       className={cn(
-        "reveal-zoom relative mb-3 block w-full cursor-zoom-in overflow-hidden sm:mb-4 lg:mb-5",
+        "relative mb-3 block w-full cursor-zoom-in overflow-hidden sm:mb-4 lg:mb-5",
         !loaded && "img-skeleton",
       )}
-      style={{
-        aspectRatio: `${photo.width} / ${photo.height}`,
-        transitionDelay: `${(index % 4) * 70}ms`,
-      }}
+      style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
     >
       <Image
         src={`/images/gallery/${encodeURIComponent(photo.file)}`}
