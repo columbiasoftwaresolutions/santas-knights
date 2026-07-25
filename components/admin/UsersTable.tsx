@@ -24,7 +24,11 @@ const ROLE_TEXT: Record<string, string> = {
   public: "text-muted",
 };
 
-const ROW_GRID = "grid-cols-[minmax(0,1.2fr)_minmax(0,1.8fr)_auto_1.75rem]";
+// The header and every data row are independent grids, so the Role column must
+// be a fixed width — an `auto` (content-sized) column resizes with each role's
+// text length ("ROLE" vs "ADMIN" vs "PARTICIPANT"), which reflows the flexible
+// Name/Email columns and makes each row's Email left edge drift out of line.
+const ROW_GRID = "grid-cols-[minmax(0,1.2fr)_minmax(0,1.8fr)_7.5rem_1.75rem]";
 
 /**
  * Admin user roster. Collapsed rows show name / email / role; expanding a row

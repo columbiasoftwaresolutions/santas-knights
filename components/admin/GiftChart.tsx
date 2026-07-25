@@ -3,9 +3,15 @@ type Point = {
   value: number;
 };
 
-const WIDTH = 760;
-const HEIGHT = 248;
+const WIDTH = 1200;
+const HEIGHT = 300;
 const PAD = { top: 20, right: 18, bottom: 42, left: 38 };
+
+const STROKE: Record<"red" | "amber" | "green", string> = {
+  red: "#c2331f",
+  amber: "#c98a3a",
+  green: "#2e5e45",
+};
 
 export function GiftChart({
   title,
@@ -14,7 +20,7 @@ export function GiftChart({
 }: {
   title: string;
   points: Point[];
-  color: "red" | "amber";
+  color: "red" | "amber" | "green";
 }) {
   const maximum = Math.max(1, ...points.map((point) => point.value));
   const chartWidth = WIDTH - PAD.left - PAD.right;
@@ -26,15 +32,14 @@ export function GiftChart({
   const area = points.length
     ? `${PAD.left},${PAD.top + chartHeight} ${line} ${x(points.length - 1)},${PAD.top + chartHeight}`
     : "";
-  const stroke = color === "red" ? "#c2331f" : "#c98a3a";
+  const stroke = STROKE[color];
   const labelIndexes = new Set([0, Math.floor((points.length - 1) / 2), points.length - 1]);
   const gridValues = Array.from(new Set([0, Math.ceil(maximum / 2), maximum]));
 
   return (
     <figure className="min-w-0 max-w-full border border-line bg-card">
-      <figcaption className="flex items-baseline justify-between gap-4 border-b border-line px-5 py-4">
+      <figcaption className="border-b border-line px-5 py-4">
         <h3 className="text-[15px] font-extrabold">{title}</h3>
-        <span className="text-[12px] text-muted">Daily · New York time</span>
       </figcaption>
       <div className="max-w-full overflow-x-auto px-2 py-3">
         <svg

@@ -51,7 +51,7 @@ export async function claimLetter(letterId: string): Promise<ClaimResult> {
 
   revalidatePath("/letters");
   revalidatePath("/account");
-  revalidatePath("/admin/gifts");
+  revalidatePath("/admin");
   return { ok: true };
 }
 
@@ -68,7 +68,7 @@ export async function markGifted(formData: FormData): Promise<void> {
     .eq("fulfilled_by_user_id", user.id)
     .eq("status", "live");
   revalidatePath("/account");
-  revalidatePath("/admin/gifts");
+  revalidatePath("/admin");
 }
 
 /** Donor changed their mind → release the claim back into the pool. */
@@ -85,5 +85,5 @@ export async function releaseClaim(formData: FormData): Promise<void> {
     .eq("status", "live");
   revalidatePath("/account");
   revalidatePath("/letters");
-  revalidatePath("/admin/gifts");
+  revalidatePath("/admin");
 }
