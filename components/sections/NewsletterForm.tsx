@@ -10,7 +10,7 @@ const initialState: EngagementState = { ok: false };
  * Newsletter capture. Signups are stored in Supabase; export to the
  * newsletter provider once one is chosen (Phase 1 blocker).
  */
-export function NewsletterForm() {
+export function NewsletterForm({ defaultEmail }: { defaultEmail?: string | null }) {
   const [state, formAction, pending] = useActionState(subscribeNewsletter, initialState);
 
   if (state.ok) {
@@ -28,6 +28,7 @@ export function NewsletterForm() {
           type="email"
           name="email"
           required
+          defaultValue={defaultEmail ?? undefined}
           placeholder="you@email.com"
           aria-label="Email address"
           className="min-w-[160px] flex-1 border-[1.5px] border-gold bg-paper px-[18px] py-[13px] text-[15px] text-ink focus:outline-2 focus:outline-offset-1 focus:outline-red"

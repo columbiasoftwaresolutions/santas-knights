@@ -1,5 +1,5 @@
 // Gallery photos served from public/images/gallery/.
-// Captions and categories are intentionally omitted: the page renders an image-only scroll.
+// Captions and categories are intentionally omitted: the page renders an image-only masonry grid.
 export type GalleryPhoto = {
   file: string;
   width: number;

@@ -16,7 +16,13 @@ const initialState: EngagementState = { ok: false };
  * when Resend is configured); the error path always offers a mailto so the
  * form is never a dead end.
  */
-export function ContactForm() {
+export function ContactForm({
+  defaultName,
+  defaultEmail,
+}: {
+  defaultName?: string | null;
+  defaultEmail?: string | null;
+}) {
   const [state, formAction, pending] = useActionState(sendContactMessage, initialState);
 
   if (state.ok) {
@@ -45,7 +51,14 @@ export function ContactForm() {
           <label htmlFor="name" className={labelBase}>
             Name
           </label>
-          <input id="name" name="name" required placeholder="Your name" className={fieldBase} />
+          <input
+            id="name"
+            name="name"
+            required
+            defaultValue={defaultName ?? undefined}
+            placeholder="Your name"
+            className={fieldBase}
+          />
         </div>
         <div>
           <label htmlFor="email" className={labelBase}>
@@ -56,6 +69,7 @@ export function ContactForm() {
             name="email"
             type="email"
             required
+            defaultValue={defaultEmail ?? undefined}
             placeholder="you@email.com"
             className={fieldBase}
           />

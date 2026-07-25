@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { Arrow } from "@/components/ui/Arrow";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { Photo } from "@/components/ui/Photo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { ImpactStrip } from "@/components/sections/ImpactStrip";
 import { NewsletterForm } from "@/components/sections/NewsletterForm";
-import { PageHero } from "@/components/sections/PageHero";
 import { links, volunteerRoles, waysToGive, waysToHelp } from "@/content/site";
+import { getCurrentUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Get Involved · Santa's Knights",
@@ -14,60 +16,95 @@ export const metadata: Metadata = {
     "Adopt a kid's letter to Santa, volunteer, or donate. Santa's Knights is a Harlem 501(c)(3); everything we run is free to the people we serve and paid for by people who chip in.",
 };
 
-const ACTION_VARIANT: Record<(typeof waysToHelp)[number]["variant"], "red" | "green" | "ink"> = {
-  red: "red",
-  green: "green",
-  gold: "ink",
+/**
+ * Full-bleed poster panels (one per way to help), ported from the Gladiators
+ * NYC "ways to use the site" band: big title anchored to the bottom, an accent
+ * bar that grows across the top on hover, and body copy that expands into view
+ * on hover (desktop) / sits open (mobile). Recolored to the three brand
+ * accents — green / red / gold — one per panel.
+ */
+const PANEL: Record<
+  (typeof waysToHelp)[number]["variant"],
+  { bg: string; hover: string; text: string; sub: string; bar: string }
+> = {
+  green: { bg: "bg-green", hover: "hover:bg-[#284f3b]", text: "text-paper", sub: "text-paper/75", bar: "bg-paper" },
+  red: { bg: "bg-red", hover: "hover:bg-[#a82a18]", text: "text-paper", sub: "text-paper/85", bar: "bg-paper" },
+  gold: { bg: "bg-gold", hover: "hover:bg-[#b0841f]", text: "text-ink", sub: "text-ink/70", bar: "bg-ink" },
 };
 
-export default function GetInvolvedPage() {
+export default async function GetInvolvedPage() {
+  const user = await getCurrentUser();
+
   return (
     <>
-      <PageHero
-        title={
-          <>
-            Ways to <em className="font-serif font-medium italic text-red">take part</em>.
-          </>
-        }
-        intro="The most direct thing you can do is adopt a kid's letter at Christmas. There's plenty else too: volunteering through the year, donating, or coming to train yourself."
-      >
-        <Button href={links.adoptLetter} variant="red" arrow>
-          Adopt a letter
-        </Button>
-        <Button href="#volunteer" variant="ghost">
-          Volunteer
-        </Button>
-      </PageHero>
-
-      <section className="py-section">
+      {/* Hero — title + lede on the left, photo on the right */}
+      <section className="border-b border-line bg-paper py-[clamp(56px,8vw,104px)] text-ink">
         <Container>
-          <div className="border-t border-line">
-          {waysToHelp.map((way) => (
-            <article
-              key={way.title}
-              className="grid gap-4 border-b border-line py-7 md:grid-cols-[220px_1fr_auto] md:items-center"
-            >
-              <h2 className="font-display text-h3 font-black uppercase text-ink">{way.title}</h2>
-              <p className="max-w-[58ch] text-muted">{way.body}</p>
-              <div>
-                <Button
-                  href={way.href}
-                  variant={ACTION_VARIANT[way.variant]}
-                  arrow
-                >
-                  {way.cta}
-                </Button>
-              </div>
-            </article>
-          ))}
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+            <div>
+              <h1 className="font-display text-[clamp(52px,8vw,116px)] leading-[0.86] font-black tracking-[-0.04em] uppercase [&_em]:font-serif [&_em]:font-normal [&_em]:normal-case [&_em]:italic [&_em]:text-red">
+                Ways to <em>take part</em>.
+              </h1>
+              <p className="mt-7 max-w-[46ch] text-[clamp(17px,1.6vw,20px)] leading-[1.6] text-muted">
+                The most direct thing you can do is adopt a kid&apos;s letter at Christmas.
+                There&apos;s plenty else too: volunteering through the year, donating, or coming to
+                train yourself.
+              </p>
+            </div>
+            <div data-reveal className="reveal-zoom">
+              <Photo
+                src="/images/hero-community.jpg"
+                alt="Santa's Knights members of all ages together"
+                priority
+                sizes="(min-width: 1024px) 46vw, 100vw"
+                className="aspect-[4/3] border border-line shadow-card"
+              />
+            </div>
           </div>
         </Container>
+      </section>
+
+      <ImpactStrip />
+
+      {/* Three ways in — full-bleed poster panels (GNYC pattern, brand-colored) */}
+      <section className="border-y border-line">
+        <div className="grid md:grid-cols-3">
+          {waysToHelp.map((way) => {
+            const p = PANEL[way.variant];
+            return (
+              <a
+                key={way.title}
+                href={way.href}
+                className={`group relative flex min-h-[260px] flex-col justify-end overflow-hidden px-8 py-10 transition-colors duration-300 md:min-h-[58vh] md:px-12 md:py-14 ${p.bg} ${p.hover} ${p.text}`}
+              >
+                <span
+                  aria-hidden
+                  className={`absolute left-0 top-0 h-[3px] w-0 transition-[width] duration-500 ease-out group-hover:w-full ${p.bar}`}
+                />
+                <span className="text-[12px] font-bold uppercase tracking-[0.16em] opacity-80">
+                  {way.eyebrow}
+                </span>
+                <h2 className="mt-3 font-display text-[clamp(34px,3.4vw,52px)] font-black uppercase leading-[0.95] tracking-[-0.02em] transition-transform duration-300 group-hover:-translate-y-1">
+                  {way.title}
+                </h2>
+                <div className="transition-all duration-300 ease-out md:max-h-0 md:translate-y-2 md:overflow-hidden md:opacity-0 md:group-hover:max-h-52 md:group-hover:translate-y-0 md:group-hover:opacity-100">
+                  <p className={`mt-4 max-w-[34ch] text-[15px] leading-7 md:mt-5 ${p.sub}`}>
+                    {way.body}
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.12em]">
+                    {way.cta} <Arrow />
+                  </span>
+                </div>
+              </a>
+            );
+          })}
+        </div>
       </section>
 
       {/* Volunteer roles */}
       <section id="volunteer" className="scroll-mt-24 bg-paper-raised border-y border-line py-section">
         <Container className="grid items-start gap-10 md:grid-cols-[1fr_1fr] md:gap-[54px]">
-          <div className="md:sticky md:top-[110px]">
+          <div data-reveal className="md:sticky md:top-[110px]">
             <SectionHeading
               title="You don't have to fight to be useful"
               intro="People sort the holiday letters, run the gift event, keep the books, handle the social accounts, and coach classes. Pick what fits. Most of it works around a job."
@@ -89,81 +126,55 @@ export default function GetInvolvedPage() {
             </p>
           </div>
 
-          <Card className="p-[34px]">
-            <h3 className="text-[13px] font-bold uppercase tracking-[0.12em] text-muted">
-              Roles we&apos;re looking for
-            </h3>
-            <ul className="mt-5 grid gap-x-6 gap-y-1 sm:grid-cols-2">
-              {volunteerRoles.map((role) => (
-                <li
-                  key={role}
-                  className="flex items-center gap-3 border-b border-line py-3 text-[15.5px] font-semibold text-ink last:border-b-0"
-                >
-                  <span aria-hidden className="text-red">
-                    ✦
-                  </span>
-                  {role}
-                </li>
-              ))}
-            </ul>
-          </Card>
-        </Container>
-      </section>
-
-      {/* Letters to Santa highlight */}
-      <section className="py-section">
-        <Container>
-          <div className="grid items-center gap-8 overflow-hidden bg-green p-[34px] text-[#eef4ef] md:grid-cols-[1.1fr_0.9fr] md:gap-[46px] md:p-[50px]">
-            <div>
-              <SectionHeading
-                tone="onColor"
-                size="band"
-                title="Adopt a letter this December"
-                intro="Pick a kid's wish off the pile and send the gift they asked for. We keep the child's details private the whole way through. You just make sure the present shows up."
-                introClassName="max-w-[42ch]"
-              />
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Button href={links.adoptLetter} variant="cream">
-                  How it works
-                </Button>
-                <Button href={links.contact} variant="clear">
-                  Help sort letters
-                </Button>
-              </div>
-            </div>
-            <Photo
-              src="/images/hero-community.jpg"
-              alt="Santa's Knights members of all ages together"
-              sizes="(min-width: 768px) 40vw, 100vw"
-              className="aspect-[4/3]"
-            />
+          <div data-reveal style={{ transitionDelay: "120ms" }}>
+            <Card className="p-[34px]">
+              <h3 className="text-[13px] font-bold uppercase tracking-[0.12em] text-muted">
+                Roles we&apos;re looking for
+              </h3>
+              <ul className="mt-5 grid gap-x-6 gap-y-1 sm:grid-cols-2">
+                {volunteerRoles.map((role) => (
+                  <li
+                    key={role}
+                    className="flex items-center gap-3 border-b border-line py-3 text-[15.5px] font-semibold text-ink last:border-b-0"
+                  >
+                    <span aria-hidden className="text-red">
+                      ✦
+                    </span>
+                    {role}
+                  </li>
+                ))}
+              </ul>
+            </Card>
           </div>
         </Container>
       </section>
 
       {/* Ways to give */}
-      <section id="give" className="scroll-mt-24 bg-paper-raised border-y border-line py-section">
+      <section id="give" className="scroll-mt-24 py-section">
         <Container>
-          <SectionHeading
-            className="max-w-[640px]"
-            title="Where your money goes"
-            intro="We're a 501(c)(3), so every gift is tax-deductible. It pays for the holiday presents, the free classes, and the events that keep the neighborhood showing up."
-            introClassName="max-w-[52ch]"
-          />
-          <div className="mt-10 border-t border-line">
+          <div data-reveal>
+            <SectionHeading
+              className="max-w-[640px]"
+              title="Where your money goes"
+              intro="We're a 501(c)(3), so every gift is tax-deductible. It pays for the holiday presents, the free classes, and the events that keep the neighborhood showing up."
+              introClassName="max-w-[52ch]"
+            />
+          </div>
+          <div data-reveal className="mt-10 border-t border-line">
             {waysToGive.map((way) => (
-              <article
+              <a
                 key={way.label}
-                className="grid gap-4 border-b border-line py-6 md:grid-cols-[220px_1fr_auto] md:items-center"
+                href={way.href}
+                className="group grid gap-2 border-b border-line py-6 transition-colors hover:bg-paper-raised sm:grid-cols-[220px_1fr_auto] sm:items-center"
               >
-                <h3 className="text-[20px] font-extrabold tracking-[-0.02em]">{way.label}</h3>
-                <p className="max-w-[58ch] text-[15.5px] text-muted">{way.body}</p>
-                <div>
-                  <Button href={way.href} variant="ghost" className="px-5 py-3 text-[15px]">
-                    {way.cta}
-                  </Button>
-                </div>
-              </article>
+                <span className="font-display text-[21px] font-black uppercase tracking-[-0.02em] text-ink">
+                  {way.label}
+                </span>
+                <span className="max-w-[58ch] text-[15.5px] text-muted">{way.body}</span>
+                <span className="inline-flex items-center gap-2 text-[13px] font-bold uppercase tracking-[0.04em] text-red">
+                  {way.cta} <Arrow />
+                </span>
+              </a>
             ))}
           </div>
         </Container>
@@ -172,13 +183,18 @@ export default function GetInvolvedPage() {
       {/* Newsletter */}
       <section className="py-section">
         <Container>
-          <Card tone="goldSoft" className="grid items-center gap-8 p-[38px] md:grid-cols-[1.1fr_0.9fr] md:p-[46px]">
-            <SectionHeading
-              title="News, and ways to help"
-              intro="We send occasional updates about the letter drive, events, and volunteer needs."
-            />
-            <NewsletterForm />
-          </Card>
+          <div data-reveal>
+            <Card
+              tone="goldSoft"
+              className="grid items-center gap-8 p-[38px] md:grid-cols-[1.1fr_0.9fr] md:p-[46px]"
+            >
+              <SectionHeading
+                title="News, and ways to help"
+                intro="We send occasional updates about the letter drive, events, and volunteer needs."
+              />
+              <NewsletterForm defaultEmail={user?.email} />
+            </Card>
+          </div>
         </Container>
       </section>
     </>

@@ -6,6 +6,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ContactForm } from "@/components/sections/ContactForm";
 import { PageHero } from "@/components/sections/PageHero";
 import { faqs, links, org, socials } from "@/content/site";
+import { getCurrentUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Contact · Santa's Knights",
@@ -31,7 +32,9 @@ function DetailRow({
   );
 }
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const user = await getCurrentUser();
+
   return (
     <>
       <PageHero
@@ -53,7 +56,7 @@ export default function ContactPage() {
               intro="We read everything that comes in and usually write back within a few days. If it's about Santa's Letters, say so and we'll get you the details."
               introClassName="max-w-[46ch]"
             />
-            <ContactForm />
+            <ContactForm defaultName={user?.name} defaultEmail={user?.email} />
           </div>
 
           <Card className="p-[34px]">

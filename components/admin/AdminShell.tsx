@@ -10,6 +10,7 @@ const TABS: { key: string; label: string; href: string }[] = [
   { key: "letters", label: "Letters", href: "/admin" },
   { key: "gifts", label: "Gifts", href: "/admin/gifts" },
   { key: "donations", label: "Donations", href: "/admin/donations" },
+  { key: "inbox", label: "Inbox", href: "/admin/inbox" },
   { key: "users", label: "Users", href: "/admin/users" },
 ];
 

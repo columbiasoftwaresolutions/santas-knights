@@ -85,38 +85,6 @@ export default function MembershipPage() {
         </Container>
       </section>
 
-      {/* What memberships fund */}
-      <section className="border-y border-line bg-paper-raised py-section">
-        <Container>
-          <SectionHeading
-            title="What your membership pays for"
-            introClassName="max-w-[52ch]"
-          />
-          <div className="mt-10 grid gap-[22px] md:grid-cols-3">
-            {[
-              {
-                title: "A present for a child",
-                body: "The Gifts tier ($20+) puts one present under the tree for a kid in Harlem every month of the year.",
-              },
-              {
-                title: "Equipment for a student",
-                body: "The Gifts + Equipment tier ($50+) adds a foam sword for a student who is starting training.",
-              },
-              {
-                title: "Free classes, always",
-                body: "Sponsorship tiers directly fund the space, insurance, and equipment that keep training free for everyone.",
-              },
-            ].map((item) => (
-              <div key={item.title}>
-                <span aria-hidden className="mb-4 block h-1 w-12 bg-red" />
-                <h3 className="text-h3 text-ink">{item.title}</h3>
-                <p className="mt-2.5 text-muted">{item.body}</p>
-              </div>
-            ))}
-          </div>
-        </Container>
-      </section>
-
       <DonateBand />
     </>
   );

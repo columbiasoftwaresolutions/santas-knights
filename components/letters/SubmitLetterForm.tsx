@@ -175,10 +175,6 @@ export function SubmitLetterForm({
             <FieldError message={state.errors?.guardian_email} />
           </div>
         </div>
-        <p className="text-[13.5px] text-muted">
-          We only use this to reach you about the letter. It is never shown publicly or shared
-          with donors.
-        </p>
       </fieldset>
 
       {/* Consent */}

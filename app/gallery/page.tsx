@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
-import { HorizontalScrollGallery } from "@/components/gallery/HorizontalScrollGallery";
+import { MasonryGallery } from "@/components/gallery/MasonryGallery";
 import { galleryPhotos } from "@/content/galleryPhotos";
 import { links } from "@/content/site";
 
@@ -21,7 +21,7 @@ export default function GalleryPage() {
         </Container>
       </section>
 
-      <HorizontalScrollGallery photos={galleryPhotos} />
+      <MasonryGallery photos={galleryPhotos} />
 
       <section className="text-paper">
         <a
