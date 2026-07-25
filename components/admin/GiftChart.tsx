@@ -28,7 +28,7 @@ export function GiftChart({
     : "";
   const stroke = color === "red" ? "#c2331f" : "#c98a3a";
   const labelIndexes = new Set([0, Math.floor((points.length - 1) / 2), points.length - 1]);
-  const gridValues = [0, Math.ceil(maximum / 2), maximum];
+  const gridValues = Array.from(new Set([0, Math.ceil(maximum / 2), maximum]));
 
   return (
     <figure className="min-w-0 max-w-full border border-line bg-card">
@@ -39,7 +39,7 @@ export function GiftChart({
       <div className="max-w-full overflow-x-auto px-2 py-3">
         <svg
           viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-          className="min-w-[560px] w-full"
+          className="w-full"
           role="img"
           aria-label={`${title} by day`}
         >
