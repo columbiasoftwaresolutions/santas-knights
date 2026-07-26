@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
@@ -68,7 +69,7 @@ async function getMyGifts(): Promise<MyGift[]> {
 export default async function AccountPage() {
   const user = await getCurrentUser();
 
-  if (!user) return <SignedOut />;
+  if (!user) redirect(links.accountLogin);
 
   const [letters, gifts] = await Promise.all([getMyLetters(), getMyGifts()]);
 
@@ -231,66 +232,5 @@ function ActionRow({
         </Button>
       </div>
     </article>
-  );
-}
-
-function SignedOut() {
-  return (
-    <>
-      <PageHero
-        title={
-          <>
-            Your Santa&apos;s Knights{" "}
-            <em className="font-serif font-medium italic text-red">account</em>.
-          </>
-        }
-        intro="Create a free account to submit a child's letter, adopt a wish to gift, and track everything in one place."
-      >
-        <Button href={links.accountRegister} variant="red" arrow>
-          Create an account
-        </Button>
-        <Button href={links.accountLogin} variant="ghost">
-          Sign in
-        </Button>
-      </PageHero>
-
-      <section className="py-section">
-        <Container>
-          <div className="border-t border-line">
-            <ActionRow
-              title="Submit & track letters"
-              body={
-                <>
-                  An account is required to submit a child&apos;s letter, so we can reach you and you
-                  can follow its status.
-                </>
-              }
-              cta="Get started"
-              href={links.accountRegister}
-              variant="green"
-            />
-            <ActionRow
-              title="Train with us"
-              body={
-                <>
-                  Classes are free and open to everyone. Browse the six Gladiators NYC programs
-                  here, then book on gladiators.nyc — one login works on both sites.
-                </>
-              }
-              cta="Browse classes"
-              href={links.training}
-              variant="red"
-            />
-            <ActionRow
-              title="Membership"
-              body="Membership ranges from free class registration to a $500 monthly corporate tier."
-              cta="View tiers"
-              href={links.membership}
-              variant="ghost"
-            />
-          </div>
-        </Container>
-      </section>
-    </>
   );
 }

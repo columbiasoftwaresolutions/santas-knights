@@ -659,7 +659,7 @@ export const waysToHelp: {
     title: "Cover the cost",
     body: "Donations are what keep the gifts coming and the classes free. Every dollar is tax-deductible.",
     cta: "Ways to give",
-    href: "#give",
+    href: links.donate,
   },
 ];
 
@@ -675,27 +675,6 @@ export const volunteerRoles: string[] = [
   "Intership",
   "Santa's Elf",
   "Other",
-];
-
-export const waysToGive: { label: string; body: string; cta: string; href: string }[] = [
-  {
-    label: "Adopt a letter",
-    body: "Grant a child's holiday wish directly, or sponsor a batch of letters at once.",
-    cta: "Start with Santa's Letters",
-    href: links.adoptLetter,
-  },
-  {
-    label: "PayPal",
-    body: "Make a one-time or recurring gift. It's tax-deductible and goes straight to the programs.",
-    cta: "Give with PayPal",
-    href: links.paypal,
-  },
-  {
-    label: "Venmo",
-    body: "Send a one-time gift through Venmo.",
-    cta: "Give with Venmo",
-    href: links.venmo,
-  },
 ];
 
 /* ------------------------------------------------------------------ *

@@ -1,20 +1,22 @@
 import type { Metadata } from "next";
-import { Button } from "@/components/ui/Button";
+import { Arrow } from "@/components/ui/Arrow";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
+import { Photo } from "@/components/ui/Photo";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ContactForm } from "@/components/sections/ContactForm";
+import { NewsletterForm } from "@/components/sections/NewsletterForm";
 import { PageHero } from "@/components/sections/PageHero";
-import { faqs, links, org, socials } from "@/content/site";
+import { VolunteerForm } from "@/components/sections/VolunteerForm";
+import { org, waysToHelp } from "@/content/site";
 import { getCurrentUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Contact · Santa's Knights",
   description:
-    "Get in touch with Santa's Knights in Harlem. Visit us at the Manhattanville Community Center, call (212) 873-5818, or send a message about classes, volunteering, or donating.",
+    "Get in touch with Santa's Knights in Harlem, or find a way to help — volunteer, adopt a letter, or give. Visit us at the Manhattanville Community Center or call (212) 873-5818.",
 };
 
-const mapEmbed = `https://www.google.com/maps?q=${encodeURIComponent(org.mapsQuery)}&output=embed`;
 const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(org.mapsQuery)}`;
 
 function DetailRow({
@@ -31,6 +33,21 @@ function DetailRow({
     </div>
   );
 }
+
+/**
+ * Full-bleed poster panels (one per way to help), ported from the Gladiators
+ * NYC "ways to use the site" band: big title anchored to the bottom, with body
+ * copy that expands into view on hover (desktop) / sits open (mobile). Recolored
+ * to the three brand accents — green / red / gold — one per panel.
+ */
+const PANEL: Record<
+  (typeof waysToHelp)[number]["variant"],
+  { bg: string; hover: string; text: string; sub: string }
+> = {
+  green: { bg: "bg-green", hover: "hover:bg-[#284f3b]", text: "text-paper", sub: "text-paper/75" },
+  red: { bg: "bg-red", hover: "hover:bg-[#a82a18]", text: "text-paper", sub: "text-paper/85" },
+  gold: { bg: "bg-gold", hover: "hover:bg-[#b0841f]", text: "text-ink", sub: "text-ink/70" },
+};
 
 export default async function ContactPage() {
   const user = await getCurrentUser();
@@ -81,100 +98,84 @@ export default async function ContactPage() {
                   {org.email}
                 </a>
               </DetailRow>
-              <DetailRow label="Training schedule">
-                Six free classes a week
-                <span className="mt-1 block text-[14px] font-normal text-muted">
-                  Browse every Gladiators NYC class on the{" "}
-                  <a href={links.training} className="underline transition-colors hover:text-red">
-                    classes page
-                  </a>
-                  . On-site booking is coming soon.
-                </span>
-              </DetailRow>
             </div>
 
             <div className="mt-6">
-              <div className="text-[12px] font-bold uppercase tracking-[0.12em] text-muted">
-                Follow along
-              </div>
-              <div className="mt-3 flex gap-2.5">
-                {socials.map((social) => (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    aria-label={social.label}
-                    className="grid h-10 w-10 place-items-center bg-ink text-[14px] text-paper transition-colors hover:bg-red"
-                  >
-                    <span aria-hidden>{social.glyph}</span>
-                  </a>
-                ))}
-              </div>
+              <Photo
+                src="/images/hero-community.jpg"
+                alt="Santa's Knights members of all ages together"
+                sizes="(min-width: 1024px) 34vw, 100vw"
+                className="aspect-[4/3] border border-line"
+              />
             </div>
-
-            <p className="mt-6 flex items-center gap-2 bg-green-soft px-4 py-3 text-[14px] font-semibold text-green">
-              <span aria-hidden>♥</span>
-              501(c)(3) nonprofit · every class is 100% free
-            </p>
           </Card>
         </Container>
       </section>
 
-      {/* Map */}
-      <section className="border-y border-line bg-paper-raised">
-        <Container className="py-section">
-          <div className="flex flex-wrap items-end justify-between gap-4">
+      {/* Three ways in — full-bleed poster panels (GNYC pattern, brand-colored) */}
+      <section className="border-y border-line">
+        <div className="grid md:grid-cols-3">
+          {waysToHelp.map((way) => {
+            const p = PANEL[way.variant];
+            return (
+              <a
+                key={way.title}
+                href={way.href}
+                className={`group relative flex min-h-[260px] flex-col justify-end overflow-hidden px-8 py-10 transition-colors duration-300 md:min-h-[58vh] md:px-12 md:py-14 ${p.bg} ${p.hover} ${p.text}`}
+              >
+                <h2 className="font-display text-[clamp(34px,3.4vw,52px)] font-black uppercase leading-[0.95] tracking-[-0.02em] transition-transform duration-300 group-hover:-translate-y-1">
+                  {way.title}
+                </h2>
+                <div className="transition-all duration-300 ease-out md:max-h-0 md:translate-y-2 md:overflow-hidden md:opacity-0 md:group-hover:max-h-52 md:group-hover:translate-y-0 md:group-hover:opacity-100">
+                  <p className={`mt-4 max-w-[34ch] text-[15px] leading-7 md:mt-5 ${p.sub}`}>
+                    {way.body}
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.12em]">
+                    {way.cta} <Arrow />
+                  </span>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Volunteer application */}
+      <section id="volunteer" className="scroll-mt-24 bg-paper-raised border-y border-line py-section">
+        <Container className="grid items-start gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-[54px]">
+          <div className="md:sticky md:top-[110px]">
             <SectionHeading
-              title="Manhattanville Community Center, Harlem"
-              intro="We're at 530 West 133rd Street, between Broadway and Amsterdam."
-              introClassName="max-w-[46ch]"
+              title="Apply to volunteer"
+              intro="Tell us who you are and where you'd like to help. Pick as many roles as you're open to — we'll follow up about what fits."
+              introClassName="max-w-[44ch]"
             />
-            <Button href={mapLink} variant="ghost" className="px-5 py-3 text-[15px]">
-              Get directions ↗
-            </Button>
           </div>
-          <div className="mt-8 overflow-hidden border border-line">
-            <iframe
-              title={`Map to ${org.venue}`}
-              src={mapEmbed}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="block h-[420px] w-full border-0"
-            />
+
+          <div>
+            <Card className="p-[34px]">
+              <VolunteerForm
+                defaultName={user?.name}
+                defaultEmail={user?.email}
+                defaultPhone={user?.phone}
+              />
+            </Card>
           </div>
         </Container>
       </section>
 
-      {/* FAQ */}
+      {/* Newsletter */}
       <section className="py-section">
-        <Container className="grid items-start gap-10 md:grid-cols-[0.85fr_1.15fr] md:gap-[54px]">
-          <div className="md:sticky md:top-[110px]">
+        <Container>
+          <Card
+            tone="goldSoft"
+            className="grid items-center gap-8 p-[38px] md:grid-cols-[1.1fr_0.9fr] md:p-[46px]"
+          >
             <SectionHeading
-              title="Common questions"
-              intro="If it's not here, send a message above and we'll sort it out."
-              introClassName="max-w-[40ch]"
+              title="News, and ways to help"
+              intro="We send occasional updates about the letter drive, events, and volunteer needs."
             />
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Button href={links.adoptLetter} variant="red" arrow>
-                Santa&apos;s Letters
-              </Button>
-              <Button href={links.getInvolved} variant="ghost">
-                Get involved
-              </Button>
-            </div>
-          </div>
-          <dl className="grid gap-4">
-            {faqs.map((faq) => (
-              <Card key={faq.q} className="p-[26px]">
-                <dt className="flex gap-3 text-[18px] font-extrabold tracking-[-0.02em] text-ink">
-                  <span aria-hidden className="text-red">
-                    ?
-                  </span>
-                  {faq.q}
-                </dt>
-                <dd className="mt-2 pl-[22px] text-muted">{faq.a}</dd>
-              </Card>
-            ))}
-          </dl>
+            <NewsletterForm defaultEmail={user?.email} />
+          </Card>
         </Container>
       </section>
     </>
