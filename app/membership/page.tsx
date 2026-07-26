@@ -5,6 +5,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { PageHero } from "@/components/sections/PageHero";
 import { DonateBand } from "@/components/sections/DonateBand";
+import { cn } from "@/lib/cn";
 import { membershipTiers, links, org } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -47,8 +48,13 @@ export default function MembershipPage() {
               <Card
                 key={tier.name}
                 hover
-                className="flex flex-col p-[30px]"
+                className={cn("relative flex flex-col p-[30px]", tier.featured && "border-red")}
               >
+                {tier.featured && (
+                  <span className="absolute right-[18px] top-0 -translate-y-1/2 bg-red px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white shadow-cta">
+                    Most common
+                  </span>
+                )}
                 <div className="flex items-start justify-between gap-3">
                   <span className={`text-[11px] font-bold tracking-[0.14em] uppercase ${tier.isFree ? "text-green" : "text-red"}`}>
                     {tier.isFree ? "Free" : "Monthly"}

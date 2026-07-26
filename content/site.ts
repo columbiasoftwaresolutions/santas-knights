@@ -338,6 +338,8 @@ export type MembershipTier = {
   /** TODO: Replace placeholder /donate hrefs with real recurring-billing URLs. */
   href: string;
   isFree?: boolean;
+  /** The tier we point most people at — gets the "Most common" marker. */
+  featured?: boolean;
 };
 
 export const membershipTiers: MembershipTier[] = [
@@ -357,6 +359,7 @@ export const membershipTiers: MembershipTier[] = [
     description: "A present for a child in need per month!",
     ctaLabel: "Buy now", // TODO: add external recurring-billing URL
     href: links.donate,
+    featured: true,
   },
   {
     name: "Gifts and Equipment",

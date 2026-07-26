@@ -13,7 +13,7 @@ export function LettersToSanta() {
         <div data-reveal className="max-w-[980px]">
           <h2 className="font-display text-[clamp(48px,6.4vw,96px)] font-black uppercase leading-[0.9] tracking-[-0.03em]">
             Every kid deserves an{" "}
-            <em className="font-serif text-amber italic [text-transform:none] [font-weight:700]">
+            <em className="font-serif text-gold-soft italic [text-transform:none] [font-weight:700]">
               answer.
             </em>
           </h2>
@@ -38,7 +38,7 @@ export function LettersToSanta() {
               style={{ transitionDelay: `${i * 100}ms` }}
               className="border-paper/[0.18] py-11 md:border-r md:pr-9 md:[&:not(:first-child)]:pl-9 md:[&:last-child]:border-r-0"
             >
-              <div className="font-display text-[clamp(56px,6vw,84px)] font-black leading-[0.8] tracking-[-0.04em] text-amber">
+              <div className="font-display text-[clamp(56px,6vw,84px)] font-black leading-[0.8] tracking-[-0.04em] text-gold-soft">
                 {String(i + 1).padStart(2, "0")}
               </div>
               <h3 className="mt-5 font-display text-[23px] font-extrabold uppercase tracking-[-0.01em]">
