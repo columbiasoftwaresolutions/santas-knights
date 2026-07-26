@@ -13,6 +13,8 @@ type Profile = {
   id: string;
   email: string | null;
   role: string;
+  first_name: string | null;
+  last_name: string | null;
   created_at: string;
 };
 
@@ -20,13 +22,15 @@ export default async function AdminUsersPage() {
   const gate = await requireAdmin();
   if (!gate.ok) return gate.node;
 
-  // Pull profiles plus the activity needed to summarize each person. Profiles
-  // hold no name, so we derive a display name from their letters. Training
-  // activity (classes, XP, waivers) lives in the gladiators.nyc admin.
+  // Pull profiles plus the activity needed to summarize each person. The name
+  // collected at signup lives on the profile (first_name/last_name); we fall
+  // back to a name derived from their letters for any legacy row that predates
+  // those fields. Training activity (classes, XP, waivers) lives in the
+  // gladiators.nyc admin.
   const [profilesRes, lettersRes] = await Promise.all([
     gate.supabase
       .from("profiles")
-      .select("id, email, role, created_at")
+      .select("id, email, role, first_name, last_name, created_at")
       .order("created_at", { ascending: true })
       .limit(2000),
     gate.supabase
@@ -55,7 +59,7 @@ export default async function AdminUsersPage() {
 
   const users: UserRow[] = profiles.map((p) => ({
     id: p.id,
-    name: names.get(p.id) ?? null,
+    name: [p.first_name, p.last_name].filter(Boolean).join(" ").trim() || names.get(p.id) || null,
     email: p.email,
     role: p.role,
     createdAt: p.created_at,

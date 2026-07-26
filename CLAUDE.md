@@ -94,6 +94,9 @@ This is the source of truth for the Postgres schema. Apply it on a fresh Supabas
 -- roles -----------------------------------------------------------
 create type public.app_role as enum ('public', 'participant', 'instructor', 'admin');
 
+-- Identity fields (first_name/last_name/dob/phone/zipcode) are added on top of
+-- this base block by the "Account model + content tables (applied)" section
+-- below — they are collected (and required) at registration on both sites.
 create table public.profiles (
   id         uuid primary key references auth.users (id) on delete cascade,
   email      text,
@@ -102,7 +105,9 @@ create table public.profiles (
 );
 alter table public.profiles enable row level security;
 
--- Auto-create a profile whenever an auth user is created.
+-- Auto-create a profile whenever an auth user is created. The registration
+-- server action then fills the identity fields (first_name/last_name/dob/
+-- phone/zipcode) on the row this trigger inserts.
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
@@ -228,6 +233,24 @@ on conflict (id) do nothing;
 These tables were applied on top of the base schema above (account model + gallery/donations/partners). The DDL is idempotent.
 
 ```sql
+-- profiles: identity fields collected (and required) at registration on both
+-- sites (santasknights.org + gladiators.nyc, one shared identity). See
+-- sql/2026-07-profile-identity-fields.sql (+ -name-dob / -not-null companions).
+-- first_name/last_name back the display name in /admin/users; dob backs the
+-- 18-or-older account gate (month + year only, day is always the 1st).
+alter table public.profiles add column if not exists first_name text;
+alter table public.profiles add column if not exists last_name  text;
+alter table public.profiles add column if not exists dob        date;
+alter table public.profiles add column if not exists phone      text;
+alter table public.profiles add column if not exists zipcode    text;
+-- Made NOT NULL once existing rows were backfilled:
+alter table public.profiles alter column email      set not null;
+alter table public.profiles alter column first_name set not null;
+alter table public.profiles alter column last_name  set not null;
+alter table public.profiles alter column dob        set not null;
+alter table public.profiles alter column phone      set not null;
+alter table public.profiles alter column zipcode    set not null;
+
 -- santa_letters: fulfillment + guardian self-read (account model) --
 alter table public.santa_letters add column if not exists guardian_user_id uuid references public.profiles(id);
 alter table public.santa_letters add column if not exists fulfilled_by_user_id uuid references public.profiles(id);
