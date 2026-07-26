@@ -95,3 +95,56 @@ export function siteDateStartUtc(dateKey: string): Date {
 export function isDateKey(value: string | undefined): value is string {
   return Boolean(value && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T12:00:00Z`)));
 }
+
+/* ------------------------------------------------------------------ *
+ * Chart bucketing — collapse a date range into day / week / month buckets
+ * so a graph never renders more than ~100 points.
+ * ------------------------------------------------------------------ */
+
+export type Grain = "day" | "week" | "month";
+
+/** Inclusive day count between two date keys. */
+export function dayCountBetween(start: string, end: string): number {
+  const [ys, ms, ds] = start.split("-").map(Number);
+  const [ye, me, de] = end.split("-").map(Number);
+  const a = Date.UTC(ys, ms - 1, ds);
+  const b = Date.UTC(ye, me - 1, de);
+  return Math.round((b - a) / 86_400_000) + 1;
+}
+
+/**
+ * Pick the coarsest grain that keeps the range at or under ~100 points:
+ * ≤100 days stay daily, up to ~100 weeks (≈700 days) go weekly, beyond that
+ * monthly. This is the "auto" default; callers may override with a fixed grain.
+ */
+export function autoGrain(start: string, end: string): Grain {
+  const days = dayCountBetween(start, end);
+  if (days <= 100) return "day";
+  if (Math.ceil(days / 7) <= 100) return "week";
+  return "month";
+}
+
+/** The bucket a given day falls into, as a date key (week = its Monday). */
+export function bucketKeyFor(dateKey: string, grain: Grain): string {
+  if (grain === "day") return dateKey;
+  if (grain === "month") return `${dateKey.slice(0, 7)}-01`;
+  const d = new Date(`${dateKey}T12:00:00Z`);
+  const backToMonday = (d.getUTCDay() + 6) % 7; // Sun→6, Mon→0, …, Sat→5
+  d.setUTCDate(d.getUTCDate() - backToMonday);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Ordered, de-duplicated bucket keys spanning [start, end] at the given grain. */
+export function bucketKeys(start: string, end: string, grain: Grain): string[] {
+  if (grain === "day") return dateKeysBetween(start, end);
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const day of dateKeysBetween(start, end)) {
+    const key = bucketKeyFor(day, grain);
+    if (!seen.has(key)) {
+      seen.add(key);
+      out.push(key);
+    }
+  }
+  return out;
+}

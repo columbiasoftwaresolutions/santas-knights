@@ -5,17 +5,24 @@ import { updateLetterStatus, type LetterAction } from "@/app/admin/actions";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { GiftChart } from "@/components/admin/GiftChart";
 import { LetterViewer } from "@/components/admin/LetterViewer";
-import { LettersFilters, type LetterStatusFilter } from "@/components/admin/LettersFilters";
+import {
+  LettersFilters,
+  type LetterStatusFilter,
+  type GrainSetting,
+} from "@/components/admin/LettersFilters";
 import { requireAdmin } from "@/components/admin/guard";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/cn";
 import {
   addDaysToDateKey,
-  dateKeysBetween,
+  autoGrain,
+  bucketKeyFor,
+  bucketKeys,
   formatSiteDateTime,
   isDateKey,
   siteDateKey,
   siteDateStartUtc,
+  type Grain,
 } from "@/lib/dates";
 import { LETTERS_BUCKET } from "@/lib/supabase/config";
 
@@ -57,6 +64,10 @@ function isStatusFilter(value: string | undefined): value is LetterStatusFilter 
   return value === "all" || value === "fulfilled" || value === "active" || value === "inactive";
 }
 
+function isGrainSetting(value: string | undefined): value is GrainSetting {
+  return value === "auto" || value === "day" || value === "week" || value === "month";
+}
+
 function maskEmail(email: string | null): string {
   if (!email) return "—";
   const [name, domain] = email.split("@");
@@ -82,7 +93,13 @@ type LetterRow = {
 export default async function AdminLettersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ section?: string; status?: string; start?: string; end?: string }>;
+  searchParams: Promise<{
+    section?: string;
+    status?: string;
+    grain?: string;
+    start?: string;
+    end?: string;
+  }>;
 }) {
   const gate = await requireAdmin();
   if (!gate.ok) return gate.node;
@@ -95,17 +112,29 @@ export default async function AdminLettersPage({
   let end = isDateKey(params.end) ? params.end : today;
   if (start > end) [start, end] = [end, start];
 
+  const grainSetting: GrainSetting = isGrainSetting(params.grain) ? params.grain : "auto";
+  const effectiveGrain: Grain = grainSetting === "auto" ? autoGrain(start, end) : grainSetting;
+
   const rangeStart = siteDateStartUtc(start).toISOString();
   const rangeEnd = siteDateStartUtc(addDaysToDateKey(end, 1)).toISOString();
 
   return (
     <AdminShell active="letters" title="Letters" email={gate.email}>
-      <LettersSubnav section={section} status={status} start={start} end={end} />
-      <LettersFilters section={section} status={status} start={start} end={end} today={today} />
+      <LettersSubnav section={section} status={status} grain={grainSetting} start={start} end={end} />
+      <LettersFilters
+        section={section}
+        status={status}
+        grain={grainSetting}
+        effectiveGrain={effectiveGrain}
+        start={start}
+        end={end}
+        today={today}
+      />
       {section === "stats" ? (
         <StatsSection
           supabase={gate.supabase}
           status={status}
+          grain={effectiveGrain}
           start={start}
           end={end}
           rangeStart={rangeStart}
@@ -121,15 +150,17 @@ export default async function AdminLettersPage({
 function LettersSubnav({
   section,
   status,
+  grain,
   start,
   end,
 }: {
   section: "list" | "stats";
   status: LetterStatusFilter;
+  grain: GrainSetting;
   start: string;
   end: string;
 }) {
-  const query = `status=${status}&start=${start}&end=${end}`;
+  const query = `status=${status}&grain=${grain}&start=${start}&end=${end}`;
   return (
     <nav className="flex gap-7 border-b border-line">
       <Link
@@ -289,6 +320,7 @@ async function ListSection({
 async function StatsSection({
   supabase,
   status,
+  grain,
   start,
   end,
   rangeStart,
@@ -296,6 +328,7 @@ async function StatsSection({
 }: {
   supabase: SupabaseClient;
   status: LetterStatusFilter;
+  grain: Grain;
   start: string;
   end: string;
   rangeStart: string;
@@ -317,19 +350,19 @@ async function StatsSection({
   if (submittedError) console.error("Failed to load letter submissions:", submittedError.message);
   if (fulfilledError) console.error("Failed to load letter fulfillments:", fulfilledError.message);
 
-  const days = dateKeysBetween(start, end);
-  const submittedCounts = new Map(days.map((day) => [day, 0]));
-  const activeCounts = new Map(days.map((day) => [day, 0]));
-  const fulfilledCounts = new Map(days.map((day) => [day, 0]));
+  const buckets = bucketKeys(start, end, grain);
+  const submittedCounts = new Map(buckets.map((bucket) => [bucket, 0]));
+  const activeCounts = new Map(buckets.map((bucket) => [bucket, 0]));
+  const fulfilledCounts = new Map(buckets.map((bucket) => [bucket, 0]));
 
   submittedRows?.forEach((row) => {
-    const key = siteDateKey(row.created_at);
+    const key = bucketKeyFor(siteDateKey(row.created_at), grain);
     submittedCounts.set(key, (submittedCounts.get(key) ?? 0) + 1);
     if (row.status === "live") activeCounts.set(key, (activeCounts.get(key) ?? 0) + 1);
   });
   fulfilledRows?.forEach((row) => {
     if (!row.fulfilled_at) return;
-    const key = siteDateKey(row.fulfilled_at);
+    const key = bucketKeyFor(siteDateKey(row.fulfilled_at), grain);
     fulfilledCounts.set(key, (fulfilledCounts.get(key) ?? 0) + 1);
   });
 
@@ -360,7 +393,8 @@ async function StatsSection({
           <GiftChart
             title={series[status].title}
             color={series[status].color}
-            points={days.map((date) => ({ date, value: series[status].counts.get(date) ?? 0 }))}
+            grain={grain}
+            points={buckets.map((date) => ({ date, value: series[status].counts.get(date) ?? 0 }))}
           />
         )}
       </div>

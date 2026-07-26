@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { Grain } from "@/lib/dates";
 
 type Point = {
   date: string;
@@ -17,14 +18,19 @@ const STROKE: Record<"red" | "amber" | "green", string> = {
   green: "#2e5e45",
 };
 
+const GRAIN_WORD: Record<Grain, string> = { day: "daily", week: "weekly", month: "monthly" };
+const GRAIN_UNIT: Record<Grain, string> = { day: "day", week: "week", month: "month" };
+
 export function GiftChart({
   title,
   points,
   color,
+  grain = "day",
 }: {
   title: string;
   points: Point[];
   color: "red" | "amber" | "green";
+  grain?: Grain;
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState(DEFAULT_SIZE);
@@ -87,8 +93,11 @@ export function GiftChart({
 
   return (
     <figure className="min-w-0 max-w-full border border-line bg-card">
-      <figcaption className="border-b border-line px-5 py-4">
+      <figcaption className="flex items-baseline justify-between gap-3 border-b border-line px-5 py-4">
         <h3 className="text-[15px] font-extrabold">{title}</h3>
+        <span className="text-[12px] font-semibold uppercase tracking-[0.08em] text-muted">
+          {GRAIN_WORD[grain]}
+        </span>
       </figcaption>
       <div
         ref={chartRef}
@@ -107,7 +116,7 @@ export function GiftChart({
           viewBox={`0 0 ${width} ${height}`}
           className="absolute inset-0 h-full w-full"
           role="img"
-          aria-label={`${title} by day`}
+          aria-label={`${title} by ${GRAIN_UNIT[grain]}`}
         >
           {gridValues.map((value) => {
             const gridY = y(value);
@@ -153,7 +162,7 @@ export function GiftChart({
                 strokeWidth="2.5"
                 tabIndex={0}
                 className="cursor-crosshair outline-none"
-                aria-label={`${formatDate(point.date)}: ${formatValue(title, point.value)}`}
+                aria-label={`${formatDate(point.date, grain)}: ${formatValue(title, point.value)}`}
                 onFocus={() => setActiveIndex(index)}
                 onBlur={() => setActiveIndex(null)}
               />
@@ -165,7 +174,7 @@ export function GiftChart({
                   fill="#6c6256"
                   fontSize="11"
                 >
-                  {formatShortDate(point.date)}
+                  {formatShortDate(point.date, grain)}
                 </text>
               )}
             </g>
@@ -177,7 +186,7 @@ export function GiftChart({
             className={`pointer-events-none absolute z-10 min-w-[142px] border-t-2 bg-ink px-3 py-2 text-bone shadow-[0_2px_8px_rgba(22,18,15,0.18)] ${horizontalPosition} ${verticalPosition}`}
             style={{ left: activeX, top: activeY, borderTopColor: stroke }}
           >
-            <p className="text-[11px] font-semibold text-bone/65">{formatDate(activePoint.date)}</p>
+            <p className="text-[11px] font-semibold text-bone/65">{formatDate(activePoint.date, grain)}</p>
             <p className="mt-0.5 text-[13px] font-extrabold">{formatValue(title, activePoint.value)}</p>
           </div>
         )}
@@ -186,21 +195,29 @@ export function GiftChart({
   );
 }
 
-function formatShortDate(date: string): string {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(`${date}T12:00:00Z`));
+/** Compact axis label: "Jan" for months, "Jan 5" for days/weeks. */
+function formatShortDate(date: string, grain: Grain): string {
+  const d = new Date(`${date}T12:00:00Z`);
+  const opts: Intl.DateTimeFormatOptions =
+    grain === "month"
+      ? { month: "short", year: "numeric", timeZone: "UTC" }
+      : { month: "short", day: "numeric", timeZone: "UTC" };
+  return new Intl.DateTimeFormat("en-US", opts).format(d);
 }
 
-function formatDate(date: string): string {
-  return new Intl.DateTimeFormat("en-US", {
+/** Full tooltip label: month name, "Week of …", or a plain date. */
+function formatDate(date: string, grain: Grain): string {
+  const d = new Date(`${date}T12:00:00Z`);
+  if (grain === "month") {
+    return new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric", timeZone: "UTC" }).format(d);
+  }
+  const label = new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
     timeZone: "UTC",
-  }).format(new Date(`${date}T12:00:00Z`));
+  }).format(d);
+  return grain === "week" ? `Week of ${label}` : label;
 }
 
 function formatValue(title: string, value: number): string {
