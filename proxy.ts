@@ -41,7 +41,7 @@ export default async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   if (path.startsWith("/admin") && path !== "/admin/login" && !user) {
     const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = "/account/login";
+    loginUrl.pathname = "/login";
     loginUrl.search = `?next=${encodeURIComponent(path)}`;
     return NextResponse.redirect(loginUrl);
   }

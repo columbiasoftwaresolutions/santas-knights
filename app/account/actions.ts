@@ -91,7 +91,7 @@ export async function registerAccount(_prev: AuthState, formData: FormData): Pro
 
   const supabase = await createSupabaseServerClient();
   const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-  if (signInError) redirect(`/account/login?next=${encodeURIComponent(next)}`);
+  if (signInError) redirect(`/login?next=${encodeURIComponent(next)}`);
 
   redirect(next);
 }

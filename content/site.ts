@@ -53,8 +53,8 @@ export const links = {
   training: TRAINING_HREF,
   online: TRAIN_ONLINE_HREF,
   account: "/account",
-  accountLogin: "/account/login",
-  accountRegister: "/account/register",
+  accountLogin: "/login",
+  accountRegister: "/signup",
   accountLetters: "/account/letters",
 } as const;
 

@@ -5,5 +5,5 @@ import { redirect } from "next/navigation";
  * admin URL just forwards to the unified login, which routes admins to /admin.
  */
 export default function AdminLoginPage() {
-  redirect(`/account/login?next=${encodeURIComponent("/admin")}`);
+  redirect(`/login?next=${encodeURIComponent("/admin")}`);
 }

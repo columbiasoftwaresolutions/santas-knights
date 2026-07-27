@@ -311,7 +311,7 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next: str
       )}
 
       <ErrorBox message={state.error} />
-      <Button type="submit" variant="green" disabled={pending || blocked}>
+      <Button type="submit" variant="red" disabled={pending || blocked}>
         {pending
           ? isRegister
             ? "Creating account…"

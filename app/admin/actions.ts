@@ -50,5 +50,5 @@ export async function updateLetterStatus(formData: FormData): Promise<void> {
 export async function signOut(): Promise<void> {
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
-  redirect(`/account/login?next=${encodeURIComponent("/admin")}`);
+  redirect(`/login?next=${encodeURIComponent("/admin")}`);
 }

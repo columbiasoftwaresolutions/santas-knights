@@ -28,6 +28,7 @@
 
   /* Gladiators NYC — steel sub-brand (kept for any sub-brand surfaces) */
   --color-steel: #16171a;
+  --color-steel2: #1a1c1f;
   --color-glad-red: #c2331f;
   --color-glad-amber: #c98a3a;
 
@@ -55,6 +56,20 @@
   --text-h2-band: clamp(28px, 3.6vw, 44px);
   --text-h3: 25px;
   --text-quote: clamp(26px, 3.4vw, 40px);
+}
+
+/* Gladiators-style dark theme for full-bleed customer surfaces (e.g. the
+   /login and /signup auth scene). Wrapping content in `.theme-steel` remaps
+   the light "paper" tokens to the dark steel palette, so shared paper/card/ink
+   components (like AuthForm) render dark-on-dark instead of their default
+   light-card look. Mirrors gladiators.nyc's identical `.theme-steel` class. */
+.theme-steel {
+  --color-paper: var(--color-steel);
+  --color-paper-raised: #212327;
+  --color-card: var(--color-steel2);
+  --color-ink: var(--color-bone);
+  --color-muted: #b7b1a4;
+  --color-line: rgba(232, 226, 212, 0.14);
 }
 
 @layer base {

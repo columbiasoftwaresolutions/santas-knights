@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Hanken_Grotesk, Cormorant, Archivo } from "next/font/google";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { SiteChrome } from "@/components/layout/SiteChrome";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Reveal } from "@/components/ui/Reveal";
 import { getCurrentUser } from "@/lib/auth";
@@ -69,9 +70,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }}
         />
         <JsonLd data={organizationSchema} />
-        <Navbar auth={auth} />
+        <SiteChrome>
+          <Navbar auth={auth} />
+        </SiteChrome>
         <main>{children}</main>
-        <Footer />
+        <SiteChrome>
+          <Footer />
+        </SiteChrome>
         <Reveal />
       </body>
     </html>
