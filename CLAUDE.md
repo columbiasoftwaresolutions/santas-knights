@@ -105,13 +105,26 @@ create table public.profiles (
 );
 alter table public.profiles enable row level security;
 
--- Auto-create a profile whenever an auth user is created. The registration
--- server action then fills the identity fields (first_name/last_name/dob/
--- phone/zipcode) on the row this trigger inserts.
+-- Auto-create a profile whenever an auth user is created. Identity fields
+-- (first_name/last_name/dob/phone/zipcode) are NOT NULL (see the "Account
+-- model" section below), so the registration server action passes them as
+-- `user_metadata` on createUser() and this trigger reads them off
+-- raw_user_meta_data — see sql/2026-07-handle-new-user-identity.sql (applied;
+-- fixes a period where every signup failed with "Database error creating new
+-- user" because this trigger only inserted id/email).
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  insert into public.profiles (id, email) values (new.id, new.email)
+  insert into public.profiles (id, email, first_name, last_name, dob, phone, zipcode)
+  values (
+    new.id,
+    new.email,
+    coalesce(new.raw_user_meta_data->>'first_name', ''),
+    coalesce(new.raw_user_meta_data->>'last_name', ''),
+    coalesce((new.raw_user_meta_data->>'dob')::date, current_date),
+    coalesce(new.raw_user_meta_data->>'phone', ''),
+    coalesce(new.raw_user_meta_data->>'zipcode', '')
+  )
   on conflict (id) do nothing;
   return new;
 end;

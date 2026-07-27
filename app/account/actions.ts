@@ -38,7 +38,8 @@ function validateAdultDob(dob: string): string | null {
  * Create a `public` account. Uses the admin client to create an already-confirmed
  * user (this seasonal flow shouldn't depend on email round-trips), then signs the
  * new user in so the session cookie is set before redirecting. The `handle_new_user`
- * trigger creates the matching `profiles` row (role `public`).
+ * trigger creates the matching `profiles` row (role `public`), populated from the
+ * `user_metadata` passed to `createUser` below.
  */
 export async function registerAccount(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const firstName = String(formData.get("first_name") ?? "").trim();
@@ -65,11 +66,13 @@ export async function registerAccount(_prev: AuthState, formData: FormData): Pro
   const admin = createSupabaseAdminClient();
   if (!admin) return { error: "Accounts aren't available yet." };
 
-  const { data: created, error: createError } = await admin.auth.admin.createUser({
+  const { error: createError } = await admin.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
-    user_metadata: { first_name: firstName, last_name: lastName },
+    // handle_new_user() reads these off raw_user_meta_data to populate the
+    // NOT NULL identity columns on the profiles row it creates.
+    user_metadata: { first_name: firstName, last_name: lastName, dob, phone, zipcode },
   });
   if (createError) {
     if (/already|registered|exists/i.test(createError.message))
@@ -78,15 +81,6 @@ export async function registerAccount(_prev: AuthState, formData: FormData): Pro
       return { error: createError.message };
     console.error("Account creation failed:", createError.message);
     return { error: "We couldn't create the account. Please try again." };
-  }
-
-  // Persist identity fields on the auto-created profile row (service role bypasses RLS).
-  if (created?.user) {
-    const { error: profileError } = await admin
-      .from("profiles")
-      .update({ first_name: firstName, last_name: lastName, dob, phone, zipcode })
-      .eq("id", created.user.id);
-    if (profileError) console.error("Profile identity update failed:", profileError.message);
   }
 
   const supabase = await createSupabaseServerClient();
