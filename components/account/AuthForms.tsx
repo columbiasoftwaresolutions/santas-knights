@@ -16,20 +16,10 @@ const labelBase = "mb-1.5 block text-[13px] font-bold uppercase tracking-[0.1em]
 
 const initial: AuthState = {};
 
-const MONTHS: SelectOption[] = [
-  ["01", "January"],
-  ["02", "February"],
-  ["03", "March"],
-  ["04", "April"],
-  ["05", "May"],
-  ["06", "June"],
-  ["07", "July"],
-  ["08", "August"],
-  ["09", "September"],
-  ["10", "October"],
-  ["11", "November"],
-  ["12", "December"],
-].map(([value, label]) => ({ value, label }));
+const MONTHS: SelectOption[] = Array.from({ length: 12 }, (_, i) => {
+  const value = String(i + 1).padStart(2, "0");
+  return { value, label: value };
+});
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS: SelectOption[] = Array.from({ length: 100 }, (_, i) => {
@@ -132,64 +122,68 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next: str
     <form action={formAction} onSubmit={handleSubmit} className="grid gap-5">
       <input type="hidden" name="next" value={next} />
 
-      {/* First name, last name, email, phone — one row on registration. */}
+      {/* First name + last name, then email + phone on their own row. */}
       {isRegister && (
-        <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
-          <div>
-            <label htmlFor="first_name" className={labelBase}>
-              First name
-            </label>
-            <input
-              id="first_name"
-              name="first_name"
-              required
-              autoComplete="given-name"
-              placeholder="First name"
-              className={fieldBase}
-            />
+        <>
+          <div className="grid grid-cols-2 gap-5">
+            <div>
+              <label htmlFor="first_name" className={labelBase}>
+                First name
+              </label>
+              <input
+                id="first_name"
+                name="first_name"
+                required
+                autoComplete="given-name"
+                placeholder="First name"
+                className={fieldBase}
+              />
+            </div>
+            <div>
+              <label htmlFor="last_name" className={labelBase}>
+                Last name
+              </label>
+              <input
+                id="last_name"
+                name="last_name"
+                required
+                autoComplete="family-name"
+                placeholder="Last name"
+                className={fieldBase}
+              />
+            </div>
           </div>
-          <div>
-            <label htmlFor="last_name" className={labelBase}>
-              Last name
-            </label>
-            <input
-              id="last_name"
-              name="last_name"
-              required
-              autoComplete="family-name"
-              placeholder="Last name"
-              className={fieldBase}
-            />
+          <div className="grid grid-cols-2 gap-5">
+            <div>
+              <label htmlFor="email" className={labelBase}>
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                placeholder="you@email.com"
+                className={fieldBase}
+              />
+            </div>
+            <div>
+              <label htmlFor="phone" className={labelBase}>
+                Phone
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                required
+                autoComplete="tel"
+                placeholder="(555) 555-5555"
+                className={fieldBase}
+              />
+            </div>
           </div>
-          <div>
-            <label htmlFor="email" className={labelBase}>
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              autoComplete="email"
-              placeholder="you@email.com"
-              className={fieldBase}
-            />
-          </div>
-          <div>
-            <label htmlFor="phone" className={labelBase}>
-              Phone
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              required
-              autoComplete="tel"
-              placeholder="(555) 555-5555"
-              className={fieldBase}
-            />
-          </div>
-        </div>
+        </>
       )}
 
       {/* Date of birth — paired with home zip code on registration. */}
@@ -201,7 +195,7 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next: str
             <div className="grid grid-cols-2 gap-2.5">
               <SelectMenu
                 ariaLabel="Birth month"
-                placeholder="Month"
+                placeholder="MM"
                 options={MONTHS}
                 value={month}
                 onChange={(v) => {
@@ -212,7 +206,7 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next: str
               />
               <SelectMenu
                 ariaLabel="Birth year"
-                placeholder="Year"
+                placeholder="YYYY"
                 options={YEARS}
                 value={year}
                 onChange={(v) => {
