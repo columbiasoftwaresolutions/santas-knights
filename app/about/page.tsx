@@ -19,18 +19,18 @@ export default function AboutPage() {
   return (
     <>
       <PageHero
+        variant="feature"
         title={
           <>
-            What Santa&apos;s Knights is, and{" "}
-            <em className="font-serif font-medium italic text-red">why</em>.
+            What we do. <em>Why we do it.</em>
           </>
         }
         media={
           <Photo
             src="/images/gallery/6b7494_da7cab87beee4becb1fa08dd5b8bb6b9_mv2.webp"
             alt="Kids training with foam weapons in the gym at a Santa's Knights class"
-            sizes="(min-width: 1024px) 32vw, 100vw"
-            className="aspect-[5/4]"
+            sizes="(min-width: 1024px) 52vw, 100vw"
+            className="aspect-[2/1] sm:aspect-[16/10] lg:aspect-[3/2]"
           />
         }
         intro="We're a 501(c)(3) nonprofit in Harlem. We answer kids' letters to Santa every December, and teach martial arts and fitness for free all year."
