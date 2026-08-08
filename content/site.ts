@@ -42,7 +42,7 @@ export const links = {
   adoptLetter: "/letters",
   submitLetter: "/letters?do=submit",
   findClass: TRAINING_HREF,
-  about: "/about",
+  about: "/santas-knights",
   contact: "/contact",
   getInvolved: "/get-involved",
   sponsors: "/sponsors",
@@ -90,7 +90,7 @@ export const navLinks: NavItem[] = [
   {
     label: "About",
     children: [
-      { label: "About Us", href: "/about" },
+      { label: "About Us", href: "/santas-knights" },
       { label: "Sponsors", href: "/sponsors" },
     ],
   },
@@ -176,20 +176,6 @@ export const letters = {
     "Each December, children around the world write to Santa. We make sure those letters don't go unanswered. You read a wish, pick one, and send the gift, and a kid wakes up to something they asked for.",
   origin:
     "The idea isn't new. The Postal Service has been answering kids' letters to Santa since 1912, and Damion grew up taking part in it, picking a stranger's letter off the pile and mailing a gift. Santa's Letters is him running that same idea out of Harlem, and reaching a few more kids every year.",
-  steps: [
-    {
-      title: "A kid writes",
-      body: "Children around the neighborhood write to Santa with what they're hoping for that year.",
-    },
-    {
-      title: "We take the names off",
-      body: "Before a letter goes anywhere, we remove last names, addresses, and anything else that points to a real child.",
-    },
-    {
-      title: "Someone sends the gift",
-      body: "You read a wish, adopt it, and ship the present.",
-    },
-  ],
 } as const;
 
 /**
@@ -518,7 +504,7 @@ export const footerColumns: { heading: string; links: { label: string; href: str
   {
     heading: "Explore",
     links: [
-      { label: "About", href: "/about" },
+      { label: "About", href: "/santas-knights" },
       { label: "Santa's Letters", href: "/letters" },
       { label: "Training", href: TRAINING_HREF },
       { label: "Membership", href: "/membership" },

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { DonateBand } from "@/components/sections/DonateBand";
 import { membershipTiers, links, org } from "@/content/site";
+import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = {
   title: "Membership · Santa's Knights",
@@ -46,40 +48,40 @@ export default function MembershipPage() {
               </div>
             </div>
 
-            <ol className="border-t border-line">
-              {membershipTiers.map((tier, index) => (
-                <li
+            <div className="grid gap-4 sm:grid-cols-2">
+              {membershipTiers.map((tier) => (
+                <Card
                   key={tier.name}
-                  className="group grid gap-4 border-b border-line py-6 transition-colors duration-150 hover:bg-paper-raised md:grid-cols-[minmax(0,1fr)_110px_150px] md:items-center md:px-5"
+                  hover
+                  className={cn(
+                    "relative flex min-h-[250px] flex-col p-6",
+                    tier.featured && "border-red",
+                  )}
                 >
-                  <div className="flex gap-4">
-                    <span className="pt-0.5 font-serif text-[17px] italic text-gold">
-                      {String(index + 1).padStart(2, "0")}
+                  {tier.featured && (
+                    <span className="absolute top-0 right-4 -translate-y-1/2 bg-red px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] text-white">
+                      Recommended
                     </span>
-                    <div>
-                      <h2 className="text-[19px] font-extrabold tracking-[-0.02em]">
-                        {tier.name}
-                        {tier.featured && (
-                          <span className="ml-3 text-[12px] font-bold text-red">Recommended</span>
-                        )}
-                      </h2>
-                      <p className="mt-1 max-w-[46ch] text-[14.5px] leading-6 text-muted">
-                        {tier.description}
-                      </p>
-                    </div>
+                  )}
+                  <div className="flex items-start justify-between gap-4">
+                    <span className={cn("text-[12px] font-bold", tier.isFree ? "text-green" : "text-red")}>
+                      {tier.isFree ? "Free" : "Monthly"}
+                    </span>
+                    <strong className="text-[22px] tracking-[-0.03em]">{tier.priceLabel}</strong>
                   </div>
-                  <strong className="pl-9 text-[22px] tracking-[-0.03em] md:pl-0">{tier.priceLabel}</strong>
+                  <h2 className="mt-5 text-[20px] font-extrabold tracking-[-0.02em]">{tier.name}</h2>
+                  <p className="mt-2 flex-1 text-[14.5px] leading-6 text-muted">{tier.description}</p>
                   <Button
                     href={tier.href}
                     variant={tier.isFree ? "green" : "red"}
                     arrow={!tier.isFree}
-                    className="ml-9 w-fit justify-center px-5 py-3 text-[12.5px] md:ml-0 md:w-full"
+                    className="mt-6 w-full justify-center px-5 py-3 text-[12.5px]"
                   >
                     {tier.ctaLabel}
                   </Button>
-                </li>
+                </Card>
               ))}
-            </ol>
+            </div>
           </div>
 
           <p className="mt-7 border-t border-line pt-5 text-[13.5px] text-muted">

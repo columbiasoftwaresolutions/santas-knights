@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 export default function GalleryPage() {
   return (
     <>
-      <section className="bg-ink pt-[clamp(28px,6vw,64px)] pb-[clamp(20px,3vw,32px)] text-paper">
+      <section className="bg-paper pt-[clamp(28px,6vw,64px)] pb-[clamp(20px,3vw,32px)] text-ink">
         <Container>
-          <h1 className="font-display text-[clamp(56px,12vw,150px)] leading-[0.85] font-black tracking-[-0.04em] uppercase text-paper">
+          <h1 className="font-display text-[clamp(56px,12vw,150px)] leading-[0.85] font-black tracking-[-0.04em] uppercase text-ink">
             Gallery
           </h1>
         </Container>

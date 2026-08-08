@@ -152,7 +152,7 @@ export function MasonryGallery({ photos }: { photos: GalleryPhoto[] }) {
   );
 
   return (
-    <section className="relative bg-ink">
+    <section className="relative bg-paper">
       <div className="columns-2 gap-3 px-3 py-8 sm:columns-3 sm:gap-4 sm:px-4 sm:py-10 lg:columns-4 lg:gap-5 lg:px-[max(16px,4vw)]">
         {ordered.map((photo, index) => (
           <Tile key={photo.file} photo={photo} index={index} onOpen={() => setOpenIndex(index)} />
