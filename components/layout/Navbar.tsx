@@ -44,13 +44,6 @@ export function Navbar({ auth }: { auth: NavAuth }) {
         </nav>
 
         <div className="ml-auto flex items-center gap-3">
-          {/* Donate hidden on mobile (wrapper avoids the hidden/inline-flex conflict). */}
-          <div className="hidden items-center gap-3 sm:flex">
-            <Button href={links.donate} variant="bone">
-              Donate
-            </Button>
-          </div>
-
           {/* Primary auth button: Log In (signed out) / Dashboard (signed in). */}
           <Button
             href={auth.signedIn ? auth.dashboardHref : links.accountLogin}
@@ -93,14 +86,11 @@ export function Navbar({ auth }: { auth: NavAuth }) {
         <div className="border-t border-bone/12 bg-ink pb-6 xl:hidden">
           <Container>
             <MobileNav items={navLinks} onClose={() => setMobileOpen(false)} />
-            {/* The auth button is always in the header; the menu keeps the CTAs. */}
+            {/* The auth button is always in the header; the menu keeps the primary CTA. */}
             {/* Closing handled on the container so the Link buttons still navigate. */}
             <div className="mt-4 grid gap-2 px-2" onClick={() => setMobileOpen(false)}>
               <Button href={links.adoptLetter} variant="red">
                 Adopt a letter
-              </Button>
-              <Button href={links.donate} variant="bone">
-                Donate
               </Button>
             </div>
           </Container>

@@ -102,6 +102,7 @@ export const navLinks: NavItem[] = [
   },
   { label: "Letters to Santa", href: "/letters" },
   { label: "Membership", href: "/membership" },
+  { label: "Donate", href: "/donate" },
   { label: "Gallery", href: "/gallery" },
   {
     label: "Contact",
