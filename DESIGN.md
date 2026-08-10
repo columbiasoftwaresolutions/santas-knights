@@ -1,227 +1,505 @@
 ---
 # DESIGN.md — machine-readable design tokens
-# Format: Google Stitch DESIGN.md (alpha). Source: design-demos/home.html.
+# Source of truth for the look: design-demos/redesign.html (Donate · Membership · Letters)
+#                               design-demos/redesign2.html (About · Contact · Gallery)
+# Implementation: app/redesign.css + components/redesign/
 meta:
   name: Santa's Knights
-  product: Santa's Knights nonprofit hub (with embedded Gladiators NYC combat brand)
-  version: 0.2.0
-  status: alpha
+  product: Santa's Knights nonprofit hub (Letters to Santa + Gladiators NYC content)
+  version: 0.3.0
+  status: current
+  supersedes: "0.2.0 — the “Poster” system (Archivo uppercase, Cormorant italics, dark/flood bands)"
 
 colors:
-  # Poster system — warm near-black grounds with paper contrast sections
-  paper:        "#F7F0E3"   # app background / primary surface
-  paperRaised:  "#FBF6EC"   # alternate surface, strips
-  card:         "#FFFFFF"   # card surface
-  ink:          "#16120F"   # primary dark ground
-  ink2:         "#1A1512"   # raised dark panel
-  muted:        "#6C6256"   # secondary text
-  red:          "#C2331F"   # primary accent / CTA
-  redDeep:      "#9E2536"   # flood-color feature ground
-  green:        "#2E5E45"   # secondary — giving / community
-  greenSoft:    "#E7EFE8"   # green tint surface
-  amber:        "#C98A3A"   # serif accents / secondary accent
-  gold:         "#C2912F"   # legacy accent
-  goldSoft:     "#F0E2C2"   # accent tint surface
-  line:         "#E4D8C4"   # borders / dividers
-  focus:        "#9E2536"   # focus ring (= red)
-  # Gladiators NYC — steel combat sub-brand
-  steel:        "#16171A"   # dark combat surface
-  gladRed:      "#C2331F"   # combat accent / CTA
-  gladAmber:    "#C98A3A"   # combat eyebrow accent
-  bone:         "#E8E2D4"   # text on steel
+  # One ground for the whole site. Ink appears only in the nav and the footer.
+  paper:       "#F7F0E3"   # the ground — every page, every section
+  paperRaised: "#FBF6EC"   # row hover only (list rows, gallery tile backing)
+  card:        "#FFFFFF"   # the few real cards: give card, tier, letter, swipe front
+  ink:         "#16120F"   # text, nav, footer, ink buttons
+  ink2:        "#1A1512"   # ink button hover
+  bone:        "#E8E2D4"   # text on ink (nav + footer)
+  muted:       "#6C6256"   # secondary text
+  red:         "#C2331F"   # primary action, the brush underline, the hand arrow
+  redDeep:     "#9E2536"   # red hover
+  green:       "#2E5E45"   # giving / submit / community
+  greenDeep:   "#244C38"   # green hover
+  gold:        "#C2912F"   # small labels only (timeline dates, the 501(c)(3) rule)
+  goldDeep:    "#B0841F"   # gold hover (contact panel)
+  goldInk:     "#6C5418"   # text on gold
+  line:        "#E4D8C4"   # hairline between items in a list
+  lineStrong:  "#CBBDA4"   # input rules, card borders, text-link underlines
+  focus:       "#C2331F"   # focus ring (= red); paper on dark grounds
+  legacy:      # still in @theme, NOT part of this system — old poster pages only
+    amber:     "#C98A3A"
+    greenSoft: "#E7EFE8"
+    goldSoft:  "#F0E2C2"
+    steel:     "#16171A"   # .theme-steel auth scene (/login, /signup) — open decision
 
 typography:
   families:
-    sans:    '"Hanken Grotesk", system-ui, sans-serif' # UI + body
-    display: '"Archivo", system-ui, sans-serif'         # uppercase poster display
-    serif:   '"Cormorant", Georgia, serif'               # italic emphasis
+    sans:    '"Hanken Grotesk", system-ui, sans-serif'   # body + UI
+    display: '"Archivo", system-ui, sans-serif'          # h1–h4, prices, list titles
+    # NO serif. Cormorant is banned from this system.
   base:
-    size: "18px"
+    size: "17px"
     lineHeight: 1.55
-  weights: [400, 500, 600, 700, 800, 900]
+  weights: [400, 500, 600, 700, 800]
+  case: "Sentence case. UPPERCASE only for tiny labels (≤13px, letter-spacing .04–.16em)."
   scale:
-    display:  { size: "clamp(44px,5.8vw,76px)", weight: 900, lineHeight: 1.05, letterSpacing: "-0.035em" }
-    h2:       { size: "clamp(30px,3.6vw,46px)", weight: 800, lineHeight: 1.05, letterSpacing: "-0.02em" }
-    h3:       { size: "25px",  weight: 800, lineHeight: 1.05, letterSpacing: "-0.02em" }
-    lede:     { size: "20px",  weight: 400, lineHeight: 1.55 }
-    body:     { size: "18px",  weight: 400, lineHeight: 1.55 }
-    small:    { size: "15px",  weight: 600 }
-    quote:    { family: serif, size: "clamp(26px,3.4vw,40px)", weight: 500, lineHeight: 1.3 }
+    h1:        { size: "clamp(40px,5.4vw,68px)", weight: 800, lineHeight: 1.14, letterSpacing: "-0.035em" }
+    h1OnPhoto: { size: "clamp(42px,5.8vw,76px)", weight: 800, lineHeight: 1.12, letterSpacing: "-0.035em" }
+    mission:   { size: "clamp(30px,4.4vw,58px)", weight: 800, lineHeight: 1.06, letterSpacing: "-0.035em" }
+    statement: { size: "clamp(30px,3.8vw,50px)", weight: 800, letterSpacing: "-0.032em" }  # .say / .free-say
+    h2:        { size: "clamp(30px,3.6vw,46px)", weight: 800, letterSpacing: "-0.03em" }   # h2.big
+    closer:    { size: "clamp(25px,2.8vw,36px)", weight: 800, letterSpacing: "-0.03em" }
+    sub:       { size: "clamp(17px,1.5vw,20px)", weight: 400, lineHeight: 1.5, color: muted, measure: "44ch" }
+    lede:      { size: "clamp(16px,1.4vw,18.5px)", weight: 400, lineHeight: 1.55, color: muted, measure: "46ch" }
+    body:      { size: "17px", weight: 400, lineHeight: 1.55 }
+    small:     { size: "15px", weight: 400, color: muted }
+    fine:      { size: "12.5–13.5px", weight: 400, color: muted }
+    label:     { size: "12px", weight: 700, letterSpacing: "0.1em", transform: uppercase, color: muted }
 
 spacing:
-  unit: 2
-  scale: [8, 12, 14, 18, 22, 26, 32, 38, 46, 54, 64, 74]   # px
   layout:
-    maxWidth: "1440px"
-    gutter: "clamp(24px,4vw,56px)"
-    sectionY: "74px"
+    maxWidth: "1240px"                    # .rd-wrap / <Wrap>
+    gutter:   "clamp(24px,4vw,56px)"
+    edge:     "calc((100vw - min(100vw, 1240px))/2 + gutter)"   # content edge → viewport edge
+  section:
+    default: "clamp(58px,7vw,104px) 0"
+    tight:   "clamp(40px,5vw,68px) 0"
+    pageHead: "clamp(48px,6vw,86px) 0 0"
+    closer:  "clamp(30px,3.6vw,50px) 0 clamp(64px,7vw,96px)"
+    bandGap: "clamp(46px,6vw,90px)"       # air before a full-bleed band
+  photoBand:
+    padding:  "clamp(92px,11vw,168px) 0 clamp(88px,10vw,156px)"
+    hero:     "clamp(72px,8.5vw,124px) 0 clamp(84px,9.5vw,140px)"
+    noHeading: "clamp(70px,8vw,116px) 0"  # timeline band
+  anchorOffset: "126px"                   # scroll-margin-top under the sticky nav
 
 roundedCorners:
-  panel: "0px"
-  control: "0px"
-  pill: "999px" # reserved for compact status chips only
+  everything: "0px"    # buttons, inputs, cards, photos, panels — no exceptions
+  pill: "999px"        # reserved; unused in this system
 
 elevation:
-  cta:    "0 10px 24px -10px rgba(178,58,46,.60)"
-  badge:  "0 24px 46px -20px rgba(34,29,23,.40)"
-  card:   "0 26px 50px -28px rgba(34,29,23,.45)"   # on hover
+  # Depth is a soft warm bloom under white paper objects. Never a hard drop shadow,
+  # never a border-and-shadow "AI card".
+  tint:   "rgba(34,29,23,.45)"
+  card:   "0 26px 50px -34px tint"    # give card, form card, swipe face
+  raised: "0 18px 36px -32px tint"    # tier, letter card (at rest)
+  hover:  "0 28px 46px -30px tint"
+
+motion:
+  ease: "cubic-bezier(.22,1,.36,1)"
+  reveal:   { transform: "translateY(14px)", duration: "420ms", stagger: "≤250ms per group" }
+  mark:     { property: "clip-path inset(0 100% 0 0) → inset(0 -2% 0 0)", duration: "620ms", delay: "120ms" }
+  arrow:    { property: "stroke-dashoffset 260 → 0", duration: "850ms", delay: "250ms" }
+  timeline: { line: "scaleX 900ms", nodes: "scale 400ms, 170ms apart" }
+  parallax: { image: "scale(1.10)", travel: "±26px translate3d on scroll" }
+  hover:    { button: "translateY(-1px)", card: "translateY(-3…-5px)", listRow: "translateX(9–10px)" }
 
 components:
   button:
-    radius: control
-    padding: "15px 26px"
-    fontSize: "16px"
+    padding: "14px 26px"
+    fontSize: "14px"
     fontWeight: 700
-    hover: "translateY(-2px)"
+    letterSpacing: "0.02em"
+    border: "1.5px solid transparent"
+    radius: 0
     variants:
-      red:   { bg: red,   fg: "#FFFFFF", shadow: cta, hover: redDeep }
-      ink:   { bg: ink,   fg: paper,     hover: "#000000" }
+      red:   { bg: red,   fg: "#FFFFFF", hover: redDeep }        # primary
+      ink:   { bg: ink,   fg: paper,     hover: ink2 }           # closers
+      green: { bg: green, fg: "#FFFFFF", hover: greenDeep }      # submit / giving
       ghost: { bg: transparent, fg: ink, border: ink, hover: "fill ink" }
-      green: { bg: green, fg: "#FFFFFF" }
-      cream: { bg: paper, fg: ink }
-      onRed: { bg: "#FFFFFF", fg: redDeep, hover: goldSoft }   # on red bands
-      steel: { bg: gladRed, fg: "#FFFFFF" }                    # Gladiators
-      bone:  { bg: transparent, fg: bone, border: "rgba(232,226,212,.4)" }  # Gladiators
+      onImg: { bg: transparent, fg: paper, border: "rgba(247,240,227,.5)", hover: "fill paper" }
+      wide:  { width: "100%", padding: "16px 24px", fontSize: "14.5px" }
+  textLink:   # .tlink — the secondary action everywhere
+    fontSize: "14.5px"
+    fontWeight: 700
+    border: "1.5px solid lineStrong (bottom)"
+    hover: "color+border → red (or greenDeep for .tlink--green)"
+  input:
+    default:  { border: "0 0 1.5px 0 solid lineStrong", bg: transparent, fontSize: "17px", padding: "9px 0", focus: "border-bottom red" }
+    carded:   { border: "1.5px solid lineStrong", bg: card, fontSize: "15.5px", padding: "12px 14px", focus: "border red" }
   card:
     bg: card
-    border: "1px solid line"
-    radius: panel
-    hover: "translateY(-4px) + elevation.card"
-  input:
-    radius: control
-    border: "1.5px solid gold"
-    padding: "13px 18px"
-    focus: "2px solid red"
-  placeholder:   # image stand-in used throughout the mock
-    light: "repeating-linear-gradient(135deg,#EBE0CB 0 14px,#E3D6BD 14px 28px)"
-    dark:  "repeating-linear-gradient(135deg,#212327 0 14px,#282b30 14px 28px)"
+    border: "1px solid line (tier) | none (letter)"
+    shadow: raised
+    hover: "translateY(-3…-5px) + shadow.hover"
 ---
 
 # Santa's Knights — Design System
 
-> ## ⚠️ This document describes the OLD "Poster" system, which is being replaced.
->
-> A site-wide redesign is landing page by page. `/donate`, `/membership`, and `/letters`
-> already use the **new** system and deliberately break several rules below — notably the
-> Cormorant italic accents, the uppercase display type, the numbered `01`/`02` labels, the
-> alternating dark/flood grounds, and the divider bars.
->
-> **Before doing UI work, read [design-demos/REDESIGN-SYSTEM.md](./design-demos/REDESIGN-SYSTEM.md).**
-> It lists which pages are on which system and how the transition ends. This file stays
-> accurate for the pages not yet ported, and gets rewritten at the global flip.
->
-> Two colors used by the new layer are not yet in the palette table below and will move
-> into `@theme` at the flip: `greenDeep` `#244C38` (green button hover, already used by
-> `Button.tsx`) and `goldInk` `#6C5418` (text on gold notice chips). A third, `lineStrong`
-> `#CBBDA4`, is the new layer's stronger border.
+The look is a **paper ground with things written and drawn on it**: one cream page, ink
+only in the nav and footer, hairlines instead of boxes, air instead of divider bars, and
+two hand-drawn marks — a red brush underline and a torn paper edge — doing the work that
+italics, tinted panels, and poster bands used to do.
 
-## Overview
+**Source of truth:** open [`design-demos/redesign.html`](./design-demos/redesign.html)
+(Donate · Membership · Letters) and [`design-demos/redesign2.html`](./design-demos/redesign2.html)
+(About · Contact · Gallery) in a browser. Where this doc and a demo disagree, the demo wins.
 
-Santa's Knights is a 501(c)(3) nonprofit bringing **free** martial arts, fitness, and community to Harlem. The design system carries **two tones in one product**:
+**Implementation:** [`app/redesign.css`](./app/redesign.css) (scoped under `.rd`) +
+[`components/redesign/`](./components/redesign/). A page opts in by wrapping in
+`<RedesignShell>`. Which routes are ported, and the checklist for dropping the scope, live in
+[`design-demos/REDESIGN-SYSTEM.md`](./design-demos/REDESIGN-SYSTEM.md) — read it before UI work.
 
-- **Santa's Knights (default / wrapper)** — warm, hopeful, trustworthy. A cream "paper" canvas, deep brand red, community green, and gold accents. Editorial serif (Cormorant) used in italic for emotional emphasis. This is the charitable, welcoming voice that fronts the org, donations, and Letters to Santa.
-- **Gladiators NYC (sub-brand section)** — gritty, intense, medieval-meets-modern. Near-black steel surfaces, a hotter orange-red, bone-colored text. Used only for the combat program's section as a deliberate *tonal bridge* into "the steel world."
+---
 
-The approved “Poster” system uses near-black grounds as the main identity, interrupted by warm paper, red, and amber flood sections. Geometry is square and editorial; rounded cards are not part of the system.
+## The six rules
 
-## Colors
+1. **One ground: paper.** `#F7F0E3` under every page. Ink appears only in the nav and the
+   footer. No alternating light/dark sections, no red flood bands.
+2. **No serif italics.** Emphasis is the same sans face plus a **hand-drawn red brush
+   underline** that draws in on scroll (`<Mark>`). Never `<em>`, never `italic`, never
+   Cormorant.
+3. **Sentence case.** Display type is Archivo 800, sentence case, tight tracking.
+   UPPERCASE is only for tiny labels: form labels, the tab switch, footer headings,
+   timeline dates.
+4. **No numbered `01`/`02` labels. No 4-up grids of bordered boxes. No tinted callout
+   panels with an accent rail. No poster CTA bands.** Lists flow with hairlines between
+   items; guidance is labelled text, not a colored box.
+5. **No horizontal divider bars** — not even a hairline between sections. Sections are
+   separated by air, or by a full-bleed band the paper appears to **tear open** into.
+   Hairlines survive only *between items in a list*.
+6. **Copy is the shortest true version.** Nothing is said twice on one screen.
 
-Warm wrapper palette (Santa's Knights):
+### Banned outright
 
-| Role | Token | Hex |
-| --- | --- | --- |
-| Background | `paper` | `#F7F0E3` |
-| Alt surface | `paperRaised` | `#FBF6EC` |
-| Card | `card` | `#FFFFFF` |
-| Primary text / dark UI | `ink` | `#221D17` |
-| Secondary text | `muted` | `#6C6256` |
-| Primary brand / CTA | `red` | `#9E2536` |
-| Primary hover | `redDeep` | `#741726` |
-| Secondary (giving) | `green` | `#2E5E45` |
-| Green tint | `greenSoft` | `#E7EFE8` |
-| Accent | `gold` | `#C2912F` |
-| Accent tint | `goldSoft` | `#F0E2C2` |
-| Border / divider | `line` | `#E4D8C4` |
+| Banned | What replaces it |
+| --- | --- |
+| Serif-italic emphasis word in a heading | `<Mark>` — the brush underline |
+| `01` / `02` / `03` section labels | Nothing. The heading is the label. |
+| 4-up grids of bordered feature boxes | A hairline list (`.facts`, `.pairs`, `.ways`) |
+| Tinted callout panels (green "free!" block) | A statement set big on the paper (`.say`) |
+| Full-bleed poster CTA bands ("ADOPT A LETTER & *give.*") | `.closer` — one line, one button, air above it |
+| Divider bars between sections | Air, or a torn-edge `<PhotoBand>` |
+| Stacked hairlines over a photo | One rule-free row of columns (`.facts--onimg`) |
+| Long explainer prose with italic emphasis | An accordion (`<details>`) beside a short lede |
+| Eyebrows / kickers above headings | Nothing |
 
-Steel sub-brand palette (Gladiators NYC):
+Three deliberate exceptions, each with a reason:
 
-| Role | Token | Hex |
-| --- | --- | --- |
-| Dark surface | `steel` | `#16171A` |
-| Combat accent / CTA | `gladRed` | `#C2331F` |
-| Combat eyebrow | `gladAmber` | `#C98A3A` |
-| Text on steel | `bone` | `#E8E2D4` |
+- **The membership tier grid** stays a 3-across card grid. Comparable prices genuinely
+  scan better side by side.
+- **The three colour panels on Contact** (green / red / gold) stay — but they are
+  full-bleed and entered through the same torn edge as a photo band, so they read as the
+  paper tearing open into colour, not as a poster band bolted on.
+- **The letters submit form** keeps its white card (`.formcard`). It is the object of the
+  page, not a section of it. Every other form is written straight on the paper.
 
-**Roles & usage.** `red` is the primary CTA and flood color; `amber` supports italic accents and small metadata; `green` is reserved for giving/community state. Color alone never carries meaning.
+---
+
+## Colour
+
+One ground, one primary, two supports, and gold reduced to a label colour.
+
+| Role | Token | Hex | Where it is allowed |
+| --- | --- | --- | --- |
+| Ground | `paper` | `#F7F0E3` | Every page. Also the fill of every torn edge. |
+| Row hover | `paper-raised` | `#FBF6EC` | List-row hover, gallery tile backing. Never a section band. |
+| Card | `card` | `#FFFFFF` | Give card, tier, letter, swipe front, form card. |
+| Text / dark chrome | `ink` | `#16120F` | Body text, nav, footer, ink buttons, swipe back. |
+| Text on ink | `bone` | `#E8E2D4` | Nav + footer only. |
+| Secondary text | `muted` | `#6C6256` | Ledes, hints, fine print. |
+| Primary action | `red` | `#C2331F` | Buttons, the brush stroke, the hand arrow, focus, the live timeline node. |
+| Giving / submit | `green` | `#2E5E45` | Submit buttons, the free-membership link, the first contact panel. |
+| Label accent | `gold` | `#C2912F` | Timeline dates, the 501(c)(3) rule, the swipe-card kicker, the third contact panel. |
+| Hairline | `line` | `#E4D8C4` | Between items in a list. Never between sections. |
+| Rule / border | `line-strong` | `#CBBDA4` | Input underlines, card borders, text-link underlines. |
+
+On a photo, text is `paper` and secondary text is `rgba(247,240,227,.78–.86)`.
+
+Colour never carries meaning alone — the label says it. Gold is never an action colour;
+red and green are the only fills a button gets, plus ink for closers.
+
+**Token drift to fix at the global flip:** `line-strong`, `green-deep`, `gold-deep`,
+`gold-ink`, `shadow-tint`, and `ease` currently live as `--rd-*` locals in `app/redesign.css`.
+They move into `@theme` in `globals.css` when the `.rd` scope is dropped. `amber`,
+`green-soft`, `gold-soft`, and the `steel` palette belong to the old poster system and are
+kept only for pages not yet ported (and the `.theme-steel` auth scene, an open decision).
+
+---
 
 ## Typography
 
-- **Archivo** is the display face: 800–900, uppercase, very tight tracking, and compressed line-height.
-- **Hanken Grotesk** is the workhorse for body copy, navigation, and UI controls.
-- **Cormorant**, usually italic at 400–500, provides one emotional emphasis beat inside large headings and quotes.
-- **No eyebrows or kickers.** Hierarchy comes from scale, spacing, rules, and color.
-- Base body is **18px / 1.55** for comfortable reading; ledes step up to 20px in `muted`.
+**Archivo 800** for everything structural — h1–h4, prices, list-row titles, the brand mark,
+accordion summaries. Sentence case, `letter-spacing:-.028em` (tighter as sizes grow),
+`line-height:1.08`, `text-wrap:balance`.
 
-## Layout
+**Hanken Grotesk 400–700** for body, ledes, buttons, labels, form fields. Base is
+**17px / 1.55**.
 
-- Centered content column, **max-width `1440px`**, responsive horizontal gutter **`24–56px`**.
-- Vertical rhythm: full sections ~**`74px`** top/bottom; tighter clusters use the spacing scale (`8 → 74`).
-- Primary structure is **two-column grids** (`~1fr 1fr`, hero `1.04fr .96fr`) that **collapse to a single column** at the breakpoints below.
-- Breakpoints (max-width): `980px` (nav links hide), `880px` (hero stacks), `820px`/`780px`/`720px` (grids → 1–2 col).
-- Mobile-first intent: everything must read and tap cleanly on a phone (audience is social-media-driven).
+**No third face.** Cormorant is gone; where the old system reached for an italic, this one
+reaches for `<Mark>`.
 
-## Elevation & Depth
+Measures are short and deliberate: `sub` 44ch, `lede` 46ch, list copy 34–52ch, accordion
+bodies 70ch, timeline entries 21ch. Headlines are capped by `max-width` in `ch` (14–26ch)
+so they break where the sentence breaks.
 
-- Depth is **soft and warm**, not hard drop-shadows. Shadows are large, offset down, low-opacity, and tinted toward ink/red — e.g. CTA glow `0 10px 24px -10px rgba(178,58,46,.6)`, card hover `0 26px 50px -28px rgba(34,29,23,.45)`.
-- **Hover = lift**: buttons rise `2px`, cards rise `4px` and gain the card shadow.
-- The **sticky nav** is a translucent paper bar (`rgba(247,240,227,.88)`) with `backdrop-filter: blur(10px)` and a bottom hairline.
-- **Tonal depth via dark bands**: the `steel` Gladiators teaser and `ink` footer create contrast valleys; the `red` donate band is a high-saturation peak. These full-bleed colored bands are the main device for sectioning, often with an oversized translucent glyph (`♔`, `✶`) bleeding off-edge.
+Uppercase is allowed at four places only, always ≤13px and always tracked out:
+form labels (`.1em`), the Adopt/Submit tab switch (`.07em`), footer column headings
+(`.12em`), timeline dates and the swipe-card kicker (`.14–.16em`).
 
-## Shapes
+---
 
-- **Buttons, inputs, cards, media, and panels are square.**
-- Pills are reserved for compact statuses or taxonomy chips where the shape carries meaning.
-- Image placeholders are diagonal hatch fills (light on warm surfaces, dark on steel) labeled with the intended photo direction.
+## Layout and flow
+
+- Page column **1240px** (`.rd-wrap` / `<Wrap>`), gutter `clamp(24px,4vw,56px)`.
+- Full bleed is `width:100vw; margin-left:calc(50% - 50vw)`. To bleed one side only, use
+  the `--edge` token — **percentage margins on a grid child resolve against the track, not
+  the viewport**, so `margin-right:calc(50% - 50vw)` silently does nothing there.
+- Section rhythm: `clamp(58px,7vw,104px)` default, `clamp(40px,5vw,68px)` tight. The page
+  head pads top only. Before a full-bleed band, `clamp(46px,6vw,90px)` of air.
+- Structure is two-column splits — `1fr 1fr`, `.9fr 1.1fr` (`--wide`), `.62fr .38fr`
+  (`--rail`) — collapsing to one column at 900–960px. A left column that is only a heading
+  can be `.sticky` (`top:126px`).
+- Anchor targets need `scroll-margin-top:126px` to clear the sticky nav.
+
+**Breakpoints:** 960 (nav links hide, rail collapses) · 900 (splits, page-head grid,
+letters hero) · 860 (photo-band fact row, timeline goes vertical) · 820 (footer columns,
+ways list, statement rows, contact panels, steps) · 780 (pair lists) · 760 (stats) ·
+640/560 (tiers, roles, field rows, gallery columns).
+
+Everything must read and tap cleanly on a phone — the audience arrives from social.
+
+---
+
+## The four signature devices
+
+### 1. `<Mark>` — the brush underline
+
+The emphasis device. A phrase in the same face and weight with an irregular red stroke
+painted under it, left to right, as it scrolls in. Modelled on a kid ruling a line in with
+a marker.
+
+- Two stroke paths (`#sk-brush`, `#sk-brush2`); `alt` swaps to the second — alternate them
+  when two marks sit near each other so the "hand" doesn't look like a stamp. `thin` for
+  marks inside body copy.
+- `fill:currentColor` must live **on the `<svg>`** — a `.mark svg path` rule cannot reach
+  `<use>` shadow content, which is why the stroke first drew black.
+- Draws in via `clip-path: inset(0 100% 0 0)` → `inset(0 -2% 0 0)`, 620ms.
+- One mark per heading. Mark the phrase that carries the claim — `free`, `$0`,
+  `actually`, `off the pile`, `don't bend` — never a whole clause.
+- On a photo, `.mark--paper` keeps the stroke legible against the veil.
+
+### 2. `<PhotoBand>` — the torn paper edge
+
+The only way one section becomes another when a photo is involved: the paper rips open and
+the image is behind it.
+
+- Full-bleed photo, `scale(1.10)`, gentle ±26px parallax; a two-axis veil (a horizontal
+  wash *and* a vertical one — a vertical-only veil can't hold text over a bright photo).
+- The tear is a `<use>` of `#sk-tear-top` / `#sk-tear-bot` filled with the paper colour, so
+  **`tearFill` must match whatever sits above and below**. It is only correct against paper.
+- `hero` drops the top tear (nothing above it to tear) and takes the larger h1.
+- `TornEdge` is exported separately for the two bands that tear the paper open without a
+  photo: the About timeline and the Contact colour panels.
+
+### 3. `<HandArrow>` — the arrow at the CTA
+
+A scribbled red arrow that parks in the gutter to the left of a closing button and draws
+itself in. It lives inside `.cta-wrap` (which is `position:relative`), and is decorative —
+the button carries the meaning. The same squiggle, smaller, separates the three steps on
+the Letters hero.
+
+### 4. Hairline lists
+
+Structure without boxes. Items are separated by a 1px `line` rule, the row is the link, and
+the hover moves the text rather than filling a card:
+
+- `.ways` — big Archivo title / description / a red "Email us →" that fades in on hover;
+  the whole row slides 10px right.
+- `.classlist` — name left, audience right, title slides 9px.
+- `.facts` / `.pairs` / `.protect` — heading + one sentence, rules top and bottom.
+- `.roles` — checkboxes as hairline rows, two columns.
+
+Over a photo, drop the rules entirely (`.facts--onimg`): three stacked hairlines read as
+three panels, which is the thing we removed everywhere else.
+
+---
+
+## Motion
+
+One `IntersectionObserver` for the whole site (`components/ui/Reveal.tsx`), driven by
+`data-reveal`. `<R>` is the wrapper that adds it plus a stagger delay.
+
+| Thing | Movement |
+| --- | --- |
+| Reveal | 14px rise + fade, 420ms, `cubic-bezier(.22,1,.36,1)`; stagger a group ≤250ms total |
+| Brush underline | clip-path wipe, 620ms, 120ms in |
+| Hand arrow | dash draw, 850ms, 250ms in |
+| Timeline | rule scales out 900ms; nodes pop 170ms apart; the "today" node is red with a glow |
+| Photo band | image scale 1.10, ±26px parallax on scroll (rAF-throttled) |
+| Buttons | `translateY(-1px)`; the `→` slides 3px |
+| Cards | tier −3px, letter −5px and un-rotates; shadow deepens |
+| Contact panels | body expands `grid-template-rows: 0fr → 1fr` (not `max-height` — 0fr→1fr interpolates to the real content height, so panels with different copy lengths finish on the same beat) |
+| Tab switch | the red/green accent slides across 340ms; the panel fades out, swaps, fades in (190ms) |
+
+**The no-JS contract:** every animated state must be the *finished* state by default.
+Reveals only hide behind `html.reveal-on`, which a pre-paint script adds only when JS runs
+and motion is allowed. **Never write a style that only looks right after `.is-visible`
+lands.** `prefers-reduced-motion` freezes reveals, the brush, the arrow, the timeline, the
+parallax, and the tile hovers.
+
+> **Known drift:** the demos reveal at 420ms/14px; the app's global rule in `globals.css`
+> is still 700ms/18px, so ported pages currently move slower than the spec. Fix by scoping
+> a `.rd [data-reveal]` override, or by changing the global values at the flip.
+
+---
 
 ## Components
 
-- **Utility bar** — slim `ink` bar; left "501(c)(3) · 100% free" status badge (green dot), right donation quick-links (Donate · PayPal · Venmo).
-- **Nav** — sticky translucent paper bar: crest + wordmark, center links, right-aligned "Gladiators NYC" (ghost, → the on-site Gladiators program section) + "Donate" (red). Gladiators link hover underlines in `steel`, others in `red`.
-- **Hero** — two-column: heading with serif-italic emphasis word + lede + CTA pair + reassurance note; media side has a 4:5 photo with an overlapping white stat badge.
-- **Impact strip** — 4 stats on `paperRaised`; big number with a small serif-italic red unit suffix.
-- **Mission quote** — large serif pull-quote with red italic emphasis and a gold-rule byline.
-- **Pillar cards** — two linked cards (`train` red-tagged / `give` green-tagged): media + tag chip + title + copy + colored "go" arrow link.
-- **Gladiators teaser** — full-bleed `steel` band (tonal bridge), uppercase heavy heading, amber eyebrow, meta stat row, `steel`/`bone` buttons, radial red glow overlay.
-- **Letters to Santa** — `green` gradient card with cream/clear buttons and a faint corner `✶`.
-- **Event + Newsletter** — white event card with an ink date-chip; gold-soft newsletter card with pill email input + red submit.
-- **Press row** — centered "As featured in" with grayscale logo placeholders.
-- **Donate band** — full-bleed `red` with oversized `♔` watermark; white + ink buttons.
-- **Footer** — `ink`, 4-column (brand/mission + 501(c)(3) note, Explore, Visit, Follow), bottom bar with copyright + circular socials.
+### Chrome
 
-## Do's and Don'ts
+- **Nav** — sticky, `ink` ground, 68px: Archivo wordmark, links in `rgba(bone,.72)` with a
+  red 2px underline on hover/current, then "Log in" and a red **Donate** button. Links hide
+  under 960px.
+- **Footer** — `ink`, four columns (`1.5fr 1fr 1fr 1.3fr` → 2-up at 820px): brand +
+  mission + the 501(c)(3) line, Explore, Get involved, Visit. Uppercase column headings.
+  Bottom bar carries the copyright and the tax-deductible line.
 
-**Do**
-- Keep the warm `paper` canvas as the default; reserve `steel` strictly for Gladiators content.
-- Use `red` for primary actions, `green` for giving/community, `gold` for accent only.
-- Use Archivo uppercase display headings and Cormorant italic sparingly for one emphasis beat per block.
-- Maintain square controls/panels and the 1440px / 24–56px layout frame across new pages.
-- Reinforce "100% free · 501(c)(3) · tax-deductible" wherever donations or classes appear.
+### Page head (`.phead`)
 
-**Don't**
-- Don't mix the steel palette into warm sections (or vice-versa) — the hand-off should be a clean, intentional band.
-- Don't set body copy or UI controls in Cormorant; don't use gold as a primary action color.
-- Don't introduce hard, high-contrast drop shadows — keep elevation soft and warm.
-- Don't rely on color alone to signal meaning; keep labels/icons.
-- Don't add on-site payment/e-commerce UI — Donate/Shop/Tickets/Gifts are external redirects (see REQUIREMENTS.md).
+H1 with one `<Mark>`, a 44ch sub, and — depending on the page — a photo, a give card, or a
+pair of text links, in a `1.12fr .88fr` grid aligned to the baseline. No eyebrow.
 
-## Agent Prompt Guide
+### Statement blocks
 
-When generating new screens or components for this product:
+- `.say` / `.free-say` — a big claim (`clamp(30px,3.8vw,50px)`) with the action as a
+  `.tlink` on the right. This is what replaced every tinted callout.
+- `.mission` — the mission sentence at `clamp(30px,4.4vw,58px)`, capped at 20–26ch,
+  followed by `.legal`: a 34px gold rule and the registered-nonprofit line.
+- `.stats` — four figures in Archivo over one hairline. Air between columns, never a band.
+- `.tl` — the timeline on a photo band: date above the line, one fact below, the rule
+  fading out past the last node (the org is still running; a hard stop reads like it ended).
 
-- Default to the **Santa's Knights warm theme** (`paper` background, `ink` text, `red` primary). Only switch to the **Gladiators steel theme** (`steel` background, `bone` text, `gladRed` primary) for combat-program screens, and mark the transition with a full-bleed band.
-- Pull all colors, type, spacing, radii, and shadows from the YAML tokens above — do not invent values.
-- Headings: Archivo 800–900 uppercase, tight tracking; one optional Cormorant-italic emphasis word in red or amber.
-- Never add eyebrows/kickers. Primary CTAs are square red controls.
-- Layout: 1440px max width, 24–56px gutters, two-column grids that collapse to one column on mobile.
-- Always surface the nonprofit framing (free / 501(c)(3) / tax-deductible) near classes or donations.
-- Source of truth for behavior/scope: `README.md` and `docs/REQUIREMENTS.md`. Reference mock: `santas-knights-home.html`.
+### Cards (the only four)
+
+- **Give card** — frequency segment, four amounts + "Another amount", a live impact line,
+  one wide red button, and one line of alternatives. In the app it is `<GiveCard>` and
+  keeps a second step (name + email) that writes the donation lead before handing off to
+  the processor. **Don't "simplify" step two away.**
+- **Tier** — price in Archivo 34px, what it buys, one button. Six of them, 3-across.
+  The "you choose" tier is dashed and transparent.
+- **Letter** — white, unbordered, each rotated ~1° and straightening on hover: name + age
+  over a hairline, the wish, the one-line ask, a wide red "Gift this".
+- **Swipe card** — 440px flip card: the letter on white on the front, the wish on ink on
+  the back with a gold kicker, an Amazon CTA, and Next / Gift this beneath with a counter.
+
+### Forms
+
+Two treatments, chosen by what the form *is*:
+
+- **On the paper** (`.form-paper`, default) — no card, no filled boxes. A field is a ruled
+  line: uppercase 12px label, a 17px input with only a bottom rule, focus turns the rule
+  red. Used on Contact and Volunteer.
+- **Carded** (`.formcard`) — white, `1px line-strong`, soft shadow, boxed 15.5px inputs.
+  Only where the form is the object of the page: the letters submit form.
+
+Success is `.sent` — a 2px green rule and a sentence, never a filled panel. The guidance
+`.rail` beside a form is labelled text (uppercase 12px heading, one line of muted copy),
+colour-coded by heading colour only.
+
+The letters consent block stays a scrollable text block, not a one-line checkbox — the
+server stores the exact text and version a guardian accepted.
+
+### Lists, accordion, closer
+
+- `<details>` accordions with hairlines top and bottom, an Archivo summary and a chevron
+  that rotates. This is how long explainers (tax, FAQ) are told.
+- `.closer` — the page ending: air above it, no bar, a `clamp(25px,2.8vw,36px)` line and
+  one sentence on the left, one ink button (often with the hand arrow) on the right.
+
+### Contact panels
+
+Three full-bleed colour panels (green / red / gold), entered through torn edges, each a
+link: the heading sits at the bottom and lifts 4px on hover while the body copy expands
+under it. Below 821px the body is always shown — hover doesn't exist on a phone.
+
+### Sponsor and press walls
+
+Logos sit **straight on the paper**, no tiles: grayscale, `mix-blend-mode:multiply` to drop
+each logo's own white background into the cream, colour and a 2px lift on hover. Sponsors
+without a logo file appear as their name in Archivo 800. Press is the same treatment at
+24px, under a small "Seen in" label.
+
+### Gallery
+
+CSS-column masonry (4 / 3 / 2), tiles keyed to each photo's real aspect ratio so nothing
+reflows, staggered reveal capped at 8 tiles. The lightbox is ink at 96%: click, arrow keys,
+Esc, and pointer drag to move between photos; focus is trapped and returned. No shadow on
+the image — against a 96% backdrop it renders as nothing.
+
+---
+
+## Accessibility
+
+- Focus is visible everywhere: `red` outline on paper, `paper` outline on colour panels and
+  photo bands. Never remove it.
+- The tab switch is a real `role="tablist"` with `aria-selected`; the swipe card is a
+  keyboard-activatable control with a live `aria-label` naming the letter and position.
+- Photos inside a `<PhotoBand>` are decorative (`alt=""`, `aria-hidden`) — the copy on top
+  carries the meaning. Content photos get real alt text describing what is happening.
+- Contrast: `muted` on `paper` is for secondary copy, never for anything ≤13px that
+  matters. On a photo, always the veil plus `rgba(paper,.78+)`.
+- Every interactive row is a real `<a>` or `<button>`, not a click handler on a div.
+- Child privacy is a design constraint: a letter shows a first name, an age, the wish, and
+  the letter image — never a last name, address, school, or handle.
+
+---
+
+## Gotchas
+
+Learned the hard way; each one cost a debugging session.
+
+- `.mark svg path { fill }` does **not** reach `<use>` shadow content — put
+  `fill:currentColor` on the `<svg>`.
+- Percentage margins on a **grid child** resolve against the grid track, so
+  `margin-right:calc(50% - 50vw)` doesn't bleed. Use `--edge`.
+- A vertical-only veil can't hold text over a bright photo — add the horizontal wash.
+- `tearFill` must match the sections above *and* below the band, or the tear shows a seam.
+- Use `grid-template-rows: 0fr → 1fr` for expanding copy, not a guessed `max-height`.
+- `input:not([type="checkbox"])` in the ruled-field rule — a checkbox stripped of its
+  border is an invisible control.
+- Anchor targets need `scroll-margin-top`, or the sticky nav eats the heading.
+- Full-bleed sections make horizontal overflow the likeliest regression: check
+  `document.documentElement.scrollWidth > window.innerWidth` is `false` at 1440px and 390px.
+
+---
+
+## Agent prompt guide
+
+When generating a screen or component for this product:
+
+- Wrap the page in `<RedesignShell>` and the content column in `<Wrap>`. Use the named
+  classes in `app/redesign.css` before reaching for Tailwind one-offs.
+- Paper ground. Ink only in nav and footer. If you are about to add a coloured section
+  band, you are about to break rule 1.
+- Archivo 800 sentence-case headings, one `<Mark>` on the phrase that carries the claim.
+  No `<em>`, no `font-serif`, no eyebrow, no `01`/`02`.
+- Separate sections with air, or a `<PhotoBand>`. Never a rule, never a bordered box grid.
+- Lists get hairlines between items. Guidance gets a label and a sentence, not a tint.
+- Every animated element must render finished without JS. Reveal with `<R>`; keep a
+  staggered group under ~250ms.
+- Square corners, 1.5px borders, soft warm shadows only under white paper objects.
+- Say the nonprofit facts once, in the shortest true form: free · 501(c)(3) ·
+  tax-deductible. Payments are external (Amazon, PayPal/Venmo, Eventbrite,
+  gladiators.nyc) — never build on-site checkout.
+- Pull every value from the tokens above. Don't invent a colour, a size, or a shadow.
+
+---
+
+## What this document does not cover
+
+- **Pages not yet ported** still run the old "Poster" system (Archivo uppercase, Cormorant
+  italics, dark grounds, flood bands). The two systems invert each other and must never
+  meet on one screen. The status table and the flip checklist are in
+  [`design-demos/REDESIGN-SYSTEM.md`](./design-demos/REDESIGN-SYSTEM.md).
+- **`/login` and `/signup`** render a deliberately dark `.theme-steel` scene mirroring
+  `gladiators.nyc`. Whether that survives rule 1 is an open decision.
+- **The homepage** is unported; its hero is liked as-is. The founder's Gothamist quote
+  block — photo bleeding off the left viewport edge, the quote in Archivo 600 with a brush
+  underline — is parked at
+  [`design-demos/parked/founder-quote.html`](./design-demos/parked/founder-quote.html) and
+  is intended for it. Quote and attribution come from `founder.quote` /
+  `founder.quoteAttribution` in `content/site.ts`; do not paraphrase.

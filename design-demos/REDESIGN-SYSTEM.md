@@ -1,6 +1,8 @@
 # The redesign — how it lands, and how to flip it global
 
-**Source of truth for the look:** [`redesign.html`](./redesign.html) (open it in a browser).
+**Source of truth for the look:** [`redesign.html`](./redesign.html) — Donate · Membership · Letters —
+and [`redesign2.html`](./redesign2.html) — About (sponsors folded in) · Contact · Gallery.
+Open either in a browser. Same six rules; demo 2 adds the shapes those three pages needed.
 **Implementation:** [`app/redesign.css`](../app/redesign.css) + [`components/redesign/`](../components/redesign/).
 
 This is a full-site redesign being landed **one page at a time**. Until every page is
@@ -17,19 +19,26 @@ system. This file is the instruction manual for the transition, and — most imp
 | Donate | `/donate` | ✅ ported |
 | Membership | `/membership` | ✅ ported |
 | Letters to Santa | `/letters` | ✅ ported |
+| About + sponsors | `/santas-knights` (`#sponsors`) | ✅ ported (demo 2) |
+| Contact + volunteer | `/contact` (`#volunteer`) | ✅ ported (demo 2) |
+| Gallery | `/gallery` | ✅ ported (demo 2) |
+| Get involved | `/get-involved` | ➡️ redirects to `/contact#volunteer` |
+| Sponsors | `/sponsors` | ➡️ redirects to `/santas-knights#sponsors` |
 | Home | `/` | ⬜ old system |
-| About | `/santas-knights` | ⬜ old system |
-| Contact | `/contact` | ⬜ old system |
-| Get involved | `/get-involved` | ⬜ old system |
-| Sponsors | `/sponsors` | ⬜ old system |
 | Links | `/links` | ⬜ old system |
-| Gallery | `/gallery` | ⬜ old system |
 | Training | `/training`, `/training/[slug]` | ⬜ old system |
 | Account | `/account` | ⬜ old system |
 | Login / Signup | `/login`, `/signup` | ⬜ old system — **see the note on `theme-steel` below** |
 | Admin | `/admin/*` | ⬜ old system — internal, port last or never |
 
 Keep this table current. It is what tells you whether the global flip is safe yet.
+
+**Two pages became sections.** Volunteering and sponsorship no longer have routes of
+their own — the volunteer application is the second half of `/contact` and the sponsor
+wall is the tail of `/santas-knights`. `links.getInvolved` / `links.volunteer` /
+`links.sponsors` in `content/site.ts` point at the anchors, the nav and footer follow
+them, and the two old routes stay as `redirect()`s for bookmarks. Both anchored sections
+carry `.anchored` (`scroll-margin-top: 100px`) so they clear the sticky nav.
 
 ---
 
@@ -51,6 +60,12 @@ convention the old system used, which is why the two can't be mixed on one scree
 5. **No horizontal divider bars.** Sections are separated by air, or — when there's a
    photo — by a full-bleed band the paper appears to tear open into (`<PhotoBand>`).
 6. **Copy is the shortest true version.** Nothing is said twice on one screen.
+
+**The one sanctioned exception** (kept by request): the three green / red / gold panels on
+`/contact` (`.panels`). They survive rules 1 and 4 because they are full-bleed and entered
+through the same torn paper edge as a photo band, so they read as the paper tearing open
+into colour rather than a poster CTA band bolted onto the page. This is the only place
+colour is allowed to be the ground. Don't take it as licence for a second one.
 
 ---
 
@@ -96,9 +111,19 @@ the pages consistent.
 | `<RedesignShell>` | `components/redesign/RedesignShell.tsx` | The opt-in wrapper. Also exports `<Wrap>`, the 1240px page column. |
 | `<Mark>` | `components/redesign/Mark.tsx` | The brush underline. `alt` swaps to the second stroke — alternate them when two marks are near each other. `thin` for marks inside body copy. |
 | `<PhotoBand>` | `components/redesign/PhotoBand.tsx` | Full-bleed photo with torn edges. `hero` drops the top tear. `tearFill` **must match the section color above and below** — it is only correct against paper. |
+| `<TornEdge>` | `components/redesign/PhotoBand.tsx` | One torn edge on its own, for a full-bleed band that isn't a `<PhotoBand>` — the About timeline strip and the Contact colour panels. |
 | `<R>` | `components/redesign/Reveal.tsx` | Rise-in on scroll. `delay` staggers a group; keep a group under ~250ms total. |
+| `<HandArrow>` | `components/redesign/HandArrow.tsx` | The hand-drawn arrow that points at a closing CTA. Goes inside a `.cta-wrap`; steps out below 900px, where there's no gutter left to park in. |
 | `<RedesignDefs>` | `components/redesign/Defs.tsx` | The shared brush + tear paths. Mounted by the shell; you never call it directly. |
 | `<GiveCard>` | `components/redesign/GiveCard.tsx` | The donation widget. Two steps: amount → details. The second step is not optional (see below). |
+
+### Two form treatments
+
+`.formcard` is the boxed one — white card, filled inputs — and it is what `/letters/submit`
+and `<GiveCard>` use, because those forms sit on top of other content and need an edge.
+`.form-paper` is the other one, from demo 2: no card, no filled boxes, a field is a ruled
+line. Contact and the volunteer application use it. Don't mix them on one screen, and
+don't "unify" them by changing `.rd .field` globally — that restyles the submit form.
 
 ### Motion
 

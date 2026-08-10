@@ -1,11 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
-import { cn } from "@/lib/cn";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { GalleryPhoto } from "@/content/galleryPhotos";
 
-const SIZES = "(max-width: 640px) 46vw, (max-width: 1024px) 31vw, 23vw";
+const SIZES = "(max-width: 640px) 48vw, (max-width: 1024px) 32vw, 24vw";
+const SRC = (photo: GalleryPhoto) => `/images/gallery/${encodeURIComponent(photo.file)}`;
+
+/** How far a drag has to travel before it counts as "next photo". */
+const SWIPE_PX = 70;
+/** Length of the slide-out before the next photo is swapped in. */
+const STEP_MS = 140;
 
 function shuffle(input: GalleryPhoto[]) {
   const next = [...input];
@@ -16,8 +21,7 @@ function shuffle(input: GalleryPhoto[]) {
   return next;
 }
 
-/** One tile: reserves its aspect ratio up front (no reflow), shimmers while
- *  loading, fades the image in, and settles into place on scroll. */
+/** One tile. Reserves its aspect ratio up front so the columns never reflow. */
 function Tile({
   photo,
   index,
@@ -27,35 +31,34 @@ function Tile({
   index: number;
   onOpen: () => void;
 }) {
-  const [loaded, setLoaded] = useState(false);
   return (
     <button
       type="button"
       onClick={onOpen}
       aria-label={`Open photo ${index + 1} full size`}
-      className={cn(
-        "relative mb-3 block w-full cursor-zoom-in overflow-hidden sm:mb-4 lg:mb-5",
-        !loaded && "img-skeleton",
-      )}
-      style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
+      className="tile"
+      data-reveal
+      // Only the first screenful staggers; past that the delay would read as lag.
+      style={{
+        aspectRatio: `${photo.width} / ${photo.height}`,
+        transitionDelay: `${Math.min(index, 7) * 45}ms`,
+      }}
     >
       <Image
-        src={`/images/gallery/${encodeURIComponent(photo.file)}`}
+        src={SRC(photo)}
         alt={`Santa's Knights community photo ${index + 1}`}
         fill
         sizes={SIZES}
         loading={index < 8 ? "eager" : "lazy"}
-        onLoad={() => setLoaded(true)}
-        className={cn(
-          "object-cover transition-[opacity,transform] duration-500 hover:scale-[1.03]",
-          loaded ? "opacity-100" : "opacity-0",
-        )}
       />
     </button>
   );
 }
 
-/** Full-size viewer: prev/next, Escape to close, click outside to close. */
+type Motion = { x: number; opacity: number; instant: boolean };
+const AT_REST: Motion = { x: 0, opacity: 1, instant: false };
+
+/** Full-size viewer: click, arrow keys, Escape, and drag/swipe between photos. */
 function Lightbox({
   photos,
   index,
@@ -67,31 +70,104 @@ function Lightbox({
   onClose: () => void;
   onStep: (delta: 1 | -1) => void;
 }) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const [motion, setMotion] = useState<Motion>(AT_REST);
+  // Held in a ref, not state: the drag handlers read it every pointermove.
+  const dragFrom = useRef<number | null>(null);
+  const stepping = useRef<number | null>(null);
+
+  /** Slide the current photo out, swap, and let the CSS transition slide the
+   *  next one back in from the same side. */
+  const step = useCallback(
+    (delta: 1 | -1) => {
+      if (stepping.current !== null) return;
+      setMotion({ x: delta * 40, opacity: 0, instant: false });
+      stepping.current = window.setTimeout(() => {
+        stepping.current = null;
+        onStep(delta);
+        setMotion(AT_REST);
+      }, STEP_MS);
+    },
+    [onStep],
+  );
+
+  // Lock the page behind the viewer, and hand focus to it and back.
+  useEffect(() => {
+    const restoreTo = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      if (stepping.current !== null) window.clearTimeout(stepping.current);
+      restoreTo?.focus?.();
+    };
+  }, []);
+
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
-      else if (event.key === "ArrowRight") onStep(1);
-      else if (event.key === "ArrowLeft") onStep(-1);
+      else if (event.key === "ArrowRight") step(1);
+      else if (event.key === "ArrowLeft") step(-1);
+      // Keep focus inside the viewer while it's open.
+      else if (event.key === "Tab") event.preventDefault();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, onStep]);
+  }, [onClose, step]);
 
   const photo = photos[index];
 
+  const endDrag = (event: React.PointerEvent<HTMLImageElement>) => {
+    if (dragFrom.current === null) return;
+    const travelled = event.clientX - dragFrom.current;
+    dragFrom.current = null;
+    if (Math.abs(travelled) > SWIPE_PX) step(travelled < 0 ? 1 : -1);
+    else setMotion(AT_REST);
+  };
+
   return (
     <div
-      className="fixed inset-0 z-[120] flex items-center justify-center bg-ink/95 p-5"
-      onClick={onClose}
+      className={`lightbox${motion.instant ? " is-drag" : ""}`}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
       role="dialog"
       aria-modal="true"
       aria-label="Photo viewer"
     >
+      {/* eslint-disable-next-line @next/next/no-img-element -- full-size viewer; next/image's fixed sizing buys nothing here */}
+      <img
+        src={SRC(photo)}
+        alt={`Santa's Knights community photo ${index + 1}`}
+        draggable={false}
+        style={{
+          transform: motion.x ? `translateX(${motion.x}px)` : undefined,
+          opacity: motion.opacity,
+        }}
+        onPointerDown={(event) => {
+          dragFrom.current = event.clientX;
+          event.currentTarget.setPointerCapture(event.pointerId);
+          setMotion({ x: 0, opacity: 1, instant: true });
+        }}
+        onPointerMove={(event) => {
+          if (dragFrom.current === null) return;
+          const travelled = event.clientX - dragFrom.current;
+          setMotion({
+            x: travelled,
+            opacity: Math.max(0.35, 1 - Math.abs(travelled) / 460),
+            instant: true,
+          });
+        }}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+      />
       <button
+        ref={closeRef}
         type="button"
         onClick={onClose}
         aria-label="Close"
-        className="absolute top-5 right-6 text-[34px] leading-none text-paper/80 transition-colors hover:text-paper"
+        className="lb-btn lb-close"
       >
         ×
       </button>
@@ -99,10 +175,10 @@ function Lightbox({
         type="button"
         onClick={(event) => {
           event.stopPropagation();
-          onStep(-1);
+          step(-1);
         }}
         aria-label="Previous photo"
-        className="absolute left-3 grid h-12 w-12 shrink-0 place-items-center text-[30px] text-paper/70 transition-colors hover:text-paper sm:left-6"
+        className="lb-btn lb-prev"
       >
         ‹
       </button>
@@ -110,23 +186,17 @@ function Lightbox({
         type="button"
         onClick={(event) => {
           event.stopPropagation();
-          onStep(1);
+          step(1);
         }}
         aria-label="Next photo"
-        className="absolute right-3 grid h-12 w-12 shrink-0 place-items-center text-[30px] text-paper/70 transition-colors hover:text-paper sm:right-6"
+        className="lb-btn lb-next"
       >
         ›
       </button>
-      {/* eslint-disable-next-line @next/next/no-img-element -- full-size viewer, not worth Next/Image's fixed-size optimization */}
-      <img
-        src={`/images/gallery/${encodeURIComponent(photo.file)}`}
-        alt={`Santa's Knights community photo ${index + 1}`}
-        className="max-h-[86vh] max-w-[92vw] object-contain"
-        onClick={(event) => event.stopPropagation()}
-      />
-      <p className="absolute bottom-5 text-[13px] font-semibold tracking-[0.08em] text-paper/60">
+      <p className="lb-count">
         {index + 1} / {photos.length}
       </p>
+      <p className="lb-hint">Drag · Esc to close</p>
     </div>
   );
 }
@@ -143,17 +213,16 @@ export function MasonryGallery({ photos }: { photos: GalleryPhoto[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const step = useCallback(
     (delta: 1 | -1) => {
-      setOpenIndex((current) => {
-        if (current === null) return current;
-        return (current + delta + ordered.length) % ordered.length;
-      });
+      setOpenIndex((current) =>
+        current === null ? current : (current + delta + ordered.length) % ordered.length,
+      );
     },
     [ordered.length],
   );
 
   return (
-    <section className="relative bg-paper">
-      <div className="columns-2 gap-3 px-3 py-8 sm:columns-3 sm:gap-4 sm:px-4 sm:py-10 lg:columns-4 lg:gap-5 lg:px-[max(16px,4vw)]">
+    <>
+      <div className="masonry">
         {ordered.map((photo, index) => (
           <Tile key={photo.file} photo={photo} index={index} onOpen={() => setOpenIndex(index)} />
         ))}
@@ -167,6 +236,6 @@ export function MasonryGallery({ photos }: { photos: GalleryPhoto[] }) {
           onStep={step}
         />
       )}
-    </section>
+    </>
   );
 }

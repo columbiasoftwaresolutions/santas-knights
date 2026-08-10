@@ -1,45 +1,45 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button } from "@/components/ui/Button";
 import { subscribeNewsletter, type EngagementState } from "@/app/actions/engagement";
 
 const initialState: EngagementState = { ok: false };
 
 /**
- * Newsletter capture. Signups are stored in Supabase; export to the
- * newsletter provider once one is chosen (Phase 1 blocker).
+ * Newsletter capture — one line on the paper, no card. Signups are stored in
+ * Supabase; export to the newsletter provider once one is chosen (Phase 1
+ * blocker).
  */
 export function NewsletterForm({ defaultEmail }: { defaultEmail?: string | null }) {
   const [state, formAction, pending] = useActionState(subscribeNewsletter, initialState);
 
   if (state.ok) {
     return (
-      <p className="border border-green/30 bg-green-soft px-[22px] py-[14px] text-[15px] font-bold text-green">
-        You&apos;re on the list. We&apos;ll email only when there is news worth sharing.
-      </p>
+      <div className="sent">
+        <h3>You&apos;re on the list.</h3>
+      </div>
     );
   }
 
   return (
     <div>
-      <form action={formAction} className="flex flex-wrap gap-2.5">
+      <form action={formAction} className="news">
+        <label htmlFor="n-email" className="sr-only">
+          Email
+        </label>
         <input
+          id="n-email"
           type="email"
           name="email"
           required
           defaultValue={defaultEmail ?? undefined}
           placeholder="you@email.com"
-          aria-label="Email address"
-          className="min-w-[160px] flex-1 border-[1.5px] border-gold bg-paper px-[18px] py-[13px] text-[15px] text-ink focus:outline-2 focus:outline-offset-1 focus:outline-red"
         />
-        <Button type="submit" variant="red" disabled={pending}>
-          {pending ? "Signing up…" : "Sign up"}
-        </Button>
+        <button type="submit" disabled={pending}>
+          {pending ? "Signing up…" : "Subscribe"}
+        </button>
       </form>
-      {state.message && !state.ok && (
-        <p className="mt-2.5 text-[13.5px] font-semibold text-red">{state.message}</p>
-      )}
+      {state.message && !state.ok && <p className="formerr mt-3">{state.message}</p>}
     </div>
   );
 }

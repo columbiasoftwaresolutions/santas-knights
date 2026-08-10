@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fragment } from "react";
 import { LettersPortal } from "@/components/letters/LettersPortal";
+import { HandArrow } from "@/components/redesign/HandArrow";
 import { Mark } from "@/components/redesign/Mark";
 import { PhotoBand } from "@/components/redesign/PhotoBand";
 import { R } from "@/components/redesign/Reveal";
@@ -262,18 +263,7 @@ export default async function LettersPage({
               <p>A donation covers the letters nobody adopts before Christmas.</p>
             </R>
             <R delay={100} className="cta-wrap">
-              <svg
-                className="arrow-hand"
-                data-reveal
-                width="96"
-                height="58"
-                viewBox="0 0 96 58"
-                aria-hidden
-                style={{ left: -104, top: -16 }}
-              >
-                <path d="M4 6C13 26 30 41 56 45.5" />
-                <path d="M45 34c4.4 4.4 8 8.3 11.5 11.8M43.5 51.5c4.6-1.6 8.8-3.7 13-6" />
-              </svg>
+              <HandArrow />
               <a className="btn btn--ink" href={links.donate}>
                 Donate instead <span className="arw">→</span>
               </a>

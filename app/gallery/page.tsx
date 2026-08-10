@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import { Container } from "@/components/ui/Container";
+import { HandArrow } from "@/components/redesign/HandArrow";
+import { Mark } from "@/components/redesign/Mark";
+import { R } from "@/components/redesign/Reveal";
+import { RedesignShell, Wrap } from "@/components/redesign/RedesignShell";
 import { MasonryGallery } from "@/components/gallery/MasonryGallery";
 import { galleryPhotos } from "@/content/galleryPhotos";
 import { links } from "@/content/site";
@@ -12,51 +15,53 @@ export const metadata: Metadata = {
 
 export default function GalleryPage() {
   return (
-    <>
-      <section className="bg-paper pt-[clamp(28px,6vw,64px)] pb-[clamp(20px,3vw,32px)] text-ink">
-        <Container>
-          <h1 className="font-display text-[clamp(56px,12vw,150px)] leading-[0.85] font-black tracking-[-0.04em] uppercase text-ink">
-            Gallery
-          </h1>
-        </Container>
-      </section>
-
-      <MasonryGallery photos={galleryPhotos} />
-
-      <section className="text-paper">
-        <a
-          href={links.getInvolved}
-          aria-label="Join us in person — get involved"
-          className="group block bg-red-deep py-[clamp(72px,9vw,120px)] outline-none transition-colors duration-200 ease-out hover:bg-[#8e2130] focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-paper"
-        >
-          <Container>
-            <div className="flex flex-col items-start gap-10 sm:flex-row sm:items-center sm:justify-between">
-              <div className="max-w-[900px]">
-                <h2 className="font-display text-[clamp(48px,8vw,112px)] leading-[0.86] font-black tracking-[-0.04em] uppercase">
-                  Join us <em className="font-serif font-normal normal-case italic text-amber">in person.</em>
-                </h2>
-                <p className="mt-7 max-w-[38rem] text-[19px] text-paper/85">
-                  Volunteer, train, or help with Santa&apos;s Letters to take part in the next event.
-                </p>
-              </div>
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                fill="none"
-                className="hidden h-[clamp(64px,8vw,140px)] w-[clamp(64px,8vw,140px)] shrink-0 text-paper transition-transform duration-200 ease-out group-hover:translate-x-3 sm:block"
-              >
-                <path
-                  d="M5 12h14M12 5l7 7-7 7"
-                  stroke="currentColor"
-                  strokeWidth="1.25"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+    <RedesignShell>
+      <section className="phead">
+        <Wrap>
+          <div className="phead-grid">
+            <div>
+              <R as="h1">Gallery</R>
             </div>
-          </Container>
-        </a>
+            <R delay={120} style={{ paddingBottom: 10 }}>
+              <a
+                className="tlink"
+                href={links.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                More on Instagram <span className="arw">↗</span>
+              </a>
+            </R>
+          </div>
+        </Wrap>
       </section>
-    </>
+
+      {/* Full width, not the 1240px column: the grid is the page. */}
+      <section className="sec sec--tight" style={{ paddingBottom: "clamp(30px, 4vw, 52px)" }}>
+        <MasonryGallery photos={galleryPhotos} />
+      </section>
+
+      <section className="closer">
+        <Wrap>
+          <div className="in">
+            <R>
+              <h2>
+                Join us <Mark>in person</Mark>.
+              </h2>
+              <p>Volunteer, train, or adopt a letter.</p>
+            </R>
+            <R delay={100} className="cta-wrap">
+              <HandArrow />
+              <a className="btn btn--ink" href={links.contact}>
+                Get involved <span className="arw">→</span>
+              </a>
+              <a className="btn btn--ghost" href={links.training}>
+                Book a class
+              </a>
+            </R>
+          </div>
+        </Wrap>
+      </section>
+    </RedesignShell>
   );
 }

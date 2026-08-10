@@ -38,14 +38,17 @@ export const links = {
   // Public, stable charity links — kept in code (not env vars) per the donate-page note.
   paypal: "https://www.paypal.com/us/fundraiser/charity/3355259",
   venmo: "https://account.venmo.com/u/santasknights",
-  volunteer: "/get-involved",
+  // Volunteering and sponsorship no longer have pages of their own: the
+  // volunteer application is a section of /contact and the sponsor wall is a
+  // section of /santas-knights. /get-involved and /sponsors stay as redirects.
+  volunteer: "/contact#volunteer",
   adoptLetter: "/letters",
   submitLetter: "/letters?do=submit",
   findClass: TRAINING_HREF,
   about: "/santas-knights",
   contact: "/contact",
-  getInvolved: "/get-involved",
-  sponsors: "/sponsors",
+  getInvolved: "/contact#volunteer",
+  sponsors: "/santas-knights#sponsors",
   linkInBio: "/links",
   // Plan v2 §D2 new routes
   gallery: "/gallery",
@@ -56,6 +59,9 @@ export const links = {
   accountLogin: "/login",
   accountRegister: "/signup",
   accountLetters: "/account/letters",
+  instagram: "https://www.instagram.com/santasknights/",
+  facebook: "https://www.facebook.com/santasknights",
+  youtube: "https://www.youtube.com/channel/UC5trQ89gJ3e-pRy-d977KCg",
 } as const;
 
 export const org = {
@@ -91,7 +97,7 @@ export const navLinks: NavItem[] = [
     label: "About",
     children: [
       { label: "About Us", href: "/santas-knights" },
-      { label: "Sponsors", href: "/sponsors" },
+      { label: "Sponsors", href: "/santas-knights#sponsors" },
     ],
   },
   {
@@ -108,7 +114,7 @@ export const navLinks: NavItem[] = [
     label: "Contact",
     children: [
       { label: "Contact Us", href: "/contact" },
-      { label: "Volunteer", href: "/get-involved" },
+      { label: "Volunteer", href: "/contact#volunteer" },
     ],
   },
 ];
@@ -413,9 +419,9 @@ export const membershipTiers: MembershipTier[] = [
 
 /**
  * Full partners roster from the live site — the single source of truth for both
- * the homepage "In good company" strip and the /sponsors page. `featured` marks
- * the handful shown on the homepage; `logo` (in /public/images/sponsors) upgrades
- * a /sponsors tile from a text wordmark to the real mark where one is available.
+ * the homepage "In good company" strip and the sponsor wall folded into
+ * /santas-knights. `featured` marks the handful shown on the homepage; `logo`
+ * (in /public/images/sponsors) renders the real mark instead of a wordmark.
  */
 export const sponsors: { name: string; logo?: string; href?: string; featured?: boolean }[] = [
   { name: "Google", logo: "/images/sponsors/google.png", featured: true },
@@ -433,6 +439,28 @@ export const sponsors: { name: string; logo?: string; href?: string; featured?: 
   { name: "Bohemian Hall" },
   { name: "Draft Barn Beach" },
   { name: "Manhattanville Community Center" },
+];
+
+/**
+ * What a business can actually back, as a flowing list rather than a grid of
+ * cards. Each row opens a pre-addressed email — there is no sponsorship form.
+ */
+export const sponsorWays: { title: string; body: string; subject: string }[] = [
+  {
+    title: "Back the letter drive",
+    body: "Gifts and shipping for a batch of December letters.",
+    subject: "Sponsoring the letter drive",
+  },
+  {
+    title: "Sponsor a season",
+    body: "Equipment, space, and insurance for a session of free training.",
+    subject: "Sponsoring a season of classes",
+  },
+  {
+    title: "Sponsor an event",
+    body: "Your name on the holiday gift event, or a public demo.",
+    subject: "Sponsoring an event",
+  },
 ];
 
 /**
@@ -535,7 +563,7 @@ export const footerColumns: { heading: string; links: { label: string; href: str
       { label: "Training", href: TRAINING_HREF },
       { label: "Membership", href: "/membership" },
       { label: "Gallery", href: "/gallery" },
-      { label: "Partners", href: "/sponsors" },
+      { label: "Partners", href: "/santas-knights#sponsors" },
       { label: "Donate", href: "/donate" },
     ],
   },
@@ -544,8 +572,8 @@ export const footerColumns: { heading: string; links: { label: string; href: str
     links: [
       { label: "Adopt a Letter", href: "/letters" },
       { label: "Submit a Letter", href: "/letters?do=submit" },
-      { label: "Volunteer", href: "/get-involved" },
-      { label: "Become a Sponsor", href: "/sponsors" },
+      { label: "Volunteer", href: "/contact#volunteer" },
+      { label: "Become a Sponsor", href: "/santas-knights#sponsors" },
     ],
   },
   {
@@ -562,21 +590,17 @@ export const footerColumns: { heading: string; links: { label: string; href: str
   {
     heading: "Follow",
     links: [
-      { label: "Instagram", href: "https://www.instagram.com/santasknights/" },
-      { label: "Facebook", href: "https://www.facebook.com/santasknights" },
-      { label: "YouTube", href: "https://www.youtube.com/channel/UC5trQ89gJ3e-pRy-d977KCg" },
+      { label: "Instagram", href: links.instagram },
+      { label: "Facebook", href: links.facebook },
+      { label: "YouTube", href: links.youtube },
     ],
   },
 ];
 
 export const socials: { label: string; glyph: string; href: string }[] = [
-  { label: "Facebook", glyph: "f", href: "https://www.facebook.com/santasknights" },
-  { label: "Instagram", glyph: "◎", href: "https://www.instagram.com/santasknights/" },
-  {
-    label: "YouTube",
-    glyph: "▷",
-    href: "https://www.youtube.com/channel/UC5trQ89gJ3e-pRy-d977KCg",
-  },
+  { label: "Facebook", glyph: "f", href: links.facebook },
+  { label: "Instagram", glyph: "◎", href: links.instagram },
+  { label: "YouTube", glyph: "▷", href: links.youtube },
 ];
 
 /* ------------------------------------------------------------------ *
@@ -590,19 +614,19 @@ export const socials: { label: string; glyph: string; href: string }[] = [
 export const missionStatement =
   "Santa's Knights' mission is to bring free martial arts, fitness, and activities to everyone, equitably, transcending socioeconomic, racial, and location boundaries, positively changing children's and adults' lives through exposure and lifestyle enhancement.";
 
-export const aboutStory: { heading: string; body: string }[] = [
-  {
-    heading: "A letter, picked off a pile",
-    body: "As a kid, Damion DiGrazia took part in the Postal Service's Operation Santa: you adopt a stranger's letter to Santa and send the gift they asked for. It stuck with him. Years later, Santa's Letters became his way of doing the same thing for Harlem, on a bigger scale.",
-  },
-  {
-    heading: "The training came first",
-    body: "In 2013 he started Gladiators NYC, full-contact armored combat with steel weapons. It grew into the oldest league of its kind in the city. In 2016 he made it a nonprofit so the classes could be free, and the giving could have a home.",
-  },
-  {
-    heading: "One organization, two jobs",
-    body: "Today Santa's Knights does two things out of Harlem. It runs free martial arts and fitness all year through Gladiators NYC, and every holiday season it answers kids' letters to Santa.",
-  },
+/**
+ * The record, on a line — the About page's timeline band. One date, one fact.
+ *
+ * These are the four dated entries only. The band's fifth node is the live
+ * "today" one, and the page renders it itself: its numbers carry inline
+ * emphasis, and it is styled as still-running rather than as one more past
+ * event (see `.tl li:last-child` in app/redesign.css).
+ */
+export const timeline: { when: string; body: string }[] = [
+  { when: "2013", body: "Gladiators NYC starts in a Harlem basement." },
+  { when: "2015", body: "It becomes a 501(c)(3). Training goes free." },
+  { when: "2020", body: "The documentary Dear Santa tells Damion's story." },
+  { when: "2021", body: "The knights start fighting in public, in Central Park." },
 ];
 
 /**
@@ -642,7 +666,7 @@ export const values: { title: string; body: string }[] = [
 ];
 
 /* ------------------------------------------------------------------ *
- * Get Involved page
+ * Contact page — the three colour panels
  * ------------------------------------------------------------------ */
 
 export const waysToHelp: {
@@ -655,38 +679,43 @@ export const waysToHelp: {
   {
     variant: "green",
     title: "Adopt a letter",
-    body: "Read a kid's wish, pick one, and send the gift. It's the most direct thing you can do here, and it lands on Christmas morning.",
+    body: "Read a kid's wish, pick one, send the gift. It lands on Christmas morning.",
     cta: "See how it works",
     href: links.adoptLetter,
   },
   {
     variant: "red",
     title: "Give us a hand",
-    body: "Help sort letters, run the holiday event, coach a class, or keep the books. Most of it fits around a regular schedule.",
+    body: "Sort letters, run the holiday event, coach a class, keep the books.",
     cta: "Volunteer roles",
     href: "#volunteer",
   },
   {
     variant: "gold",
     title: "Cover the cost",
-    body: "Donations are what keep the gifts coming and the classes free. Every dollar is tax-deductible.",
+    body: "Donations keep the gifts coming and the classes free.",
     cta: "Ways to give",
     href: links.donate,
   },
 ];
 
-// Volunteer application role options — checkboxes on the Get Involved form.
-export const volunteerRoles: string[] = [
-  "Martial Art Instructor",
-  "Martial Art Assistant Instructor",
-  "Event Management",
-  "Admin - General",
-  "Relationship Management",
-  "Social Media",
-  "Marketing",
-  "Intership",
-  "Santa's Elf",
-  "Other",
+/**
+ * Volunteer application role options — the checkbox rows on /contact#volunteer.
+ * `value` is what lands in the admin inbox and matches the live Wix form's
+ * wording, so applications stay comparable across the two sites; `label` is the
+ * shorter thing a person actually reads next to a checkbox.
+ */
+export const volunteerRoles: { value: string; label: string }[] = [
+  { value: "Martial Art Instructor", label: "Martial Art Instructor" },
+  { value: "Martial Art Assistant Instructor", label: "Assistant Instructor" },
+  { value: "Event Management", label: "Event Management" },
+  { value: "Admin - General", label: "Admin — general" },
+  { value: "Relationship Management", label: "Relationship Management" },
+  { value: "Social Media", label: "Social Media" },
+  { value: "Marketing", label: "Marketing" },
+  { value: "Internship", label: "Internship" },
+  { value: "Santa's Elf", label: "Santa's Elf" },
+  { value: "Other", label: "Other" },
 ];
 
 /* ------------------------------------------------------------------ *

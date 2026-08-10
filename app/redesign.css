@@ -37,6 +37,9 @@
        tokens here so the redesign layer has no unnamed colors. */
     --rd-green-deep: #244c38;
     --rd-gold-ink: #6c5418;
+    /* Gold hover for the contact page's third colour panel — the value the old
+       contact page carried inline as `hover:bg-[#b0841f]`. */
+    --rd-gold-deep: #b0841f;
     --rd-shadow-tint: rgba(34, 29, 23, 0.45);
     --rd-ease: cubic-bezier(0.22, 1, 0.36, 1);
     --rd-gutter: clamp(24px, 4vw, 56px);
@@ -770,6 +773,17 @@
   }
   .rd .cta-wrap {
     position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  /* The hand-drawn arrow is parked in the gutter to the left of the CTA. Once
+     the closer stacks there is no gutter left to park in, and body's
+     overflow-x:hidden would clip it into half an arrow — so it steps out. */
+  @media (max-width: 900px) {
+    .rd .cta-wrap .arrow-hand {
+      display: none;
+    }
   }
 
   /* ============================================================
@@ -1451,6 +1465,984 @@
   .rd .notice--red {
     border-color: var(--color-red);
     color: var(--color-red);
+  }
+
+  /* ==========================================================================
+     REDESIGN 2 — About (sponsors folded in) · Contact · Gallery
+     Ported from design-demos/redesign2.html. Same six rules; these are the
+     shapes those three pages needed that /donate · /membership · /letters
+     never did.
+     ========================================================================== */
+
+  /* ---- split variants ---------------------------------------------------- *
+     Declared after the base `.split` collapse so their own collapse (below)
+     wins. A two-column rule written after `@media (max-width:900px)` would
+     otherwise keep the grid at two columns on a phone. */
+  .rd .split--wide {
+    grid-template-columns: 0.9fr 1.1fr;
+  }
+  .rd .split--rail {
+    grid-template-columns: 0.62fr 0.38fr;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .rd .split--wide {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 960px) {
+    .rd .split--rail {
+      grid-template-columns: 1fr;
+    }
+  }
+  /* Offset clears the 72px sticky nav. */
+  .rd .sticky {
+    position: sticky;
+    top: 100px;
+  }
+  @media (max-width: 900px) {
+    .rd .sticky {
+      position: static;
+    }
+  }
+  /* An anchored section has to clear the sticky nav too. */
+  .rd .anchored {
+    scroll-margin-top: 100px;
+  }
+
+  /* ---- stats ------------------------------------------------------------- *
+     Air between the columns and one hairline above — never the old red flood
+     band (rule 1). */
+  .rd .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(18px, 3vw, 44px);
+    border-top: 1px solid var(--color-line);
+    padding-top: 26px;
+  }
+  @media (max-width: 760px) {
+    .rd .stats {
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+    }
+  }
+  .rd .stats .n {
+    font-family: var(--font-display);
+    font-size: clamp(34px, 4vw, 54px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.94;
+  }
+  .rd .stats .l {
+    margin: 10px 0 0;
+    font-size: 13.5px;
+    color: var(--color-muted);
+    line-height: 1.45;
+    max-width: 20ch;
+  }
+
+  /* ---- the mission, said once, big --------------------------------------- */
+  .rd .mission {
+    max-width: 20ch;
+    font-size: clamp(30px, 4.4vw, 58px);
+    letter-spacing: -0.035em;
+    line-height: 1.06;
+  }
+  .rd .mission--wide {
+    max-width: 26ch;
+  }
+  .rd .legal {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 26px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+  .rd .legal::before {
+    content: "";
+    width: 34px;
+    height: 2px;
+    background: var(--color-gold);
+    flex: none;
+  }
+
+  /* ---- the record, on a line --------------------------------------------- *
+     Date above the rule, one fact below it. The rule fades out past the last
+     node rather than stopping dead: the org is still running, and a hard stop
+     reads like it ended. */
+  .rd .imgsec--tl .content {
+    /* carries no heading, so it needs less air than a titled band */
+    padding: clamp(70px, 8vw, 116px) 0;
+  }
+  .rd .tl {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0 clamp(14px, 1.8vw, 28px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .rd .tl::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 30px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba(247, 240, 227, 0.34) 0%,
+      rgba(247, 240, 227, 0.34) 82%,
+      rgba(247, 240, 227, 0) 100%
+    );
+    transform-origin: left center;
+  }
+  .rd .tl li {
+    position: relative;
+    padding-top: 54px;
+  }
+  .rd .tl li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 25px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--color-paper);
+  }
+  /* "today" reads as live, not as one more past event */
+  .rd .tl li:last-child::before {
+    background: var(--color-red);
+    box-shadow: 0 0 0 5px rgba(194, 51, 31, 0.26);
+  }
+  .rd .tl .when {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-family: var(--font-display);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+  }
+  /* Amber, not gold: the palette's on-dark accent, so the live node's label
+     lifts off the veiled photo while the past labels stay quiet in gold. */
+  .rd .tl li:last-child .when {
+    color: var(--color-amber);
+  }
+  .rd .tl p {
+    margin: 0;
+    font-size: 15.5px;
+    line-height: 1.5;
+    color: rgba(247, 240, 227, 0.86);
+    max-width: 21ch;
+  }
+  .rd .tl .now {
+    color: var(--color-paper);
+  }
+  .rd .tl .now b {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  /* The line and the nodes draw themselves in only when the reveal observer is
+     armed; without `reveal-on` they render finished (same contract as .mark). */
+  html.reveal-on .rd .tl[data-reveal]::before {
+    transform: scaleX(0);
+    transition: transform 0.9s var(--rd-ease) 0.1s;
+  }
+  html.reveal-on .rd .tl[data-reveal].is-visible::before {
+    transform: scaleX(1);
+  }
+  html.reveal-on .rd .tl[data-reveal] li::before {
+    transform: scale(0);
+    transition: transform 0.4s var(--rd-ease);
+  }
+  html.reveal-on .rd .tl[data-reveal].is-visible li::before {
+    transform: scale(1);
+  }
+  html.reveal-on .rd .tl[data-reveal].is-visible li:nth-child(1)::before {
+    transition-delay: 0.15s;
+  }
+  html.reveal-on .rd .tl[data-reveal].is-visible li:nth-child(2)::before {
+    transition-delay: 0.32s;
+  }
+  html.reveal-on .rd .tl[data-reveal].is-visible li:nth-child(3)::before {
+    transition-delay: 0.49s;
+  }
+  html.reveal-on .rd .tl[data-reveal].is-visible li:nth-child(4)::before {
+    transition-delay: 0.66s;
+  }
+  html.reveal-on .rd .tl[data-reveal].is-visible li:nth-child(5)::before {
+    transition-delay: 0.83s;
+  }
+  @media (max-width: 860px) {
+    .rd .tl {
+      grid-template-columns: 1fr;
+    }
+    .rd .tl::before {
+      left: 5px;
+      right: auto;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      height: auto;
+      background: linear-gradient(
+        180deg,
+        rgba(247, 240, 227, 0.34) 0%,
+        rgba(247, 240, 227, 0.34) 88%,
+        rgba(247, 240, 227, 0) 100%
+      );
+      transform-origin: center top;
+    }
+    html.reveal-on .rd .tl[data-reveal]::before {
+      transform: scaleY(0);
+    }
+    html.reveal-on .rd .tl[data-reveal].is-visible::before {
+      transform: scaleY(1);
+    }
+    .rd .tl li {
+      padding: 0 0 26px 30px;
+    }
+    .rd .tl li:last-child {
+      padding-bottom: 0;
+    }
+    .rd .tl li::before {
+      top: 4px;
+    }
+    .rd .tl .when {
+      position: static;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .rd .tl p {
+      max-width: 44ch;
+    }
+  }
+
+  /* ---- founder ----------------------------------------------------------- */
+  .rd .bio p {
+    margin: 0 0 16px;
+    color: var(--color-muted);
+    font-size: 15.5px;
+    line-height: 1.7;
+    max-width: 62ch;
+  }
+  .rd .bio p:last-child {
+    margin-bottom: 0;
+  }
+  .rd .role {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--color-ink);
+    margin: 8px 0 20px;
+  }
+
+  /* ---- two-column hairline pairs (values) -------------------------------- */
+  .rd .pairs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 clamp(30px, 4vw, 56px);
+  }
+  @media (max-width: 780px) {
+    .rd .pairs {
+      grid-template-columns: 1fr;
+    }
+  }
+  .rd .pairs div {
+    padding: 18px 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .rd .pairs h3 {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .rd .pairs p {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--color-muted);
+    line-height: 1.55;
+  }
+
+  /* ---- class / program list ---------------------------------------------- */
+  .rd .classlist {
+    border-top: 1px solid var(--color-line);
+    margin-top: 22px;
+  }
+  .rd .classlist a {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 18px;
+    align-items: baseline;
+    padding: 17px 0;
+    border-bottom: 1px solid var(--color-line);
+    text-decoration: none;
+    transition: background-color 0.18s ease;
+  }
+  .rd .classlist a:hover {
+    background: var(--color-paper-raised);
+  }
+  .rd .classlist strong {
+    font-family: var(--font-display);
+    font-size: 17.5px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    transition: transform 0.2s var(--rd-ease);
+  }
+  .rd .classlist a:hover strong {
+    transform: translateX(9px);
+  }
+  .rd .classlist span {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+
+  /* ---- a statement on the paper, not a tinted panel ---------------------- */
+  .rd .say {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: clamp(20px, 3vw, 48px);
+    align-items: end;
+  }
+  @media (max-width: 820px) {
+    .rd .say {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+  }
+  .rd .say h2 {
+    font-size: clamp(30px, 3.8vw, 50px);
+    letter-spacing: -0.032em;
+  }
+  .rd .say p {
+    margin: 14px 0 0;
+    font-size: 16.5px;
+    color: var(--color-muted);
+    max-width: 48ch;
+    line-height: 1.55;
+  }
+
+  /* ---- sponsor wall ------------------------------------------------------ *
+     Marks sitting straight on the paper — no tiles (rule 4). mix-blend-mode
+     drops each logo's own white background into the paper. */
+  .rd .logos {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: clamp(30px, 3.6vw, 52px) clamp(24px, 3vw, 44px);
+    margin-top: 34px;
+    align-items: center;
+  }
+  @media (max-width: 900px) {
+    .rd .logos {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 560px) {
+    .rd .logos {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .rd .logos a,
+  .rd .logos div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 56px;
+    text-decoration: none;
+  }
+  .rd .logos img {
+    height: 42px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+    filter: grayscale(1) contrast(1.15);
+    opacity: 0.9;
+    transition:
+      filter 0.35s ease,
+      opacity 0.35s ease,
+      transform 0.25s var(--rd-ease);
+  }
+  .rd .logos a:hover img {
+    filter: grayscale(0);
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+  .rd .logos .name {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    color: var(--color-muted);
+    transition: color 0.2s ease;
+  }
+  .rd .logos div:hover .name {
+    color: var(--color-ink);
+  }
+
+  /* ---- press wall — same treatment, smaller ------------------------------ */
+  .rd .press {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(22px, 3.2vw, 46px);
+    margin-top: 20px;
+  }
+  .rd .press a {
+    display: flex;
+    align-items: center;
+  }
+  .rd .press img {
+    height: 24px;
+    width: auto;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+    filter: grayscale(1) contrast(1.15);
+    opacity: 0.82;
+    transition:
+      filter 0.35s ease,
+      opacity 0.35s ease;
+  }
+  .rd .press a:hover img {
+    filter: grayscale(0);
+    opacity: 1;
+  }
+  .rd .press-head h3 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  /* ---- CONTACT: the three colours ---------------------------------------- *
+     The one deliberate exception to rule 4, carried over by request. They are
+     full-bleed and entered through the same torn edge as a photo band, so they
+     read as the paper tearing open into colour — not a poster CTA band. */
+  .rd .panels {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (max-width: 820px) {
+    .rd .panels {
+      grid-template-columns: 1fr;
+    }
+  }
+  .rd .panels a {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 300px;
+    padding: clamp(30px, 3.4vw, 52px) clamp(26px, 2.8vw, 46px) clamp(34px, 3.6vw, 56px);
+    text-decoration: none;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+  }
+  @media (min-width: 821px) {
+    .rd .panels a {
+      min-height: clamp(290px, 30vw, 400px);
+    }
+  }
+  .rd .panels .p1 {
+    background: var(--color-green);
+    color: var(--color-paper);
+  }
+  .rd .panels .p1:hover {
+    background: var(--rd-green-deep);
+  }
+  .rd .panels .p2 {
+    background: var(--color-red);
+    color: var(--color-paper);
+  }
+  .rd .panels .p2:hover {
+    background: var(--color-red-deep);
+  }
+  .rd .panels .p3 {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+  .rd .panels .p3:hover {
+    background: var(--rd-gold-deep);
+  }
+  .rd .panels h2 {
+    font-size: clamp(29px, 3.2vw, 44px);
+    letter-spacing: -0.032em;
+    line-height: 1.02;
+    color: inherit;
+    transition: transform 0.3s var(--rd-ease);
+  }
+  .rd .panels a:hover h2 {
+    transform: translateY(-4px);
+  }
+  /* 0fr → 1fr, not max-height: it interpolates to the real content height, so
+     the three panels (whose copy differs in length) all finish on the beat
+     instead of overshooting a guessed height and stopping early. */
+  .rd .panels .body {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition:
+      grid-template-rows 0.34s var(--rd-ease),
+      opacity 0.3s ease;
+  }
+  .rd .panels .body-in {
+    min-height: 0;
+    overflow: hidden;
+    transition: transform 0.34s var(--rd-ease);
+  }
+  @media (min-width: 821px) {
+    .rd .panels .body {
+      grid-template-rows: 0fr;
+      opacity: 0;
+    }
+    .rd .panels .body-in {
+      transform: translateY(10px);
+    }
+    .rd .panels a:hover .body,
+    .rd .panels a:focus-visible .body {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+    .rd .panels a:hover .body-in,
+    .rd .panels a:focus-visible .body-in {
+      transform: none;
+    }
+  }
+  .rd .panels .body p {
+    margin: 18px 0 0;
+    font-size: 15.5px;
+    line-height: 1.6;
+    max-width: 34ch;
+  }
+  .rd .panels .p1 .body p,
+  .rd .panels .p2 .body p {
+    color: rgba(247, 240, 227, 0.82);
+  }
+  .rd .panels .p3 .body p {
+    color: rgba(22, 18, 15, 0.72);
+  }
+  .rd .panels .go {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 18px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .rd .panels a:focus-visible {
+    outline: 3px solid var(--color-paper);
+    outline-offset: -8px;
+  }
+
+  /* ---- where to find us — typeset like letterhead ------------------------ *
+     The venue names itself, so it needs no "VISIT" label above it, and the
+     address is text rather than a link: the thing you'd click is directions. */
+  .rd .reach h3 {
+    font-size: clamp(20px, 1.9vw, 24px);
+    letter-spacing: -0.025em;
+  }
+  .rd .reach .where {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 22px;
+    margin-top: 9px;
+  }
+  .rd .reach address {
+    font-style: normal;
+    font-size: 16.5px;
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+  .rd .reach .lines {
+    display: grid;
+    justify-items: start;
+    gap: 11px;
+    margin-top: 28px;
+  }
+  .rd .reach .lines a {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-ink);
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--rd-line-strong);
+    padding-bottom: 2px;
+    transition:
+      color 0.16s ease,
+      border-color 0.16s ease;
+  }
+  .rd .reach .lines a:hover {
+    color: var(--color-red);
+    border-color: var(--color-red);
+  }
+
+  /* ---- newsletter — inline on the paper ---------------------------------- */
+  .rd .news {
+    display: flex;
+    gap: 0;
+    max-width: 440px;
+    width: 100%;
+  }
+  .rd .news input {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    font-size: 16px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--color-ink);
+    border-right: 0;
+    background: transparent;
+    color: var(--color-ink);
+  }
+  .rd .news input::placeholder {
+    color: var(--color-muted);
+    opacity: 0.55;
+  }
+  .rd .news input:focus {
+    outline: none;
+    border-color: var(--color-red);
+  }
+  .rd .news button {
+    border: 1.5px solid var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-paper);
+    padding: 0 22px;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.16s ease;
+  }
+  .rd .news button:hover {
+    background: var(--color-red);
+    border-color: var(--color-red);
+  }
+  .rd .news button:disabled {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  @media (max-width: 520px) {
+    .rd .news {
+      flex-direction: column;
+    }
+    .rd .news input {
+      border-right: 1.5px solid var(--color-ink);
+    }
+    .rd .news button {
+      padding: 14px 22px;
+    }
+  }
+
+  /* ---- forms written on the paper ---------------------------------------- *
+     `.form-paper` opts a form out of the boxed `.formcard` treatment that
+     /letters/submit and the give card still use: no card, no filled inputs —
+     a field is a ruled line, the same hairline every list on the site uses. */
+  .rd .form-paper h3 {
+    font-size: clamp(24px, 2.4vw, 30px);
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+  }
+  .rd .form-paper .field {
+    margin-bottom: 22px;
+  }
+  .rd .form-paper .field label,
+  .rd .form-paper .field legend {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 2px;
+    padding: 0;
+  }
+  .rd .form-paper .field fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+  /* :not([type=checkbox]) matters — the roles list lives inside a .field, and a
+     checkbox stripped of its border is an invisible control. */
+  .rd .form-paper .field input:not([type="checkbox"]),
+  .rd .form-paper .field textarea,
+  .rd .form-paper .field select {
+    font-size: 17px;
+    padding: 9px 0;
+    border: 0;
+    border-bottom: 1.5px solid var(--rd-line-strong);
+    background: transparent;
+    appearance: none;
+  }
+  .rd .form-paper .field input::placeholder,
+  .rd .form-paper .field textarea::placeholder {
+    color: var(--color-muted);
+    opacity: 0.55;
+  }
+  .rd .form-paper .field select {
+    background-image: linear-gradient(45deg, transparent 50%, var(--color-ink) 50%),
+      linear-gradient(135deg, var(--color-ink) 50%, transparent 50%);
+    background-position: calc(100% - 8px) calc(50% + 1px), calc(100% - 2px) calc(50% + 1px);
+    background-size:
+      6px 6px,
+      6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 28px;
+    cursor: pointer;
+  }
+  .rd .form-paper .field input:not([type="checkbox"]):focus,
+  .rd .form-paper .field textarea:focus,
+  .rd .form-paper .field select:focus {
+    outline: none;
+    border-bottom-color: var(--color-red);
+  }
+  .rd .form-paper .field textarea {
+    min-height: 96px;
+    line-height: 1.55;
+  }
+  .rd .form-paper .field .hint {
+    margin: 8px 0 0;
+    font-size: 12.5px;
+  }
+  .rd .formfoot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-top: 10px;
+  }
+  .rd .formfoot .note {
+    font-size: 13.5px;
+    color: var(--color-muted);
+  }
+
+  /* volunteer roles — hairline rows, not boxes */
+  .rd .roles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 clamp(18px, 2.4vw, 32px);
+    margin-top: 2px;
+  }
+  @media (max-width: 640px) {
+    .rd .roles {
+      grid-template-columns: 1fr;
+    }
+  }
+  .rd .form-paper .roles label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    margin: 0;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--color-line);
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--color-ink);
+    transition: color 0.15s ease;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .rd .form-paper .roles label:hover {
+    color: var(--color-red);
+  }
+  .rd .roles input {
+    width: 17px;
+    height: 17px;
+    flex: none;
+    accent-color: var(--color-red);
+    margin: 0;
+  }
+
+  /* success — a rule and a sentence, not a filled panel */
+  .rd .sent {
+    border-top: 2px solid var(--color-green);
+    padding: 22px 0 0;
+  }
+  .rd .sent h3 {
+    font-size: 22px;
+    color: var(--rd-green-deep);
+    margin-bottom: 8px;
+  }
+  .rd .sent p {
+    margin: 0;
+    font-size: 15px;
+    color: var(--color-muted);
+    max-width: 46ch;
+    line-height: 1.6;
+  }
+  .rd .sent p + p {
+    margin-top: 16px;
+  }
+  /* Inline error, matching the ruled-field language: a red rule, no filled box. */
+  .rd .formerr {
+    border-left: 2px solid var(--color-red);
+    padding: 2px 0 2px 14px;
+    margin-bottom: 18px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--color-red);
+  }
+
+  /* ---- GALLERY ----------------------------------------------------------- */
+  .rd .masonry {
+    columns: 4;
+    column-gap: clamp(10px, 1.1vw, 16px);
+    padding: 0 var(--rd-gutter);
+  }
+  @media (max-width: 1024px) {
+    .rd .masonry {
+      columns: 3;
+    }
+  }
+  @media (max-width: 640px) {
+    .rd .masonry {
+      columns: 2;
+      column-gap: 10px;
+    }
+  }
+  .rd .tile {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0 0 clamp(10px, 1.1vw, 16px);
+    border: 0;
+    background: var(--color-paper-raised);
+    position: relative;
+    overflow: hidden;
+    cursor: zoom-in;
+    break-inside: avoid;
+  }
+  .rd .tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition:
+      transform 0.6s var(--rd-ease),
+      filter 0.4s ease;
+  }
+  .rd .tile:hover img {
+    transform: scale(1.045);
+  }
+  .rd .tile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-ink);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .rd .tile:hover::after {
+    opacity: 0.12;
+  }
+  .rd .tile:focus-visible {
+    outline: 3px solid var(--color-red);
+    outline-offset: 2px;
+  }
+
+  .rd .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(18, 15, 12, 0.96);
+    padding: clamp(16px, 3vw, 40px);
+    animation: rd-lightbox-in 0.22s ease both;
+  }
+  @keyframes rd-lightbox-in {
+    from {
+      opacity: 0;
+    }
+  }
+  /* no drop shadow: against a 96%-opaque ink backdrop it renders as nothing */
+  .rd .lightbox img {
+    max-height: 86vh;
+    max-width: 92vw;
+    object-fit: contain;
+    user-select: none;
+    touch-action: pan-y;
+    transition:
+      transform 0.26s var(--rd-ease),
+      opacity 0.2s ease;
+  }
+  .rd .lightbox.is-drag img {
+    transition: none;
+  }
+  .rd .lb-btn {
+    position: absolute;
+    background: transparent;
+    border: 0;
+    color: rgba(247, 240, 227, 0.66);
+    cursor: pointer;
+    transition:
+      color 0.16s ease,
+      transform 0.16s ease;
+    line-height: 1;
+  }
+  .rd .lb-btn:hover {
+    color: var(--color-paper);
+  }
+  .rd .lb-close {
+    top: clamp(12px, 2vw, 26px);
+    right: clamp(14px, 2.4vw, 32px);
+    font-size: 34px;
+  }
+  .rd .lb-prev,
+  .rd .lb-next {
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 44px;
+    padding: 12px 16px;
+  }
+  .rd .lb-prev {
+    left: clamp(4px, 1.4vw, 22px);
+  }
+  .rd .lb-next {
+    right: clamp(4px, 1.4vw, 22px);
+  }
+  .rd .lb-prev:hover {
+    transform: translateY(-50%) translateX(-3px);
+  }
+  .rd .lb-next:hover {
+    transform: translateY(-50%) translateX(3px);
+  }
+  .rd .lb-count {
+    position: absolute;
+    bottom: clamp(14px, 2.4vw, 28px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: rgba(247, 240, 227, 0.55);
+  }
+  .rd .lb-hint {
+    position: absolute;
+    bottom: clamp(14px, 2.4vw, 28px);
+    right: clamp(16px, 2.6vw, 34px);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: rgba(247, 240, 227, 0.36);
+  }
+  @media (max-width: 640px) {
+    .rd .lb-hint {
+      display: none;
+    }
   }
 
   /* Reduced motion: the global rule in globals.css already freezes reveals and

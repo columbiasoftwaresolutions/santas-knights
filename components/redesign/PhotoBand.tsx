@@ -53,7 +53,19 @@ export function PhotoBand({
   );
 }
 
-function TornEdge({ edge, fill }: { edge: "top" | "bottom"; fill: string }) {
+/**
+ * One torn paper edge. Exported because two sections tear the paper open
+ * without being a <PhotoBand>: the About timeline band (no heading, tighter
+ * padding) and the Contact page's three colour panels.
+ */
+export function TornEdge({
+  edge,
+  fill = "var(--color-paper)",
+}: {
+  edge: "top" | "bottom";
+  /** Must match the section color above/below the band. */
+  fill?: string;
+}) {
   return (
     <svg
       className={cn("torn", edge === "top" ? "torn--top" : "torn--bot")}

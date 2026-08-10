@@ -1,20 +1,16 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button } from "@/components/ui/Button";
 import { contactReasons, org } from "@/content/site";
 import { sendContactMessage, type EngagementState } from "@/app/actions/engagement";
-
-const fieldBase =
-  "w-full border-[1.5px] border-line bg-paper-raised px-[18px] py-[13px] text-[15.5px] text-ink placeholder:text-muted/70 focus:border-red focus:outline-2 focus:outline-offset-1 focus:outline-red";
-const labelBase = "mb-1.5 block text-[13px] font-bold uppercase tracking-[0.1em] text-muted";
 
 const initialState: EngagementState = { ok: false };
 
 /**
- * Contact capture. Messages are stored in Supabase (and forwarded by email
- * when Resend is configured); the error path always offers a mailto so the
- * form is never a dead end.
+ * Contact capture, written on the paper: a field is a ruled line, not a filled
+ * box (see `.form-paper` in app/redesign.css). Messages are stored in Supabase
+ * (and forwarded by email when Resend is configured); the error path always
+ * offers a mailto so the form is never a dead end.
  */
 export function ContactForm({
   defaultName,
@@ -27,15 +23,11 @@ export function ContactForm({
 
   if (state.ok) {
     return (
-      <div className="border border-green/40 bg-green-soft p-[34px] text-center">
-        <div aria-hidden className="text-[34px] text-green">
-          ♔
-        </div>
-        <h3 className="mt-2 text-h3 text-green">Got it, thanks</h3>
-        <p className="mx-auto mt-2 max-w-[42ch] text-muted">
-          We received your message. We usually reply within a few days. If you need us sooner,
-          email{" "}
-          <a href={`mailto:${org.email}`} className="font-semibold text-green underline">
+      <div className="sent">
+        <h3>Got it.</h3>
+        <p>
+          We usually reply within a few days. If you need us sooner, email{" "}
+          <a className="tlink" style={{ fontSize: "15px" }} href={`mailto:${org.email}`}>
             {org.email}
           </a>
           .
@@ -45,42 +37,36 @@ export function ContactForm({
   }
 
   return (
-    <form action={formAction} className="grid gap-5">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <label htmlFor="name" className={labelBase}>
-            Name
-          </label>
+    <form action={formAction} className="form-paper">
+      <h3>Drop us a line</h3>
+
+      <div className="fieldrow fieldrow--even">
+        <div className="field">
+          <label htmlFor="c-name">Name</label>
           <input
-            id="name"
+            id="c-name"
             name="name"
             required
             defaultValue={defaultName ?? undefined}
             placeholder="Your name"
-            className={fieldBase}
           />
         </div>
-        <div>
-          <label htmlFor="email" className={labelBase}>
-            Email
-          </label>
+        <div className="field">
+          <label htmlFor="c-email">Email</label>
           <input
-            id="email"
+            id="c-email"
             name="email"
             type="email"
             required
             defaultValue={defaultEmail ?? undefined}
             placeholder="you@email.com"
-            className={fieldBase}
           />
         </div>
       </div>
 
-      <div>
-        <label htmlFor="reason" className={labelBase}>
-          I&apos;m reaching out about
-        </label>
-        <select id="reason" name="reason" defaultValue="letters" className={fieldBase}>
+      <div className="field">
+        <label htmlFor="c-reason">I&apos;m reaching out about</label>
+        <select id="c-reason" name="reason" defaultValue="letters">
           {contactReasons.map((reason) => (
             <option key={reason.value} value={reason.value}>
               {reason.label}
@@ -89,31 +75,18 @@ export function ContactForm({
         </select>
       </div>
 
-      <div>
-        <label htmlFor="message" className={labelBase}>
-          Message
-        </label>
-        <textarea
-          id="message"
-          name="message"
-          required
-          rows={5}
-          placeholder="Tell us how we can help…"
-          className={`${fieldBase} resize-y`}
-        />
+      <div className="field">
+        <label htmlFor="c-message">Message</label>
+        <textarea id="c-message" name="message" required placeholder="Tell us how we can help…" />
       </div>
 
-      {state.message && !state.ok && (
-        <p className="border border-red/30 bg-red/5 px-[18px] py-[14px] text-[14.5px] font-semibold text-red">
-          {state.message}
-        </p>
-      )}
+      {state.message && !state.ok && <p className="formerr">{state.message}</p>}
 
-      <div className="flex flex-wrap items-center gap-4">
-        <Button type="submit" variant="red" arrow disabled={pending}>
-          {pending ? "Sending…" : "Send message"}
-        </Button>
-        <span className="text-[13.5px] text-muted">We typically reply within a few days.</span>
+      <div className="formfoot">
+        <button className="btn btn--red" type="submit" disabled={pending}>
+          {pending ? "Sending…" : "Send message"} <span className="arw">→</span>
+        </button>
+        <span className="note">We usually reply within a few days.</span>
       </div>
     </form>
   );
