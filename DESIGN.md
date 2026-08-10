@@ -99,6 +99,22 @@ components:
 
 # Santa's Knights — Design System
 
+> ## ⚠️ This document describes the OLD "Poster" system, which is being replaced.
+>
+> A site-wide redesign is landing page by page. `/donate`, `/membership`, and `/letters`
+> already use the **new** system and deliberately break several rules below — notably the
+> Cormorant italic accents, the uppercase display type, the numbered `01`/`02` labels, the
+> alternating dark/flood grounds, and the divider bars.
+>
+> **Before doing UI work, read [design-demos/REDESIGN-SYSTEM.md](./design-demos/REDESIGN-SYSTEM.md).**
+> It lists which pages are on which system and how the transition ends. This file stays
+> accurate for the pages not yet ported, and gets rewritten at the global flip.
+>
+> Two colors used by the new layer are not yet in the palette table below and will move
+> into `@theme` at the flip: `greenDeep` `#244C38` (green button hover, already used by
+> `Button.tsx`) and `goldInk` `#6C5418` (text on gold notice chips). A third, `lineStrong`
+> `#CBBDA4`, is the new layer's stronger border.
+
 ## Overview
 
 Santa's Knights is a 501(c)(3) nonprofit bringing **free** martial arts, fitness, and community to Harlem. The design system carries **two tones in one product**:

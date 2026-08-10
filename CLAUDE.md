@@ -70,10 +70,22 @@ Then write the git commit. Keep the CHANGELOG entry and the commit message consi
 - **Next.js (App Router)** on Vercel; **Supabase** (Postgres + RLS, Auth, Storage).
 - `SUPABASE_SECRET_KEY` is **server-only** — never import it into client components.
 - Mobile-first responsive design (audience is heavily social-media-driven).
-- Visual source of truth: `design-demos/home.html` + `design-demos/styles.css`. Use the
-  poster system: Archivo 900 uppercase display, Cormorant italic accents, Hanken body,
-  square controls/panels, warm near-black grounds, paper contrast sections, red/amber
-  flood accents, and no eyebrows/kickers.
+- **⭐ The site is mid-redesign, and two visual systems coexist. Read
+  [design-demos/REDESIGN-SYSTEM.md](./design-demos/REDESIGN-SYSTEM.md) before any UI work** —
+  it says which pages are on which system, and how the transition ends.
+  - **NEW system** (`design-demos/redesign.html` → `app/redesign.css` +
+    `components/redesign/`) — currently on `/donate`, `/membership`, `/letters`. One paper
+    ground; ink only in nav + footer. Archivo 800 **sentence case**. **No serif italics** —
+    emphasis is `<Mark>`, a hand-drawn red brush underline. No `01`/`02` labels, no 4-up box
+    grids, no tinted panels with an accent rail, no poster CTA bands. **No divider bars** —
+    sections are separated by air or by a torn-edge `<PhotoBand>`. A page opts in by
+    wrapping in `<RedesignShell>`; the CSS is scoped to `.rd` so it can't leak.
+  - **OLD poster system** (`design-demos/home.html` + `design-demos/styles.css`) — every
+    other page, until ported: Archivo 900 uppercase display, Cormorant italic accents,
+    Hanken body, warm near-black grounds, paper contrast sections, red/amber flood accents.
+  - When you port a page, move it to the new system wholesale and tick it off in the Status
+    table in REDESIGN-SYSTEM.md. Never mix the two on one screen — they invert each other.
+  - Both systems: Hanken body, square controls/panels, no eyebrows/kickers.
 - Santa's Letters: never expose a child's identifying details publicly; gifts must be age-appropriate, legal, and safe.
 - _Gladiators program conventions (training tracker, built on `gladiators.nyc` — GLADIATORS-SITE.md (gladiators-nyc repo)): XP values/levels/thresholds/rewards are admin-editable data, never hardcoded; XP can make a participant eligible to **request** a privilege but never auto-grants safety-sensitive access (armor, sparring) — those require instructor/admin certification. Armor rental eligibility is computed on `gladiators.nyc` (from XP + certification), alongside the rental transaction + item inventory. These conventions govern the `gladiators.nyc` build; this repo only cross-links out to it._
 
@@ -89,6 +101,8 @@ This is the source of truth for the Postgres schema. Apply it on a fresh Supabas
 > **The training-tracker tables are owned, documented, and operated by the `gladiators.nyc` app — not this repo.** The Gladiators *operational* program (booking, waivers, check-in, XP, dashboards, videos, admin) is built on the separate `gladiators.nyc` site. The two sites share **one identity** (one Supabase Auth + `profiles` in this **one shared Supabase project** — resolved 2026-07-02), so the training tables (`classes`, `registrations`, `checkins`, `waivers`, `media_consents`, `xp_config`, `xp_events`, `levels`/`badges`, `training_videos`, + private `waivers`/`training-videos` buckets, and the profile fields `veteran_status`/`waiver_signed_at` + `is_instructor()`) key off the same `profiles`. Their DDL and spec live in the **gladiators-nyc repo** (`sql/2026-06-training.sql` and GLADIATORS-SITE.md there). This repo's app builds UI only against the nonprofit/Letters tables. The `app_role` enum includes `participant`/`instructor` for the shared identity. `armor_inventory` / `armor_rentals` stay on the commercial `gladiators.nyc` Armory.
 
 **Privacy invariant:** a child's identifying details are NEVER exposed publicly. Guardian contact lives on the same `santa_letters` row, but anonymous visitors can only read live, unclaimed letters' safe columns through the `public_letters` view. Letter images sit in a private `letters` storage bucket, served via short-lived signed URLs.
+
+**The letter pile is public; the two write actions are not.** Anyone — signed out included — can read the pile on `/letters`, so a stranger can see a real wish before deciding to make an account. **Claiming** a letter requires an account (the claim ties the gift to a donor, enables the acknowledgment, and blocks a guardian from gifting their own child's letter — `app/letters/give/actions.ts`). **Submitting** a letter requires an account (the row carries `guardian_user_id`, which powers `/account` → "My letters"). Don't gate reading, and don't ungate either write.
 
 ```sql
 -- roles -----------------------------------------------------------
@@ -162,6 +176,11 @@ create table public.santa_letters (
   amazon_urls       text[] not null check (cardinality(amazon_urls) between 1 and 20),  -- one or more Amazon links (any country)
   letter_image_path text,                    -- path in the private "letters" storage bucket
   status            public.letter_status not null default 'live',
+  -- Gift description, shown on the public letter cards as "LEGO Technic set · about $50".
+  -- Added by sql/2026-08-gift-summary.sql; required on new submissions, nullable so
+  -- pre-migration letters stay valid. Describes the gift, never the child.
+  gift_summary      text,
+  gift_value_usd    numeric,
   -- Private fields — never exposed publicly
   guardian_name     text not null,
   guardian_email    text not null,

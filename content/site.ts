@@ -316,69 +316,94 @@ export const appPromo = {
  * Membership tiers (Plan v2 §A4/E7)
  * ------------------------------------------------------------------ */
 
+/**
+ * Free class membership. Deliberately NOT one of the paid tiers: pricing it in
+ * the same row as monthly giving reads as "the cheap plan", and the whole point
+ * is that training costs nothing and never will. The redesigned /membership
+ * page states it on the paper above the tier grid.
+ */
+export const freeMembership = {
+  name: "Class membership",
+  priceLabel: "$0",
+  headline: "Class membership is $0, always",
+  description:
+    "Sign up once and book any of the six Gladiators NYC classes. Equipment provided, beginners welcome.",
+  ctaLabel: "Sign up free",
+  href: TRAINING_HREF,
+} as const;
+
 export type MembershipTier = {
-  name: string;
-  price: number;
+  /** The monthly amount. `null` = "you choose", which sends them to /donate. */
+  price: number | null;
   priceLabel: string;
+  /** What the money buys, not a package name. */
+  name: string;
   description: string;
   ctaLabel: string;
-  /** TODO: Replace placeholder /donate hrefs with real recurring-billing URLs. */
-  href: string;
-  isFree?: boolean;
-  /** The tier we point most people at — gets the "Most common" marker. */
-  featured?: boolean;
+  /** Resolved from content/billing.ts at render; falls back to PayPal. */
+  href?: string;
+  /** Rendered under the description with a hand-drawn underline. */
+  note?: string;
+  /** Renders as the open, dashed card at the end of the grid. */
+  open?: boolean;
 };
 
+/**
+ * Monthly giving. Every tier is phrased as what it buys — the redesign drops
+ * the old perk-package framing and the "Recommended" badge (rule 4: no chips
+ * bolted onto cards); the one tier we actually steer people to carries `note`
+ * instead, marked with a brush underline.
+ *
+ * `href` is intentionally absent: /membership resolves each one through
+ * `checkoutUrl(price, "monthly")` so recurring links can be turned on in one
+ * place (content/billing.ts) without touching this list.
+ */
 export const membershipTiers: MembershipTier[] = [
   {
-    name: "Class Membership",
-    price: 0,
-    priceLabel: "$0/mo",
-    description: "100% free membership that lets you sign up for all classes!",
-    ctaLabel: "Sign up free",
-    href: TRAINING_HREF,
-    isFree: true,
-  },
-  {
-    name: "Gifts",
     price: 20,
-    priceLabel: "$20/mo",
-    description: "A present for a child in need per month!",
-    ctaLabel: "Buy now", // TODO: add external recurring-billing URL
-    href: links.donate,
-    featured: true,
+    priceLabel: "$20",
+    name: "A gift every month",
+    description: "One wrapped present for a child in need.",
+    note: "Most people start here.",
+    ctaLabel: "Give $20/mo",
   },
   {
-    name: "Gifts and Equipment",
     price: 50,
-    priceLabel: "$50/mo",
-    description: "A present and a foam sword for a child-student in need!",
-    ctaLabel: "Buy now", // TODO: add external recurring-billing URL
-    href: links.donate,
+    priceLabel: "$50",
+    name: "A gift and a sword",
+    description: "A present plus a foam sword, so a kid can join a class and keep training.",
+    ctaLabel: "Give $50/mo",
   },
   {
-    name: "Sponsor 2 Children",
     price: 100,
-    priceLabel: "$100/mo",
-    description: "Equivalent to a foam sword and a present for 2 children!",
-    ctaLabel: "Buy now", // TODO: add external recurring-billing URL
-    href: links.donate,
+    priceLabel: "$100",
+    name: "Two kids covered",
+    description: "A present and a foam sword each, for two children.",
+    ctaLabel: "Give $100/mo",
   },
   {
-    name: "Sponsor 5 Children",
     price: 250,
-    priceLabel: "$250/mo",
-    description: "Equivalent to a foam sword and a present for 5 children!",
-    ctaLabel: "Buy now", // TODO: add external recurring-billing URL
-    href: links.donate,
+    priceLabel: "$250",
+    name: "Five kids covered",
+    description: "A present and a foam sword each, for five children.",
+    ctaLabel: "Give $250/mo",
   },
   {
-    name: "Corporate Membership",
     price: 500,
-    priceLabel: "$500/mo",
-    description: "For companies that would like to sponsor Santa's Knights!",
-    ctaLabel: "Buy now", // TODO: add external recurring-billing URL
+    priceLabel: "$500",
+    name: "Corporate membership",
+    description: "For companies backing the program. We'll credit you on the sponsors page.",
+    ctaLabel: "Talk to us",
+    href: `mailto:${org.email}?subject=Corporate%20membership`,
+  },
+  {
+    price: null,
+    priceLabel: "You choose",
+    name: "Another amount",
+    description: "Any monthly amount, or a one-time gift instead.",
+    ctaLabel: "Set an amount",
     href: links.donate,
+    open: true,
   },
 ];
 

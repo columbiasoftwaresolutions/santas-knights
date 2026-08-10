@@ -1,0 +1,1470 @@
+/* ============================================================================
+   SANTA'S KNIGHTS — REDESIGN LAYER  (scoped, transitional)
+   ----------------------------------------------------------------------------
+   The new visual system, ported from design-demos/redesign.html.
+
+   ⚠️  EVERY rule in this file is scoped under `.rd`. Nothing here touches a page
+   that has not been redesigned yet. Pages opt in by wrapping their content in
+   <RedesignShell> (components/redesign/RedesignShell.tsx).
+
+   When every page has been ported, this whole layer is promoted to global and
+   the `.rd` scope disappears. The exact steps are written down in
+   design-demos/REDESIGN-SYSTEM.md — read that before flipping anything.
+
+   THE RULES (what makes this system different from the old poster system):
+     1. ONE ground: paper. Ink appears only in nav + footer.
+     2. NO serif italics. Emphasis is the same sans + a hand-drawn red brush
+        underline that draws in on scroll (<Mark>).
+     3. Sentence case. Uppercase is reserved for tiny labels.
+     4. No numbered 01/02 labels. No 4-up box grids. No tinted panels with an
+        accent rail. No poster CTA bands.
+     5. NO horizontal divider bars. Sections flow: air between text sections,
+        and full-bleed photo sections entered through a torn paper edge.
+     6. Copy is the shortest true version. Nothing is said twice on one screen.
+
+   Everything lives in @layer components so Tailwind utilities still win when a
+   page needs a one-off, and so these rules still beat globals.css @layer base.
+   ========================================================================== */
+
+@layer components {
+  .rd {
+    /* Local tokens. Colors deliberately alias the global @theme tokens so the
+       promotion to global is a rename, not a recolor. */
+    --rd-line-strong: #cbbda4;
+    /* Named aliases for two values the old system carried as bare literals:
+       the green button's hover state (Button.tsx `hover:bg-[#244c38]`) and the
+       ink used on gold notice chips (LettersPortal / SwipeDeck). Promoted to
+       tokens here so the redesign layer has no unnamed colors. */
+    --rd-green-deep: #244c38;
+    --rd-gold-ink: #6c5418;
+    --rd-shadow-tint: rgba(34, 29, 23, 0.45);
+    --rd-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --rd-gutter: clamp(24px, 4vw, 56px);
+    --rd-maxw: 1240px;
+    /* distance from the .rd-wrap content edge out to the viewport edge */
+    --rd-edge: calc((100vw - min(100vw, var(--rd-maxw))) / 2 + var(--rd-gutter));
+
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  /* ---- type ------------------------------------------------------------- */
+  .rd h1,
+  .rd h2,
+  .rd h3,
+  .rd h4 {
+    font-family: var(--font-display);
+    margin: 0;
+    line-height: 1.08;
+    letter-spacing: -0.028em;
+    font-weight: 800;
+    text-transform: none; /* rule 3: sentence case */
+    text-wrap: balance;
+  }
+  .rd p {
+    margin: 0;
+  }
+  .rd .rd-muted {
+    color: var(--color-muted);
+  }
+
+  .rd-wrap {
+    max-width: var(--rd-maxw);
+    margin: 0 auto;
+    padding: 0 var(--rd-gutter);
+  }
+
+  /* ============================================================
+     EMPHASIS — the hand-drawn red underline
+     ============================================================ */
+  .rd .mark {
+    position: relative;
+    display: inline-block;
+    font-style: normal;
+    white-space: nowrap;
+  }
+  .rd .mark > svg {
+    position: absolute;
+    left: -0.05em;
+    right: -0.07em;
+    width: calc(100% + 0.12em);
+    bottom: -0.11em;
+    height: 0.2em;
+    overflow: visible;
+    pointer-events: none;
+    color: var(--color-red);
+    /* fill must live on the <svg>: a `path` rule cannot reach <use> shadow
+       content, which is why it otherwise draws black. */
+    fill: currentColor;
+  }
+  .rd .mark--thin > svg {
+    height: 0.16em;
+    bottom: -0.1em;
+  }
+  .rd .mark--paper > svg {
+    color: var(--color-red);
+  }
+
+  /* The draw-in only exists when the reveal observer is armed (JS on + motion
+     allowed — see layout.tsx). Without `reveal-on` the stroke is simply drawn,
+     so no-JS, reduced-motion, and crawler renders always show it. */
+  html.reveal-on .rd .mark[data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+  html.reveal-on .rd .mark[data-reveal] > svg {
+    clip-path: inset(0 100% 0 0);
+  }
+  html.reveal-on .rd .mark[data-reveal].is-visible > svg {
+    clip-path: inset(0 -2% 0 0);
+    transition: clip-path 0.62s var(--rd-ease) 0.12s;
+  }
+
+  /* hand-drawn arrow */
+  .rd .arrow-hand {
+    position: absolute;
+    color: var(--color-red);
+    pointer-events: none;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  html.reveal-on .rd .arrow-hand[data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    stroke-dasharray: 260;
+    stroke-dashoffset: 260;
+  }
+  html.reveal-on .rd .arrow-hand[data-reveal].is-visible {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.85s var(--rd-ease) 0.25s;
+  }
+
+  /* ============================================================
+     CONTROLS
+     ============================================================ */
+  .rd .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1.5px solid transparent;
+    padding: 14px 26px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    white-space: nowrap;
+    text-transform: none;
+    cursor: pointer;
+    transition:
+      background-color 0.16s ease,
+      color 0.16s ease,
+      border-color 0.16s ease,
+      transform 0.16s ease;
+  }
+  .rd .btn:hover {
+    transform: translateY(-1px);
+  }
+  .rd .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .rd .btn--red {
+    background: var(--color-red);
+    color: #fff;
+  }
+  .rd .btn--red:hover {
+    background: var(--color-red-deep);
+  }
+  .rd .btn--green {
+    background: var(--color-green);
+    color: #fff;
+  }
+  .rd .btn--green:hover {
+    background: var(--rd-green-deep);
+  }
+  .rd .btn--ink {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .rd .btn--ink:hover {
+    background: var(--color-ink2);
+  }
+  .rd .btn--ghost {
+    background: transparent;
+    color: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+  .rd .btn--ghost:hover {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .rd .btn--onimg {
+    background: transparent;
+    color: var(--color-paper);
+    border-color: rgba(247, 240, 227, 0.5);
+  }
+  .rd .btn--onimg:hover {
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+  .rd .btn--wide {
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 14.5px;
+  }
+  .rd .btn .arw {
+    transition: transform 0.16s ease;
+  }
+  .rd .btn:hover .arw {
+    transform: translateX(3px);
+  }
+
+  .rd .tlink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14.5px;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--rd-line-strong);
+    padding-bottom: 2px;
+    transition:
+      border-color 0.16s ease,
+      color 0.16s ease;
+  }
+  .rd .tlink:hover {
+    border-color: var(--color-red);
+    color: var(--color-red);
+  }
+  .rd .tlink .arw {
+    transition: transform 0.16s ease;
+  }
+  .rd .tlink:hover .arw {
+    transform: translateX(3px);
+  }
+  .rd .tlink--green {
+    color: var(--color-green);
+    border-color: rgba(46, 94, 69, 0.35);
+  }
+  .rd .tlink--green:hover {
+    color: var(--rd-green-deep);
+    border-color: var(--color-green);
+  }
+
+  /* ============================================================
+     FLOW — no divider bars anywhere
+     ============================================================ */
+  .rd .sec {
+    padding: clamp(58px, 7vw, 104px) 0;
+  }
+  .rd .sec--tight {
+    padding: clamp(40px, 5vw, 68px) 0;
+  }
+  .rd .phead {
+    padding: clamp(48px, 6vw, 86px) 0 0;
+  }
+  .rd .phead h1 {
+    font-size: clamp(40px, 5.4vw, 68px);
+    line-height: 1.14;
+    letter-spacing: -0.035em;
+  }
+  .rd .phead .sub {
+    font-size: clamp(17px, 1.5vw, 20px);
+    color: var(--color-muted);
+    max-width: 44ch;
+    line-height: 1.5;
+  }
+  .rd .phead .phead-grid {
+    display: grid;
+    gap: clamp(26px, 4vw, 64px);
+    grid-template-columns: 1.12fr 0.88fr;
+    align-items: end;
+  }
+  @media (max-width: 900px) {
+    .rd .phead .phead-grid {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+  }
+
+  .rd h2.big {
+    font-size: clamp(30px, 3.6vw, 46px);
+    letter-spacing: -0.03em;
+  }
+  .rd .lede {
+    font-size: clamp(16px, 1.4vw, 18.5px);
+    color: var(--color-muted);
+    max-width: 46ch;
+    line-height: 1.55;
+  }
+
+  /* Rhythm helpers, so pages express spacing as relationships rather than a
+     scatter of inline margins. */
+  .rd .phead h1 + .sub,
+  .rd h2 + .lede,
+  .rd h1 + .lede {
+    margin-top: 18px;
+  }
+  .rd .phead h1 + .sub {
+    margin-top: 22px;
+  }
+  .rd h2 + .facts,
+  .rd h1 + .steps,
+  .rd h2 + .steps {
+    margin-top: 34px;
+  }
+  .rd .linkrow {
+    margin-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: center;
+  }
+  .rd .fineprint {
+    margin-top: 24px;
+    font-size: 12.5px;
+    color: var(--color-muted);
+    max-width: 52ch;
+    line-height: 1.55;
+  }
+  .rd .aside-note {
+    margin-top: 20px;
+    font-size: 14.5px;
+    color: var(--color-muted);
+  }
+  /* Air before a photo band, replacing the divider bar the old system used. */
+  .rd .band-gap {
+    margin-top: clamp(48px, 6vw, 90px);
+  }
+  /* A heading with something small parked at its right edge. */
+  .rd .headrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .rd .narrow-16 {
+    max-width: 16ch;
+  }
+  .rd .narrow-15 {
+    max-width: 15ch;
+  }
+  .rd .narrow-14 {
+    max-width: 14ch;
+  }
+  /* An inline photo (not a full-bleed band). Height is set per use so the crop
+     can be tuned to the shot; next/image fills it. */
+  .rd .figbox {
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    width: 100%;
+  }
+  .rd .figbox img {
+    object-fit: cover;
+  }
+
+  /* full-bleed helpers */
+  .rd .bleed {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+  }
+
+  /* the full-bleed photo section, entered through a torn paper edge */
+  .rd .imgsec {
+    position: relative;
+    overflow: hidden;
+    color: var(--color-paper);
+    isolation: isolate;
+  }
+  .rd .imgsec .bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+    transform: scale(1.1);
+    will-change: transform;
+  }
+  .rd .imgsec .veil {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(22, 18, 15, 0.9) 0%,
+        rgba(22, 18, 15, 0.76) 42%,
+        rgba(22, 18, 15, 0.34) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(22, 18, 15, 0.72) 0%,
+        rgba(22, 18, 15, 0.42) 40%,
+        rgba(22, 18, 15, 0.78) 100%
+      );
+  }
+  .rd .imgsec .content {
+    position: relative;
+    padding: clamp(92px, 11vw, 168px) 0 clamp(88px, 10vw, 156px);
+  }
+  .rd .torn {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: clamp(30px, 4vw, 58px);
+    display: block;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .rd .torn--top {
+    top: -1px;
+  }
+  .rd .torn--bot {
+    bottom: -1px;
+  }
+  .rd .imgsec h1,
+  .rd .imgsec h2 {
+    color: var(--color-paper);
+  }
+  .rd .imgsec .lede {
+    color: rgba(247, 240, 227, 0.78);
+  }
+  .rd .imgsec--hero .content {
+    padding: clamp(72px, 8.5vw, 124px) 0 clamp(84px, 9.5vw, 140px);
+  }
+  .rd .imgsec--hero h1 {
+    font-size: clamp(42px, 5.8vw, 76px);
+    line-height: 1.12;
+    letter-spacing: -0.035em;
+  }
+
+  /* facts — hairlines only, between items */
+  .rd .facts {
+    margin: 0;
+    padding: 0;
+  }
+  .rd .facts li {
+    list-style: none;
+    padding: 20px 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .rd .facts li:last-child {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .rd .facts h3 {
+    font-size: 18.5px;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin-bottom: 5px;
+  }
+  .rd .facts p {
+    font-size: 15px;
+    color: var(--color-muted);
+    line-height: 1.6;
+  }
+  /* Over a photo the rules would read as three stacked panels — the exact thing
+     rule 4 removes. No rules at all: one row, air between the columns. */
+  .rd .facts--onimg {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(24px, 3.6vw, 58px);
+  }
+  .rd .facts--onimg li,
+  .rd .facts--onimg li:last-child {
+    border: 0;
+    padding: 0;
+  }
+  .rd .facts--onimg h3 {
+    font-size: clamp(19px, 1.9vw, 23px);
+    color: var(--color-paper);
+    margin-bottom: 9px;
+    min-height: 2.16em; /* two lines, so every column's body starts level */
+  }
+  .rd .facts--onimg p {
+    color: rgba(247, 240, 227, 0.82);
+    font-size: 15.5px;
+    line-height: 1.6;
+    max-width: 34ch;
+  }
+  @media (max-width: 860px) {
+    .rd .facts--onimg {
+      grid-template-columns: 1fr;
+      gap: 26px;
+    }
+    .rd .facts--onimg h3 {
+      min-height: 0;
+    }
+  }
+
+  .rd .split {
+    display: grid;
+    gap: clamp(30px, 4.6vw, 72px);
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+  .rd .split--top {
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .rd .split {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ============================================================
+     DONATION WIDGET
+     ============================================================ */
+  .rd .give-card {
+    background: var(--color-card);
+    border: 1px solid var(--rd-line-strong);
+    box-shadow: 0 26px 50px -34px var(--rd-shadow-tint);
+    padding: clamp(22px, 2.4vw, 30px);
+  }
+  .rd .give-card h2 {
+    font-size: 23px;
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+  }
+  .rd .seg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1.5px solid var(--color-ink);
+    margin-bottom: 16px;
+  }
+  .rd .seg button {
+    background: var(--color-card);
+    color: var(--color-ink);
+    border: 0;
+    padding: 12px 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .rd .seg button + button {
+    border-left: 1.5px solid var(--color-ink);
+  }
+  .rd .seg button[aria-pressed="true"] {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .rd .amts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 9px;
+  }
+  .rd .amts button {
+    background: var(--color-card);
+    border: 1.5px solid var(--rd-line-strong);
+    padding: 14px 4px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .rd .amts button:hover {
+    border-color: var(--color-ink);
+  }
+  .rd .amts button[aria-pressed="true"] {
+    background: var(--color-red);
+    border-color: var(--color-red);
+    color: #fff;
+  }
+  .rd .amts .other {
+    grid-column: span 4;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 11px;
+  }
+  .rd .impact {
+    margin: 16px 0 18px;
+    font-size: 15.5px;
+    line-height: 1.5;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    color: var(--color-ink);
+  }
+  .rd .impact b {
+    font-weight: 700;
+  }
+  .rd .give-foot {
+    margin-top: 14px;
+    font-size: 13.5px;
+    color: var(--color-muted);
+  }
+  .rd .give-foot a {
+    font-weight: 700;
+    color: var(--color-ink);
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--rd-line-strong);
+  }
+  .rd .give-foot a:hover {
+    border-color: var(--color-red);
+    color: var(--color-red);
+  }
+  @media (max-width: 780px) {
+    .rd .amts {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .rd .amts .other {
+      grid-column: span 2;
+    }
+  }
+
+  /* ============================================================
+     "OTHER WAYS" — a flowing list, not a box grid
+     ============================================================ */
+  .rd .ways {
+    margin-top: 10px;
+  }
+  .rd .ways a {
+    display: grid;
+    grid-template-columns: minmax(180px, 0.34fr) 1fr auto;
+    gap: clamp(14px, 2.6vw, 40px);
+    align-items: baseline;
+    padding: 24px 0;
+    border-top: 1px solid var(--color-line);
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+  .rd .ways a:last-child {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .rd .ways a:hover {
+    background: var(--color-paper-raised);
+  }
+  .rd .ways strong {
+    font-family: var(--font-display);
+    font-size: clamp(19px, 2vw, 24px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+  }
+  .rd .ways span {
+    font-size: 15px;
+    color: var(--color-muted);
+    line-height: 1.55;
+    max-width: 52ch;
+  }
+  .rd .ways strong,
+  .rd .ways span {
+    transition: transform 0.2s var(--rd-ease);
+  }
+  .rd .ways a:hover strong,
+  .rd .ways a:hover span {
+    transform: translateX(10px);
+  }
+  .rd .ways em {
+    font-style: normal;
+    color: var(--color-red);
+    font-weight: 700;
+    font-size: 13.5px;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s var(--rd-ease);
+  }
+  .rd .ways a:hover em,
+  .rd .ways a:focus-visible em {
+    opacity: 1;
+    transform: none;
+  }
+  @media (max-width: 820px) {
+    .rd .ways a {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .rd .ways em {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* ---- accordion -------------------------------------------------------- */
+  .rd details {
+    border-top: 1px solid var(--color-line);
+  }
+  .rd details:last-of-type {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .rd summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 17px 34px 17px 0;
+    position: relative;
+    font-size: 16.5px;
+    font-weight: 700;
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  .rd summary::-webkit-details-marker {
+    display: none;
+  }
+  .rd summary::after {
+    content: "";
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    width: 11px;
+    height: 11px;
+    border-right: 2px solid var(--color-ink);
+    border-bottom: 2px solid var(--color-ink);
+    transform: translateY(-70%) rotate(45deg);
+    transition: transform 0.22s var(--rd-ease);
+  }
+  .rd details[open] summary::after {
+    transform: translateY(-25%) rotate(-135deg);
+  }
+  .rd details p {
+    margin: 0 0 17px;
+    font-size: 15px;
+    color: var(--color-muted);
+    line-height: 1.65;
+    max-width: 70ch;
+  }
+
+  /* ---- closer — air above it, no bar ------------------------------------ */
+  .rd .closer {
+    padding: clamp(30px, 3.6vw, 50px) 0 clamp(64px, 7vw, 96px);
+  }
+  .rd .closer .in {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .rd .closer h2 {
+    font-size: clamp(25px, 2.8vw, 36px);
+    letter-spacing: -0.03em;
+    max-width: 24ch;
+  }
+  .rd .closer p {
+    margin: 9px 0 0;
+    font-size: 15px;
+    color: var(--color-muted);
+    max-width: 48ch;
+  }
+  .rd .cta-wrap {
+    position: relative;
+  }
+
+  /* ============================================================
+     MEMBERSHIP
+     ============================================================ */
+  .rd .free-say {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: clamp(20px, 3vw, 48px);
+    align-items: end;
+  }
+  @media (max-width: 820px) {
+    .rd .free-say {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+  }
+  .rd .free-say h2 {
+    font-size: clamp(30px, 3.8vw, 50px);
+    letter-spacing: -0.032em;
+  }
+  .rd .free-say p {
+    margin: 14px 0 0;
+    font-size: 16.5px;
+    color: var(--color-muted);
+    max-width: 48ch;
+    line-height: 1.55;
+  }
+
+  /* Tier cards keep a 3-across grid — comparable prices really are easier to
+     scan side by side. White paper + a soft shadow, the same object language as
+     the letter cards; not an outlined generic card. */
+  .rd .tiers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(14px, 1.8vw, 22px);
+  }
+  @media (max-width: 980px) {
+    .rd .tiers {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .rd .tiers {
+      grid-template-columns: 1fr;
+    }
+  }
+  .rd .tier {
+    background: var(--color-card);
+    border: 1px solid var(--color-line);
+    padding: 26px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 18px 36px -32px var(--rd-shadow-tint);
+    transition:
+      transform 0.22s var(--rd-ease),
+      box-shadow 0.22s var(--rd-ease),
+      border-color 0.2s ease;
+  }
+  .rd .tier:hover {
+    transform: translateY(-3px);
+    border-color: var(--rd-line-strong);
+    box-shadow: 0 28px 46px -30px var(--rd-shadow-tint);
+  }
+  .rd .tier .price {
+    font-family: var(--font-display);
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+  }
+  .rd .tier .price small {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-muted);
+    letter-spacing: 0;
+  }
+  .rd .tier h3 {
+    font-size: 18px;
+    letter-spacing: -0.02em;
+    margin-top: 16px;
+  }
+  .rd .tier p {
+    margin: 7px 0 0;
+    font-size: 14.5px;
+    color: var(--color-muted);
+    line-height: 1.55;
+    flex: 1;
+  }
+  .rd .tier .btn {
+    margin-top: 22px;
+  }
+  /* A marked phrase inside body copy needs to darken back to ink, since the
+     brush stroke is doing the emphasising rather than the color. */
+  .rd .rd-note {
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+  .rd .tier--open {
+    background: transparent;
+    box-shadow: none;
+    border-style: dashed;
+  }
+  .rd .tier--open .price {
+    font-size: 23px;
+    color: var(--color-muted);
+  }
+
+  /* ============================================================
+     LETTERS
+     ============================================================ */
+  .rd .steps {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: start;
+    gap: clamp(10px, 1.4vw, 18px);
+  }
+  .rd .steps .step {
+    min-width: 0;
+  }
+  .rd .steps strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 2px;
+  }
+  .rd .steps span {
+    font-size: 14px;
+    color: var(--color-muted);
+    line-height: 1.45;
+  }
+  .rd .steps .sep {
+    color: var(--color-red);
+    flex: none;
+    margin-top: 6px;
+    align-self: start;
+  }
+  .rd .steps--onimg strong {
+    color: var(--color-paper);
+  }
+  .rd .steps--onimg span {
+    color: rgba(247, 240, 227, 0.78);
+  }
+  @media (max-width: 820px) {
+    .rd .steps {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .rd .steps .sep {
+      transform: rotate(66deg);
+      margin-left: 6px;
+    }
+  }
+
+  .rd .value-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    border: 1.5px solid var(--color-ink);
+    padding: 9px 14px;
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+  .rd .value-note b {
+    font-weight: 800;
+  }
+  .rd .value-note--onimg {
+    border-color: rgba(247, 240, 227, 0.55);
+    color: var(--color-paper);
+  }
+
+  /* the preview pile */
+  .rd .deck {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(16px, 2.2vw, 26px);
+    padding: 10px 0 16px;
+  }
+  @media (max-width: 920px) {
+    .rd .deck {
+      grid-template-columns: 1fr;
+    }
+  }
+  .rd .letter {
+    background: var(--color-card);
+    padding: 26px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 18px 34px -26px var(--rd-shadow-tint);
+    transition:
+      transform 0.28s var(--rd-ease),
+      box-shadow 0.28s var(--rd-ease);
+  }
+  .rd .letter:nth-child(1) {
+    transform: rotate(-1.1deg);
+  }
+  .rd .letter:nth-child(2) {
+    transform: rotate(0.7deg);
+  }
+  .rd .letter:nth-child(3) {
+    transform: rotate(-0.5deg);
+  }
+  .rd .letter:hover {
+    transform: rotate(0) translateY(-5px);
+    box-shadow: 0 28px 46px -26px var(--rd-shadow-tint);
+  }
+  .rd .letter .who {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--color-line);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .rd .letter .who em {
+    font-style: normal;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+  .rd .letter .wish {
+    font-size: 15.5px;
+    line-height: 1.62;
+    color: var(--color-ink);
+    flex: 1;
+    margin: 0 0 18px;
+  }
+  .rd .letter .ask {
+    font-size: 12.5px;
+    color: var(--color-muted);
+    margin: 0 0 15px;
+  }
+
+  .rd .protect {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 clamp(30px, 4vw, 56px);
+  }
+  @media (max-width: 780px) {
+    .rd .protect {
+      grid-template-columns: 1fr;
+    }
+  }
+  .rd .protect div {
+    padding: 18px 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .rd .protect h3 {
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .rd .protect p {
+    font-size: 14.5px;
+    color: var(--color-muted);
+    line-height: 1.55;
+  }
+
+  /* ---- the Adopt / Submit control — one square switch, sliding accent ---- */
+  .rd .tabs {
+    position: relative;
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    max-width: 440px;
+    border: 1.5px solid var(--color-ink);
+    background: var(--color-paper);
+    user-select: none;
+  }
+  .rd .tabs .slide {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 50%;
+    z-index: 0;
+    background: var(--color-red);
+    transition:
+      transform 0.34s var(--rd-ease),
+      background-color 0.34s var(--rd-ease);
+  }
+  .rd .tabs[data-view="submit"] .slide {
+    transform: translateX(100%);
+    background: var(--color-green);
+  }
+  .rd .tabs button {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+    border: 0;
+    padding: 15px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .rd .tabs button[aria-selected="true"] {
+    color: #fff;
+  }
+  .rd .tabs button[aria-selected="false"]:hover {
+    color: var(--color-red);
+  }
+  .rd .tabs button:last-child[aria-selected="false"]:hover {
+    color: var(--color-green);
+  }
+
+  .rd .panel {
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s var(--rd-ease);
+  }
+  .rd .panel.is-out {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  /* ---- the swipe deck --------------------------------------------------- */
+  .rd .deckwrap {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .rd .swipe {
+    position: relative;
+    height: 540px;
+  }
+  .rd .sw-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    backface-visibility: hidden;
+    box-shadow: 0 26px 50px -30px var(--rd-shadow-tint);
+  }
+  .rd .sw-front {
+    background: var(--color-card);
+  }
+  .rd .sw-back {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    transform: rotateY(180deg);
+    padding: 30px 28px;
+  }
+  .rd .sw-note {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 30px 26px;
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--color-ink);
+  }
+  .rd .sw-who {
+    border-top: 1px solid var(--color-line);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .rd .sw-who strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .rd .sw-who span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+  .rd .sw-back .kicker {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+  }
+  .rd .sw-back h3 {
+    margin-top: 12px;
+    font-size: 25px;
+    color: var(--color-paper);
+  }
+  .rd .sw-back .wish {
+    margin: 14px 0 0;
+    font-size: 16.5px;
+    line-height: 1.6;
+    color: rgba(247, 240, 227, 0.85);
+    max-height: 132px;
+    overflow-y: auto;
+  }
+  .rd .sw-back .ask {
+    margin: 10px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-gold);
+  }
+  /* Pinned to the bottom of the card, so a letter with one gift link doesn't
+     leave a hole between the link and the fine print. */
+  .rd .sw-back .fine {
+    margin-top: auto;
+    padding-top: 14px;
+    font-size: 12.5px;
+    color: rgba(247, 240, 227, 0.6);
+    text-align: center;
+  }
+  .rd .sw-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    padding: 12px;
+    text-decoration: none;
+    min-height: 88px;
+    transition: background-color 0.15s ease;
+  }
+  .rd .sw-item:hover {
+    background: #fff;
+  }
+  .rd .sw-item .thumb {
+    display: flex;
+    height: 64px;
+    width: 74px;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(22, 18, 15, 0.4);
+  }
+  .rd .sw-item .label {
+    min-width: 0;
+    flex: 1;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .rd .sw-stamp {
+    pointer-events: none;
+    position: absolute;
+    top: 26px;
+    border: 3px solid;
+    background: rgba(255, 255, 255, 0.86);
+    padding: 6px 16px;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    z-index: 3;
+  }
+  .rd .deckbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 22px;
+  }
+  /* Three nowrap buttons don't fit a phone — let them wrap and share the row
+     rather than pushing the document sideways. */
+  @media (max-width: 560px) {
+    .rd .deckbar {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+    .rd .deckbar .btn {
+      flex: 1 1 auto;
+      padding-left: 14px;
+      padding-right: 14px;
+    }
+  }
+  .rd .deckcount {
+    margin: 14px 0 0;
+    text-align: center;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+
+  /* ---- forms ------------------------------------------------------------ */
+  .rd .formgrid {
+    display: grid;
+    grid-template-columns: 0.62fr 0.38fr;
+    gap: clamp(28px, 4vw, 54px);
+    align-items: start;
+  }
+  @media (max-width: 960px) {
+    .rd .formgrid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .rd .field {
+    margin-bottom: 18px;
+  }
+  .rd .field label,
+  .rd .field .lbl {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 7px;
+  }
+  .rd .field input,
+  .rd .field textarea,
+  .rd .field select {
+    width: 100%;
+    font: inherit;
+    font-size: 15.5px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--rd-line-strong);
+    background: var(--color-card);
+    color: var(--color-ink);
+    transition: border-color 0.16s ease;
+  }
+  .rd .field input:focus,
+  .rd .field textarea:focus,
+  .rd .field select:focus {
+    outline: none;
+    border-color: var(--color-red);
+  }
+  .rd .field textarea {
+    min-height: 104px;
+    resize: vertical;
+  }
+  .rd .field .hint {
+    margin: 6px 0 0;
+    font-size: 12.5px;
+    color: var(--color-muted);
+  }
+  .rd .field .err {
+    margin: 6px 0 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-red);
+  }
+  .rd .fieldrow {
+    display: grid;
+    grid-template-columns: 1fr 140px;
+    gap: 16px;
+  }
+  .rd .fieldrow--even {
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 560px) {
+    .rd .fieldrow,
+    .rd .fieldrow--even {
+      grid-template-columns: 1fr;
+    }
+  }
+  .rd .consent {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14.5px;
+    line-height: 1.55;
+    margin: 6px 0 20px;
+    cursor: pointer;
+  }
+  .rd .consent input {
+    margin-top: 3px;
+    width: 17px;
+    height: 17px;
+    accent-color: var(--color-green);
+    flex: none;
+  }
+  .rd .consent-text {
+    max-height: 210px;
+    overflow-y: auto;
+    white-space: pre-line;
+    border: 1px solid var(--color-line);
+    background: var(--color-paper);
+    padding: 16px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--color-muted);
+    margin-bottom: 14px;
+  }
+  .rd .formcard {
+    background: var(--color-card);
+    border: 1px solid var(--rd-line-strong);
+    box-shadow: 0 26px 50px -34px var(--rd-shadow-tint);
+    padding: clamp(26px, 3vw, 38px);
+  }
+  .rd .formcard h3 {
+    font-size: 21px;
+    margin-bottom: 6px;
+  }
+  .rd .formcard .sub {
+    margin: 0 0 22px;
+    font-size: 15px;
+    color: var(--color-muted);
+  }
+
+  /* guidance rail — labelled text, not tinted boxes */
+  .rd .rail {
+    display: grid;
+    gap: 22px;
+  }
+  .rd .rail .item h4 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .rd .rail .item p {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+  .rd .rail .item--green h4 {
+    color: var(--color-green);
+  }
+  .rd .rail .item--red h4 {
+    color: var(--color-red);
+  }
+  .rd .rail .item--ink h4 {
+    color: var(--color-ink);
+  }
+
+  /* ---- neutral states (gates, empties, notices) ------------------------- */
+  .rd .state {
+    background: var(--color-card);
+    border: 1px solid var(--rd-line-strong);
+    box-shadow: 0 26px 50px -34px var(--rd-shadow-tint);
+    padding: clamp(28px, 3.4vw, 42px);
+    text-align: center;
+  }
+  .rd .state h2,
+  .rd .state h3 {
+    font-size: 25px;
+  }
+  .rd .state p {
+    margin: 10px auto 0;
+    max-width: 46ch;
+    font-size: 15.5px;
+    color: var(--color-muted);
+    line-height: 1.6;
+  }
+  .rd .state .actions {
+    margin-top: 26px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+  .rd .notice {
+    margin: 14px auto 0;
+    max-width: 46ch;
+    border: 1.5px solid var(--color-gold);
+    padding: 10px 14px;
+    text-align: center;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--rd-gold-ink);
+  }
+  .rd .notice--red {
+    border-color: var(--color-red);
+    color: var(--color-red);
+  }
+
+  /* Reduced motion: the global rule in globals.css already freezes reveals and
+     transitions. These two need explicit resets because they animate properties
+     the global rule doesn't neutralise. */
+  @media (prefers-reduced-motion: reduce) {
+    .rd .mark > svg {
+      clip-path: none !important;
+    }
+    .rd .arrow-hand {
+      stroke-dashoffset: 0 !important;
+    }
+    .rd .imgsec .bg {
+      transform: scale(1.1) !important;
+    }
+  }
+}

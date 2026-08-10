@@ -1,7 +1,8 @@
 "use server";
 
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { links, org } from "@/content/site";
+import { checkoutUrl, isBillingConfigured, type DonationFrequency } from "@/content/billing";
+import { org } from "@/content/site";
 
 export type DonationState = {
   ok: boolean;
@@ -25,7 +26,8 @@ export async function recordDonationIntent(
   const lastName = String(formData.get("last_name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const amountRaw = String(formData.get("amount") ?? "").replace(/[^0-9.]/g, "");
-  const frequency = String(formData.get("frequency") ?? "one_time");
+  const frequency: DonationFrequency =
+    String(formData.get("frequency") ?? "one_time") === "monthly" ? "monthly" : "one_time";
   const designation = String(formData.get("designation") ?? "").trim() || null;
   const dedicateTo = String(formData.get("dedicate_to") ?? "").trim() || null;
 
@@ -36,16 +38,15 @@ export async function recordDonationIntent(
     return { ok: false, message: "Enter a donation amount greater than zero." };
   }
 
-  // Prefer a dedicated card processor if one is ever configured; otherwise hand
-  // off to PayPal (the live default) after capturing the lead.
-  const processorUrl = process.env.NEXT_PUBLIC_DONATE_URL || links.paypal;
+  // Resolve where this specific gift should continue to: a recurring plan link
+  // for monthly gifts when one is configured, otherwise the general checkout,
+  // otherwise PayPal. Never empty — see content/billing.ts.
+  const processorUrl = checkoutUrl(amount, frequency);
 
   const supabase = createSupabaseAdminClient();
   if (!supabase) {
-    // No backend yet: still let them continue to the processor if one exists.
-    return processorUrl
-      ? { ok: true, redirect: processorUrl }
-      : { ok: false, message: `Please email ${org.email} to arrange your gift.` };
+    // No backend yet: still let them continue to the processor.
+    return { ok: true, redirect: processorUrl };
   }
 
   const { error } = await supabase.from("donations").insert({
@@ -53,10 +54,10 @@ export async function recordDonationIntent(
     last_name: lastName,
     email,
     amount,
-    frequency: frequency === "monthly" ? "monthly" : "one_time",
+    frequency,
     designation,
     dedicate_to: dedicateTo,
-    processor: processorUrl ? "external" : null,
+    processor: isBillingConfigured() ? "external" : "paypal",
   });
   if (error) {
     console.error("Donation intent insert failed:", error.message);

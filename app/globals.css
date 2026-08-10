@@ -1,6 +1,15 @@
 @import "tailwindcss";
 
 /*
+  The redesign layer (design-demos/redesign.html → app/redesign.css).
+  Every rule in it is scoped under `.rd`, so it only affects pages that opt in
+  via <RedesignShell>. It is imported here (not per-page) so Tailwind's cascade
+  layers stay in one place. See design-demos/REDESIGN-SYSTEM.md for how this
+  becomes the global system once every page has been ported.
+*/
+@import "./redesign.css";
+
+/*
   Design tokens — mirror of DESIGN.md.
   Tailwind v4 reads these `--color-*`, `--font-*`, `--radius-*` vars and
   generates matching utilities (bg-paper, text-ink, font-serif, rounded-pill, …).

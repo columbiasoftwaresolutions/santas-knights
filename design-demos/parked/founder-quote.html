@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Parked — founder quote block (for the homepage redesign)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   PARKED BLOCK — Damion's founder quote
+   ------------------------------------------------------------
+   Pulled off /membership on 2026-08-10. Not in use anywhere yet;
+   the intent is to place it on the HOMEPAGE redesign, where a
+   named human voice is the thing the current build most lacks.
+
+   The quote is real and sourced (Gothamist) and already lives in
+   content/site.ts as `founder.quote` / `founder.quoteAttribution` —
+   do not paraphrase it.
+
+   Drop-in cost: the CSS block below, plus `.mark` (the hand-drawn
+   red underline) and the `--edge` custom property from the main
+   demo. Everything else is self-contained.
+   ============================================================ */
+
+:root{
+  --paper:#F7F0E3;
+  --ink:#16120F;
+  --muted:#6C6256;
+  --red:#C2331F;
+  --gutter:clamp(24px,4vw,56px);
+  --maxw:1240px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  /* distance from the .wrap content edge out to the viewport edge */
+  --edge:calc((100vw - min(100vw, var(--maxw)))/2 + var(--gutter));
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Hanken Grotesk",system-ui,sans-serif;font-size:17px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;}
+img{max-width:100%;display:block;}
+h1,h2,h3{font-family:"Archivo",sans-serif;margin:0;line-height:1.08;letter-spacing:-.028em;font-weight:800;}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter);}
+.sec{padding:clamp(58px,7vw,104px) 0;}
+.sec--tight{padding:clamp(40px,5vw,68px) 0;}
+
+/* photo that runs off the LEFT edge of the viewport.
+   NOTE: an inline `margin:0` on the <figure> will silently beat this. */
+.bleed-left{margin:0 0 0 calc(-1 * var(--edge));}
+
+/* founder quote — a human voice, photo bleeding off the left edge */
+.quoteblock{display:grid;grid-template-columns:.46fr .54fr;gap:clamp(28px,4.4vw,64px);align-items:center;}
+@media(max-width:900px){.quoteblock{grid-template-columns:1fr;}
+  .bleed-left{margin:0 calc(-1 * var(--edge));}}
+.quoteblock img{width:100%;height:clamp(320px,38vw,500px);object-fit:cover;}
+.quoteblock blockquote{margin:0;font-size:clamp(23px,2.7vw,36px);line-height:1.28;
+  letter-spacing:-.025em;font-weight:600;font-family:"Archivo",sans-serif;}
+.quoteblock .attr{margin-top:22px;font-size:13px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);}
+.quoteblock .attr b{display:block;color:var(--ink);margin-bottom:4px;letter-spacing:.08em;}
+
+/* the emphasis device — same sans, hand-drawn red brush underline */
+.mark{position:relative;display:inline-block;font-style:normal;white-space:nowrap;}
+.mark svg{position:absolute;left:-.05em;right:-.07em;width:calc(100% + .12em);
+  bottom:-.11em;height:.20em;overflow:visible;pointer-events:none;
+  color:var(--red);fill:currentColor;clip-path:inset(0 100% 0 0);}
+.is-in .mark svg,.mark.is-in svg{clip-path:inset(0 -2% 0 0);transition:clip-path .62s var(--ease) .12s;}
+
+[data-r]{opacity:0;transform:translateY(14px);}
+[data-r].is-in{opacity:1;transform:none;
+  transition:opacity .42s var(--ease) var(--d,0ms),transform .42s var(--ease) var(--d,0ms);}
+@media(prefers-reduced-motion:reduce){
+  [data-r]{opacity:1!important;transform:none!important;transition:none!important;}
+  .mark svg{clip-path:none!important;transition:none!important;}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <path id="brush" d="M2.4,7.9 C46,3.1 97,1.8 152,2.8 C199,3.6 246,6.1 297.6,3.4 C252,10.6 203,11.9 150,10.9 C95,9.9 47,10.5 2.4,7.9 Z" />
+  </defs>
+</svg>
+
+  <section class="sec sec--tight">
+    <div class="wrap">
+      <div class="quoteblock">
+        <figure class="bleed-left" data-r>
+          <img src="../../public/images/gallery/Gladiators_Byline_Luca_Venter_30_e42b7b32ad.jpg" alt="Three Gladiators NYC fighters in armor on a Harlem street" style="object-position:50% 34%" />
+        </figure>
+        <div data-r style="--d:120ms">
+          <blockquote>
+            “I’m ex-military and I got heavily injured while I was in. When I came out I was just
+            a mess. Fitness and sports <span class="mark">really saved my life</span>.”
+          </blockquote>
+          <p class="attr"><b>Damion DiGrazia</b>Founder, Santa’s Knights · to Gothamist</p>
+        </div>
+      </div>
+    </div>
+  </section>
+<script>
+document.querySelectorAll('.mark').forEach(el=>{
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 300 14');
+  svg.setAttribute('preserveAspectRatio','none');
+  svg.setAttribute('aria-hidden','true');
+  const use=document.createElementNS('http://www.w3.org/2000/svg','use');
+  use.setAttribute('href','#brush');
+  svg.appendChild(use); el.appendChild(svg);
+});
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){e.target.classList.add('is-in');io.unobserve(e.target);}
+}),{rootMargin:'0px 0px -6% 0px',threshold:0.15});
+document.querySelectorAll('[data-r], .mark').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

@@ -46,11 +46,35 @@ update profiles set role = 'admin' where email = '<that email>';
 
 Sign in at `/admin/login` to reach the Letters admin dashboard.
 
+## 3b. Apply the gift-summary migration
+
+Run [`sql/2026-08-gift-summary.sql`](../sql/2026-08-gift-summary.sql) in the SQL
+Editor. It adds `gift_summary` / `gift_value_usd` to `santa_letters` and
+re-projects them through the three letter views, so the public letter cards can
+show "LEGO Technic set · about $50".
+
+Safe to defer: both the read and the write detect the missing columns and fall
+back to the old column set, so the site keeps working — the ask line just
+doesn't render, and the submit form's answer is dropped.
+
 ## 4. Get from Damion / Nicolas
 
 - Real **PayPal / Venmo / donation-processor URLs** →
   `NEXT_PUBLIC_PAYPAL_URL`, `NEXT_PUBLIC_VENMO_URL`, `NEXT_PUBLIC_DONATE_URL`.
   (The Donate page only renders options whose URLs are set.)
+- ⭐ **Recurring-billing links** — the one genuinely missing piece behind the
+  Donate and Membership CTAs. Right now every monthly gift falls through to the
+  PayPal fundraiser, which does handle recurring gifts, so nothing is a dead
+  link — but the donor doesn't land on a page that already knows the amount.
+  Turning it on is a change to **one file**, [`content/billing.ts`](../content/billing.ts),
+  with no UI work. Either:
+  1. paste a per-amount recurring link (Stripe payment link, Donorbox plan,
+     Givebutter, …) into `monthlyPlanUrls` for $20 / $50 / $100 / $250 / $500, or
+  2. set `NEXT_PUBLIC_BILLING_URL` to a checkout that accepts `?amount=` and
+     `?frequency=`, which also covers custom amounts.
+
+  Whichever is set, `recordDonationIntent` still writes the `donations` row
+  before the donor leaves, so the lead and the receipt trail are unaffected.
 - Final **consent / terms language** to replace the drafts in
   [`content/consent.ts`](../content/consent.ts) — bump the version strings
   when the text changes.

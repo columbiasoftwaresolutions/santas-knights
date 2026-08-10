@@ -1,0 +1,1267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Santa's Knights — redesign demo (Donate · Membership · Letters)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   SANTA'S KNIGHTS — redesign demo  (v3)
+   ------------------------------------------------------------
+     1. ONE ground: paper. Ink only in nav + footer.
+     2. NO serif italics. Emphasis = same sans + a hand-drawn red
+        brush underline that draws in on scroll. (.mark)
+     3. Sentence case. Uppercase only for tiny labels.
+     4. No numbered labels. No 4-up box grids. No tinted panels
+        with an accent rail.
+     5. NO horizontal divider bars. Sections flow:
+          · air alone between text sections
+          · full-bleed photo sections entered through a torn
+            paper edge, so paper dissolves into the image
+          · a photo that runs off the edge of the viewport
+     6. Copy trimmed to the shortest true version. Nothing is
+        said twice on the same screen.
+   ============================================================ */
+
+:root{
+  --paper:#F7F0E3;
+  --paper-raised:#FBF6EC;
+  --card:#FFFFFF;
+  --ink:#16120F;
+  --ink2:#1A1512;
+  --bone:#E8E2D4;
+  --muted:#6C6256;
+  --red:#C2331F;
+  --red-deep:#9E2536;
+  --green:#2E5E45;
+  --green-deep:#244C38;
+  --gold:#C2912F;
+  --line:#E4D8C4;
+  --line-strong:#CBBDA4;
+  --gutter:clamp(24px,4vw,56px);
+  --maxw:1240px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --shadow-tint:rgba(34,29,23,.45);
+  /* distance from the .wrap content edge out to the viewport edge */
+  --edge:calc((100vw - min(100vw, var(--maxw)))/2 + var(--gutter));
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Hanken Grotesk",system-ui,sans-serif;
+  font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;}
+button{font:inherit;cursor:pointer;}
+h1,h2,h3,h4{
+  font-family:"Archivo",system-ui,sans-serif;margin:0;
+  line-height:1.08;letter-spacing:-.028em;font-weight:800;text-wrap:balance;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter);}
+.muted{color:var(--muted);}
+
+/* ============================================================
+   EMPHASIS — the hand-drawn red underline
+   ============================================================ */
+.mark{position:relative;display:inline-block;font-style:normal;white-space:nowrap;}
+.mark svg{
+  position:absolute;left:-.05em;right:-.07em;width:calc(100% + .12em);
+  bottom:-.11em;height:.20em;overflow:visible;pointer-events:none;
+  color:var(--red);
+  /* fill must live on the <svg>: a `.mark svg path` rule cannot reach
+     <use> shadow content, which is why it first drew black. */
+  fill:currentColor;
+  clip-path:inset(0 100% 0 0);
+}
+.is-in .mark svg,.mark.is-in svg{clip-path:inset(0 -2% 0 0);transition:clip-path .62s var(--ease) .12s;}
+.mark--thin svg{height:.16em;bottom:-.10em;}
+
+/* hand-drawn arrow */
+.arrow-hand{
+  position:absolute;color:var(--red);pointer-events:none;
+  stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:260;stroke-dashoffset:260;
+}
+.is-in .arrow-hand{stroke-dashoffset:0;transition:stroke-dashoffset .85s var(--ease) .25s;}
+
+/* ============================================================
+   MOTION
+   ============================================================ */
+[data-r]{opacity:0;transform:translateY(14px);}
+[data-r].is-in{opacity:1;transform:none;
+  transition:opacity .42s var(--ease) var(--d,0ms),transform .42s var(--ease) var(--d,0ms);}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  [data-r]{opacity:1!important;transform:none!important;transition:none!important;}
+  .mark svg{clip-path:none!important;transition:none!important;}
+  .arrow-hand{stroke-dashoffset:0!important;transition:none!important;}
+  .imgsec .bg{transform:none!important;}
+}
+
+/* ---- buttons ---- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  border:1.5px solid transparent;padding:14px 26px;
+  font-size:14px;font-weight:700;letter-spacing:.02em;text-decoration:none;white-space:nowrap;
+  transition:background-color .16s ease,color .16s ease,border-color .16s ease,transform .16s ease;
+}
+.btn:hover{transform:translateY(-1px);}
+.btn--red{background:var(--red);color:#fff;}
+.btn--red:hover{background:var(--red-deep);}
+.btn--ink{background:var(--ink);color:var(--paper);}
+.btn--ink:hover{background:var(--ink2);}
+.btn--ghost{background:transparent;color:var(--ink);border-color:var(--ink);}
+.btn--ghost:hover{background:var(--ink);color:var(--paper);}
+.btn--wide{width:100%;padding:16px 24px;font-size:14.5px;}
+.btn .arw{transition:transform .16s ease;}
+.btn:hover .arw{transform:translateX(3px);}
+
+.tlink{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:14.5px;font-weight:700;text-decoration:none;
+  border-bottom:1.5px solid var(--line-strong);padding-bottom:2px;
+  transition:border-color .16s ease,color .16s ease;
+}
+.tlink:hover{border-color:var(--red);color:var(--red);}
+.tlink .arw{transition:transform .16s ease;}
+.tlink:hover .arw{transform:translateX(3px);}
+.tlink--green{color:var(--green);border-color:rgba(46,94,69,.35);}
+.tlink--green:hover{color:var(--green-deep);border-color:var(--green);}
+
+/* ============================================================
+   DEMO CHROME (not part of the design)
+   ============================================================ */
+.demobar{
+  position:sticky;top:0;z-index:100;background:var(--ink);color:var(--bone);
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  padding:9px clamp(16px,3vw,28px);font-size:12.5px;
+  border-bottom:1px solid rgba(232,226,212,.16);
+}
+.demobar b{font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:11px;opacity:.5;margin-right:6px;}
+.demobar button{background:transparent;color:rgba(232,226,212,.7);border:1px solid rgba(232,226,212,.24);
+  padding:6px 13px;font-size:12.5px;font-weight:600;transition:all .15s ease;}
+.demobar button:hover{color:var(--bone);border-color:rgba(232,226,212,.5);}
+.demobar button[aria-current="true"]{background:var(--bone);color:var(--ink);border-color:var(--bone);}
+.demobar .spacer{margin-left:auto;opacity:.42;font-size:11.5px;}
+
+/* ============================================================
+   SITE CHROME
+   ============================================================ */
+.nav{position:sticky;top:37px;z-index:60;background:var(--ink);border-bottom:1px solid rgba(232,226,212,.14);}
+.nav .wrap{display:flex;align-items:center;gap:22px;height:68px;}
+.brand{font-family:"Archivo",sans-serif;font-weight:800;font-size:17px;letter-spacing:-.02em;color:var(--bone);text-decoration:none;white-space:nowrap;}
+.navlinks{display:flex;gap:20px;font-size:13.5px;font-weight:600;}
+.navlinks a{color:rgba(232,226,212,.72);text-decoration:none;padding:4px 0;border-bottom:2px solid transparent;transition:color .15s ease,border-color .15s ease;}
+.navlinks a:hover,.navlinks a.on{color:var(--bone);border-color:var(--red);}
+.nav .right{margin-left:auto;display:flex;align-items:center;gap:14px;}
+.nav .right .give{font-size:13.5px;font-weight:600;color:rgba(232,226,212,.72);text-decoration:none;}
+.nav .right .give:hover{color:var(--bone);}
+@media(max-width:960px){.navlinks{display:none;}}
+
+.foot{background:var(--ink);color:var(--bone);padding:clamp(48px,5vw,68px) 0 26px;}
+.foot .cols{display:grid;gap:34px;grid-template-columns:1.5fr 1fr 1fr 1.3fr;}
+@media(max-width:820px){.foot .cols{grid-template-columns:1fr 1fr;}}
+.foot h4{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:rgba(232,226,212,.5);font-weight:700;margin-bottom:14px;}
+.foot .fbrand{font-family:"Archivo",sans-serif;font-weight:800;font-size:18px;margin-bottom:12px;}
+.foot p{font-size:14px;color:rgba(232,226,212,.6);margin:0 0 10px;max-width:34ch;line-height:1.6;}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:9px;}
+.foot a{font-size:14px;color:rgba(232,226,212,.72);text-decoration:none;}
+.foot a:hover{color:var(--paper);}
+.foot .bar{margin-top:36px;padding-top:20px;border-top:1px solid rgba(232,226,212,.12);font-size:12.5px;color:rgba(232,226,212,.45);}
+
+/* ============================================================
+   FLOW — no divider bars anywhere
+   ============================================================ */
+.sec{padding:clamp(58px,7vw,104px) 0;}
+.sec--tight{padding:clamp(40px,5vw,68px) 0;}
+.phead{padding:clamp(48px,6vw,86px) 0 0;}
+.phead h1{font-size:clamp(40px,5.4vw,68px);line-height:1.14;letter-spacing:-.035em;}
+.phead .sub{font-size:clamp(17px,1.5vw,20px);color:var(--muted);max-width:44ch;line-height:1.5;}
+.phead .grid{display:grid;gap:clamp(26px,4vw,64px);grid-template-columns:1.12fr .88fr;align-items:end;}
+@media(max-width:900px){.phead .grid{grid-template-columns:1fr;align-items:start;}}
+
+h2.big{font-size:clamp(30px,3.6vw,46px);letter-spacing:-.03em;}
+.lede{font-size:clamp(16px,1.4vw,18.5px);color:var(--muted);max-width:46ch;line-height:1.55;}
+
+/* full-bleed helpers */
+.bleed{width:100vw;margin-left:calc(50% - 50vw);}
+.bleed-right{margin-right:calc(-1 * var(--edge));}
+
+/* the full-bleed photo section, entered through a torn paper edge */
+.imgsec{position:relative;overflow:hidden;color:var(--paper);isolation:isolate;}
+.imgsec .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;
+  transform:scale(1.10);will-change:transform;}
+.imgsec .veil{position:absolute;inset:0;z-index:-1;
+  background:
+    linear-gradient(90deg,rgba(22,18,15,.90) 0%,rgba(22,18,15,.76) 42%,rgba(22,18,15,.34) 100%),
+    linear-gradient(180deg,rgba(22,18,15,.72) 0%,rgba(22,18,15,.42) 40%,rgba(22,18,15,.78) 100%);}
+.imgsec .content{position:relative;padding:clamp(92px,11vw,168px) 0 clamp(88px,10vw,156px);}
+.torn{position:absolute;left:0;width:100%;height:clamp(30px,4vw,58px);display:block;pointer-events:none;z-index:1;}
+.torn--top{top:-1px;}
+.torn--bot{bottom:-1px;}
+.imgsec h2{color:var(--paper);}
+.imgsec .lede{color:rgba(247,240,227,.78);}
+
+/* facts — hairlines only, between items */
+.facts{margin:0;padding:0;}
+.facts li{list-style:none;padding:20px 0;border-top:1px solid var(--line);}
+.facts li:last-child{border-bottom:1px solid var(--line);}
+.facts h3{font-size:18.5px;letter-spacing:-.02em;font-weight:800;margin-bottom:5px;}
+.facts p{margin:0;font-size:15px;color:var(--muted);line-height:1.6;}
+/* Over a photo the rules read as three stacked panels — the exact thing
+   we removed elsewhere. No rules at all: one row, air between the columns. */
+.facts--onimg{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3.6vw,58px);}
+.facts--onimg li{border:0;padding:0;}
+.facts--onimg li:last-child{border:0;}
+.facts--onimg h3{font-size:clamp(19px,1.9vw,23px);color:var(--paper);margin-bottom:9px;
+  min-height:2.16em;}   /* two lines, so every column's body copy starts on the same line */
+.facts--onimg p{color:rgba(247,240,227,.82);font-size:15.5px;line-height:1.6;max-width:34ch;}
+@media(max-width:860px){.facts--onimg{grid-template-columns:1fr;gap:26px;}
+  .facts--onimg h3{min-height:0;}}
+
+.split{display:grid;gap:clamp(30px,4.6vw,72px);grid-template-columns:1fr 1fr;align-items:center;}
+.split--top{align-items:start;}
+@media(max-width:900px){.split{grid-template-columns:1fr;}}
+
+/* ============================================================
+   DONATION WIDGET
+   ============================================================ */
+.give-card{background:var(--card);border:1px solid var(--line-strong);
+  box-shadow:0 26px 50px -34px var(--shadow-tint);padding:clamp(22px,2.4vw,30px);}
+.give-card h2{font-size:23px;letter-spacing:-.02em;margin-bottom:18px;}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--ink);margin-bottom:16px;}
+.seg button{background:var(--card);color:var(--ink);border:0;padding:12px 8px;font-size:14px;font-weight:700;
+  transition:background-color .15s ease,color .15s ease;}
+.seg button + button{border-left:1.5px solid var(--ink);}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);}
+.amts{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}
+.amts button{background:var(--card);border:1.5px solid var(--line-strong);padding:14px 4px;
+  font-size:16px;font-weight:700;letter-spacing:-.02em;
+  transition:background-color .15s ease,color .15s ease,border-color .15s ease;}
+.amts button:hover{border-color:var(--ink);}
+.amts button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff;}
+.amts .other{grid-column:span 4;font-size:14px;font-weight:600;padding:11px;}
+.impact{margin:16px 0 18px;font-size:15.5px;line-height:1.5;min-height:48px;display:flex;align-items:center;color:var(--ink);}
+.impact b{font-weight:700;}
+.give-foot{margin-top:14px;margin-bottom:0;font-size:13.5px;color:var(--muted);}
+.give-foot a{font-weight:700;color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--line-strong);}
+.give-foot a:hover{border-color:var(--red);color:var(--red);}
+@media(max-width:780px){.amts{grid-template-columns:repeat(2,1fr);}.amts .other{grid-column:span 2;}}
+
+/* ============================================================
+   "OTHER WAYS" — a flowing list
+   ============================================================ */
+.ways{margin-top:10px;}
+.ways a{display:grid;grid-template-columns:minmax(180px,.34fr) 1fr auto;gap:clamp(14px,2.6vw,40px);
+  align-items:baseline;padding:24px 0;border-top:1px solid var(--line);text-decoration:none;
+  transition:background-color .2s ease;}
+.ways a:last-child{border-bottom:1px solid var(--line);}
+.ways a:hover{background:var(--paper-raised);}
+.ways strong{font-family:"Archivo",sans-serif;font-size:clamp(19px,2vw,24px);font-weight:800;letter-spacing:-.025em;}
+.ways span{font-size:15px;color:var(--muted);line-height:1.55;max-width:52ch;}
+.ways strong,.ways span{transition:transform .2s var(--ease);}
+.ways a:hover strong,.ways a:hover span{transform:translateX(10px);}
+.ways em{font-style:normal;color:var(--red);font-weight:700;font-size:13.5px;white-space:nowrap;
+  opacity:0;transform:translateX(-6px);transition:opacity .2s ease,transform .2s var(--ease);}
+.ways a:hover em{opacity:1;transform:none;}
+@media(max-width:820px){.ways a{grid-template-columns:1fr;gap:8px;}.ways em{opacity:1;transform:none;}}
+
+/* accordion */
+details{border-top:1px solid var(--line);}
+details:last-of-type{border-bottom:1px solid var(--line);}
+summary{list-style:none;cursor:pointer;padding:17px 34px 17px 0;position:relative;
+  font-size:16.5px;font-weight:700;font-family:"Archivo",sans-serif;letter-spacing:-.02em;}
+summary::-webkit-details-marker{display:none;}
+summary::after{content:"";position:absolute;right:6px;top:50%;width:11px;height:11px;
+  border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);
+  transform:translateY(-70%) rotate(45deg);transition:transform .22s var(--ease);}
+details[open] summary::after{transform:translateY(-25%) rotate(-135deg);}
+details p{margin:0 0 17px;font-size:15px;color:var(--muted);line-height:1.65;max-width:70ch;}
+
+/* closer — air above it, no bar */
+.closer{padding:clamp(30px,3.6vw,50px) 0 clamp(64px,7vw,96px);}
+.closer .in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;}
+.closer h2{font-size:clamp(25px,2.8vw,36px);letter-spacing:-.03em;max-width:24ch;}
+.closer p{margin:9px 0 0;font-size:15px;color:var(--muted);max-width:48ch;}
+.closer .cta-wrap{position:relative;}
+
+/* ============================================================
+   MEMBERSHIP
+   ============================================================ */
+/* the free tier: a statement on the paper, not a tinted panel */
+.free-say{display:grid;grid-template-columns:1fr auto;gap:clamp(20px,3vw,48px);align-items:end;}
+@media(max-width:820px){.free-say{grid-template-columns:1fr;align-items:start;}}
+.free-say h2{font-size:clamp(30px,3.8vw,50px);letter-spacing:-.032em;}
+.free-say p{margin:14px 0 0;font-size:16.5px;color:var(--muted);max-width:48ch;line-height:1.55;}
+
+/* Tier cards — the 3-across grid, kept because comparable prices are
+   genuinely easier to scan side by side. White paper + a soft shadow,
+   same object language as the letter cards, not an outlined AI card. */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,1.8vw,22px);}
+@media(max-width:980px){.tiers{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.tiers{grid-template-columns:1fr;}}
+.tier{background:var(--card);border:1px solid var(--line);padding:26px 24px 24px;
+  display:flex;flex-direction:column;box-shadow:0 18px 36px -32px var(--shadow-tint);
+  transition:transform .22s var(--ease),box-shadow .22s var(--ease),border-color .2s ease;}
+.tier:hover{transform:translateY(-3px);border-color:var(--line-strong);
+  box-shadow:0 28px 46px -30px var(--shadow-tint);}
+.tier .price{font-family:"Archivo",sans-serif;font-size:34px;font-weight:800;
+  letter-spacing:-.035em;display:flex;align-items:baseline;gap:3px;}
+.tier .price small{font-size:14px;font-weight:600;color:var(--muted);letter-spacing:0;}
+.tier h3{font-size:18px;letter-spacing:-.02em;margin-top:16px;}
+.tier p{margin:7px 0 0;font-size:14.5px;color:var(--muted);line-height:1.55;flex:1;}
+.tier .btn{margin-top:22px;}
+.tier--open{background:transparent;box-shadow:none;border-style:dashed;}
+.tier--open .price{font-size:23px;color:var(--muted);}
+
+/* ============================================================
+   LETTERS
+   ============================================================ */
+.hero-letters{display:grid;grid-template-columns:.94fr 1.06fr;gap:clamp(30px,4.4vw,68px);align-items:center;}
+@media(max-width:900px){.hero-letters{grid-template-columns:1fr;}}
+.hero-letters img{height:clamp(320px,40vw,520px);object-fit:cover;}
+
+.steps{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:start;
+  gap:clamp(10px,1.4vw,18px);margin-top:30px;}
+.steps .step{min-width:0;}
+.steps strong{display:block;font-family:"Archivo",sans-serif;font-size:16px;font-weight:800;letter-spacing:-.02em;margin-bottom:2px;}
+.steps span{font-size:14px;color:var(--muted);line-height:1.45;}
+.steps .sep{color:var(--red);flex:none;margin-top:6px;align-self:start;}
+@media(max-width:820px){.steps{grid-template-columns:1fr;gap:14px;}.steps .sep{transform:rotate(66deg);margin-left:6px;}}
+
+.deck{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.2vw,26px);padding:10px 0 16px;}
+@media(max-width:920px){.deck{grid-template-columns:1fr;}}
+.letter{background:var(--card);padding:26px 24px 24px;display:flex;flex-direction:column;
+  box-shadow:0 18px 34px -26px var(--shadow-tint);
+  transition:transform .28s var(--ease),box-shadow .28s var(--ease);}
+.letter:nth-child(1){transform:rotate(-1.1deg);}
+.letter:nth-child(2){transform:rotate(.7deg);}
+.letter:nth-child(3){transform:rotate(-.5deg);}
+.letter:hover{transform:rotate(0) translateY(-5px);box-shadow:0 28px 46px -26px var(--shadow-tint);}
+.letter .who{font-family:"Archivo",sans-serif;font-size:19px;font-weight:800;letter-spacing:-.02em;
+  padding-bottom:12px;margin-bottom:15px;border-bottom:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.letter .who em{font-style:normal;font-family:"Hanken Grotesk",sans-serif;font-size:13px;font-weight:600;color:var(--muted);}
+.letter .wish{font-size:15.5px;line-height:1.62;color:var(--ink);flex:1;margin:0 0 18px;}
+.letter .ask{font-size:12.5px;color:var(--muted);margin:0 0 15px;}
+
+.protect{display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(30px,4vw,56px);}
+@media(max-width:780px){.protect{grid-template-columns:1fr;}}
+.protect div{padding:18px 0;border-top:1px solid var(--line);}
+.protect h3{font-size:17px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px;}
+.protect p{margin:0;font-size:14.5px;color:var(--muted);line-height:1.55;}
+
+.value-note{display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--ink);
+  padding:9px 14px;font-size:13.5px;font-weight:600;}
+.value-note b{font-weight:800;}
+
+/* ============================================================
+   LETTERS — hero over a photo, then the two-sided portal
+   ============================================================ */
+.imgsec--hero .content{padding:clamp(72px,8.5vw,124px) 0 clamp(84px,9.5vw,140px);}
+.imgsec--hero h1{color:var(--paper);font-size:clamp(42px,5.8vw,76px);line-height:1.12;letter-spacing:-.035em;}
+.steps--onimg strong{color:var(--paper);}
+.steps--onimg span{color:rgba(247,240,227,.78);}
+.value-note--onimg{border-color:rgba(247,240,227,.55);color:var(--paper);}
+
+/* the Adopt / Submit control — one square switch with a sliding accent */
+.tabs{position:relative;display:inline-grid;grid-template-columns:1fr 1fr;
+  width:100%;max-width:440px;border:1.5px solid var(--ink);background:var(--paper);user-select:none;}
+.tabs .slide{position:absolute;inset:0 auto 0 0;width:50%;z-index:0;background:var(--red);
+  transition:transform .34s var(--ease),background-color .34s var(--ease);}
+.tabs[data-view="submit"] .slide{transform:translateX(100%);background:var(--green);}
+.tabs button{position:relative;z-index:1;background:transparent;border:0;padding:15px 12px;
+  font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink);transition:color .2s ease;}
+.tabs button[aria-selected="true"]{color:#fff;}
+.tabs button[aria-selected="false"]:hover{color:var(--red);}
+.tabs button:last-child[aria-selected="false"]:hover{color:var(--green);}
+
+#portal{scroll-margin-top:118px;}
+.panel{transition:opacity .2s ease,transform .2s var(--ease);}
+.panel.is-out{opacity:0;transform:translateY(8px);}
+
+/* ---- swipe deck ---- */
+.deckwrap{max-width:520px;margin:0 auto;}
+.swipe{position:relative;height:440px;perspective:1400px;}
+.swipe .card{position:absolute;inset:0;transform-style:preserve-3d;cursor:pointer;
+  transition:transform .5s var(--ease);}
+.swipe.is-flipped .card{transform:rotateY(180deg);}
+.swipe .face{position:absolute;inset:0;backface-visibility:hidden;
+  display:flex;flex-direction:column;box-shadow:0 26px 50px -30px var(--shadow-tint);}
+.swipe .front{background:var(--card);padding:34px 30px 26px;}
+.swipe .back{background:var(--ink);color:var(--paper);transform:rotateY(180deg);padding:32px 30px;}
+.swipe .note{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:20px;line-height:1.6;color:var(--ink);}
+.swipe .who{border-top:1px solid var(--line);padding-top:16px;text-align:center;}
+.swipe .who strong{display:block;font-family:"Archivo",sans-serif;font-size:18px;font-weight:800;letter-spacing:-.02em;}
+.swipe .who span{font-size:13px;font-weight:600;color:var(--muted);}
+.swipe .back .kicker{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);}
+.swipe .back h3{margin-top:12px;font-size:25px;color:var(--paper);}
+.swipe .back .wish{margin:16px 0 0;font-size:17px;line-height:1.6;color:rgba(247,240,227,.85);}
+.swipe .back .excerpt{margin:18px 0 0;flex:1;font-size:14.5px;line-height:1.65;
+  color:rgba(247,240,227,.6);overflow-y:auto;}
+.swipe .back .excerpt b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(247,240,227,.45);margin-bottom:7px;}
+.swipe .back .fine{margin:12px 0 0;font-size:12.5px;color:rgba(247,240,227,.6);text-align:center;}
+.deckbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:22px;}
+.deckcount{margin:14px 0 0;text-align:center;font-size:13.5px;font-weight:600;color:var(--muted);}
+
+/* ---- submit form ---- */
+.formgrid{display:grid;grid-template-columns:.62fr .38fr;gap:clamp(28px,4vw,54px);align-items:start;}
+@media(max-width:960px){.formgrid{grid-template-columns:1fr;}}
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:13px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.field input,.field textarea{width:100%;font:inherit;font-size:15.5px;padding:12px 14px;
+  border:1.5px solid var(--line-strong);background:var(--card);color:var(--ink);
+  transition:border-color .16s ease;}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--red);}
+.field textarea{min-height:104px;resize:vertical;}
+.field .hint{margin:6px 0 0;font-size:12.5px;color:var(--muted);}
+.fieldrow{display:grid;grid-template-columns:1fr 140px;gap:16px;}
+@media(max-width:560px){.fieldrow{grid-template-columns:1fr;}}
+.consent{display:flex;gap:12px;align-items:flex-start;font-size:14.5px;line-height:1.55;margin:6px 0 20px;}
+.consent input{margin-top:3px;width:17px;height:17px;accent-color:var(--green);flex:none;}
+.formcard{background:var(--card);border:1px solid var(--line-strong);
+  box-shadow:0 26px 50px -34px var(--shadow-tint);padding:clamp(26px,3vw,38px);}
+.formcard h3{font-size:21px;margin-bottom:6px;}
+.formcard .sub{margin:0 0 22px;font-size:15px;color:var(--muted);}
+
+/* guidance rail — labelled text, not tinted boxes */
+.rail{display:grid;gap:22px;}
+.rail .item h4{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+.rail .item p{margin:0;font-size:14.5px;line-height:1.6;color:var(--muted);}
+.rail .item--green h4{color:var(--green);}
+.rail .item--red h4{color:var(--red);}
+.rail .item--ink h4{color:var(--ink);}
+
+/* ============================================================
+   MEMBERSHIP — extra blocks
+   ============================================================ */
+.bleed-left{margin:0 0 0 calc(-1 * var(--edge));}
+
+/* the six free classes — a list, name left / audience right */
+.classlist{border-top:1px solid var(--line);margin-top:22px;}
+.classlist a{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:baseline;
+  padding:17px 0;border-bottom:1px solid var(--line);text-decoration:none;
+  transition:background-color .18s ease;}
+.classlist a:hover{background:var(--paper-raised);}
+.classlist strong{font-family:"Archivo",sans-serif;font-size:17.5px;font-weight:800;letter-spacing:-.02em;
+  transition:transform .2s var(--ease);}
+.classlist a:hover strong{transform:translateX(9px);}
+.classlist span{font-size:13.5px;font-weight:600;color:var(--muted);}
+
+
+
+.page{display:none;}
+.page.on{display:block;}
+</style>
+</head>
+<body>
+
+<div class="demobar">
+  <b>Redesign demo</b>
+  <button data-page="donate" aria-current="true">Donate</button>
+  <button data-page="membership" aria-current="false">Membership</button>
+  <button data-page="letters" aria-current="false">Letters to Santa</button>
+  <span class="spacer">v3 — no divider bars · torn-edge photo sections · trimmed copy</span>
+</div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#">SANTA'S KNIGHTS</a>
+    <nav class="navlinks">
+      <a href="#">About</a>
+      <a href="#">Gladiators NYC</a>
+      <a href="#" data-nav="letters">Letters to Santa</a>
+      <a href="#" data-nav="membership">Membership</a>
+      <a href="#" data-nav="donate">Donate</a>
+      <a href="#">Gallery</a>
+      <a href="#">Contact</a>
+    </nav>
+    <div class="right">
+      <a class="give" href="#">Log in</a>
+      <a class="btn btn--red" href="#" data-nav="donate">Donate</a>
+    </div>
+  </div>
+</header>
+
+<!-- shared shapes: two brush strokes, two torn paper edges -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <path id="brush" d="M2.4,7.9 C46,3.1 97,1.8 152,2.8 C199,3.6 246,6.1 297.6,3.4 C252,10.6 203,11.9 150,10.9 C95,9.9 47,10.5 2.4,7.9 Z" />
+    <path id="brush2" d="M1.8,8.4 C52,2.6 108,4.2 163,3.1 C214,2.1 258,5.4 298.2,2.9 C255,9.9 209,10.4 156,11.2 C104,12 52,11.1 1.8,8.4 Z" />
+    <path id="tear-top" d="M0,0 H1440 V16 C1352,29 1298,11 1214,21 C1130,31 1074,14 988,25 C902,36 848,15 762,24 C676,33 614,12 528,23 C442,34 388,15 302,26 C216,37 158,16 74,25 C48,28 24,31 0,29 Z" />
+    <path id="tear-bot" d="M0,44 H1440 V16 C1360,4 1300,25 1216,15 C1132,5 1078,26 992,17 C906,8 846,29 760,20 C674,11 616,30 530,21 C444,12 386,31 300,22 C214,13 156,32 72,23 C46,20 24,17 0,19 Z" />
+  </defs>
+</svg>
+
+<main>
+
+<!-- ============================================================
+     PAGE 1 — DONATE
+     ============================================================ -->
+<div class="page on" id="page-donate">
+
+  <section class="phead">
+    <div class="wrap">
+      <div class="grid">
+        <div>
+          <h1 data-r>Keep the classes <span class="mark">free</span>.<br />Answer a kid's letter.</h1>
+          <p class="sub" data-r style="--d:80ms;margin-top:22px">
+            A Harlem 501(c)(3). Donations are the only reason the training and the gifts are free —
+            and they're tax-deductible.
+          </p>
+        </div>
+
+        <div class="give-card" data-r style="--d:180ms">
+          <h2>Give</h2>
+          <div class="seg" role="group" aria-label="Donation frequency">
+            <button type="button" data-freq="monthly" aria-pressed="true">Monthly</button>
+            <button type="button" data-freq="once" aria-pressed="false">One-time</button>
+          </div>
+          <div class="amts" role="group" aria-label="Amount">
+            <button type="button" data-amt="20" aria-pressed="false">$20</button>
+            <button type="button" data-amt="50" aria-pressed="true">$50</button>
+            <button type="button" data-amt="100" aria-pressed="false">$100</button>
+            <button type="button" data-amt="250" aria-pressed="false">$250</button>
+            <button type="button" class="other" data-amt="other" aria-pressed="false">Another amount</button>
+          </div>
+          <p class="impact" id="impact"></p>
+          <a class="btn btn--red btn--wide" href="#" id="giveBtn"><span>Give $50 a month</span><span class="arw">→</span></a>
+          <p class="give-foot">
+            Or use <a href="https://www.paypal.com/us/fundraiser/charity/3355259">PayPal</a>
+            or <a href="https://account.venmo.com/u/santasknights">Venmo</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- paper tears open into the photo — no divider anywhere -->
+  <section class="bleed imgsec" style="margin-top:clamp(48px,6vw,90px)">
+    <img class="bg" src="../public/images/donate-impact.webp" alt="" aria-hidden="true" style="object-position:62% center" />
+    <div class="veil"></div>
+    <svg class="torn torn--top" viewBox="0 0 1440 44" preserveAspectRatio="none" aria-hidden="true"><use href="#tear-top" fill="#F7F0E3"/></svg>
+    <svg class="torn torn--bot" viewBox="0 0 1440 44" preserveAspectRatio="none" aria-hidden="true"><use href="#tear-bot" fill="#F7F0E3"/></svg>
+    <div class="wrap content">
+      <h2 class="big" data-r style="max-width:16ch">Where the money <span class="mark">actually</span> goes</h2>
+      <ul class="facts facts--onimg" data-r style="--d:100ms;margin-top:34px;max-width:840px">
+        <li>
+          <h3>Gifts for kids who wrote to Santa</h3>
+          <p>A wish costs $20–50 to answer. Every December we work through as many letters as donations will cover.</p>
+        </li>
+        <li>
+          <h3>Equipment, so nobody is turned away</h3>
+          <p>Foam swords, armor, and mats. Beginners never bring their own gear, and never pay for it.</p>
+        </li>
+        <li>
+          <h3>Keeping every class at $0</h3>
+          <p>Six free programs out of the Manhattanville Community Center — adults, teens, kids, women, and veterans.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <h2 class="big" data-r>Other ways to help</h2>
+      <div class="ways" data-r style="--d:80ms">
+        <a href="#">
+          <strong>Sponsor</strong>
+          <span>Corporate and individual sponsorships fund a whole season, not a single gift.</span>
+          <em>Sponsor us →</em>
+        </a>
+        <a href="#">
+          <strong>Volunteer</strong>
+          <span>Sort letters, run the holiday event, coach a class, keep the books.</span>
+          <em>See the roles →</em>
+        </a>
+        <a href="#" data-nav="letters">
+          <strong>Adopt a letter</strong>
+          <span>Skip the money and send the actual gift a kid asked for.</span>
+          <em>Read the letters →</em>
+        </a>
+        <a href="#">
+          <strong>Spread the word</strong>
+          <span>Most of our donors found us through somebody they already knew.</span>
+          <em>Share our links →</em>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--tight">
+    <div class="wrap">
+      <div class="split split--top">
+        <div>
+          <h2 class="big" data-r>Giving and your taxes</h2>
+          <p class="lede" data-r style="--d:70ms;margin-top:16px">
+            We're tax-exempt federally and in New York State, and the receipt is emailed automatically.
+          </p>
+          <div data-r style="--d:120ms;margin-top:22px;display:flex;gap:18px;flex-wrap:wrap">
+            <a class="tlink" href="https://www.irs.gov/charities-non-profits/charitable-organizations/charitable-contribution-deductions">IRS guidance ↗</a>
+            <a class="tlink" href="https://www.irs.gov/publications/p526">Publication 526 ↗</a>
+          </div>
+          <p data-r style="--d:160ms;margin-top:24px;font-size:12.5px;color:var(--muted);max-width:50ch;line-height:1.55">
+            General information, not tax advice. Confirm your situation with a tax professional.
+          </p>
+        </div>
+        <div data-r style="--d:110ms">
+          <details open>
+            <summary>How the deduction works</summary>
+            <p>Donations come off your gross income. You have to itemize rather than take the standard deduction, so keep the receipt we send you.</p>
+          </details>
+          <details>
+            <summary>Limits and carryover</summary>
+            <p>Cash gifts are deductible up to 60% of adjusted gross income; property runs 20–50%. Anything above the limit carries forward five years.</p>
+          </details>
+          <details>
+            <summary>Goods and vehicles</summary>
+            <p>Non-cash donations are valued at fair market value. Special rules apply to vehicles.</p>
+          </details>
+          <details>
+            <summary>Giving from an IRA at 70½+</summary>
+            <p>Transfer up to $100,000 a year straight from an IRA. It can count toward your required minimum distribution and stays out of your taxable income.</p>
+          </details>
+          <details>
+            <summary>Volunteering and estate gifts</summary>
+            <p>You can't deduct your time, but travel and other volunteering costs are deductible. Bequests reduce a taxable estate.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closer">
+    <div class="wrap">
+      <div class="in">
+        <div data-r>
+          <h2>Not ready to give? Send a kid the <span class="mark">exact</span> gift they asked for.</h2>
+          <p>Read a wish, buy it on Amazon, and it lands on Christmas morning.</p>
+        </div>
+        <div class="cta-wrap" data-r style="--d:100ms">
+          <a class="btn btn--ink" href="#" data-nav="letters">Read the letters <span class="arw">→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<!-- ============================================================
+     PAGE 2 — MEMBERSHIP
+     ============================================================ -->
+<div class="page" id="page-membership">
+
+  <section class="phead">
+    <div class="wrap">
+      <div class="grid" style="align-items:center">
+        <div>
+          <h1 data-r>Membership</h1>
+          <p class="sub" data-r style="--d:80ms;margin-top:22px">
+            Training is free and always will be. Paid membership is monthly giving — it's what buys
+            the gifts and the gear.
+          </p>
+          <p data-r style="--d:120ms;margin-top:26px">
+            <a class="btn btn--ghost" href="https://gladiators.nyc/classes">Book now <span class="arw">→</span></a>
+          </p>
+        </div>
+        <figure data-r style="--d:160ms;margin:0">
+          <img src="../public/images/gallery/23.jpg" alt="A boy in borrowed sparring armor holding a foam sword before a Gladiators NYC class"
+               style="width:100%;height:clamp(330px,38vw,470px);object-fit:cover;object-position:50% 26%" />
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- free tier: a statement, no tinted panel, no accent rail -->
+  <section class="sec sec--tight">
+    <div class="wrap">
+      <div class="free-say">
+        <div data-r>
+          <h2>Class membership is <span class="mark">$0</span>, always</h2>
+          <p>Sign up once and book any of the six Gladiators NYC classes. Equipment provided, beginners welcome.</p>
+        </div>
+        <a class="tlink tlink--green" data-r style="--d:100ms" href="#">Sign up free <span class="arw">→</span></a>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="sec sec--tight" style="padding-top:clamp(28px,3.4vw,44px)">
+    <div class="wrap">
+      <div style="display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px;margin-bottom:20px">
+        <h2 class="big" data-r>Monthly giving</h2>
+        <p class="muted" data-r style="--d:70ms;margin:0;font-size:15px;max-width:38ch">
+          Each tier is what it buys, not a package of perks.
+        </p>
+      </div>
+
+      <div class="tiers" data-r style="--d:110ms">
+        <article class="tier">
+          <div class="price">$20<small>/mo</small></div>
+          <h3>A gift every month</h3>
+          <p>One wrapped present for a child in need. <span class="mark mark--thin" style="font-weight:700;color:var(--ink)">Most people start here.</span></p>
+          <a class="btn btn--red" href="#">Give $20/mo</a>
+        </article>
+        <article class="tier">
+          <div class="price">$50<small>/mo</small></div>
+          <h3>A gift and a sword</h3>
+          <p>A present plus a foam sword, so a kid can join a class and keep training.</p>
+          <a class="btn btn--ghost" href="#">Give $50/mo</a>
+        </article>
+        <article class="tier">
+          <div class="price">$100<small>/mo</small></div>
+          <h3>Two kids covered</h3>
+          <p>A present and a foam sword each, for two children.</p>
+          <a class="btn btn--ghost" href="#">Give $100/mo</a>
+        </article>
+        <article class="tier">
+          <div class="price">$250<small>/mo</small></div>
+          <h3>Five kids covered</h3>
+          <p>A present and a foam sword each, for five children.</p>
+          <a class="btn btn--ghost" href="#">Give $250/mo</a>
+        </article>
+        <article class="tier">
+          <div class="price">$500<small>/mo</small></div>
+          <h3>Corporate membership</h3>
+          <p>For companies backing the program. We'll credit you on the sponsors page.</p>
+          <a class="btn btn--ghost" href="#">Talk to us</a>
+        </article>
+        <article class="tier tier--open">
+          <div class="price">You choose</div>
+          <h3>Another amount</h3>
+          <p>Any monthly amount, or a one-time gift instead.</p>
+          <a class="btn btn--ghost" href="#" data-nav="donate">Set an amount</a>
+        </article>
+      </div>
+
+      <p class="muted" data-r style="margin-top:18px;font-size:13.5px">
+        Cancel any time. Questions?
+        <a class="tlink" style="font-size:13.5px" href="mailto:contact@santasknights.org">contact@santasknights.org</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="bleed imgsec" style="margin-top:clamp(48px,6vw,90px)">
+    <img class="bg" src="../public/images/gallery/6b7494_da7cab87beee4becb1fa08dd5b8bb6b9_mv2.webp" alt="" aria-hidden="true" />
+    <div class="veil"></div>
+    <svg class="torn torn--top" viewBox="0 0 1440 44" preserveAspectRatio="none" aria-hidden="true"><use href="#tear-top" fill="#F7F0E3"/></svg>
+    <svg class="torn torn--bot" viewBox="0 0 1440 44" preserveAspectRatio="none" aria-hidden="true"><use href="#tear-bot" fill="#F7F0E3"/></svg>
+    <div class="wrap content">
+      <h2 class="big" data-r style="max-width:15ch">What a membership <span class="mark">pays for</span></h2>
+      <ul class="facts facts--onimg" data-r style="--d:100ms;margin-top:34px;max-width:840px">
+        <li>
+          <h3>Nobody pays to train</h3>
+          <p>Classes, the holiday gifts, the events — the people who use them never see a bill.</p>
+        </li>
+        <li>
+          <h3>Gear is provided</h3>
+          <p>Foam weapons, armor, and mats, so cost is never the reason a kid doesn't show up.</p>
+        </li>
+        <li>
+          <h3>Six programs, one room</h3>
+          <p>Adults, teens, kids, women, and veterans, all out of the Manhattanville Community Center.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec sec--tight">
+    <div class="wrap">
+      <div class="split split--top">
+        <div>
+          <h2 class="big" data-r>Before you sign up</h2>
+          <p class="lede" data-r style="--d:70ms;margin-top:16px">The questions we get asked most.</p>
+          <p data-r style="--d:110ms;margin-top:20px;font-size:14.5px;color:var(--muted)">
+            Anything else?
+            <a class="tlink" style="font-size:14.5px" href="mailto:contact@santasknights.org">contact@santasknights.org</a>
+          </p>
+        </div>
+        <div data-r style="--d:120ms">
+          <details open>
+            <summary>Do I have to pay anything to train?</summary>
+            <p>No. Class membership is $0 and always will be. Monthly giving is a separate, entirely optional thing — you never need it to walk in and train.</p>
+          </details>
+          <details>
+            <summary>Do I need experience, or my own gear?</summary>
+            <p>Neither. Beginners are the point. Foam weapons, armor, and mats are provided, and instructors run every floor.</p>
+          </details>
+          <details>
+            <summary>Can I cancel monthly giving?</summary>
+            <p>Any time, from the payment processor. There’s no minimum term and nothing to negotiate.</p>
+          </details>
+          <details>
+            <summary>Is monthly giving tax-deductible?</summary>
+            <p>Yes. Santa’s Knights, Inc. is a registered 501(c)(3), tax-exempt federally and in New York State. The receipt is emailed automatically.</p>
+          </details>
+          <details>
+            <summary>Where do classes actually happen?</summary>
+            <p>The Manhattanville Community Center, 530 W 133rd St in Harlem — except Women’s Combat, which also runs from a Midtown studio. Schedule and booking live on gladiators.nyc.</p>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closer" style="padding-top:clamp(44px,5.4vw,74px)">
+    <div class="wrap">
+      <div class="in">
+        <div data-r>
+          <h2>Rather give <span class="mark">once</span>?</h2>
+          <p>A one-time gift does the same work.</p>
+        </div>
+        <div class="cta-wrap" data-r style="--d:100ms">
+          <a class="btn btn--ink" href="#" data-nav="donate">Make a one-time gift <span class="arw">→</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+<!-- ============================================================
+     PAGE 3 — LETTERS TO SANTA
+     ============================================================ -->
+<div class="page" id="page-letters">
+
+  <!-- hero over a photo; the paper tears open beneath it -->
+  <section class="bleed imgsec imgsec--hero">
+    <img class="bg" src="../public/images/gallery/48362591_10161478136885422_5477524744964145152_o.jpg" alt="" aria-hidden="true" style="object-position:52% 40%" />
+    <div class="veil"></div>
+    <svg class="torn torn--bot" viewBox="0 0 1440 44" preserveAspectRatio="none" aria-hidden="true"><use href="#tear-bot" fill="#F7F0E3"/></svg>
+    <div class="wrap content">
+      <h1 data-r style="max-width:14ch">Pick a letter <span class="mark">off the pile</span>.</h1>
+
+      <div class="steps steps--onimg" data-r style="--d:110ms;max-width:820px">
+        <div class="step"><strong>Read a wish</strong><span>A first name, an age, and what they asked for.</span></div>
+        <svg class="sep" width="34" height="16" viewBox="0 0 34 16" fill="none" aria-hidden="true">
+          <path d="M1.5 8.6C7 6.4 14 5.9 20.5 7.2c4 .8 7.6 2 11 3.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M26.6 5.2c2.4 1.9 4.4 3.9 5.9 6.2M25.9 14.4c2.5-.5 4.6-1.6 6.6-3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <div class="step"><strong>Buy the gift</strong><span>Straight from Amazon. We never touch your payment.</span></div>
+        <svg class="sep" width="34" height="16" viewBox="0 0 34 16" fill="none" aria-hidden="true">
+          <path d="M1.5 8.6C7 6.4 14 5.9 20.5 7.2c4 .8 7.6 2 11 3.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M26.6 5.2c2.4 1.9 4.4 3.9 5.9 6.2M25.9 14.4c2.5-.5 4.6-1.6 6.6-3.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <div class="step"><strong>They open it</strong><span>Christmas morning, from Santa.</span></div>
+      </div>
+
+      <div data-r style="--d:180ms;margin-top:32px;display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+        <a class="btn btn--red" href="#portal" data-tab="adopt">Adopt a letter <span class="arw">&#8594;</span></a>
+        <a class="btn" style="background:transparent;color:var(--paper);border-color:rgba(247,240,227,.5)" href="#portal" data-tab="submit">Submit your child&rsquo;s letter</a>
+      </div>
+      <div class="value-note value-note--onimg" data-r style="--d:230ms;margin-top:20px">Suggested gift value <b>$20&ndash;50</b> per child</div>
+    </div>
+  </section>
+
+  <!-- the preview pile -->
+  <section class="sec sec--tight">
+    <div class="wrap">
+      <div style="display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px;margin-bottom:20px">
+        <h2 class="big" data-r>Letters waiting <span class="mark">right now</span></h2>
+        <a class="tlink" data-r style="--d:80ms" href="#portal">See all 47 letters <span class="arw">&#8594;</span></a>
+      </div>
+
+      <div class="deck" data-r style="--d:120ms">
+        <article class="letter">
+          <div class="who">Maya <em>Age 7</em></div>
+          <p class="wish">&ldquo;Dear Santa, I have been very good this year. I would love this LEGO car set because I want to build something big with my dad.&rdquo;</p>
+          <p class="ask">LEGO Technic set &middot; about $50</p>
+          <a class="btn btn--red btn--wide" href="#portal">Gift this</a>
+        </article>
+        <article class="letter">
+          <div class="who">Jaylen <em>Age 10</em></div>
+          <p class="wish">&ldquo;Hi Santa! My sneakers are too small now. Size 5 please, any color but mostly blue. Thank you and say hi to the reindeer.&rdquo;</p>
+          <p class="ask">Sneakers, size 5 &middot; about $40</p>
+          <a class="btn btn--red btn--wide" href="#portal">Gift this</a>
+        </article>
+        <article class="letter">
+          <div class="who">Sofia <em>Age 5</em></div>
+          <p class="wish">&ldquo;deer santa. a stuffed dog pleese. a big one. i wil name him biscit.&rdquo;</p>
+          <p class="ask">A large stuffed dog &middot; about $25</p>
+          <a class="btn btn--red btn--wide" href="#portal">Gift this</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- the two-sided portal: swipe deck ⇄ guardian form -->
+  <section class="sec sec--tight" id="portal">
+    <div class="wrap">
+      <div style="display:grid;gap:22px;margin-bottom:30px">
+        <div style="display:grid">
+          <h2 class="big" data-r data-title="adopt" style="grid-area:1/1">One at a time, <span class="mark">the way it always worked</span></h2>
+          <h2 class="big" data-title="submit" style="grid-area:1/1;opacity:0;pointer-events:none">Send us your child&rsquo;s letter</h2>
+        </div>
+        <div class="tabs" data-view="adopt" role="tablist" aria-label="Choose what to do" data-r style="--d:70ms">
+          <span class="slide" aria-hidden="true"></span>
+          <button type="button" role="tab" id="tab-adopt" aria-selected="true" aria-controls="letters-panel">Adopt a letter</button>
+          <button type="button" role="tab" id="tab-submit" aria-selected="false" aria-controls="letters-panel">Submit a letter</button>
+        </div>
+      </div>
+
+      <div class="panel" id="letters-panel" role="tabpanel" aria-labelledby="tab-adopt">
+
+        <!-- ADOPT -->
+        <div data-side="adopt">
+          <div class="deckwrap">
+            <div class="swipe" id="swipe">
+              <div class="card" id="swipecard" role="button" tabindex="0" aria-label="Letter card, activate to see the wish">
+                <div class="face front">
+                  <p class="note" id="sw-note"></p>
+                  <div class="who"><strong id="sw-name"></strong><span>Tap the card to see the wish</span></div>
+                </div>
+                <div class="face back">
+                  <p class="kicker">The wish</p>
+                  <h3 id="sw-name2"></h3>
+                  <p class="wish" id="sw-wish"></p>
+                  <p class="excerpt"><b>From the letter</b><span id="sw-ex"></span></p>
+                  <a class="btn btn--red btn--wide" style="margin-top:18px" href="#" id="sw-amazon">Gift this on Amazon &#8599;</a>
+                  <p class="fine">Opens Amazon in a new tab. We never handle the money.</p>
+                </div>
+              </div>
+            </div>
+            <div class="deckbar">
+              <button class="btn btn--ghost" type="button" id="sw-skip">&#8592; Next letter</button>
+              <button class="btn btn--red" type="button" id="sw-gift">Gift this <span class="arw">&#8594;</span></button>
+            </div>
+            <p class="deckcount" id="sw-count"></p>
+            <p class="muted" style="margin:26px auto 0;max-width:58ch;text-align:center;font-size:13.5px;line-height:1.6">
+              <strong style="color:var(--ink)">The fine print:</strong> gifts are fulfilled directly through Amazon.
+              Santa&rsquo;s Knights never handles your payment. Do not attempt to identify or contact a child or family.
+            </p>
+          </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <div data-side="submit" hidden>
+          <div class="formgrid">
+            <form class="formcard" onsubmit="return false">
+              <h3>Your child&rsquo;s letter</h3>
+              <p class="sub">About five minutes: the letter, the wish, and a gift link.</p>
+
+              <div class="fieldrow">
+                <div class="field">
+                  <label for="cfn">Child&rsquo;s first name</label>
+                  <input id="cfn" name="child_first_name" required placeholder="First name only" />
+                </div>
+                <div class="field">
+                  <label for="cage">Age</label>
+                  <input id="cage" name="child_age" type="number" min="0" max="17" required placeholder="8" />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="wish">The wish</label>
+                <textarea id="wish" name="wish_note" required placeholder="Write a line or two in your own words. Donors read this next to the letter."></textarea>
+              </div>
+
+              <div class="field">
+                <label for="wl">Amazon wishlist link</label>
+                <input id="wl" name="wishlist_url" type="url" required placeholder="https://www.amazon.com/hz/wishlist/ls/&hellip;" />
+                <p class="hint">Donors buy straight from this list, so no address is ever exchanged.</p>
+              </div>
+
+              <div class="field">
+                <label for="img">Photo of the handwritten letter</label>
+                <input id="img" name="letter_image" type="file" accept="image/*" required />
+                <p class="hint">Crop or cover any last name, address, school, or phone number first.</p>
+              </div>
+
+              <div class="fieldrow" style="grid-template-columns:1fr 1fr">
+                <div class="field">
+                  <label for="gn">Your name</label>
+                  <input id="gn" name="guardian_name" required placeholder="Full name" />
+                </div>
+                <div class="field">
+                  <label for="ge">Your email</label>
+                  <input id="ge" name="guardian_email" type="email" required placeholder="you@email.com" />
+                </div>
+              </div>
+
+              <label class="consent">
+                <input type="checkbox" name="consent" required />
+                <span>I&rsquo;m this child&rsquo;s parent or guardian, and I agree to the letter being shared with donors as a first name, age, wish, and letter image.</span>
+              </label>
+
+              <button class="btn btn--green btn--wide" type="submit">Submit the letter <span class="arw">&#8594;</span></button>
+            </form>
+
+            <div class="rail">
+              <div class="item item--green">
+                <h4>Gift value guidance</h4>
+                <p>Keep the request to $20&ndash;50 in total value of gifts per child.</p>
+              </div>
+              <div class="item item--red">
+                <h4>Privacy reminder</h4>
+                <p>Do NOT include your, or your child&rsquo;s, last name or mailing address in the physical letter or in an online post.</p>
+              </div>
+              <div class="item item--ink">
+                <h4>You submit, it goes live</h4>
+                <p>The letter joins the gift pool right away. Admins can remove anything that needs attention.</p>
+              </div>
+              <div class="item item--ink">
+                <h4>Identity stays private</h4>
+                <p>Donors only ever see a first name, an age, the wish, and the letter itself.</p>
+              </div>
+              <div class="item item--ink">
+                <h4>Gifts come via Amazon</h4>
+                <p>Donors buy from the link you provide. We never handle the money, and nobody gets anyone&rsquo;s address.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="sec sec--tight">
+    <div class="wrap">
+      <div class="split split--top">
+        <div>
+          <h2 class="big" data-r>How we protect the kids</h2>
+          <p class="lede" data-r style="--d:70ms;margin-top:16px">
+            Generosity never costs a family their privacy.
+          </p>
+          <p data-r style="--d:110ms;margin-top:20px;font-size:14.5px;color:var(--muted)">
+            Questions?
+            <a class="tlink" style="font-size:14.5px" href="mailto:contact@santasknights.org">contact@santasknights.org</a>
+          </p>
+        </div>
+        <div class="protect" data-r style="--d:120ms">
+          <div>
+            <h3>First names only</h3>
+            <p>A first name, an age, and a wish. Never a last name, address, school, or handle.</p>
+          </div>
+          <div>
+            <h3>No contact, either way</h3>
+            <p>Families and donors stay anonymous. Amazon ships it, so addresses are never exchanged.</p>
+          </div>
+          <div>
+            <h3>Gifts are vetted</h3>
+            <p>Wishes have to be age-appropriate, legal, and safe.</p>
+          </div>
+          <div>
+            <h3>Admins can pull anything</h3>
+            <p>Letters go live immediately, and admins can remove any that shouldn&rsquo;t stay in the pool.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closer">
+    <div class="wrap">
+      <div class="in">
+        <div data-r>
+          <h2>Can&rsquo;t shop this year?</h2>
+          <p>A donation covers the letters nobody adopts before Christmas.</p>
+        </div>
+        <div class="cta-wrap" data-r style="--d:100ms">
+          <svg class="arrow-hand" width="96" height="58" viewBox="0 0 96 58" aria-hidden="true" style="left:-104px;top:-16px">
+            <path d="M4 6C13 26 30 41 56 45.5" />
+            <path d="M45 34c4.4 4.4 8 8.3 11.5 11.8M43.5 51.5c4.6-1.6 8.8-3.7 13-6" />
+          </svg>
+          <a class="btn btn--ink" href="#" data-nav="donate">Donate instead <span class="arw">&#8594;</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <div class="fbrand">SANTA'S KNIGHTS</div>
+        <p>A Harlem nonprofit. We answer kids' letters to Santa each December, and teach free martial arts and fitness the rest of the year.</p>
+        <p style="font-size:12.5px;opacity:.75">A registered 501(c)(3). Classes, schedule, and booking live on gladiators.nyc.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#" data-nav="letters">Santa's Letters</a></li>
+          <li><a href="#">Training</a></li>
+          <li><a href="#" data-nav="membership">Membership</a></li>
+          <li><a href="#">Gallery</a></li>
+          <li><a href="#" data-nav="donate">Donate</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Get involved</h4>
+        <ul>
+          <li><a href="#" data-nav="letters">Adopt a letter</a></li>
+          <li><a href="#">Submit a letter</a></li>
+          <li><a href="#">Volunteer</a></li>
+          <li><a href="#">Become a sponsor</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Visit</h4>
+        <ul>
+          <li><a href="#">Manhattanville Community Center,<br />530 W 133rd St, New York, NY 10027</a></li>
+          <li><a href="tel:+12128735818">(212) 873-5818</a></li>
+          <li><a href="mailto:contact@santasknights.org">contact@santasknights.org</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="bar">© 2026 Santa's Knights, Inc. A 501(c)(3) nonprofit. Donations are tax-deductible.</div>
+  </div>
+</footer>
+
+<script>
+/* ---- brush stroke into every .mark ---- */
+document.querySelectorAll('.mark').forEach((el,i)=>{
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 300 14');
+  svg.setAttribute('preserveAspectRatio','none');
+  svg.setAttribute('aria-hidden','true');
+  const use=document.createElementNS('http://www.w3.org/2000/svg','use');
+  use.setAttribute('href', i%2 ? '#brush2' : '#brush');
+  svg.appendChild(use);
+  el.appendChild(svg);
+});
+
+/* ---- scroll reveal ---- */
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); } });
+},{rootMargin:'0px 0px -6% 0px',threshold:0.15});
+function arm(root){
+  root.querySelectorAll('[data-r], .mark, .arrow-hand').forEach(el=>{el.classList.remove('is-in');io.observe(el);});
+}
+
+/* ---- gentle parallax on the torn-edge photo sections ---- */
+let ticking=false;
+function parallax(){
+  document.querySelectorAll('.page.on .imgsec').forEach(sec=>{
+    const r=sec.getBoundingClientRect();
+    if(r.bottom<0||r.top>innerHeight) return;
+    const p=(r.top+r.height/2-innerHeight/2)/innerHeight;   // -1 … 1
+    const img=sec.querySelector('.bg');
+    if(img) img.style.transform='translate3d(0,'+(p*-26).toFixed(2)+'px,0) scale(1.10)';
+  });
+  ticking=false;
+}
+addEventListener('scroll',()=>{ if(!ticking){ticking=true;requestAnimationFrame(parallax);} },{passive:true});
+
+/* ---- page switching (demo only) ---- */
+function show(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.id==='page-'+name));
+  document.querySelectorAll('.demobar button').forEach(b=>b.setAttribute('aria-current',String(b.dataset.page===name)));
+  document.querySelectorAll('.navlinks a').forEach(a=>a.classList.toggle('on',a.dataset.nav===name));
+  window.scrollTo({top:0,behavior:'instant'});
+  arm(document.getElementById('page-'+name));
+  parallax();
+}
+document.querySelectorAll('.demobar button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.page)));
+document.querySelectorAll('[data-nav]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();show(el.dataset.nav);}));
+
+/* ---- donation widget ---- */
+const IMPACT={
+  '20':{monthly:'buys a wrapped gift for one kid, every month.',once:'buys a wrapped gift for one kid this Christmas.'},
+  '50':{monthly:'buys a gift and a foam sword each month — a present, and a way into the class.',once:'buys a gift and a foam sword — a present, and a way into the class.'},
+  '100':{monthly:'covers two kids a month: a gift and a foam sword each.',once:'covers two kids: a gift and a foam sword each.'},
+  '250':{monthly:'covers five kids a month: a gift and a foam sword each.',once:'covers five kids: a gift and a foam sword each.'},
+  'other':{monthly:'Every dollar goes to gifts, equipment, and keeping the classes at $0.',once:'Every dollar goes to gifts, equipment, and keeping the classes at $0.'}
+};
+let freq='monthly',amt='50';
+function render(){
+  const line=IMPACT[amt][freq];
+  document.getElementById('impact').innerHTML =
+    amt==='other' ? line : '<b>$'+amt+(freq==='monthly'?' a month':'')+'</b> '+line;
+  document.querySelector('#giveBtn span').textContent =
+    amt==='other' ? (freq==='monthly'?'Choose a monthly amount':'Choose an amount')
+                  : (freq==='monthly'?'Give $'+amt+' a month':'Give $'+amt);
+}
+document.querySelectorAll('[data-freq]').forEach(b=>b.addEventListener('click',()=>{
+  freq=b.dataset.freq;
+  document.querySelectorAll('[data-freq]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  render();
+}));
+document.querySelectorAll('[data-amt]').forEach(b=>b.addEventListener('click',()=>{
+  amt=b.dataset.amt;
+  document.querySelectorAll('[data-amt]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  render();
+}));
+render();
+
+/* ---- letters portal: Adopt / Submit tabs + the swipe deck ---- */
+(function(){
+  const tabs=document.querySelector('.tabs'); if(!tabs) return;
+  const panel=document.getElementById('letters-panel');
+  const sides={adopt:panel.querySelector('[data-side="adopt"]'),submit:panel.querySelector('[data-side="submit"]')};
+  const titles={adopt:document.querySelector('[data-title="adopt"]'),submit:document.querySelector('[data-title="submit"]')};
+  const btns=[...tabs.querySelectorAll('button')];
+  let view='adopt';
+
+  function setView(next){
+    if(next===view) return;
+    view=next;
+    tabs.dataset.view=next;
+    btns.forEach(b=>b.setAttribute('aria-selected',String(b.id==='tab-'+next)));
+    panel.setAttribute('aria-labelledby','tab-'+next);
+    Object.entries(titles).forEach(([k,el])=>{
+      el.style.opacity = k===next ? '1' : '0';
+      el.style.pointerEvents = k===next ? 'auto' : 'none';
+    });
+    // fade the body out, swap, fade back in — same beat as the live portal
+    panel.classList.add('is-out');
+    setTimeout(()=>{
+      Object.entries(sides).forEach(([k,el])=>{ el.hidden = k!==next; });
+      panel.classList.remove('is-out');
+    },190);
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>setView(b.id.replace('tab-',''))));
+  document.querySelectorAll('[data-tab]').forEach(el=>el.addEventListener('click',()=>setView(el.dataset.tab)));
+  titles.adopt.style.transition=titles.submit.style.transition='opacity .2s ease';
+
+  /* ---- deck ---- */
+  const LETTERS=[
+    {name:'Maya',age:7,note:'Dear Santa, I have been very good this year. I would love this LEGO car set because I want to build something big with my dad.',wish:'A LEGO Technic car set, about $50.'},
+    {name:'Jaylen',age:10,note:'Hi Santa! My sneakers are too small now. Size 5 please, any color but mostly blue. Thank you and say hi to the reindeer.',wish:'Sneakers in size 5, about $40.'},
+    {name:'Sofia',age:5,note:'deer santa. a stuffed dog pleese. a big one. i wil name him biscit.',wish:'One large stuffed dog, about $25.'}
+  ];
+  const swipe=document.getElementById('swipe');
+  const card=document.getElementById('swipecard');
+  let i=0;
+  function paint(){
+    const L=LETTERS[i%LETTERS.length];
+    document.getElementById('sw-note').textContent='\u201C'+L.note+'\u201D';
+    document.getElementById('sw-name').textContent=L.name+', age '+L.age;
+    document.getElementById('sw-name2').textContent=L.name+', age '+L.age;
+    document.getElementById('sw-wish').textContent=L.wish;
+    document.getElementById('sw-ex').textContent='\u201C'+L.note+'\u201D';
+    document.getElementById('sw-count').textContent='Letter '+((i%LETTERS.length)+1)+' of '+LETTERS.length;
+    card.setAttribute('aria-label','Letter '+((i%LETTERS.length)+1)+' of '+LETTERS.length+': '+L.name+', age '+L.age);
+  }
+  function flip(){ swipe.classList.toggle('is-flipped'); }
+  function advance(){ swipe.classList.remove('is-flipped'); i++; paint(); }
+  card.addEventListener('click',flip);
+  card.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();flip();} });
+  document.getElementById('sw-skip').addEventListener('click',advance);
+  document.getElementById('sw-gift').addEventListener('click',()=>{
+    if(!swipe.classList.contains('is-flipped')){ flip(); return; }
+    advance();
+  });
+  paint();
+})();
+
+arm(document);
+parallax();
+</script>
+</body>
+</html>

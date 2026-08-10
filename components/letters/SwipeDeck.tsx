@@ -1,8 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/cn";
-import { Button } from "@/components/ui/Button";
 import { claimLetter } from "@/app/letters/give/actions";
 import { links } from "@/content/site";
 
@@ -16,6 +14,9 @@ export type SwipeLetter = {
   /** A single Amazon wishlist link (guardian-owned). When set, the card shows a
    *  "see their wishlist" button instead of per-item Amazon links. */
   wishlistUrl: string | null;
+  /** Short noun phrase for the gift, e.g. "LEGO Technic set". */
+  giftSummary: string | null;
+  giftValueUsd: number | null;
   imageUrl: string | null;
 };
 
@@ -24,20 +25,27 @@ const TAP_TOLERANCE_PX = 8;
 const FLING_MS = 280;
 
 /**
- * The swipe/card donor UI. One letter per card: the handwritten letter is the
- * card front, tapping flips to the wish + gift CTA. Right swipe (or the
- * "Gift this" button) = claim intent → records the claim and advances; left
- * swipe passes. Actually opening Amazon is a separate, explicit tap on the
- * wishlist / product link on the back of the card. Works with pointer, buttons,
- * and keyboard.
+ * The donor deck. One letter per card: the handwritten letter is the card
+ * front, tapping flips to the wish + gift links. Right swipe (or "Gift this")
+ * records the claim and advances; left swipe passes. Actually opening Amazon is
+ * a separate, explicit tap on the wishlist / product link on the back.
+ *
+ * Reading the pile is public. CLAIMING is not: the claim ties the gift to a
+ * donor so we can coordinate handoff, send an acknowledgment, and block a
+ * guardian from gifting their own child. A signed-out visitor who presses
+ * "Gift this" is sent to log in and returned here.
+ *
+ * Works with pointer, buttons, and keyboard (← pass · → gift · space/enter flip).
  */
 export function SwipeDeck({
   letters,
   claimable = true,
+  signedIn,
 }: {
   letters: SwipeLetter[];
-  /** When true, gifting records a claim in Supabase (off for demo letters). */
+  /** False for the `?demo=1` sample letters — nothing is written. */
   claimable?: boolean;
+  signedIn: boolean;
 }) {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -60,8 +68,11 @@ export function SwipeDeck({
     }, FLING_MS);
   }, []);
 
-  /** Record a claim for the current letter (no-op for demo letters). The Amazon
-   *  tab is opened by the caller synchronously so popup blockers don't fire. */
+  const goSignIn = useCallback(() => {
+    window.location.href = `${links.accountLogin}?next=${encodeURIComponent("/letters")}`;
+  }, []);
+
+  /** Record a claim for the current letter (no-op for demo letters). */
   const claimCurrent = useCallback(() => {
     if (!claimable || !current) return;
     void claimLetter(current.id).then((res) => {
@@ -70,26 +81,28 @@ export function SwipeDeck({
         setNotice("That was your own child's letter — not recorded as an adoption.");
       else if (res.reason === "taken")
         setNotice("That one was already claimed by someone else.");
-      else if (res.reason === "auth")
-        window.location.href = `/login?next=${encodeURIComponent("/letters")}`;
+      else if (res.reason === "auth") goSignIn();
     });
-  }, [claimable, current]);
+  }, [claimable, current, goSignIn]);
 
   const gift = useCallback(() => {
     if (!current || leaving) return;
+    if (!signedIn) {
+      goSignIn();
+      return;
+    }
     setNotice(null);
-    // Right swipe just records the claim (tags it as "to send"). Buying is a
-    // separate, explicit tap on the wishlist/product link on the card back.
+    // Swiping right records the claim ("I'm sending this"). Buying is a separate,
+    // explicit tap on the wishlist/product link on the card back.
     claimCurrent();
     advance("right");
-  }, [current, leaving, advance, claimCurrent]);
+  }, [current, leaving, signedIn, goSignIn, advance, claimCurrent]);
 
   const pass = useCallback(() => {
     if (!current || leaving) return;
     advance("left");
   }, [current, leaving, advance]);
 
-  // Keyboard: ← pass · → gift · space/enter flip
   useEffect(() => {
     const deck = deckRef.current;
     if (!deck) return;
@@ -107,22 +120,19 @@ export function SwipeDeck({
 
   if (done) {
     return (
-      <div className="border border-line bg-paper-raised p-[42px] text-center">
-        <div aria-hidden className="text-[40px] text-red">
-          ♔
-        </div>
-        <h2 className="mt-3 text-h3">You&apos;ve read the whole pile</h2>
-        <p className="mx-auto mt-2.5 max-w-[44ch] text-muted">
+      <div className="state">
+        <h3>You&apos;ve read the whole pile</h3>
+        <p>
           That&apos;s every letter that&apos;s live right now. New ones go up as families submit
           them. You can start again if you want to reread one.
         </p>
-        <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-          <Button variant="red" onClick={() => setIndex(0)}>
+        <div className="actions">
+          <button type="button" className="btn btn--red" onClick={() => setIndex(0)}>
             Start over
-          </Button>
-          <Button href={links.donate} variant="ghost">
+          </button>
+          <a className="btn btn--ghost" href={links.donate}>
             Donate instead
-          </Button>
+          </a>
         </div>
       </div>
     );
@@ -145,7 +155,6 @@ export function SwipeDeck({
     const dx = drag?.dx ?? 0;
     pointerStart.current = null;
     if (Math.abs(dx) < TAP_TOLERANCE_PX) {
-      // A tap flips the card.
       setDrag(null);
       setFlipped((f) => !f);
       return;
@@ -161,32 +170,49 @@ export function SwipeDeck({
     url,
     imageUrl: current.amazonImageUrls[i] || null,
   }));
+  // "LEGO Technic set · about $50" — omits whichever half the letter lacks.
+  const ask =
+    [
+      current.giftSummary,
+      current.giftValueUsd ? `about $${Math.round(current.giftValueUsd)}` : null,
+    ]
+      .filter(Boolean)
+      .join(" · ") || null;
   const topTransform = leaving
     ? `translate(${leaving === "right" ? 720 : -720}px, ${dy * 0.4 - 40}px) rotate(${leaving === "right" ? 24 : -24}deg)`
     : `translate(${dx}px, ${dy * 0.4}px) rotate(${dx * 0.055}deg)`;
   const verdictOpacity = Math.min(Math.abs(dx) / SWIPE_THRESHOLD_PX, 1);
 
+  const openLink = (event: React.MouseEvent) => {
+    // The anchor's href opens Amazon natively; also record the claim.
+    event.stopPropagation();
+    if (!signedIn) return; // The link still opens; the claim needs an account.
+    setNotice(null);
+    claimCurrent();
+    advance("right");
+  };
+
   return (
-    <div>
+    <div className="deckwrap">
       <div
         ref={deckRef}
         tabIndex={0}
         role="group"
         aria-label={`Letter ${index + 1} of ${letters.length}: ${current.childFirstName}, age ${current.childAge}`}
-        className="relative mx-auto h-[540px] max-w-[420px] outline-none select-none focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-red"
+        className="swipe"
         style={{ perspective: "1400px" }}
       >
-        {/* Cards behind the top one */}
+        {/* The rest of the pile, stacked behind the top card. */}
         {letters
           .slice(index + 1, index + 3)
           .reverse()
           .map((letter, i, arr) => {
-            const depth = arr.length - i; // 1 = next card, 2 = the one after
+            const depth = arr.length - i;
             return (
               <div
                 key={letter.id}
                 aria-hidden
-                className="absolute inset-0 border border-line bg-paper-raised"
+                className="sw-face sw-front"
                 style={{
                   transform: `translateY(${depth * 14}px) scale(${1 - depth * 0.04})`,
                   zIndex: 1,
@@ -195,7 +221,6 @@ export function SwipeDeck({
             );
           })}
 
-        {/* Top card */}
         <div
           className="absolute inset-0 cursor-grab touch-none active:cursor-grabbing"
           style={{
@@ -212,175 +237,146 @@ export function SwipeDeck({
           }}
         >
           <div
-            className="relative h-full w-full transition-colors duration-500 [transform-style:preserve-3d]"
-            style={{ transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
+            className="relative h-full w-full [transform-style:preserve-3d]"
+            style={{
+              transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
+              transition: "transform 500ms cubic-bezier(0.22,1,0.36,1)",
+            }}
           >
-            {/* Front: the handwritten letter */}
-            <div className="absolute inset-0 flex flex-col overflow-hidden border border-line bg-paper-raised [backface-visibility:hidden]">
+            {/* Front: the handwritten letter itself — the point of the program. */}
+            <div className="sw-face sw-front">
               {current.imageUrl ? (
-                // The signed Supabase URL domain is not known at build time, so use img.
+                // The signed Supabase URL host isn't known at build time, so use img.
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={current.imageUrl}
                   alt={`${current.childFirstName}'s handwritten letter to Santa`}
-                  className="min-h-0 flex-1 bg-paper-raised object-contain"
+                  className="min-h-0 flex-1 object-contain"
                   draggable={false}
                 />
               ) : (
-                <div className="flex min-h-0 flex-1 items-center justify-center bg-paper-raised p-8">
-                  <p className="max-w-[30ch] text-center font-serif text-[22px] italic leading-relaxed text-ink">
-                    “{current.wishNote}”
-                  </p>
-                </div>
+                <p className="sw-note">“{current.wishNote}”</p>
               )}
-              <div className="flex items-center justify-between border-t border-line px-6 py-4">
+              <div className="sw-who">
                 <div>
-                  <p className="text-[17px] font-extrabold tracking-[-0.01em]">
+                  <strong>
                     {current.childFirstName}, {current.childAge}
-                  </p>
-                  <p className="text-[13px] font-semibold text-muted">Tap the card to see the wish</p>
+                  </strong>
+                  <span>Tap the card to see the wish</span>
                 </div>
-                <span aria-hidden className="text-[22px] text-red">
-                  ✦
-                </span>
               </div>
             </div>
 
-            {/* Back: the wish and Amazon CTA */}
-            <div className="absolute inset-0 flex [transform:rotateY(180deg)] flex-col overflow-hidden border border-line bg-red-deep p-7 text-paper [backface-visibility:hidden]">
-              <p className="text-[13px] font-bold uppercase tracking-[0.16em] text-gold-soft">
-                The wish
-              </p>
-              <p className="mt-3 text-[24px] font-extrabold tracking-[-0.02em] text-white">
+            {/* Back: the wish and where to buy it. */}
+            <div className="sw-face sw-back">
+              <p className="kicker">The wish</p>
+              <h3>
                 {current.childFirstName}, age {current.childAge}
-              </p>
-              <p className="mt-4 max-h-[135px] overflow-y-auto font-serif text-[19px] italic leading-relaxed">
-                “{current.wishNote}”
-              </p>
-              <div className="mt-5 min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
+              </h3>
+              <p className="wish">“{current.wishNote}”</p>
+              {ask && <p className="ask">{ask}</p>}
+
+              <div className="mt-5 flex min-h-0 flex-col gap-2 overflow-y-auto pr-1">
                 {current.wishlistUrl ? (
-                  <>
+                  <a
+                    href={current.wishlistUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={openLink}
+                    onPointerDown={(event) => event.stopPropagation()}
+                    className="sw-item"
+                  >
+                    <span className="thumb">List</span>
+                    <span className="label">See their Amazon wishlist ↗</span>
+                  </a>
+                ) : (
+                  giftItems.map((item, i) => (
                     <a
-                      href={current.wishlistUrl}
+                      key={item.url}
+                      href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={(event) => {
-                        // Opens their wishlist natively; record the claim too.
-                        event.stopPropagation();
-                        setNotice(null);
-                        claimCurrent();
-                        advance("right");
-                      }}
+                      onClick={openLink}
                       onPointerDown={(event) => event.stopPropagation()}
-                      className="flex min-h-[92px] items-center gap-3 bg-paper p-3 text-red-deep transition-colors duration-150"
+                      className="sw-item"
                     >
-                      <span className="flex h-[68px] w-[78px] shrink-0 items-center justify-center bg-white text-[11px] font-bold uppercase tracking-[0.08em] text-red-deep/45">
-                        List
+                      <span className="thumb">
+                        {item.imageUrl ? (
+                          // Amazon image hosts are remote and dynamic, so use img here.
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={item.imageUrl}
+                            alt=""
+                            className="h-full w-full object-contain"
+                            loading="lazy"
+                            draggable={false}
+                          />
+                        ) : (
+                          "Amazon"
+                        )}
                       </span>
-                      <span className="min-w-0 flex-1 text-left text-[15px] font-bold leading-tight">
-                        See their Amazon wishlist ↗
+                      <span className="label">
+                        {current.amazonUrls.length > 1
+                          ? `Gift item ${i + 1} on Amazon ↗`
+                          : "Gift this on Amazon ↗"}
                       </span>
                     </a>
-                    <p className="text-center text-[12.5px] opacity-80">
-                      Opens their Amazon wishlist in a new tab. Pick anything on it — we never handle
-                      payment.
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    {giftItems.map((item, i) => (
-                      <a
-                        key={item.url}
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(event) => {
-                          // The anchor's href opens this specific item natively; record the claim too.
-                          event.stopPropagation();
-                          setNotice(null);
-                          claimCurrent();
-                          advance("right");
-                        }}
-                        onPointerDown={(event) => event.stopPropagation()}
-                        className="flex min-h-[92px] items-center gap-3 bg-paper p-3 text-red-deep transition-colors duration-150"
-                      >
-                        <span className="flex h-[68px] w-[78px] shrink-0 items-center justify-center bg-white">
-                          {item.imageUrl ? (
-                            // Amazon image hosts are remote and dynamic, so use img here.
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={item.imageUrl}
-                              alt=""
-                              className="h-full w-full object-contain"
-                              loading="lazy"
-                              draggable={false}
-                            />
-                          ) : (
-                            <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-red-deep/45">
-                              Amazon
-                            </span>
-                          )}
-                        </span>
-                        <span className="min-w-0 flex-1 text-left text-[15px] font-bold leading-tight">
-                          {current.amazonUrls.length > 1
-                            ? `Gift item ${i + 1} on Amazon ↗`
-                            : "Gift this on Amazon ↗"}
-                        </span>
-                      </a>
-                    ))}
-                    <p className="text-center text-[12.5px] opacity-80">
-                      {current.amazonUrls.length > 1
-                        ? "Each link opens Amazon in a new tab. Gift one item or all of them. We never handle payment."
-                        : "This opens Amazon in a new tab. We never handle payment."}
-                    </p>
-                  </>
+                  ))
                 )}
               </div>
+              <p className="fine">
+                {signedIn
+                  ? "Opens Amazon in a new tab. We never handle the money."
+                  : "Opens Amazon in a new tab. Log in first so we can mark this letter as taken."}
+              </p>
             </div>
           </div>
 
           {/* Swipe verdict stamps */}
           <div
             aria-hidden
-            className="pointer-events-none absolute top-7 left-6 rotate-[-12deg] border-[3px] border-green bg-white/85 px-4 py-1.5 text-[20px] font-black tracking-wide text-green uppercase"
-            style={{ opacity: dx > 0 || leaving === "right" ? verdictOpacity : 0, zIndex: 3 }}
+            className="sw-stamp"
+            style={{
+              left: 24,
+              transform: "rotate(-12deg)",
+              borderColor: "var(--color-green)",
+              color: "var(--color-green)",
+              opacity: dx > 0 || leaving === "right" ? verdictOpacity : 0,
+            }}
           >
             Gift it
           </div>
           <div
             aria-hidden
-            className="pointer-events-none absolute top-7 right-6 rotate-[12deg] border-[3px] border-muted bg-white/85 px-4 py-1.5 text-[20px] font-black tracking-wide text-muted uppercase"
-            style={{ opacity: dx < 0 || leaving === "left" ? verdictOpacity : 0, zIndex: 3 }}
+            className="sw-stamp"
+            style={{
+              right: 24,
+              transform: "rotate(12deg)",
+              borderColor: "var(--color-muted)",
+              color: "var(--color-muted)",
+              opacity: dx < 0 || leaving === "left" ? verdictOpacity : 0,
+            }}
           >
             Next
           </div>
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-        <Button variant="ghost" onClick={pass} className="px-5 py-3 text-[15px]">
+      <div className="deckbar">
+        <button type="button" className="btn btn--ghost" onClick={pass}>
           ← Next letter
-        </Button>
-        <Button
-          variant="ghost"
-          onClick={() => setFlipped((f) => !f)}
-          className="px-5 py-3 text-[15px]"
-        >
+        </button>
+        <button type="button" className="btn btn--ghost" onClick={() => setFlipped((f) => !f)}>
           {flipped ? "See the letter" : "See the wish"}
-        </Button>
-        <Button variant="red" onClick={gift} className="px-5 py-3 text-[15px]">
-          Gift this
-        </Button>
+        </button>
+        <button type="button" className="btn btn--red" onClick={gift}>
+          {signedIn ? "Gift this" : "Log in to gift"} <span className="arw">→</span>
+        </button>
       </div>
-      <p className="mt-4 text-center text-[13.5px] font-semibold text-muted">
+      <p className="deckcount">
         Letter {index + 1} of {letters.length}
       </p>
-      {notice && (
-        <p className="mx-auto mt-3 max-w-[44ch] border border-gold bg-gold-soft/60 px-4 py-2.5 text-center text-[13.5px] font-semibold text-[#6c5418]">
-          {notice}
-        </p>
-      )}
+      {notice && <p className="notice">{notice}</p>}
     </div>
   );
 }

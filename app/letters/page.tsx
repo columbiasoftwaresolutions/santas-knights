@@ -1,113 +1,43 @@
 import type { Metadata } from "next";
-import { Container } from "@/components/ui/Container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Fragment } from "react";
 import { LettersPortal } from "@/components/letters/LettersPortal";
-import type { SwipeLetter } from "@/components/letters/SwipeDeck";
+import { Mark } from "@/components/redesign/Mark";
+import { PhotoBand } from "@/components/redesign/PhotoBand";
+import { R } from "@/components/redesign/Reveal";
+import { RedesignShell, Wrap } from "@/components/redesign/RedesignShell";
+import { giftAskLine, getLetterPool, type PublicLetter } from "@/lib/letters";
 import { getCurrentUser } from "@/lib/auth";
-import { fetchAmazonImagePreviews } from "@/lib/amazonPreview";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
-import { isSupabaseConfigured, LETTERS_BUCKET } from "@/lib/supabase/config";
-import { org } from "@/content/site";
+import { giftGuidance, links, org } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Santa's Letters · Santa's Knights",
   description:
-    "Read kids' letters to Santa and adopt a wish, or submit your child's letter — all on one page. We protect every child's identity, and here's exactly how we keep them safe.",
+    "Read kids' letters to Santa and adopt a wish, or submit your child's letter. We protect every child's identity, and here's exactly how.",
 };
 
-// Render per request because submissions, claims, and fulfillment change the pool.
+// Rendered per request: submissions, claims, and fulfillment change the pool.
 export const dynamic = "force-dynamic";
 
-const SIGNED_URL_TTL_SECONDS = 60 * 60;
+/** How many letters get a card in the public preview above the portal. */
+const PREVIEW_COUNT = 3;
 
 /**
- * Live unclaimed letters via the public-safe view, with short-lived signed URLs
- * for the letter images (the bucket is private so raw uploads stay dark).
- * Returns null when Supabase isn't configured yet.
+ * Sample letters for `?demo=1` let the team review the deck on the beta before
+ * real submissions exist. Clearly labeled, never mixed with real data, and the
+ * beta is noindex so this never reaches search.
  */
-async function getLetters(): Promise<SwipeLetter[] | null> {
-  if (!isSupabaseConfigured()) return null;
-  const supabase = createSupabaseAdminClient();
-  if (!supabase) return null;
-
-  const { data, error } = await supabase
-    .from("public_letters")
-    .select(
-      "id, child_first_name, child_age, wish_note, amazon_urls, wishlist_url, letter_image_path, created_at, amazon_image_urls",
-    )
-    .order("created_at", { ascending: true })
-    .limit(150);
-
-  if (error || !data) {
-    console.error("Failed to load letters:", error?.message);
-    return [];
-  }
-
-  const paths = data.map((row) => row.letter_image_path).filter(Boolean) as string[];
-  const signedByPath = new Map<string, string>();
-  if (paths.length > 0) {
-    const { data: signed } = await supabase.storage
-      .from(LETTERS_BUCKET)
-      .createSignedUrls(paths, SIGNED_URL_TTL_SECONDS);
-    signed?.forEach((entry) => {
-      if (entry.signedUrl && entry.path) signedByPath.set(entry.path, entry.signedUrl);
-    });
-  }
-
-  const previewByLetterId = new Map<string, string[]>();
-  await Promise.all(
-    data
-      .filter((row) => {
-        const amazonUrls: string[] = row.amazon_urls ?? [];
-        const previewUrls: string[] = row.amazon_image_urls ?? [];
-        return amazonUrls.length > 0 && amazonUrls.some((_, i) => !previewUrls[i]);
-      })
-      .slice(0, 12)
-      .map(async (row) => {
-        const amazonUrls: string[] = row.amazon_urls ?? [];
-        const previewUrls: string[] = row.amazon_image_urls ?? [];
-        const fetched = await fetchAmazonImagePreviews(amazonUrls);
-        const merged = amazonUrls.map((_, i) => previewUrls[i] || fetched[i] || "");
-        if (!merged.some((url, i) => url && url !== previewUrls[i])) return;
-
-        previewByLetterId.set(row.id, merged);
-        const { error: updateError } = await supabase
-          .from("santa_letters")
-          .update({ amazon_image_urls: merged })
-          .eq("id", row.id);
-        if (updateError) console.error("Failed to backfill Amazon previews:", updateError.message);
-      }),
-  );
-
-  return data.map((row) => ({
-    id: row.id,
-    childFirstName: row.child_first_name,
-    childAge: row.child_age,
-    wishNote: row.wish_note,
-    amazonUrls: row.amazon_urls ?? [],
-    amazonImageUrls: previewByLetterId.get(row.id) ?? row.amazon_image_urls ?? [],
-    wishlistUrl: row.wishlist_url ?? null,
-    imageUrl: row.letter_image_path ? (signedByPath.get(row.letter_image_path) ?? null) : null,
-  }));
-}
-
-/**
- * Sample letters for `?demo=1` let the team review the swipe experience on
- * the beta before real submissions exist. Clearly labeled, never mixed with
- * real data, and the beta is noindex so this never reaches search.
- */
-const DEMO_LETTERS: SwipeLetter[] = [
+const DEMO_LETTERS: PublicLetter[] = [
   {
     id: "demo-1",
     childFirstName: "Maya",
     childAge: 7,
     wishNote:
       "Dear Santa, I have been very good this year. I would love this LEGO car set because I want to build something big with my dad.",
-    amazonUrls: [
-      "https://www.amazon.com/LEGO-Technic-Lamborghini-Advanced-Building/dp/B0CPQ54PQ5/ref=sr_1_9?crid=1G8XMOFGVLN5C&dib=eyJ2IjoiMSJ9.cEtfmrGy_T40hphH4Ih9xNRkh7R263UBsFqsEwGXZ4FbI6hrZ7rS6lMS--6s_NeSDPdXr0WwqgLX9bpuD3jPTF6Q63sGM1RyATMaey8NJX24H7q24IOhtu749uxaqNCko6lPvIfiSt4hT6RAGN9AsLXppWceNXkb22YT3pQ7MyuFAFUTU_74unWBSLMzHbOOobkk-0aQ66nc_H7xRvxNUt9I_VapITm_3UE55CYTEmCuresm3flZwANr80N5jeF8KhvWRzSmNPCzY3K5QWwLmhHOtoN5pW_yg5L7ZEAJYwo.BEXCwJldfrIU8QcIHzu3XSdrOLzeA9R5mXiqaOV8kZA&dib_tag=se&keywords=lego&qid=1782588029&sprefix=lego+set%2Caps%2C339&sr=8-9&ufe=app_do%3Aamzn1.fos.9fe8cbfa-bf43-43d1-a707-3f4e65a4b666",
-    ],
-    amazonImageUrls: ["https://m.media-amazon.com/images/I/81w4luhxYqL._AC_SL1500_.jpg"],
+    amazonUrls: ["https://www.amazon.com/s?k=lego+technic+car+set"],
+    amazonImageUrls: [],
     wishlistUrl: null,
+    giftSummary: "LEGO Technic set",
+    giftValueUsd: 50,
     imageUrl: null,
   },
   {
@@ -119,6 +49,8 @@ const DEMO_LETTERS: SwipeLetter[] = [
     amazonUrls: ["https://www.amazon.com/s?k=kids+sneakers+size+5"],
     amazonImageUrls: [],
     wishlistUrl: null,
+    giftSummary: "Sneakers, size 5",
+    giftValueUsd: 40,
     imageUrl: null,
   },
   {
@@ -129,29 +61,56 @@ const DEMO_LETTERS: SwipeLetter[] = [
     amazonUrls: [],
     amazonImageUrls: [],
     wishlistUrl: "https://www.amazon.com/hz/wishlist/ls/DEMO12345",
+    giftSummary: "A large stuffed dog",
+    giftValueUsd: 25,
     imageUrl: null,
   },
 ];
 
-/** Trust content kept on this page for visitors and for SEO. */
-const privacyPoints: { title: string; body: string }[] = [
+const steps = [
+  { title: "Read a wish", body: "A first name, an age, and what they asked for." },
+  { title: "Buy the gift", body: "Straight from Amazon. We never touch your payment." },
+  { title: "They open it", body: "Christmas morning, from Santa." },
+];
+
+const protections = [
   {
     title: "First names only",
-    body: "A donor sees a first name, an age, and a wish. Never a last name, address, school, phone number, or social handle.",
-  },
-  {
-    title: "Admins can remove issues",
-    body: "Letters go live immediately, and admins can delete anything that should not stay in the gift pool.",
+    body: "A first name, an age, and a wish. Never a last name, address, school, or handle.",
   },
   {
     title: "No contact, either way",
-    body: "Families and donors stay anonymous to each other. Amazon handles shipping, so addresses are never exchanged.",
+    body: "Families and donors stay anonymous. Amazon ships it, so addresses are never exchanged.",
   },
   {
     title: "Gifts are vetted",
-    body: "Wishes have to be age-appropriate, legal, and safe. Anything else doesn't make it onto the pile.",
+    body: "Wishes have to be age-appropriate, legal, and safe.",
+  },
+  {
+    title: "Admins can pull anything",
+    body: "Letters go live immediately, and admins can remove any that shouldn't stay in the pool.",
   },
 ];
+
+/** The hand-drawn arrow between steps. */
+function StepArrow() {
+  return (
+    <svg className="sep" width="34" height="16" viewBox="0 0 34 16" fill="none" aria-hidden>
+      <path
+        d="M1.5 8.6C7 6.4 14 5.9 20.5 7.2c4 .8 7.6 2 11 3.6"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M26.6 5.2c2.4 1.9 4.4 3.9 5.9 6.2M25.9 14.4c2.5-.5 4.6-1.6 6.6-3.2"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 export default async function LettersPage({
   searchParams,
@@ -163,54 +122,165 @@ export default async function LettersPage({
   // Always defaults to adopt; only an explicit ?do=submit opens the submit side.
   const initialView = params.do === "submit" ? "submit" : "adopt";
   const user = await getCurrentUser();
-  // Adopting requires an account: the gift is linked to the donor so we can
-  // coordinate handoff, send a tax acknowledgment, and block self-dealing.
-  const letters = user ? (demo ? DEMO_LETTERS : await getLetters()) : null;
+
+  // The pile is PUBLIC — anyone can read the letters. Only claiming one needs an
+  // account (SwipeDeck redirects), and only submitting one needs an account (the
+  // row carries guardian_user_id).
+  const pool = demo
+    ? { letters: DEMO_LETTERS, total: DEMO_LETTERS.length }
+    : await getLetterPool();
+  const preview = pool?.letters.slice(0, PREVIEW_COUNT) ?? [];
 
   return (
-    <>
-      <LettersPortal
-        initialView={initialView}
-        signedIn={!!user}
-        defaultEmail={user?.email ?? undefined}
-        defaultName={user?.name ?? undefined}
-        letters={letters}
-        demo={demo}
-      />
+    <RedesignShell>
+      {/* Hero over a photo; the paper tears open beneath it. */}
+      <PhotoBand
+        src="/images/gallery/48362591_10161478136885422_5477524744964145152_o.jpg"
+        objectPosition="52% 40%"
+        hero
+        priority
+      >
+        <R as="h1" className="narrow-14">
+          Pick a letter <Mark>off the pile</Mark>.
+        </R>
 
-      {/* Privacy & safety — kept on the page for visitors and for SEO. */}
-      <section className="border-t border-line bg-paper-raised py-section text-ink">
-        <Container>
-          <SectionHeading
-            className="max-w-[640px]"
-            title="How we protect the kids"
-            intro="The whole program is built so that generosity never costs a family their privacy."
-            introClassName="max-w-[52ch]"
-          />
-          <div className="mt-10 grid gap-x-[54px] gap-y-8 sm:grid-cols-2">
-            {privacyPoints.map((point) => (
-              <div key={point.title} className="flex gap-4">
-                <span aria-hidden className="mt-1 text-[18px] text-green">
-                  ✦
-                </span>
-                <div>
-                  <h2 className="text-[19px] font-extrabold tracking-[-0.02em] text-ink">
-                    {point.title}
-                  </h2>
-                  <p className="mt-1.5 text-[15.5px] text-muted">{point.body}</p>
-                </div>
+        <div className="steps steps--onimg" data-reveal style={{ transitionDelay: "110ms" }}>
+          {steps.map((step, index) => (
+            <Fragment key={step.title}>
+              <div className="step">
+                <strong>{step.title}</strong>
+                <span>{step.body}</span>
               </div>
-            ))}
-          </div>
-          <p className="mt-10 text-[14.5px] text-muted">
-            Questions about the program? Email{" "}
-            <a href={`mailto:${org.email}`} className="font-semibold text-ink underline">
-              {org.email}
-            </a>
-            .
-          </p>
-        </Container>
+              {index < steps.length - 1 && <StepArrow />}
+            </Fragment>
+          ))}
+        </div>
+
+        <R delay={180} className="linkrow" style={{ marginTop: 32 }}>
+          <a className="btn btn--red" href="#portal">
+            Adopt a letter <span className="arw">→</span>
+          </a>
+          <a className="btn btn--onimg" href="#portal">
+            Submit your child&apos;s letter
+          </a>
+        </R>
+        <R delay={230} style={{ marginTop: 20 }}>
+          <span className="value-note value-note--onimg">
+            Suggested gift value <b>{giftGuidance.valueRange}</b> per child
+          </span>
+        </R>
+      </PhotoBand>
+
+      {/* The public preview pile. Reading is open to everyone — a stranger should
+          be able to see a real wish before deciding to make an account. */}
+      {preview.length > 0 && (
+        <section className="sec sec--tight">
+          <Wrap>
+            <div className="headrow">
+              <R as="h2" className="big">
+                Letters waiting <Mark alt>right now</Mark>
+              </R>
+              <R delay={80}>
+                <a className="tlink" href="#portal">
+                  {pool && pool.total > PREVIEW_COUNT
+                    ? `See all ${pool.total} letters`
+                    : "Read the letters"}{" "}
+                  <span className="arw">→</span>
+                </a>
+              </R>
+            </div>
+
+            <R delay={120} className="deck">
+              {preview.map((letter) => {
+                const ask = giftAskLine(letter);
+                return (
+                  <article key={letter.id} className="letter">
+                    <div className="who">
+                      {letter.childFirstName} <em>Age {letter.childAge}</em>
+                    </div>
+                    <p className="wish">“{letter.wishNote}”</p>
+                    {ask && <p className="ask">{ask}</p>}
+                    <a className="btn btn--red btn--wide" href="#portal">
+                      Gift this
+                    </a>
+                  </article>
+                );
+              })}
+            </R>
+          </Wrap>
+        </section>
+      )}
+
+      {/* The two-sided portal: deck ⇄ guardian form. */}
+      <section className="sec sec--tight" id="portal" style={{ scrollMarginTop: 118 }}>
+        <Wrap>
+          <LettersPortal
+            initialView={initialView}
+            signedIn={!!user}
+            defaultEmail={user?.email ?? undefined}
+            defaultName={user?.name ?? undefined}
+            letters={pool?.letters ?? null}
+            demo={demo}
+          />
+        </Wrap>
       </section>
-    </>
+
+      <section className="sec sec--tight">
+        <Wrap>
+          <div className="split split--top">
+            <div>
+              <R as="h2" className="big">
+                How we protect the kids
+              </R>
+              <R as="p" delay={70} className="lede">
+                Generosity never costs a family their privacy.
+              </R>
+              <R as="p" delay={110} className="aside-note">
+                Questions?{" "}
+                <a className="tlink" style={{ fontSize: 14.5 }} href={`mailto:${org.email}`}>
+                  {org.email}
+                </a>
+              </R>
+            </div>
+            <R delay={120} className="protect">
+              {protections.map((item) => (
+                <div key={item.title}>
+                  <h3>{item.title}</h3>
+                  <p>{item.body}</p>
+                </div>
+              ))}
+            </R>
+          </div>
+        </Wrap>
+      </section>
+
+      <section className="closer">
+        <Wrap>
+          <div className="in">
+            <R>
+              <h2>Can&apos;t shop this year?</h2>
+              <p>A donation covers the letters nobody adopts before Christmas.</p>
+            </R>
+            <R delay={100} className="cta-wrap">
+              <svg
+                className="arrow-hand"
+                data-reveal
+                width="96"
+                height="58"
+                viewBox="0 0 96 58"
+                aria-hidden
+                style={{ left: -104, top: -16 }}
+              >
+                <path d="M4 6C13 26 30 41 56 45.5" />
+                <path d="M45 34c4.4 4.4 8 8.3 11.5 11.8M43.5 51.5c4.6-1.6 8.8-3.7 13-6" />
+              </svg>
+              <a className="btn btn--ink" href={links.donate}>
+                Donate instead <span className="arw">→</span>
+              </a>
+            </R>
+          </div>
+        </Wrap>
+      </section>
+    </RedesignShell>
   );
 }

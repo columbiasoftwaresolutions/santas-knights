@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { headers } from "next/headers";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { LETTERS_BUCKET } from "@/lib/supabase/config";
+import { isMissingColumnError } from "@/lib/pgError";
 import { getCurrentUser } from "@/lib/auth";
 import { GUARDIAN_CONSENT_TEXT, GUARDIAN_CONSENT_VERSION } from "@/content/consent";
 
@@ -79,6 +80,9 @@ export async function submitLetter(
   const wishNote = String(formData.get("wish_note") ?? "").trim();
   // Gifts are shopped via a single Amazon wishlist link (guardian-owned).
   const wishlistUrl = String(formData.get("wishlist_url") ?? "").trim();
+  // Shown publicly on the letter card as "LEGO Technic set · about $50".
+  const giftSummary = String(formData.get("gift_summary") ?? "").trim();
+  const giftValueRaw = String(formData.get("gift_value_usd") ?? "").replace(/[^0-9.]/g, "");
   const guardianName = String(formData.get("guardian_name") ?? "").trim();
   const guardianEmail = String(formData.get("guardian_email") ?? "").trim();
   const consent = formData.get("consent") === "on";
@@ -93,6 +97,14 @@ export async function submitLetter(
   if (!childAgeRaw || !Number.isInteger(childAge) || childAge < 0 || childAge > 17)
     errors.child_age = "Age must be a whole number between 0 and 17.";
   if (!wishNote) errors.wish_note = "Tell us in a line or two what they're wishing for.";
+  // Donors scan the pile by this line, so it's required on new letters. It must
+  // describe the gift, never the child — enforced by review, not by regex.
+  if (!giftSummary) errors.gift_summary = "Name the gift in a few words, e.g. “LEGO Technic set”.";
+  else if (giftSummary.length > 120)
+    errors.gift_summary = "Keep this under 120 characters — just the item, not a description.";
+  const giftValue = giftValueRaw ? Number(giftValueRaw) : null;
+  if (giftValue !== null && (!Number.isFinite(giftValue) || giftValue <= 0 || giftValue > 1000))
+    errors.gift_value_usd = "Enter an approximate dollar value, or leave it blank.";
   if (!wishlistUrl) errors.wishlist_url = "Please paste the link to the child's Amazon wishlist.";
   else if (!isAmazonWishlistUrl(wishlistUrl))
     errors.wishlist_url =
@@ -148,16 +160,35 @@ export async function submitLetter(
     status: "live",
   };
 
-  const { data: letter, error: insertError } = await supabase
+  const letterRow = {
+    ...letterBase,
+    amazon_urls: [],
+    amazon_image_urls: [],
+    wishlist_url: wishlistUrl,
+    gift_summary: giftSummary,
+    gift_value_usd: giftValue,
+  };
+
+  let { data: letter, error: insertError } = await supabase
     .from("santa_letters")
-    .insert({
-      ...letterBase,
-      amazon_urls: [],
-      amazon_image_urls: [],
-      wishlist_url: wishlistUrl,
-    })
+    .insert(letterRow)
     .select("id")
     .single();
+
+  // Compatibility: a Supabase project that hasn't run sql/2026-08-gift-summary.sql
+  // yet has no gift_* columns. Drop them and retry rather than losing the letter;
+  // the card just omits the "what they asked for" line until the SQL is applied.
+  if (insertError && isMissingColumnError(insertError.message)) {
+    console.warn(
+      "santa_letters.gift_summary/gift_value_usd missing — apply sql/2026-08-gift-summary.sql. Falling back.",
+    );
+    const { gift_summary: _s, gift_value_usd: _v, ...withoutGiftFields } = letterRow;
+    ({ data: letter, error: insertError } = await supabase
+      .from("santa_letters")
+      .insert(withoutGiftFields)
+      .select("id")
+      .single());
+  }
 
   if (insertError || !letter) {
     console.error("Letter insert failed:", insertError?.message);
