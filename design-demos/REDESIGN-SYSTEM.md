@@ -1,8 +1,9 @@
 # The redesign — how it lands, and how to flip it global
 
 **Source of truth for the look:** [`redesign.html`](./redesign.html) — Donate · Membership · Letters —
-[`redesign2.html`](./redesign2.html) — About (sponsors folded in) · Contact · Gallery — and
-[`redesign3.html`](./redesign3.html) — Home · Log in / Sign up.
+[`redesign2.html`](./redesign2.html) — About (sponsors folded in) · Contact · Gallery —
+[`redesign3.html`](./redesign3.html) — Home · Log in / Sign up — and
+[`redesign4.html`](./redesign4.html) — Account.
 Open any of them in a browser. Same six rules throughout; each demo adds the shapes its pages needed.
 **Implementation:** [`app/redesign.css`](../app/redesign.css) + [`components/redesign/`](../components/redesign/).
 
@@ -29,10 +30,27 @@ system. This file is the instruction manual for the transition, and — most imp
 | Training | `/training`, `/training/[slug]` | ➡️ redirects out to `gladiators.nyc/classes` |
 | Home | `/` | ✅ ported (demo 3) |
 | Login / Signup | `/login`, `/signup` | ✅ ported (demo 3) — `theme-steel` retired, both pages on paper |
-| Account | `/account` | ⬜ old system |
+| Account | `/account` | ✅ ported (demo 4) |
 | Admin | `/admin/*` | ⬜ old system — internal, port last or never |
 
 Keep this table current. It is what tells you whether the global flip is safe yet.
+
+**Every public-facing page is now on the new system.** `/admin` is the only `⬜` left, and it is
+the one row [the global flip](#the-global-flip) is allowed to leave behind (open decision 3) —
+so the flip is unblocked. Read the caveat in step 1 before starting it: `app/redesign.css` styles
+bare elements (`.rd h1, .rd h2, .rd h3, .rd h4`, `.rd p`), and dropping the `.rd ` prefix makes
+those rules global, which *does* reach `/admin`. Leaving admin unported is not the same as
+leaving it untouched — walk its four tabs after the flip rather than assuming it is a no-op.
+Open decision 2 (1240 vs 1440) hits it too: `AdminShell` uses `Container`, and the letters table
+is wide.
+
+`/account` is a **tool, not a page about something** — the one screen in the system where the
+materials are used at working density. What that means concretely is written at the top of
+[`redesign4.html`](./redesign4.html), and the three states it has to handle are in that demo's
+demo bar. The short version: a bar instead of a hero, a real table (column heads, one
+`--acct-cols` shared by head and rows, status as an aligned column), live filter/search/paging,
+and no photography. The site's two drawn gestures — `<Mark>` and `<HandArrow>` — appear once, in
+the closer, *after* the work.
 
 **`/links` is gone.** The link-in-bio page was deleted (route, `links.linkInBio`, and the
 one reference to it on `/donate`, which now points at Instagram). There is no way to reach

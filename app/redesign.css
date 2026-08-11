@@ -3118,4 +3118,381 @@
       transform: scale(1.1) !important;
     }
   }
+
+  /* ============================================================
+     /ACCOUNT — the member's ledger
+     ------------------------------------------------------------
+     Same materials as every other redesigned page, at WORKING
+     DENSITY. This screen is a tool, not a page about something:
+     somebody opens it to find out which gifts they still owe, so
+     the list starts immediately and the type is sized for reading
+     forty rows rather than for a headline.
+
+     Spec: design-demos/redesign4.html.
+     ============================================================ */
+
+  /* ---- page bar: a bar, not a hero ---- */
+  .rd .acct-pagebar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px 24px;
+    padding: clamp(26px, 3.2vw, 42px) 0 clamp(20px, 2.4vw, 30px);
+  }
+  .rd .acct-pagebar h1 {
+    font-size: clamp(24px, 2.5vw, 31px);
+    letter-spacing: -0.032em;
+  }
+  /* Identity and the way out are a receipt, so they are set like one. */
+  .rd .acct-who {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+    font-size: 13px;
+    color: var(--color-muted);
+  }
+  .rd .acct-who b {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  /* Sign out is a <button> inside a server-action form, not an <a>. `.tlink`
+     never had to reset native button chrome before, so without this it renders
+     as a grey box. Scoped to `button` so no anchor loses its underline. */
+  .rd button.tlink {
+    background: transparent;
+    border: 0;
+    border-bottom: 1.5px solid var(--rd-line-strong);
+    color: inherit;
+    font-family: inherit;
+    padding: 0 0 2px;
+    cursor: pointer;
+  }
+  .rd .acct-tlink-quiet {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-muted);
+    border-bottom-color: transparent;
+  }
+  .rd .acct-tlink-quiet:hover {
+    color: var(--color-red);
+    border-bottom-color: var(--color-red);
+  }
+
+  /* ---- the switch ----
+     Reuses `.tabs` (the Adopt / Submit control from /letters) including its
+     colours. The counts are the inbox pattern, and they are why the control
+     reads as a tool: it says how much work is on each side before you click. */
+  .rd .acct-tabhead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .rd .acct-tabhead .tabs {
+    max-width: 452px;
+  }
+  .rd .acct-tabhead .tabs button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 10px;
+    font-size: 12.5px;
+  }
+  .rd .acct-n {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    opacity: 0.62;
+    font-variant-numeric: tabular-nums;
+  }
+  .rd .tabs button[aria-selected="true"] .acct-n {
+    opacity: 0.8;
+  }
+
+  /* ---- toolbar: filters + search ----
+     Filters are text with a rule under the active one, never pills — a word in
+     a tinted capsule is the panel rule 4 bans at the smallest possible size.
+     The search field is the ruled `.form-paper` treatment, because a filled
+     input box would be the only box on the page. */
+  .rd .acct-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px 28px;
+    margin-top: clamp(22px, 2.6vw, 32px);
+  }
+  .rd .acct-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .rd .acct-filters button {
+    background: transparent;
+    border: 0;
+    padding: 6px 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--color-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .rd .acct-filters button:hover {
+    color: var(--color-ink);
+  }
+  .rd .acct-filters button[aria-pressed="true"] {
+    color: var(--color-ink);
+    border-bottom-color: var(--color-red);
+  }
+  /* The accent has to match the tab it belongs to. Keyed off the panel rather
+     than off `.tabs[data-view]`: the switch and the filters are in sibling
+     subtrees, so no combinator reaches from one to the other. */
+  .rd [data-side="submit"] .acct-filters button[aria-pressed="true"] {
+    border-bottom-color: var(--color-green);
+  }
+  .rd .acct-search input {
+    width: clamp(180px, 22vw, 260px);
+    font: inherit;
+    font-size: 14px;
+    padding: 6px 0;
+    border: 0;
+    border-bottom: 1.5px solid var(--rd-line-strong);
+    background: transparent;
+    color: var(--color-ink);
+    border-radius: 0;
+    appearance: none;
+    transition: border-color 0.15s ease;
+  }
+  .rd .acct-search input::placeholder {
+    color: var(--color-muted);
+    opacity: 0.7;
+  }
+  .rd .acct-search input:focus {
+    outline: none;
+    border-bottom-color: var(--color-red);
+  }
+
+  /* ---- the ledger ----
+     A table. One `--acct-cols` custom property is shared by the head row and
+     every data row, so the two cannot drift — which also settles the `.ways`
+     grid gotcha above for good: there are no per-row `auto` tracks left to size
+     differently. The head rule is heavier than the row hairlines (1.5px ink vs
+     1px line), which is the table convention and what makes a long list read as
+     one column of records rather than a stack of separated items. */
+  .rd .acct-ledger {
+    --acct-cols: minmax(168px, 21%) minmax(0, 1fr) 96px minmax(238px, auto);
+    margin-top: clamp(18px, 2vw, 24px);
+  }
+  .rd .acct-thead,
+  .rd .acct-rec {
+    display: grid;
+    grid-template-columns: var(--acct-cols);
+    gap: clamp(12px, 1.8vw, 28px);
+    align-items: baseline;
+  }
+  .rd .acct-thead {
+    padding-bottom: 9px;
+    border-bottom: 1.5px solid var(--color-ink);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .rd .acct-rec {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-line);
+    transition: background-color 0.13s ease;
+  }
+  .rd .acct-rec:hover {
+    background: var(--color-paper-raised);
+  }
+  .rd .acct-rec h3 {
+    font-size: 16.5px;
+    letter-spacing: -0.022em;
+  }
+  .rd .acct-meta {
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    color: var(--color-muted);
+  }
+  /* One line. At forty rows the wish identifies the letter; it is not the
+     letter, and the whole thing is one click away. Uniform row height is what
+     makes the column scannable. */
+  .rd .acct-wish {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--color-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* Status is a word in an aligned column. Colour, no fill: a tinted pill above
+     the name would be an eyebrow, and a colour-coded capsule on every row of a
+     long list is noise. */
+  .rd .acct-state {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .rd .acct-state--owed {
+    color: var(--rd-gold-ink);
+  }
+  .rd .acct-state--done {
+    color: var(--color-green);
+  }
+  .rd .acct-state--gone {
+    color: var(--color-muted);
+  }
+  /* Column 3 is a right-aligned stack: the wishlist first, because on a gift
+     row "go and buy it" is the actual next step, then whatever changes the
+     record. */
+  .rd .acct-acts {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 11px;
+  }
+  /* The two record actions share a row under the wishlist link rather than
+     stacking, so a gift row is not three lines tall. */
+  .rd .acct-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+  .rd .acct-tlink-sm {
+    font-size: 13px;
+    gap: 5px;
+  }
+  /* Row-level buttons: smaller, so a control never outweighs the name it sits
+     beside. A row can carry two of them. */
+  .rd .acct-btn-sm {
+    padding: 8px 14px;
+    font-size: 13px;
+    gap: 7px;
+  }
+  .rd .acct-btn-quiet {
+    background: transparent;
+    color: var(--color-muted);
+    border-color: var(--rd-line-strong);
+  }
+  .rd .acct-btn-quiet:hover {
+    color: var(--color-red);
+    border-color: var(--color-red);
+  }
+
+  /* ---- table foot ----
+     The only number down here is the page range, and its denominator is always
+     the list in front of you. The per-state counts live on the filter buttons,
+     where each number means exactly one thing — an earlier draft printed
+     "Showing 3 of 8", which set a filtered count against an unfiltered total. */
+  .rd .acct-tablefoot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 20px;
+    margin-top: 14px;
+  }
+  .rd .acct-note {
+    margin: 0;
+    font-size: 13px;
+    color: var(--color-muted);
+  }
+  .rd .acct-pager {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-left: auto;
+  }
+  .rd .acct-range {
+    font-size: 13px;
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .rd .acct-pager button {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    background: transparent;
+    border: 1px solid var(--rd-line-strong);
+    color: var(--color-ink);
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .rd .acct-pager button:hover:not(:disabled) {
+    border-color: var(--color-red);
+    color: var(--color-red);
+  }
+  .rd .acct-pager button:disabled {
+    opacity: 0.28;
+    cursor: default;
+  }
+
+  /* ---- empty state ----
+     One hairline, the sentence, the way out of it. A bordered card drawn around
+     nothing is a box announcing that it is empty. */
+  .rd .acct-empty {
+    border-top: 1.5px solid var(--color-ink);
+    padding: 26px 0 0;
+    margin-top: clamp(18px, 2vw, 24px);
+  }
+  .rd .acct-empty p {
+    margin: 0;
+    font-size: 15.5px;
+    color: var(--color-muted);
+    max-width: 46ch;
+  }
+  .rd .acct-empty-cta {
+    margin-top: 18px;
+  }
+
+  /* The closer keeps the shared `.closer` metrics; it only needs air above it
+     now that a table rather than a section sits on top. */
+  .rd .acct-closer {
+    padding-top: clamp(44px, 5vw, 74px);
+  }
+  /* .mark is an inline-block, so a line-break opportunity opens right after it
+     and the trailing period can orphan onto its own line. */
+  .rd .acct-nb {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 960px) {
+    .rd .acct-ledger {
+      --acct-cols: 1fr;
+    }
+    .rd .acct-thead {
+      display: none;
+    }
+    .rd .acct-rec {
+      padding: 16px 0;
+      gap: 9px;
+      align-items: start;
+    }
+    .rd .acct-wish {
+      white-space: normal;
+    }
+    .rd .acct-acts {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 14px;
+      margin-top: 3px;
+    }
+  }
+
 }

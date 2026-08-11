@@ -25,7 +25,7 @@ Read these before substantial work:
 
 The app is built and the Supabase backend is wired up:
 
-- **Routes** (App Router, `app/`): `/` home, `/santas-knights` about (sponsors folded in at `#sponsors`), `/contact` (volunteer application folded in at `#volunteer`), `/donate`, `/letters` (+ `/submit`, `/give`), `/account` (+ login/register scaffolds), `/gallery`, `/membership`, `/training` + `/online`, and `/admin` (+ `/login`). `/about`, `/get-involved`, and `/sponsors` are redirects only — Get Involved is now `/contact#volunteer` and Sponsors is now `/santas-knights#sponsors`. **`/links` (link-in-bio) was deleted** — route, `links.linkInBio`, and its one reference on `/donate` are all gone; the planning docs (README, REQUIREMENTS, plan-v2, REDESIGN-PORT-PLAN) still list it and are stale on that point. Expanded account tracking and admin gallery/partners/donations remain planned. The Gladiators **training tracker** (booking, waiver, instructor check-in, XP, participant dashboard, training videos, training admin) is **not built in this repo** — it lives on the separate `gladiators.nyc` site. `/training` + `/online` here carry program **content**; their booking CTAs **link out** to `gladiators.nyc`. Class booking, the participant dashboard, and the commercial Shop/Armory all route out to `gladiators.nyc` (shared identity). See [docs/plan-v2.md](./docs/plan-v2.md) §D2.
+- **Routes** (App Router, `app/`): `/` home, `/santas-knights` about (sponsors folded in at `#sponsors`), `/contact` (volunteer application folded in at `#volunteer`), `/donate`, `/letters` (+ `/submit`, `/give`), `/account` (the member ledger — gifts you're sending and letters you've submitted, behind one switch; login/register redirect to `/login` and `/signup`), `/gallery`, `/membership`, `/training` + `/online`, and `/admin` (+ `/login`). `/about`, `/get-involved`, and `/sponsors` are redirects only — Get Involved is now `/contact#volunteer` and Sponsors is now `/santas-knights#sponsors`. **`/links` (link-in-bio) was deleted** — route, `links.linkInBio`, and its one reference on `/donate` are all gone; the planning docs (README, REQUIREMENTS, plan-v2, REDESIGN-PORT-PLAN) still list it and are stale on that point. Expanded account tracking and admin gallery/partners/donations remain planned. The Gladiators **training tracker** (booking, waiver, instructor check-in, XP, participant dashboard, training videos, training admin) is **not built in this repo** — it lives on the separate `gladiators.nyc` site. `/training` + `/online` here carry program **content**; their booking CTAs **link out** to `gladiators.nyc`. Class booking, the participant dashboard, and the commercial Shop/Armory all route out to `gladiators.nyc` (shared identity). See [docs/plan-v2.md](./docs/plan-v2.md) §D2.
 - **Supabase** clients in `lib/supabase/` (`browser` / `server` / `admin` / `config`); the admin gate is `lib/auth.ts`; server actions live in `app/actions/`. Every entry point checks `isSupabaseConfigured()` first, so the site builds and runs with features degraded to friendly empty-states before env vars exist.
 - **Env** lives in `.env.local` (template in `.env.example`); the live Supabase project is already configured.
 - **Content** copy/config in `content/` (`site.ts`, `consent.ts` — bump consent `version` strings when terms change).
@@ -73,23 +73,31 @@ Then write the git commit. Keep the CHANGELOG entry and the commit message consi
 - **⭐ The site is mid-redesign, and two visual systems coexist. Read
   [design-demos/REDESIGN-SYSTEM.md](./design-demos/REDESIGN-SYSTEM.md) before any UI work** —
   it says which pages are on which system, and how the transition ends.
-  - **NEW system** (`design-demos/redesign.html` + `redesign2.html` + `redesign3.html` →
-    `app/redesign.css` + `components/redesign/`) — currently on `/` (home), `/donate`,
-    `/membership`, `/letters`, `/santas-knights`, `/contact`, `/gallery`, `/login`, and
-    `/signup`. One paper
+  - **NEW system** (`design-demos/redesign.html` + `redesign2.html` + `redesign3.html` +
+    `redesign4.html` → `app/redesign.css` + `components/redesign/`) — on every public-facing
+    page: `/` (home), `/donate`, `/membership`, `/letters`, `/santas-knights`, `/contact`,
+    `/gallery`, `/login`, `/signup`, and `/account`. One paper
     ground; ink only in nav + footer. Archivo 800 **sentence case**. **No serif italics** —
     emphasis is `<Mark>`, a hand-drawn red brush underline. No `01`/`02` labels, no 4-up box
     grids, no tinted panels with an accent rail, no poster CTA bands. **No divider bars** —
     sections are separated by air or by a torn-edge `<PhotoBand>`. A page opts in by
     wrapping in `<RedesignShell>`; the CSS is scoped to `.rd` so it can't leak.
   - **OLD poster system** (`design-demos/home.html` + `design-demos/styles.css`) — only
-    `/account` and `/admin/*` are left on it: Archivo 900 uppercase display, Cormorant italic
-    accents, Hanken body, warm near-black grounds, paper contrast sections, red/amber flood
-    accents. Port those two and the `.rd` scope can be dropped (the flip checklist is in
-    REDESIGN-SYSTEM.md).
+    `/admin/*` is left on it: Archivo 900 uppercase display, Cormorant italic accents, Hanken
+    body, warm near-black grounds, paper contrast sections, red/amber flood accents. Every
+    public-facing page is now on the new system, so the `.rd` scope can be dropped whenever
+    someone wants to (the flip checklist is in REDESIGN-SYSTEM.md; admin is the row it is
+    allowed to leave behind, but it still inherits the new base type rules — see the caveat
+    there).
   - When you port a page, move it to the new system wholesale and tick it off in the Status
     table in REDESIGN-SYSTEM.md. Never mix the two on one screen — they invert each other.
   - Both systems: Hanken body, square controls/panels, no eyebrows/kickers.
+  - **`/account` is the system at working density** — it is a tool, not a page about
+    something. Its own vocabulary (`.acct-*` in `app/redesign.css`) is a table: column heads,
+    one `--acct-cols` shared by the head row and every data row, status as an aligned column
+    rather than a badge, and live filter/search/paging. No photography. The drawn gestures
+    (`<Mark>`, `<HandArrow>`) appear once, in the closer, after the work. Spec:
+    `design-demos/redesign4.html`.
 - Santa's Letters: never expose a child's identifying details publicly; gifts must be age-appropriate, legal, and safe.
 - _Gladiators program conventions (training tracker, built on `gladiators.nyc` — GLADIATORS-SITE.md (gladiators-nyc repo)): XP values/levels/thresholds/rewards are admin-editable data, never hardcoded; XP can make a participant eligible to **request** a privilege but never auto-grants safety-sensitive access (armor, sparring) — those require instructor/admin certification. Armor rental eligibility is computed on `gladiators.nyc` (from XP + certification), alongside the rental transaction + item inventory. These conventions govern the `gladiators.nyc` build; this repo only cross-links out to it._
 

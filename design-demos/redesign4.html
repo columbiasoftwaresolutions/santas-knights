@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Santa's Knights — redesign demo 4 (Account)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   SANTA'S KNIGHTS — redesign demo 4
+   Account
+   ------------------------------------------------------------
+   Same materials as redesign.html / 2 / 3 — paper ground, Archivo
+   800 sentence case, hairlines, square geometry, no boxes, no
+   eyebrows — used at WORKING DENSITY.
+
+   THIS PAGE IS A TOOL, NOT A PAGE ABOUT SOMETHING.
+
+   That is the whole difference between this demo and the other
+   three, and it is worth stating plainly because the first pass
+   got it wrong. /account was drawn like a landing page carrying a
+   dashboard's content: a 68px greeting with a brush underline, a
+   full-bleed parallax photo band, and a closing donate CTA with a
+   hand-drawn arrow. Every one of those is a marketing gesture. On
+   a screen somebody opens to find out which three gifts they still
+   owe, they are furniture between the member and their work.
+
+   What replaced them:
+
+   - THE LIST STARTS IMMEDIATELY. The header is a bar, not a hero:
+     one line, ~30px, no brush. Identity and sign-out sit on the
+     same line, right-aligned and small. First row of real data is
+     above the fold at 900px.
+
+   - IT IS A TABLE. Column headers in the system's tiny tracked
+     uppercase (the one caps rule 3 allows), a heavier rule under
+     the head than between the rows, and one `--cols` custom
+     property shared by the head and every row so the two can
+     never drift. This is the same anatomy /admin already uses.
+
+   - STATUS IS A COLUMN. The first pass deleted status entirely
+     because a tinted pill above a name is an eyebrow. That was an
+     over-correction: the pill and its placement were the problem,
+     not the fact. A status word in an aligned status column is
+     what a ledger is for. Colour, no fill.
+
+   - THE CONTROLS ARE REAL. The filters and the search box work —
+     they filter the rows in front of you. A tool whose controls
+     are painted on is exactly what "looks like a demo" means. The
+     counts on the tabs and on each filter are computed from the
+     rows on load, not typed in.
+
+   - THE PHOTO BAND IS GONE. A full-bleed parallax photograph
+     between a member and the bottom of their own ledger is the
+     single most decorative thing that was on this page. The
+     training pointer it carried is real feature parity, so it
+     survives as one role-gated link in the page bar, where
+     participants will look for it.
+
+   - THE DONATE CLOSER STAYS, and it is the exception that proves
+     the rule: it sits AFTER the work, at the bottom, where
+     somebody who is done with their rows arrives. Nothing stands
+     between the member and their ledger to reach it. It is the
+     only place on the page that uses the brush underline and the
+     hand arrow — everything above is a tool; this is the
+     organisation asking, once.
+
+   STILL TRUE FROM THE FIRST PASS, and still the right calls:
+
+   - A SWITCH, NOT TWO STACKED SECTIONS. Almost nobody is both a
+     donor and a guardian. The switch is the Adopt / Submit control
+     from demo 1, colours included — adopting is red and submitting
+     is green everywhere else on the site. Which side opens is a
+     data question: whichever has rows.
+   - ROWS, NOT CARDS. Forty bordered Cards in a two-column grid is
+     a wall; forty rows is a ledger.
+   - ONE WISHLIST PER LETTER, always in the same place.
+
+   THREE STATES in the demo bar. An account page is defined by its
+   states; a demo that only draws the happy one is not a demo of
+   this page.
+   ============================================================ */
+
+:root{
+  --paper:#F7F0E3;
+  --paper-raised:#FBF6EC;
+  --ink:#16120F;
+  --ink2:#1A1512;
+  --bone:#E8E2D4;
+  --muted:#6C6256;
+  --red:#C2331F;
+  --red-deep:#9E2536;
+  --green:#2E5E45;
+  --green-deep:#244C38;
+  --gold-ink:#8A6420;
+  --line:#E4D8C4;
+  --line-strong:#CBBDA4;
+  --gutter:clamp(20px,3.4vw,56px);
+  --maxw:1240px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Hanken Grotesk",system-ui,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img{max-width:100%;display:block;}
+a{color:inherit;}
+button{font:inherit;cursor:pointer;}
+h1,h2,h3{
+  font-family:"Archivo",system-ui,sans-serif;margin:0;
+  line-height:1.1;letter-spacing:-.028em;font-weight:800;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter);}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px;}
+
+/* ---- buttons ---- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  border:1.5px solid transparent;padding:13px 24px;
+  font-size:14px;font-weight:700;letter-spacing:.02em;text-decoration:none;white-space:nowrap;
+  transition:background-color .15s ease,color .15s ease,border-color .15s ease;
+}
+.btn--red{background:var(--red);color:#fff;}
+.btn--red:hover{background:var(--red-deep);}
+.btn--green{background:var(--green);color:#fff;}
+.btn--green:hover{background:var(--green-deep);}
+/* Row-level actions: smaller, so a control never outweighs the name it sits
+   beside. A row can carry three of these. */
+.btn--sm{padding:8px 14px;font-size:13px;gap:7px;}
+.btn--quiet{background:transparent;color:var(--muted);border-color:var(--line-strong);}
+.btn--quiet:hover{color:var(--red);border-color:var(--red);}
+
+/* `background`/`border`/`color`/`padding` are reset first because Sign out is a
+   <button> inside a server-action form, not an <a> — without the reset the
+   browser draws its native chrome and the link renders as a grey box. */
+.tlink{
+  display:inline-flex;align-items:center;gap:7px;
+  background:transparent;border:0;color:inherit;padding:0 0 2px;
+  font-family:inherit;font-size:14px;font-weight:700;text-decoration:none;
+  border-bottom:1.5px solid var(--line-strong);
+  transition:border-color .15s ease,color .15s ease;
+}
+.tlink:hover{border-color:var(--red);color:var(--red);}
+.tlink .arw{transition:transform .15s ease;}
+.tlink:hover .arw{transform:translateX(3px);}
+.tlink--sm{font-size:13px;gap:5px;}
+.tlink--quiet{font-weight:600;color:var(--muted);border-bottom-color:transparent;}
+.tlink--quiet:hover{color:var(--red);border-bottom-color:var(--red);}
+
+/* ============================================================
+   DEMO CHROME (not part of the design)
+   ============================================================ */
+.demobar{
+  position:sticky;top:0;z-index:100;background:var(--ink);color:var(--bone);
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  padding:9px clamp(16px,3vw,28px);font-size:12.5px;
+  border-bottom:1px solid rgba(232,226,212,.16);
+}
+.demobar b{font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:11px;opacity:.5;margin-right:6px;}
+.demobar button{background:transparent;color:rgba(232,226,212,.7);border:1px solid rgba(232,226,212,.24);
+  padding:6px 13px;font-size:12.5px;font-weight:600;transition:all .15s ease;}
+.demobar button:hover{color:var(--bone);border-color:rgba(232,226,212,.5);}
+.demobar button[aria-current="true"]{background:var(--bone);color:var(--ink);border-color:var(--bone);}
+.demobar .sep{width:1px;height:20px;background:rgba(232,226,212,.2);margin:0 6px;}
+.demobar .lbl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.45;}
+@media(max-width:860px){.demobar .lbl{display:none;}}
+
+/* the two state axes: how full the account is, and what role it has */
+[data-fill="full"]  [data-when="empty"]{display:none!important;}
+[data-fill="empty"] [data-when="full"]{display:none!important;}
+[data-role="member"]      [data-when="participant"]{display:none!important;}
+[data-role="participant"] [data-when="member"]{display:none!important;}
+
+/* ============================================================
+   SITE CHROME — unchanged from the other demos
+   ============================================================ */
+.nav{position:sticky;top:37px;z-index:60;background:var(--ink);border-bottom:1px solid rgba(232,226,212,.14);}
+.nav .wrap{display:flex;align-items:center;gap:22px;height:64px;}
+.brand{font-family:"Archivo",sans-serif;font-weight:800;font-size:16.5px;letter-spacing:-.02em;color:var(--bone);text-decoration:none;white-space:nowrap;}
+.navlinks{display:flex;gap:19px;font-size:13.5px;font-weight:600;}
+.navlinks a{color:rgba(232,226,212,.72);text-decoration:none;padding:4px 0;border-bottom:2px solid transparent;transition:color .15s ease,border-color .15s ease;}
+.navlinks a:hover{color:var(--bone);border-color:var(--red);}
+.nav .right{margin-left:auto;display:flex;align-items:center;gap:14px;}
+.nav .right .give{font-size:13.5px;font-weight:600;color:rgba(232,226,212,.72);text-decoration:none;
+  padding:4px 0;border-bottom:2px solid transparent;}
+.nav .right .give.on{color:var(--bone);border-color:var(--red);}
+@media(max-width:1060px){.navlinks{display:none;}}
+
+.foot{background:var(--ink);color:var(--bone);padding:clamp(40px,4.4vw,60px) 0 24px;margin-top:clamp(50px,6vw,84px);}
+.foot .cols{display:grid;gap:32px;grid-template-columns:1.5fr 1fr 1fr 1.3fr;}
+@media(max-width:820px){.foot .cols{grid-template-columns:1fr 1fr;}}
+.foot h4{font-size:11.5px;text-transform:uppercase;letter-spacing:.12em;color:rgba(232,226,212,.5);font-weight:700;margin-bottom:13px;}
+.foot .fbrand{font-family:"Archivo",sans-serif;font-weight:800;font-size:17px;margin-bottom:11px;}
+.foot p{font-size:13.5px;color:rgba(232,226,212,.6);margin:0 0 9px;max-width:34ch;line-height:1.55;}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:8px;}
+.foot a{font-size:13.5px;color:rgba(232,226,212,.72);text-decoration:none;}
+.foot a:hover{color:var(--paper);}
+.foot .bar{margin-top:32px;padding-top:18px;border-top:1px solid rgba(232,226,212,.12);font-size:12.5px;color:rgba(232,226,212,.45);}
+
+/* ============================================================
+   PAGE BAR
+   ------------------------------------------------------------
+   A bar, not a hero. ~30px, one line, no brush underline — the
+   hand-drawn mark is the site's marketing gesture and it does not
+   belong on a screen somebody opens to do something. Identity and
+   the way out sit on the same line, small and right-aligned,
+   because they are a receipt, not content.
+   ============================================================ */
+.pagebar{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;
+  gap:14px 24px;padding:clamp(26px,3.2vw,42px) 0 clamp(20px,2.4vw,30px);}
+.pagebar h1{font-size:clamp(24px,2.5vw,31px);letter-spacing:-.032em;}
+.pagebar .who{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:12px;}
+.pagebar .who b{font-weight:600;color:var(--ink);}
+
+/* ============================================================
+   THE SWITCH
+   ------------------------------------------------------------
+   The Adopt / Submit control from demo 1, unchanged, including its
+   colours: adopting is red and submitting is green everywhere else
+   on the site, and these two lists are those same two acts seen
+   afterwards. app/redesign.css already ships
+   `.tabs[data-view="submit"]`, so the port is a lift.
+
+   The counts are the inbox pattern and they are the reason this
+   reads as a tool: the switch says how much work is on each side
+   before you click it.
+   ============================================================ */
+.tabhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;}
+.tabs{position:relative;display:inline-grid;grid-template-columns:1fr 1fr;
+  width:100%;max-width:452px;border:1.5px solid var(--ink);background:var(--paper);user-select:none;}
+.tabs .slide{position:absolute;inset:0 auto 0 0;width:50%;z-index:0;background:var(--red);
+  transition:transform .3s var(--ease),background-color .3s var(--ease);}
+.tabs[data-view="submit"] .slide{transform:translateX(100%);background:var(--green);}
+.tabs button{position:relative;z-index:1;background:transparent;border:0;padding:13px 10px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink);transition:color .2s ease;}
+.tabs button[aria-selected="true"]{color:#fff;}
+.tabs button[aria-selected="false"]:hover{color:var(--red);}
+.tabs button:last-child[aria-selected="false"]:hover{color:var(--green);}
+.tabs .n{font-size:12px;letter-spacing:.02em;opacity:.62;font-variant-numeric:tabular-nums;}
+.tabs button[aria-selected="true"] .n{opacity:.8;}
+.panel{transition:opacity .16s ease;}
+.panel.is-out{opacity:0;}
+.panel [data-side][hidden]{display:none;}
+.tabhead [data-act][hidden]{display:none;}
+
+/* ============================================================
+   TOOLBAR — filters + search
+   ------------------------------------------------------------
+   These work. A tool whose controls are painted on is precisely
+   what "looks like a demo" means, so the filters and the search
+   box actually filter the rows, and every count is computed from
+   the rows on load rather than typed into the markup.
+
+   Filters are text with a rule under the active one — not pills,
+   which would be the tinted panel rule 4 bans at small size.
+   ============================================================ */
+.toolbar{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;
+  gap:14px 28px;margin-top:clamp(22px,2.6vw,32px);}
+.filters{display:flex;flex-wrap:wrap;gap:24px;}
+.filters button{background:transparent;border:0;padding:6px 0;
+  font-size:13.5px;font-weight:600;color:var(--muted);
+  border-bottom:2px solid transparent;transition:color .15s ease,border-color .15s ease;}
+.filters button:hover{color:var(--ink);}
+.filters button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--red);}
+/* Keyed off the side, not off `.tabs[data-view]` — the switch lives in
+   `.tabhead` and the filters live inside `.panel`, so there is no combinator
+   that reaches from one to the other. The accent has to match the tab. */
+[data-side="submit"] .filters button[aria-pressed="true"]{border-bottom-color:var(--green);}
+.filters .n{margin-left:6px;color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums;}
+.filters button[aria-pressed="true"] .n{color:var(--muted);}
+
+/* A field is a ruled line — the `.form-paper` treatment from demo 2, not the
+   boxed one. A filled input box here would be the only box on the page. */
+.search{position:relative;display:flex;align-items:center;}
+.search input{width:clamp(180px,22vw,260px);font:inherit;font-size:14px;
+  padding:6px 22px 6px 0;border:0;border-bottom:1.5px solid var(--line-strong);
+  background:transparent;color:var(--ink);border-radius:0;transition:border-color .15s ease;}
+.search input::placeholder{color:var(--muted);opacity:.7;}
+.search input:focus{outline:none;border-bottom-color:var(--red);}
+.search .clear{position:absolute;right:0;bottom:6px;background:transparent;border:0;padding:0 2px;
+  font-size:15px;line-height:1;color:var(--muted);}
+.search .clear:hover{color:var(--red);}
+.search .clear[hidden]{display:none;}
+
+/* ============================================================
+   THE LEDGER
+   ------------------------------------------------------------
+   A table. One `--cols` custom property is shared by the head row
+   and every data row, so the two cannot drift — which also settles
+   the `.ways` grid gotcha in app/redesign.css for good: there are
+   no per-row `auto` tracks left to size differently.
+
+   The head rule is heavier than the row hairlines (1.5px ink vs
+   1px line). That is the table convention and it is what makes a
+   long list read as one column of records rather than a stack of
+   separated items. Same anatomy /admin already uses.
+   ============================================================ */
+.ledger{--cols:minmax(168px,21%) minmax(0,1fr) 96px minmax(238px,auto);
+  margin-top:clamp(18px,2vw,24px);}
+.thead,.rec{display:grid;grid-template-columns:var(--cols);gap:clamp(12px,1.8vw,28px);align-items:baseline;}
+.thead{padding-bottom:9px;border-bottom:1.5px solid var(--ink);
+  font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);}
+.rec{padding:14px 0;border-bottom:1px solid var(--line);transition:background-color .13s ease;}
+.rec:hover{background:var(--paper-raised);}
+.rec[hidden]{display:none;}
+.rec h3{font-size:16.5px;letter-spacing:-.022em;}
+.rec .meta{margin:4px 0 0;font-size:12.5px;color:var(--muted);}
+/* One line. At forty rows the wish identifies the letter; it is not the letter,
+   and the whole thing is one click away. Uniform row height is what makes the
+   column scannable. */
+.rec .wish{margin:0;font-size:14.5px;color:var(--muted);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* Status: a word in an aligned column. Colour, no fill — a tinted pill is the
+   panel rule 4 bans at the smallest possible size. */
+.rec .state{font-size:13px;font-weight:600;white-space:nowrap;}
+.state--owed{color:var(--gold-ink);}
+.state--done{color:var(--green);}
+.state--gone{color:var(--muted);}
+.rec .acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;justify-content:flex-end;}
+
+/* ---- table foot ----
+   "Showing 3 of 8" was wrong: it set a filtered count against an UNFILTERED
+   total, so the denominator silently changed meaning depending on which filter
+   was on. The per-state counts live on the filter buttons, where each number
+   means exactly one thing. Down here the only number is the page range, whose
+   denominator is always the list you are actually looking at. */
+.tablefoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  gap:10px 20px;margin-top:14px;}
+.tablefoot .note{margin:0;font-size:13px;color:var(--muted);}
+.pager{display:flex;align-items:center;gap:9px;margin-left:auto;}
+.pager .range{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;}
+.pager button{width:30px;height:30px;display:grid;place-items:center;
+  background:transparent;border:1px solid var(--line-strong);color:var(--ink);
+  font-size:15px;line-height:1;transition:border-color .15s ease,color .15s ease;}
+.pager button:hover:not(:disabled){border-color:var(--red);color:var(--red);}
+.pager button:disabled{opacity:.28;cursor:default;}
+.pager[hidden]{display:none;}
+
+@media(max-width:960px){
+  .ledger{--cols:1fr;}
+  .thead{display:none;}
+  .rec{padding:16px 0;gap:9px;align-items:start;}
+  .rec .wish{white-space:normal;}
+  .rec .acts{justify-content:flex-start;margin-top:3px;}
+}
+
+/* ---- empty state ----
+   One hairline, the sentence, the way out of it. A bordered card drawn around
+   nothing is a box announcing that it is empty. */
+.empty{border-top:1.5px solid var(--ink);padding:26px 0 0;margin-top:clamp(18px,2vw,24px);}
+.empty p{margin:0;font-size:15.5px;color:var(--muted);max-width:46ch;}
+.empty .cta{margin-top:18px;}
+
+/* ============================================================
+   THE CLOSER — the one piece of the site's voice on this page
+   ------------------------------------------------------------
+   Kept by request, and it earns its place *here* in a way the cut
+   photo band did not: it sits after the work, at the bottom of the
+   page, where somebody who has finished with their ledger arrives.
+   Nothing stands between the member and their rows to reach it.
+
+   This is the only place on the page that uses the system's two
+   drawn gestures — the brush underline and the hand arrow — and
+   both draw in on scroll. Everything above is a tool; this is the
+   organisation asking, once.
+   ============================================================ */
+.closer{padding:clamp(44px,5vw,74px) 0 clamp(20px,2.4vw,32px);}
+.closer .in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;}
+.closer h2{font-size:clamp(24px,2.6vw,34px);letter-spacing:-.03em;max-width:24ch;text-wrap:balance;}
+.closer p{margin:9px 0 0;font-size:15px;color:var(--muted);max-width:48ch;}
+.closer .cta-wrap{position:relative;display:flex;flex-wrap:wrap;gap:12px;}
+.btn--ink{background:var(--ink);color:var(--paper);}
+.btn--ink:hover{background:var(--ink2);}
+.btn .arw{transition:transform .15s ease;}
+.btn:hover .arw{transform:translateX(3px);}
+
+/* .mark is inline-block, which opens a line-break opportunity right after it —
+   punctuation following a mark can orphan onto its own line. */
+.nb{white-space:nowrap;}
+.mark{position:relative;display:inline-block;font-style:normal;white-space:nowrap;}
+/* fill:currentColor goes on the <svg>, NOT on `.mark svg path` — a path rule
+   does not reach <use> shadow content, which renders the stroke black. */
+.mark svg{
+  position:absolute;left:-.05em;right:-.07em;width:calc(100% + .12em);
+  bottom:-.11em;height:.20em;overflow:visible;pointer-events:none;
+  color:var(--red);fill:currentColor;clip-path:inset(0 100% 0 0);
+}
+.is-in .mark svg{clip-path:inset(0 -2% 0 0);transition:clip-path .62s var(--ease) .12s;}
+
+.arrow-hand{
+  position:absolute;color:var(--red);pointer-events:none;
+  stroke:currentColor;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:260;stroke-dashoffset:260;
+}
+.is-in .arrow-hand{stroke-dashoffset:0;transition:stroke-dashoffset .85s var(--ease) .25s;}
+
+@media(prefers-reduced-motion:reduce){
+  .mark svg{clip-path:none!important;transition:none!important;}
+  .arrow-hand{stroke-dashoffset:0!important;transition:none!important;}
+}
+</style>
+</head>
+<body data-fill="full" data-role="member">
+
+<div class="demobar">
+  <b>Redesign demo 4</b>
+  <button data-fill="full"  data-role="member"      aria-current="true">Returning member</button>
+  <button data-fill="empty" data-role="member"      aria-current="false">New account</button>
+  <button data-fill="full"  data-role="participant" aria-current="false">Participant</button>
+  <span class="sep"></span>
+  <span class="lbl">/account &mdash; filters and search are live</span>
+</div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#">SANTA'S KNIGHTS</a>
+    <nav class="navlinks">
+      <a href="#">About</a>
+      <a href="https://gladiators.nyc/classes">Gladiators NYC</a>
+      <a href="#">Letters to Santa</a>
+      <a href="#">Membership</a>
+      <a href="#">Donate</a>
+      <a href="#">Gallery</a>
+      <a href="#">Contact</a>
+    </nav>
+    <div class="right">
+      <a class="give on" href="#">Account</a>
+      <a class="btn btn--red" href="#" style="padding:10px 20px">Donate</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="pagebar">
+    <h1>Hi, Damion.</h1>
+    <!-- A <div>, not a <p>: <form> is flow content and <p> only takes phrasing,
+         so the parser closes the paragraph before the form and the two land as
+         separate children of a space-between flex row, flung to either end. -->
+    <div class="who">
+      <!-- The training dashboard pointer. It lived in the utility row until that
+           row was cut; it is real feature parity (the live page gates it on
+           role === participant/instructor) so it moves here rather than
+           disappearing. Members never see it. -->
+      <a class="tlink tlink--quiet" href="https://gladiators.nyc/dashboard" data-when="participant">Training dashboard <span class="arw">&#8599;</span></a>
+      <b>damion@santasknights.org</b>
+      <form onsubmit="return false" style="display:contents"><button class="tlink tlink--quiet" type="submit">Sign out</button></form>
+    </div>
+  </div>
+
+  <div class="tabhead">
+    <div class="tabs" data-view="adopt" role="tablist" aria-label="Gifts you're sending, or letters you've submitted">
+      <span class="slide" aria-hidden="true"></span>
+      <button type="button" role="tab" id="tab-adopt"  aria-selected="true"  aria-controls="ledger">Gifts I&rsquo;m sending <span class="n" data-count="adopt"></span></button>
+      <button type="button" role="tab" id="tab-submit" aria-selected="false" aria-controls="ledger">My letters <span class="n" data-count="submit"></span></button>
+    </div>
+    <a class="tlink" href="#" data-act="adopt" data-when="full">Pick another letter <span class="arw">&#8594;</span></a>
+    <a class="tlink" href="#" data-act="submit" data-when="full" hidden>Submit a letter <span class="arw">&#8594;</span></a>
+  </div>
+
+  <div class="panel" id="ledger" role="tabpanel" aria-labelledby="tab-adopt">
+
+    <!-- ================= GIFTS I'M SENDING ================= -->
+    <div data-side="adopt">
+      <div data-when="full">
+
+        <div class="toolbar">
+          <div class="filters" role="group" aria-label="Filter gifts">
+            <button type="button" data-filter="all"    aria-pressed="true">All <span class="n"></span></button>
+            <button type="button" data-filter="owed"   aria-pressed="false">To send <span class="n"></span></button>
+            <button type="button" data-filter="done"   aria-pressed="false">Sent <span class="n"></span></button>
+          </div>
+          <div class="search">
+            <label class="visually-hidden" for="q-adopt" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search gifts</label>
+            <input id="q-adopt" type="search" placeholder="Search name or wish" autocomplete="off" />
+            <button class="clear" type="button" aria-label="Clear search" hidden>&times;</button>
+          </div>
+        </div>
+
+        <div class="ledger">
+          <div class="thead" aria-hidden="true">
+            <span>Child</span><span>Wish</span><span>Status</span><span></span>
+          </div>
+
+          <!-- Outstanding first. At six rows it is a nicety; at forty it is the
+               only reason the list is usable without touching a filter. -->
+          <article class="rec" data-state="owed">
+            <div><h3>Maya, age 7</h3><p class="meta">Adopted 6 December</p></div>
+            <p class="wish">&ldquo;Dear Santa, I would like a big box of LEGO so me and my brother can build a castle together. He is 4 so please nothing sharp.&rdquo;</p>
+            <span class="state state--owed">To send</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+              <!-- markGifted / releaseClaim in app/letters/give/actions.ts —
+                   two server-action forms, unchanged. -->
+              <form onsubmit="return false"><button class="btn btn--green btn--sm" type="submit">I sent it</button></form>
+              <form onsubmit="return false"><button class="btn btn--quiet btn--sm" type="submit">Release</button></form>
+            </div>
+          </article>
+
+          <article class="rec" data-state="owed">
+            <div><h3>Elijah, age 6</h3><p class="meta">Adopted 6 December</p></div>
+            <p class="wish">&ldquo;I want the dinosaur that walks by itself and roars. The green one.&rdquo;</p>
+            <span class="state state--owed">To send</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+              <form onsubmit="return false"><button class="btn btn--green btn--sm" type="submit">I sent it</button></form>
+              <form onsubmit="return false"><button class="btn btn--quiet btn--sm" type="submit">Release</button></form>
+            </div>
+          </article>
+
+          <article class="rec" data-state="owed">
+            <div><h3>Nia, age 9</h3><p class="meta">Adopted 4 December</p></div>
+            <p class="wish">&ldquo;A keyboard for playing music. I am learning from videos and I only have a paper one I drew.&rdquo;</p>
+            <span class="state state--owed">To send</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+              <form onsubmit="return false"><button class="btn btn--green btn--sm" type="submit">I sent it</button></form>
+              <form onsubmit="return false"><button class="btn btn--quiet btn--sm" type="submit">Release</button></form>
+            </div>
+          </article>
+
+          <article class="rec" data-state="done">
+            <div><h3>Andre, age 11</h3><p class="meta">Sent 9 December</p></div>
+            <p class="wish">&ldquo;I want a real basketball, not a toy one, and a pump because ours is broken.&rdquo;</p>
+            <span class="state state--done">Sent</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+            </div>
+          </article>
+
+          <article class="rec" data-state="done">
+            <div><h3>Sofia, age 8</h3><p class="meta">Sent 7 December</p></div>
+            <p class="wish">&ldquo;Please can I have paints and the big paper. I want to make one for my mum.&rdquo;</p>
+            <span class="state state--done">Sent</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+            </div>
+          </article>
+
+          <article class="rec" data-state="done">
+            <div><h3>Marcus, age 12</h3><p class="meta">Sent 3 December</p></div>
+            <p class="wish">&ldquo;A skateboard helmet, mine cracked. And stickers for the board if there is room.&rdquo;</p>
+            <span class="state state--done">Sent</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+            </div>
+          </article>
+
+          <article class="rec" data-state="done">
+            <div><h3>Amara, age 10</h3><p class="meta">Sent 2 December</p></div>
+            <p class="wish">&ldquo;A telescope so I can see the moon properly. Or a book about space.&rdquo;</p>
+            <span class="state state--done">Sent</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+            </div>
+          </article>
+
+          <article class="rec" data-state="done">
+            <div><h3>Diego, age 7</h3><p class="meta">Sent 30 November</p></div>
+            <p class="wish">&ldquo;Football boots, size 1. Mine have a hole and my mum says wait but I don&rsquo;t want to.&rdquo;</p>
+            <span class="state state--done">Sent</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+            </div>
+          </article>
+        </div>
+
+        <div class="tablefoot">
+          <p class="note" data-note="adopt"></p>
+          <div class="pager" data-pager="adopt">
+            <span class="range"></span>
+            <button type="button" data-page="prev" aria-label="Previous page">&#8592;</button>
+            <button type="button" data-page="next" aria-label="Next page">&#8594;</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty" data-when="empty">
+        <p>You haven&rsquo;t adopted a letter yet.</p>
+        <div class="cta"><a class="btn btn--red" href="#">Pick a letter to gift <span class="arw">&#8594;</span></a></div>
+      </div>
+    </div>
+
+    <!-- ==================== MY LETTERS ==================== -->
+    <div data-side="submit" hidden>
+      <div data-when="full">
+
+        <div class="toolbar">
+          <div class="filters" role="group" aria-label="Filter letters">
+            <button type="button" data-filter="all"  aria-pressed="true">All <span class="n"></span></button>
+            <button type="button" data-filter="owed" aria-pressed="false">Waiting <span class="n"></span></button>
+            <button type="button" data-filter="done" aria-pressed="false">Gifted <span class="n"></span></button>
+            <!-- Removed gets a filter of its own rather than being quietly held
+                 out of the totals. The guardian still sees the row (RLS:
+                 "Guardians read own letters") — a letter that vanished without
+                 explanation would be worse — and All still adds up. -->
+            <button type="button" data-filter="gone" aria-pressed="false">Removed <span class="n"></span></button>
+          </div>
+          <div class="search">
+            <label for="q-submit" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search letters</label>
+            <input id="q-submit" type="search" placeholder="Search name or wish" autocomplete="off" />
+            <button class="clear" type="button" aria-label="Clear search" hidden>&times;</button>
+          </div>
+        </div>
+
+        <div class="ledger">
+          <div class="thead" aria-hidden="true">
+            <span>Child</span><span>Wish</span><span>Status</span><span></span>
+          </div>
+
+          <article class="rec" data-state="owed">
+            <div><h3>Rosa, age 5</h3><p class="meta">Submitted 1 December</p></div>
+            <p class="wish">&ldquo;A doll house with the little furniture inside and a dog for it.&rdquo;</p>
+            <span class="state state--owed">Waiting</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+            </div>
+          </article>
+
+          <article class="rec" data-state="owed">
+            <div><h3>Isaiah, age 3</h3><p class="meta">Submitted 1 December</p></div>
+            <p class="wish">&ldquo;Dictated to his mum: a train that goes round and round on the floor.&rdquo;</p>
+            <span class="state state--owed">Waiting</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+            </div>
+          </article>
+
+          <article class="rec" data-state="owed">
+            <div><h3>Nadia, age 8</h3><p class="meta">Submitted 30 November</p></div>
+            <p class="wish">&ldquo;A proper art set with the pencils that come in a tin, and a sketchbook.&rdquo;</p>
+            <span class="state state--owed">Waiting</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+            </div>
+          </article>
+
+          <article class="rec" data-state="done">
+            <div><h3>Kofi, age 11</h3><p class="meta">Submitted 29 November</p></div>
+            <p class="wish">&ldquo;A bike light set so I can ride home from practice when it gets dark.&rdquo;</p>
+            <span class="state state--done">Gifted</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+            </div>
+          </article>
+
+          <article class="rec" data-state="done">
+            <div><h3>Tomas, age 9</h3><p class="meta">Submitted 28 November</p></div>
+            <p class="wish">&ldquo;Please can I have a skateboard. I promise to wear the helmet.&rdquo;</p>
+            <span class="state state--done">Gifted</span>
+            <div class="acts">
+              <a class="tlink tlink--sm" href="#" target="_blank" rel="noopener">Wishlist <span class="arw">&#8599;</span></a>
+            </div>
+          </article>
+
+          <!-- `deleted` — an admin pulled it from the pool. The guardian still
+               sees the row (RLS: "Guardians read own letters"), because a letter
+               that silently vanished would be worse. It is outside the All /
+               Waiting / Gifted counts because it is no longer in the pool. -->
+          <article class="rec" data-state="gone">
+            <div><h3>Tomas, age 9</h3><p class="meta">Submitted 26 November &middot; duplicate</p></div>
+            <p class="wish">&ldquo;Please can I have a skateboard. I promise to wear the helmet.&rdquo;</p>
+            <span class="state state--gone">Removed</span>
+            <div class="acts"></div>
+          </article>
+        </div>
+
+        <div class="tablefoot">
+          <p class="note" data-note="submit"></p>
+          <div class="pager" data-pager="submit">
+            <span class="range"></span>
+            <button type="button" data-page="prev" aria-label="Previous page">&#8592;</button>
+            <button type="button" data-page="next" aria-label="Next page">&#8594;</button>
+          </div>
+        </div>
+        <!-- The privacy promise, which the schema keeps: the my_letters view is
+             scoped to guardian_user_id = auth.uid(). It sits with the row count
+             because that is where a guardian is already looking. -->
+      </div>
+
+      <div class="empty" data-when="empty">
+        <p>You haven&rsquo;t submitted a letter yet.</p>
+        <div class="cta"><a class="btn btn--green" href="#">Submit a child&rsquo;s letter <span class="arw">&#8594;</span></a></div>
+      </div>
+    </div>
+
+  </div>
+
+  <section class="closer">
+    <div class="in">
+      <div>
+        <!-- .nb because the mark lands at the END of a heading that wraps, and
+             .mark is an inline-block: without it the trailing period orphans
+             onto a line of its own. -->
+        <h2>The classes and the gifts are free. Keeping them free <span class="nb"><span class="mark">isn&rsquo;t</span>.</span></h2>
+        <p>Every dollar is tax-deductible.</p>
+      </div>
+      <div class="cta-wrap">
+        <svg class="arrow-hand" width="96" height="58" viewBox="0 0 96 58" aria-hidden="true" style="left:-104px;top:-16px">
+          <path d="M4 6C13 26 30 41 56 45.5" />
+          <path d="M45 34c4.4 4.4 8 8.3 11.5 11.8M43.5 51.5c4.6-1.6 8.8-3.7 13-6" />
+        </svg>
+        <a class="btn btn--ink" href="#">Donate <span class="arw">&#8594;</span></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- the two brush strokes the closer's underline is drawn from -->
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <path id="brush" d="M2.4,7.9 C46,3.1 97,1.8 152,2.8 C199,3.6 246,6.1 297.6,3.4 C252,10.6 203,11.9 150,10.9 C95,9.9 47,10.5 2.4,7.9 Z" />
+    <path id="brush2" d="M1.8,8.4 C52,2.6 108,4.2 163,3.1 C214,2.1 258,5.4 298.2,2.9 C255,9.9 209,10.4 156,11.2 C104,12 52,11.1 1.8,8.4 Z" />
+  </defs>
+</svg>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <div class="fbrand">SANTA'S KNIGHTS</div>
+        <p>A Harlem nonprofit. We answer kids' letters to Santa each December, and teach free martial arts and fitness the rest of the year.</p>
+        <p style="font-size:12.5px;opacity:.75">A registered 501(c)(3). Classes, schedule, and booking live on gladiators.nyc.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Santa's Letters</a></li>
+          <li><a href="https://gladiators.nyc/classes">Training</a></li>
+          <li><a href="#">Membership</a></li>
+          <li><a href="#">Gallery</a></li>
+          <li><a href="#">Donate</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Get involved</h4>
+        <ul>
+          <li><a href="#">Adopt a letter</a></li>
+          <li><a href="#">Submit a letter</a></li>
+          <li><a href="#">Volunteer</a></li>
+          <li><a href="#">Become a sponsor</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Visit</h4>
+        <ul>
+          <li><a href="#">Manhattanville Community Center,<br />530 W 133rd St, New York, NY 10027</a></li>
+          <li><a href="tel:+12128735818">(212) 873-5818</a></li>
+          <li><a href="mailto:contact@santasknights.org">contact@santasknights.org</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="bar">© 2026 Santa's Knights, Inc. A 501(c)(3) nonprofit. Donations are tax-deductible.</div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   The controls are real. Everything below filters the rows that
+   are actually on the page, and every number is counted from them
+   — nothing is typed into the markup. In the app this is the same
+   work done server-side (or in one small client component), but a
+   demo where the filters are decoration is exactly the thing that
+   reads as a mockup.
+   ============================================================ */
+
+const SIDES = ['adopt','submit'];
+
+const sideEl  = v => document.querySelector('[data-side="'+v+'"]');
+const rowsOf  = v => [...sideEl(v).querySelectorAll('.rec')];
+const queryOf = v => sideEl(v).querySelector('.search input');
+
+/* Which filter each side is currently on, and which page of it. */
+const active = { adopt:'all', submit:'all' };
+const page   = { adopt:1,     submit:1 };
+const PAGE_SIZE = 4;
+
+/* Every state gets a filter, so All is always the sum of the rest and no number
+   on the page can disagree with another. An earlier pass held `gone` (an
+   admin-removed letter) out of the tab count but left it inside "All", which is
+   exactly how "of 8" came to mean two different things. */
+function counts(v){
+  const r = rowsOf(v);
+  const by = s => r.filter(x => x.dataset.state === s).length;
+  return { all:r.length, owed:by('owed'), done:by('done'), gone:by('gone') };
+}
+
+function apply(v){
+  const q = (queryOf(v).value || '').trim().toLowerCase();
+  const f = active[v];
+
+  /* What the current filter + search actually select. */
+  const matched = rowsOf(v).filter(row =>
+    (f === 'all' || row.dataset.state === f) &&
+    (!q || row.textContent.toLowerCase().includes(q)));
+
+  const pages = Math.max(1, Math.ceil(matched.length / PAGE_SIZE));
+  if (page[v] > pages) page[v] = pages;
+  const start = (page[v] - 1) * PAGE_SIZE;
+  const onPage = new Set(matched.slice(start, start + PAGE_SIZE));
+
+  rowsOf(v).forEach(row => { row.hidden = !onPage.has(row); });
+
+  /* The only number down here is the page range, and its denominator is always
+     the list in front of you — never a total from some other filter. The
+     per-state counts live on the filter buttons, where each means one thing. */
+  const pager = sideEl(v).querySelector('[data-pager]');
+  pager.hidden = pages <= 1;
+  pager.querySelector('.range').textContent = (start + 1) + '–' + (start + onPage.size) + ' of ' + matched.length;
+  pager.querySelector('[data-page="prev"]').disabled = page[v] <= 1;
+  pager.querySelector('[data-page="next"]').disabled = page[v] >= pages;
+
+  const note = sideEl(v).querySelector('[data-note]');
+  note.textContent = matched.length === 0
+    ? 'Nothing matches.'
+    : (v === 'submit' ? 'Only you can see these.' : '');
+
+  sideEl(v).querySelector('.search .clear').hidden = !q;
+}
+
+/* Any change to what is selected sends you back to page one — landing on an
+   empty page 3 because the filter shrank the list is the classic bug here. */
+function reset(v){ page[v] = 1; apply(v); }
+
+function paintCounts(){
+  SIDES.forEach(v => {
+    const c = counts(v);
+    document.querySelector('[data-count="'+v+'"]').textContent = c.all;
+    const btns = sideEl(v).querySelectorAll('.filters button');
+    btns.forEach(b => {
+      const n = b.querySelector('.n');
+      if (n) n.textContent = c[b.dataset.filter] ?? '';
+    });
+  });
+}
+
+/* ---- filters ---- */
+SIDES.forEach(v => {
+  sideEl(v).querySelectorAll('.filters button').forEach(b => {
+    b.addEventListener('click', () => {
+      active[v] = b.dataset.filter;
+      sideEl(v).querySelectorAll('.filters button').forEach(o =>
+        o.setAttribute('aria-pressed', String(o === b)));
+      reset(v);
+    });
+  });
+  queryOf(v).addEventListener('input', () => reset(v));
+  sideEl(v).querySelector('.search .clear').addEventListener('click', () => {
+    queryOf(v).value = ''; reset(v); queryOf(v).focus();
+  });
+
+  /* ---- paging ---- */
+  sideEl(v).querySelectorAll('[data-page]').forEach(b => {
+    b.addEventListener('click', () => {
+      page[v] += b.dataset.page === 'next' ? 1 : -1;
+      apply(v);
+    });
+  });
+});
+
+/* ---- the Gifts / Letters switch ----
+   The Adopt/Submit control from demo 1: the accent slides while the panel fades
+   out, swaps, and fades back in. The action link beside the tabs swaps with it,
+   so there is one action visible instead of two competing. */
+(function(){
+  const tabs=document.querySelector('.tabs');
+  const panel=document.getElementById('ledger');
+  const btns=[...tabs.querySelectorAll('button')];
+  const act = v => document.querySelector('.tabhead [data-act="'+v+'"]');
+
+  function go(next){
+    if(tabs.dataset.view===next) return;
+    const prev=tabs.dataset.view;
+    tabs.dataset.view=next;
+    btns.forEach(b=>b.setAttribute('aria-selected',String(b.id==='tab-'+next)));
+    panel.setAttribute('aria-labelledby','tab-'+next);
+    panel.classList.add('is-out');
+    setTimeout(()=>{
+      sideEl(prev).hidden=true; sideEl(next).hidden=false;
+      act(prev).hidden=true;    act(next).hidden=false;
+      panel.classList.remove('is-out');
+    },160);
+  }
+  btns.forEach(b=>b.addEventListener('click',()=>go(b.id.replace('tab-',''))));
+})();
+
+/* ---- state switching (demo only) ----
+   Two axes: how full the account is, and what role it has. The real page gets
+   these from the my_gifts / my_letters rows and profiles.role. */
+document.querySelectorAll('.demobar button[data-fill]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.body.dataset.fill=b.dataset.fill;
+    document.body.dataset.role=b.dataset.role;
+    document.querySelectorAll('.demobar button[data-fill]').forEach(o=>
+      o.setAttribute('aria-current',String(o===b)));
+  });
+});
+
+/* ---- the closer's two drawn gestures ----
+   One brush <svg> into the mark, then a single observer that draws both the
+   underline and the hand arrow when the closer scrolls into view. Scoped to
+   the closer — nothing above it animates, because nothing above it should.
+   Degrades to fully-drawn when the observer never fires. */
+(function(){
+  const closer=document.querySelector('.closer'); if(!closer) return;
+  closer.querySelectorAll('.mark').forEach((el,i)=>{
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 300 14');
+    svg.setAttribute('preserveAspectRatio','none');
+    svg.setAttribute('aria-hidden','true');
+    const use=document.createElementNS('http://www.w3.org/2000/svg','use');
+    use.setAttribute('href', i%2 ? '#brush2' : '#brush');
+    svg.appendChild(use);
+    el.appendChild(svg);
+  });
+  if(!('IntersectionObserver' in window)){ closer.classList.add('is-in'); return; }
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){ closer.classList.add('is-in'); io.disconnect(); } });
+  },{rootMargin:'0px 0px -8% 0px',threshold:0.25});
+  io.observe(closer);
+})();
+
+paintCounts();
+SIDES.forEach(apply);
+</script>
+</body>
+</html>

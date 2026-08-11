@@ -12,7 +12,9 @@ import { RedesignParallax } from "@/components/redesign/Parallax";
  *       return <RedesignShell>…</RedesignShell>;
  *     }
  *
- * Ported so far: /donate · /membership · /letters
+ * Ported so far: every public-facing page. Only /admin/* is still on the old
+ * poster system — see the Status table in design-demos/REDESIGN-SYSTEM.md,
+ * which is the source of truth for what is left.
  *
  * When the last page is ported, this component and the `.rd` scope both go
  * away — see design-demos/REDESIGN-SYSTEM.md for the exact removal steps.
