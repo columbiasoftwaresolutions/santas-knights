@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { Brand } from "@/components/layout/Brand";
 import { Button } from "@/components/ui/Button";
@@ -10,13 +11,48 @@ import { type NavItem, navLinks, links } from "@/content/site";
 
 export type NavAuth = { signedIn: boolean; dashboardHref: string };
 
+/**
+ * Pages that open on a full-bleed dark hero photo (a <PhotoBand hero>). There
+ * the nav floats straight on the image — no ground of its own — and only fills
+ * in with ink once you've scrolled past it. Every other page starts on paper,
+ * where bone text on cream is unreadable, so the nav stays solid from the top.
+ */
+const OVERLAY_ROUTES = ["/", "/letters"];
+
+/** Scrolled far enough that the nav has left the top of the hero (its own height). */
+const FILL_AFTER = 72;
+
 /** Dark poster nav with dropdown menus and a mobile slide-out. */
 export function Navbar({ auth }: { auth: NavAuth }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const overlay = OVERLAY_ROUTES.includes(pathname);
+
+  // Only overlay routes care about scroll position; everywhere else the nav is
+  // solid regardless, so don't pay for the listener.
+  useEffect(() => {
+    if (!overlay) return;
+    const onScroll = () => setScrolled(window.scrollY > FILL_AFTER);
+    onScroll(); // reload mid-page / bfcache restore starts already scrolled
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [overlay]);
+
+  // The open mobile panel needs a ground under it even at the top of the hero.
+  const filled = !overlay || scrolled || mobileOpen;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-bone/15 bg-ink">
+    <header
+      className={cn(
+        "top-0 z-50 border-b transition-colors duration-300",
+        // Fixed (not sticky) on overlay routes so the hero runs up under it;
+        // it stays fixed once filled, or it would snap back up the document.
+        overlay ? "fixed inset-x-0" : "sticky",
+        filled ? "border-bone/15 bg-ink" : "border-transparent bg-transparent",
+      )}
+    >
       <Container className="flex h-[72px] items-center gap-[14px]">
         <Brand tagline={false} />
 

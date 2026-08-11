@@ -452,8 +452,11 @@
   .rd .imgsec .lede {
     color: rgba(247, 240, 227, 0.78);
   }
+  /* The nav floats on this photo instead of sitting above it (it goes `fixed`
+     on hero routes), so the 72px it used to occupy comes back as padding —
+     the h1 lands exactly where it did when the nav had its own ink band. */
   .rd .imgsec--hero .content {
-    padding-top: clamp(72px, 8.5vw, 124px);
+    padding-top: calc(72px + clamp(72px, 8.5vw, 124px));
     padding-bottom: clamp(84px, 9.5vw, 140px);
   }
   .rd .imgsec--hero h1 {
