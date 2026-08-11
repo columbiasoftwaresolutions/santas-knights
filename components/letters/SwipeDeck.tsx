@@ -53,6 +53,16 @@ export function SwipeDeck({
   const [leaving, setLeaving] = useState<"left" | "right" | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const pointerStart = useRef<{ x: number; y: number } | null>(null);
+  /**
+   * Which way this gesture turned out to go, decided once per press.
+   *
+   * The card is `touch-action: pan-y`, so a vertical drag on it scrolls the
+   * page — the card sits mid-document and a 500px scroll trap is how a phone
+   * visitor gets stuck. But the browser still reports those moves to us, and
+   * without this the page scrolls AND the card slides sideways under the
+   * thumb. `null` = undecided, `"x"` = ours, `"y"` = the page's.
+   */
+  const axis = useRef<"x" | "y" | null>(null);
   const deckRef = useRef<HTMLDivElement>(null);
 
   const current = letters[index];
@@ -141,19 +151,32 @@ export function SwipeDeck({
   const onPointerDown = (event: React.PointerEvent) => {
     if (leaving) return;
     pointerStart.current = { x: event.clientX, y: event.clientY };
+    axis.current = null;
     (event.target as Element).setPointerCapture?.(event.pointerId);
   };
   const onPointerMove = (event: React.PointerEvent) => {
     if (!pointerStart.current || leaving) return;
-    setDrag({
-      dx: event.clientX - pointerStart.current.x,
-      dy: event.clientY - pointerStart.current.y,
-    });
+    const dx = event.clientX - pointerStart.current.x;
+    const dy = event.clientY - pointerStart.current.y;
+    if (axis.current === null) {
+      // Undecided until the gesture has actually travelled — a press that
+      // hasn't moved yet is still a tap, and tap flips the card.
+      if (Math.abs(dx) < TAP_TOLERANCE_PX && Math.abs(dy) < TAP_TOLERANCE_PX) return;
+      axis.current = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+    }
+    if (axis.current === "y") return; // the page is scrolling; leave the card alone
+    setDrag({ dx, dy });
   };
   const onPointerUp = () => {
     if (!pointerStart.current) return;
     const dx = drag?.dx ?? 0;
     pointerStart.current = null;
+    const wasVertical = axis.current === "y";
+    axis.current = null;
+    if (wasVertical) {
+      setDrag(null);
+      return;
+    }
     if (Math.abs(dx) < TAP_TOLERANCE_PX) {
       setDrag(null);
       setFlipped((f) => !f);
@@ -222,7 +245,10 @@ export function SwipeDeck({
           })}
 
         <div
-          className="absolute inset-0 cursor-grab touch-none active:cursor-grabbing"
+          // touch-pan-y, not touch-none: the browser keeps vertical scrolling so
+          // the page can still be read past the deck, and we take the sideways
+          // gesture. See `axis` above for how the two are told apart.
+          className="absolute inset-0 cursor-grab touch-pan-y active:cursor-grabbing"
           style={{
             transform: topTransform,
             transition: drag && !leaving ? "none" : `transform ${FLING_MS}ms ease`,
@@ -232,7 +258,9 @@ export function SwipeDeck({
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={() => {
+            // Fired when the browser takes the gesture over to scroll the page.
             pointerStart.current = null;
+            axis.current = null;
             setDrag(null);
           }}
         >

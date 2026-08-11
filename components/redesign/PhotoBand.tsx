@@ -56,7 +56,10 @@ export function PhotoBand({
       <div className="veil" />
       {!hero && <TornEdge edge="top" fill={topTearFill} />}
       <TornEdge edge="bottom" fill={tearFill} />
-      <div className="rd-wrap content">{children}</div>
+      {/* `mcenter`: below 900px the band is a single column with nothing to its
+          left or right, so the copy centres over the photo rather than keeping a
+          left rag that reads as a column that failed to fill. */}
+      <div className="rd-wrap content mcenter">{children}</div>
     </section>
   );
 }

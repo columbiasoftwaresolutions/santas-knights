@@ -62,7 +62,7 @@ export default async function ContactPage() {
             {/* Typeset like letterhead: the venue names itself, so it needs no
                 "VISIT" label, and the address is text — the thing you'd
                 actually click is the directions. */}
-            <R delay={110} className="reach">
+            <R delay={110} className="reach mcenter">
               <h3>{org.venue}</h3>
               <div className="where">
                 <address>
@@ -123,7 +123,7 @@ export default async function ContactPage() {
       <section className="sec anchored" id="volunteer">
         <Wrap>
           <div className="split split--wide split--top">
-            <div className="sticky">
+            <div className="sticky mcenter">
               <R as="h2" className="big">
                 Apply to <Mark alt>volunteer</Mark>
               </R>
@@ -146,7 +146,7 @@ export default async function ContactPage() {
       <section className="sec sec--tight">
         <Wrap>
           <div className="split split--top">
-            <div>
+            <div className="mcenter">
               <R as="h2" className="big">
                 Asked <Mark>often</Mark>
               </R>

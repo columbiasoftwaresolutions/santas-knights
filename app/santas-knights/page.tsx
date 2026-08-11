@@ -83,7 +83,7 @@ export default function AboutPage() {
       {/* Air between the columns and one hairline above — never a flood band. */}
       <section className="sec sec--tight">
         <Wrap>
-          <R className="stats">
+          <R className="stats mcenter">
             {stats.map((stat) => (
               <div key={stat.label}>
                 <div className="n">
@@ -98,7 +98,7 @@ export default function AboutPage() {
       </section>
 
       <section className="sec sec--tight" style={{ paddingTop: "clamp(24px, 3vw, 40px)" }}>
-        <Wrap>
+        <Wrap className="mcenter">
           <R as="h2" className="mission mission--wide">
             Free martial arts, fitness, and activities for <Mark>everyone</Mark>, equitably.
           </R>
@@ -160,10 +160,13 @@ export default function AboutPage() {
               />
             </R>
             <div>
-              <R as="h2" className="big">
+              {/* Name and role centre with the portrait above them; the bio
+                  underneath does not — four paragraphs of centred copy is
+                  unreadable, so it keeps its left edge. */}
+              <R as="h2" className="big mcenter">
                 {founder.name}
               </R>
-              <R as="p" delay={60} className="role">
+              <R as="p" delay={60} className="role mcenter">
                 {founder.role}
               </R>
               <R delay={110} className="bio">
@@ -180,7 +183,7 @@ export default function AboutPage() {
       <section className="sec sec--tight">
         <Wrap>
           <div className="split split--top">
-            <div>
+            <div className="mcenter">
               <R as="h2" className="big">
                 Every kid deserves an <Mark alt>answer</Mark>
               </R>
@@ -223,7 +226,7 @@ export default function AboutPage() {
       <section className="sec sec--tight">
         <Wrap>
           <div className="split split--wide split--top">
-            <div className="sticky">
+            <div className="sticky mcenter">
               <R as="h2" className="big">
                 Four things we <Mark>don&apos;t bend</Mark> on
               </R>
@@ -244,7 +247,7 @@ export default function AboutPage() {
       <section className="sec sec--tight">
         <Wrap>
           <div className="split split--wide split--top">
-            <div>
+            <div className="mcenter">
               <R as="h2" className="big">
                 Gladiators NYC
               </R>
@@ -329,7 +332,7 @@ export default function AboutPage() {
 
       <section className="sec sec--tight" style={{ paddingTop: "clamp(28px, 3.4vw, 44px)" }}>
         <Wrap>
-          <div className="headrow">
+          <div className="headrow mcenter">
             <R as="h2" className="big">
               Ways a business can help
             </R>
@@ -346,7 +349,7 @@ export default function AboutPage() {
               </a>
             ))}
           </R>
-          <R as="p" delay={150} className="aside-note">
+          <R as="p" delay={150} className="aside-note mcenter">
             Or call{" "}
             <a className="tlink" style={{ fontSize: "14.5px" }} href={org.phoneHref}>
               {org.phone}
@@ -358,10 +361,10 @@ export default function AboutPage() {
 
       <section className="sec sec--tight" style={{ paddingTop: "clamp(24px, 3vw, 40px)" }}>
         <Wrap>
-          <R className="press-head">
+          <R className="press-head mcenter">
             <h3>Seen in</h3>
           </R>
-          <R delay={80} className="press">
+          <R delay={80} className="press mcenter">
             {pressLogos.map((logo) => (
               <a
                 key={logo.name}

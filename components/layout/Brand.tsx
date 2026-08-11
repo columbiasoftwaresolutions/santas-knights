@@ -17,7 +17,9 @@ export function Brand({
 }) {
   return (
     <Link href={href} className={cn("flex shrink-0 items-baseline gap-3", className)}>
-      <span className="font-display text-[19px] font-black whitespace-nowrap uppercase tracking-[0.01em]">
+      {/* A notch down on phones: at 19px the wordmark, the auth button, and the
+          hamburger together are wider than a 360px screen. */}
+      <span className="font-display text-[17px] font-black whitespace-nowrap uppercase tracking-[0.01em] sm:text-[19px]">
         Santa&apos;s Knights
       </span>
       {tagline && (

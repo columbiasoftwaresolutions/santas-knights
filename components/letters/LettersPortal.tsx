@@ -117,7 +117,7 @@ export function LettersPortal({
 
   return (
     <>
-      <div style={{ display: "grid", gap: 22, marginBottom: 30 }}>
+      <div className="mcenter" style={{ display: "grid", gap: 22, marginBottom: 30 }}>
         {/* Both headings share one grid cell, so switching never reflows. */}
         <div style={{ display: "grid" }}>
           {(["adopt", "submit"] as const).map((v) => (

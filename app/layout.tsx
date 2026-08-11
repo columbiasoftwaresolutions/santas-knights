@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Hanken_Grotesk, Cormorant, Archivo } from "next/font/google";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -39,6 +39,21 @@ export const metadata: Metadata = {
   // Beta stays out of search until the coordinated public cutover (ROLLOUT.md).
   // Flip to index/follow only as part of the cutover checklist.
   robots: { index: false, follow: false },
+};
+
+/**
+ * Stated rather than inherited from the framework default, so the two things
+ * that matter on a phone are visible here: the page scales to the device, and
+ * pinch-zoom is never capped (`maximumScale` is deliberately absent — capping
+ * it locks out anyone who needs to zoom to read).
+ *
+ * `themeColor` is the nav's ink, so a phone browser's chrome matches the top of
+ * the page instead of flashing white above it.
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#16120f",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

@@ -177,7 +177,7 @@ export default async function LettersPage({
       {preview.length > 0 && (
         <section className="sec sec--tight">
           <Wrap>
-            <div className="headrow">
+            <div className="headrow mcenter">
               <R as="h2" className="big">
                 Letters waiting <Mark alt>right now</Mark>
               </R>
@@ -229,7 +229,7 @@ export default async function LettersPage({
       <section className="sec sec--tight">
         <Wrap>
           <div className="split split--top">
-            <div>
+            <div className="mcenter">
               <R as="h2" className="big">
                 How we protect the kids
               </R>

@@ -269,13 +269,13 @@
      FLOW — no divider bars anywhere
      ============================================================ */
   .rd .sec {
-    padding: clamp(58px, 7vw, 104px) 0;
+    padding: clamp(46px, 7vw, 104px) 0;
   }
   .rd .sec--tight {
-    padding: clamp(40px, 5vw, 68px) 0;
+    padding: clamp(32px, 5vw, 68px) 0;
   }
   .rd .phead {
-    padding: clamp(48px, 6vw, 86px) 0 0;
+    padding: clamp(40px, 6vw, 86px) 0 0;
   }
   .rd .phead h1 {
     font-size: clamp(40px, 5.4vw, 68px);
@@ -854,9 +854,25 @@
       grid-template-columns: repeat(2, 1fr);
     }
   }
+  /* Six stacked cards is the longest run on the site. They can't go two-up (the
+     price and the sentence under it both need the width), so instead each card
+     gives back the padding it only needed to look right beside its neighbours. */
   @media (max-width: 640px) {
     .rd .tiers {
       grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .rd .tier {
+      padding: 20px 20px 20px;
+    }
+    .rd .tier .price {
+      font-size: 30px;
+    }
+    .rd .tier h3 {
+      margin-top: 12px;
+    }
+    .rd .tier .btn {
+      margin-top: 16px;
     }
   }
   .rd .tier {
@@ -959,14 +975,18 @@
   .rd .steps--onimg span {
     color: rgba(247, 240, 227, 0.78);
   }
+  /* Stacked, the arrow has to point DOWN the column. At 66° it pointed off into
+     the margin and read as a stray pen mark rather than as "then this". */
   @media (max-width: 820px) {
     .rd .steps {
       grid-template-columns: 1fr;
-      gap: 14px;
+      gap: 12px;
+      justify-items: center;
     }
     .rd .steps .sep {
-      transform: rotate(66deg);
-      margin-left: 6px;
+      transform: rotate(78deg);
+      margin: 0;
+      align-self: center;
     }
   }
 
@@ -994,9 +1014,34 @@
     gap: clamp(16px, 2.2vw, 26px);
     padding: 10px 0 16px;
   }
-  @media (max-width: 920px) {
+  /* Stacked, three preview cards are a screen and a half of scrolling before
+     the portal below them shows the same letters again. Swiped, they are one
+     gesture — and the card that peeks past the edge says so without a caption.
+     The row bleeds to the viewport edges (negative margin + matching padding)
+     so a card can start flush with the gutter and still scroll past it. 900, so
+     it turns over on the same breakpoint as everything else on the page. */
+  @media (max-width: 900px) {
     .rd .deck {
-      grid-template-columns: 1fr;
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: min(78%, 320px);
+      gap: 16px;
+      /* `safe`: centre the row while it fits, and fall back to the start edge
+         once it overflows — otherwise a pile of one card sits off to the left,
+         and a pile of five starts already scrolled past its first card. */
+      justify-content: safe center;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      padding: 10px var(--rd-gutter) 20px;
+      margin-inline: calc(var(--rd-gutter) * -1);
+      scrollbar-width: none;
+    }
+    .rd .deck::-webkit-scrollbar {
+      display: none;
+    }
+    .rd .letter {
+      scroll-snap-align: center;
     }
   }
   .rd .letter {
@@ -1149,6 +1194,27 @@
     position: relative;
     height: 540px;
   }
+  /* The card is sized against the WINDOW, not the width: a 540px card plus its
+     three buttons and the counter is taller than a small phone's viewport, and
+     a card you have to scroll to see the bottom of can't be swiped. Held to
+     handheld widths so a short desktop window keeps the full-size card. */
+  @media (max-width: 900px) and (max-height: 800px) {
+    .rd .swipe {
+      height: 470px;
+    }
+  }
+  @media (max-width: 900px) and (max-height: 700px) {
+    .rd .swipe {
+      height: 400px;
+    }
+    .rd .sw-back {
+      padding: 22px 20px;
+    }
+    .rd .sw-note {
+      padding: 22px 20px;
+      font-size: 17px;
+    }
+  }
   .rd .sw-face {
     position: absolute;
     inset: 0;
@@ -1289,18 +1355,24 @@
     gap: 14px;
     margin-top: 22px;
   }
-  /* Three nowrap buttons don't fit a phone — let them wrap and share the row
-     rather than pushing the document sideways. */
+  /* Three nowrap buttons don't fit a phone. Wrapping them left the third one
+     stranded at a different width from the other two; a 2-up grid with the
+     action spanning the full row underneath says which button is the point. */
   @media (max-width: 560px) {
     .rd .deckbar {
-      flex-wrap: wrap;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
+      margin-top: 18px;
     }
     .rd .deckbar .btn {
-      flex: 1 1 auto;
-      padding-left: 14px;
-      padding-right: 14px;
+      padding-left: 12px;
+      padding-right: 12px;
+      font-size: 13.5px;
+    }
+    .rd .deckbar .btn:last-child {
+      grid-column: 1 / -1;
+      font-size: 14px;
     }
   }
   .rd .deckcount {
@@ -1548,10 +1620,16 @@
     border-top: 1px solid var(--color-line);
     padding-top: 26px;
   }
-  @media (max-width: 760px) {
+  /* 900, not 760: at 768 the four columns are ~160px wide and "501(c)(3)" at
+     34px fills every pixel of one — it fits, but only just, and nothing else on
+     the page is that tight. */
+  @media (max-width: 900px) {
     .rd .stats {
       grid-template-columns: 1fr 1fr;
-      gap: 26px;
+      gap: 26px clamp(18px, 4vw, 40px);
+    }
+    .rd .stats .l {
+      max-width: 24ch;
     }
   }
   .rd .stats .n {
@@ -1963,9 +2041,22 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
   }
+  /* Stacked, the 300px floor and the bottom-alignment left a third of each
+     panel as empty colour above the heading — three screens of nothing between
+     three short offers. They shrink to their copy and centre it instead. */
   @media (max-width: 820px) {
     .rd .panels {
       grid-template-columns: 1fr;
+    }
+    .rd .panels a {
+      min-height: 0;
+      justify-content: center;
+      text-align: center;
+      padding: clamp(34px, 7vw, 52px) var(--rd-gutter);
+    }
+    .rd .panels .body p {
+      margin-left: auto;
+      margin-right: auto;
     }
   }
   .rd .panels a {
@@ -2471,9 +2562,36 @@
     letter-spacing: 0.06em;
     color: rgba(247, 240, 227, 0.36);
   }
+  /* On a phone the photo already fills the width, so the arrows sit on top of
+     it. They drop to the bottom corners, out of the picture and inside thumb
+     reach, and the "drag to browse" hint goes — the gesture is the obvious one. */
   @media (max-width: 640px) {
     .rd .lb-hint {
       display: none;
+    }
+    .rd .lightbox img {
+      max-height: 74vh;
+    }
+    .rd .lb-prev,
+    .rd .lb-next {
+      top: auto;
+      bottom: 6px;
+      transform: none;
+      font-size: 34px;
+      padding: 10px 22px;
+    }
+    .rd .lb-prev:hover {
+      transform: none;
+    }
+    .rd .lb-next:hover {
+      transform: none;
+    }
+    .rd .lb-count {
+      bottom: 22px;
+    }
+    .rd .lb-close {
+      font-size: 38px;
+      padding: 4px 8px;
     }
   }
 
@@ -2567,23 +2685,24 @@
     gap: 12px;
     justify-content: flex-end;
   }
-  /* Right-aligned type needs a wide column to work; stacked on a phone a right
-     rag just reads as broken, so it goes back to the left. */
+  /* The right rag only works because a photo faces it across the band. Stacked,
+     there is nothing to face — so the copy centres under the photo rather than
+     keeping an alignment that no longer answers anything. */
   @media (max-width: 900px) {
     .rd .redband .content {
       grid-template-columns: 1fr;
       gap: clamp(26px, 4vw, 38px);
     }
     .rd .redband .copy {
-      text-align: left;
+      text-align: center;
     }
     .rd .redband h2,
     .rd .redband p {
-      margin-left: 0;
+      margin-left: auto;
       margin-right: auto;
     }
     .rd .redband .cta {
-      justify-content: flex-start;
+      justify-content: center;
     }
   }
   /* The brush can't be red on red — the stroke goes paper. */
@@ -2660,13 +2779,17 @@
     padding-bottom: clamp(60px, 6.6vw, 88px);
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 24px;
+    /* Stacked, eight chips wrap into rows that end short. Centred, the ragged
+       last row reads as a strip; left-aligned it reads as a missing chip. */
+    align-items: center;
+    text-align: center;
+    gap: 20px;
   }
   @media (min-width: 768px) {
     .rd .pressband .content {
       flex-direction: row;
       align-items: center;
+      text-align: left;
       gap: clamp(28px, 3.4vw, 48px);
     }
   }
@@ -2686,10 +2809,16 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+  @media (min-width: 768px) {
+    .rd .pressband ul {
+      justify-content: flex-start;
+    }
   }
   .rd .pressband a {
     display: flex;
@@ -2730,6 +2859,10 @@
     display: grid;
     grid-template-columns: 0.44fr 0.56fr;
     min-height: 100vh;
+    /* dvh, so the paper still reaches the bottom once a phone's address bar
+       collapses — with 100vh alone a strip of the ink <body> shows through, and
+       these two routes render no footer to close the page off. */
+    min-height: 100dvh;
   }
   /* Stacked, the photo keeps its own height and the form takes the rest — the
      100vh floor stays. Dropping it here would end the paper wherever the form
@@ -2823,6 +2956,151 @@
   @media (max-width: 560px) {
     .rd .auth-form .fieldrow {
       grid-template-columns: 1fr;
+    }
+  }
+
+  /* ==========================================================================
+     MOBILE / TABLET — one column, centred
+     --------------------------------------------------------------------------
+     Below 900px every two-column shape above has already collapsed, so there is
+     no left/right distinction left to hold. A block of head copy that keeps its
+     left rag inside a single centred column reads as "the layout broke" rather
+     than as a decision — so head copy centres, and only the things that are
+     genuinely lists (hairline rows, cards, form fields, long-form body copy)
+     keep their left edge.
+
+     `mcenter` is the marker. It sits on the shapes that are always head copy —
+     a <PhotoBand>'s content, a `.closer`, a page head's first column — and by
+     hand on the intro column of a `.split`. Above 900px it does nothing.
+     ========================================================================== */
+  @media (max-width: 900px) {
+    /* `.mcenter` is the hand-applied marker. The three shapes beside it are
+       always head copy wherever they appear, so they opt in structurally: a
+       page head's first column, a closer, and the statement half of a `.say`. */
+    .rd .mcenter,
+    .rd .phead .phead-grid > *:first-child,
+    .rd .closer .in,
+    .rd :is(.say, .free-say) > *:first-child {
+      text-align: center;
+    }
+    /* Every max-width in this system is a measure (44ch, 24ch, 15ch…). Centred,
+       the measure has to recentre too, or the column stays pinned left inside a
+       centred parent — the exact "nearly centred" fault that reads as a bug. */
+    .rd :is(.mcenter, .phead .phead-grid > *:first-child, .closer .in, .say > *:first-child, .free-say > *:first-child)
+      :is(h1, h2, h3, p, ul, ol, blockquote, figure, .lede, .sub, .standfirst, .mission, .fineprint, [class*="narrow-"]) {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .rd :is(.mcenter, .phead .phead-grid > *:first-child, .closer .in, .say > *:first-child, .free-say > *:first-child)
+      :is(.linkrow, .cta, .cta-wrap, .actions, .legal, .where, .lines, .press) {
+      justify-content: center;
+    }
+    /* …and when `mcenter` lands on the flex row itself rather than on a block
+       that wraps one. */
+    .rd :is(.linkrow, .cta, .press, .where, .headrow, .logos).mcenter {
+      justify-content: center;
+    }
+    .rd .phead .phead-grid > .linkrow {
+      justify-content: center;
+    }
+    .rd .mcenter .lines,
+    .rd .lines.mcenter {
+      justify-items: center;
+    }
+    /* A rule that runs off one side of centred type is a stray mark. */
+    .rd .mcenter .legal::before {
+      display: none;
+    }
+    .rd .mcenter .legal {
+      gap: 0;
+    }
+    /* The pull-quote is display type, not body copy: it centres with the rest.
+       The founder bio further down the page does not — that one is four
+       paragraphs, and centred paragraphs stop being readable at three lines. */
+    .rd .quoteblock blockquote {
+      max-width: 32ch;
+    }
+    /* Fixed-measure controls sit under centred headings, so they centre too. */
+    .rd .news,
+    .rd .tabs,
+    .rd .notice {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* A form's own title is a section heading like any other, so it centres.
+       The fields under it do not: a label belongs over its input's left edge. */
+    .rd .form-paper > h3,
+    .rd .formcard > h3,
+    .rd .formcard > .sub {
+      text-align: center;
+    }
+    .rd .formcard > .sub {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 40ch;
+    }
+    /* Same argument on the auth routes: the title centres over a full-width
+       switch, the ruled fields under it stay left. */
+    .rd .authhead {
+      text-align: center;
+    }
+    /* The success state is a sentence, not a form — it centres whole. */
+    .rd .sent {
+      text-align: center;
+    }
+    .rd .sent p {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  /* ---- phones: one thumb, one column ------------------------------------- *
+     Two buttons sharing a row is a desktop shape. On a phone they either wrap
+     into a ragged stack or squeeze their labels, so below 560px every action
+     row becomes a single centred column and the buttons take the full width —
+     the same target size whichever one you meant to hit. */
+  @media (max-width: 560px) {
+    .rd .linkrow,
+    .rd .cta,
+    .rd .cta-wrap,
+    .rd .state .actions,
+    .rd .formfoot {
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .rd .linkrow > .btn,
+    .rd .cta > .btn,
+    .rd .cta-wrap > .btn,
+    .rd .state .actions > .btn,
+    .rd .formfoot > .btn {
+      width: 100%;
+    }
+    .rd .closer .in {
+      flex-direction: column;
+      align-items: center;
+      gap: 26px;
+    }
+    .rd .closer .in > * {
+      width: 100%;
+    }
+    .rd .btn {
+      padding: 15px 22px;
+    }
+    /* A tapped link needs a target, not just a baseline. */
+    .rd .tlink {
+      padding-bottom: 6px;
+    }
+  }
+
+  /* iOS zooms the whole page in when a focused field is under 16px. The ruled
+     `.form-paper` fields are already 17px; the boxed ones (give card, letter
+     submission) were 15.5, which is exactly the size that triggers it. */
+  @media (max-width: 700px) {
+    .rd .field input,
+    .rd .field textarea,
+    .rd .field select {
+      font-size: 16px;
     }
   }
 

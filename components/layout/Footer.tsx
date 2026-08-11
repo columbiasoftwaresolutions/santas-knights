@@ -1,13 +1,16 @@
 import { Brand } from "@/components/layout/Brand";
 import { Container } from "@/components/ui/Container";
+import { cn } from "@/lib/cn";
 import { footerColumns, socials } from "@/content/site";
 
 export function Footer() {
   return (
     <footer id="contact" className="border-t border-bone/12 bg-ink2 pt-16 pb-[30px] text-bone/70">
       <Container>
-        <div className="mb-[42px] grid grid-cols-1 gap-9 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
-          <div>
+        {/* Two columns from the smallest phone up: four stacked link lists is
+            more scrolling than the page above them. The blurb spans both. */}
+        <div className="mb-[42px] grid grid-cols-2 gap-x-6 gap-y-9 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+          <div className="col-span-2 lg:col-span-1">
             <Brand className="mb-3 text-bone" tagline={false} />
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-amber">
               The Gift of Martial Arts&trade;
@@ -23,7 +26,7 @@ export function Footer() {
           </div>
 
           {footerColumns.map((col) => (
-            <div key={col.heading}>
+            <div key={col.heading} className={cn(col.wide && "col-span-2 lg:col-span-1")}>
               <h4 className="mb-[15px] text-[11px] font-bold uppercase tracking-[0.24em] text-bone/45">
                 {col.heading}
               </h4>
@@ -31,7 +34,7 @@ export function Footer() {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="block py-1.5 text-[14.5px] text-bone/78 transition-colors hover:text-amber"
+                  className="block py-2 text-[14.5px] text-bone/78 transition-colors hover:text-amber lg:py-1.5"
                 >
                   {link.label}
                 </a>
@@ -40,7 +43,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3.5 border-t border-bone/12 pt-[22px] text-[12.5px] text-bone/50">
+        <div className="flex flex-col items-center gap-5 border-t border-bone/12 pt-[22px] text-center text-[12.5px] text-bone/50 sm:flex-row sm:justify-between sm:gap-3.5 sm:text-left">
           <span>
             © 2026 Santa&apos;s Knights, Inc. A 501(c)(3) nonprofit. Donations are tax-deductible.
           </span>

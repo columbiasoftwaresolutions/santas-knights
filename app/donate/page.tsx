@@ -125,7 +125,7 @@ export default function DonatePage() {
 
       <section className="sec">
         <Wrap>
-          <R as="h2" className="big">
+          <R as="h2" className="big mcenter">
             Other ways to help
           </R>
           <R delay={80} className="ways">
@@ -150,7 +150,7 @@ export default function DonatePage() {
       <section className="sec sec--tight">
         <Wrap>
           <div className="split split--top">
-            <div>
+            <div className="mcenter">
               <R as="h2" className="big">
                 Giving and your taxes
               </R>

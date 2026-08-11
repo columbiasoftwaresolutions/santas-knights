@@ -113,7 +113,7 @@ export default function HomePage() {
           once. */}
       <section className="sec sec--tight" style={{ paddingTop: "clamp(46px, 5.6vw, 84px)" }}>
         <Wrap className="missionsplit">
-          <div>
+          <div className="mcenter">
             <R as="p" className="standfirst">
               {markWord(missionStatement, "free")}
             </R>
@@ -150,7 +150,7 @@ export default function HomePage() {
               style={{ objectPosition: "42% center" }}
             />
           </R>
-          <div className="copy">
+          <div className="copy mcenter">
             <R as="h2" delay={60}>
               Every kid deserves an{" "}
               <Mark className="mark--onred">answer</Mark>.
@@ -228,7 +228,7 @@ export default function HomePage() {
                 style={{ objectPosition: "50% 30%" }}
               />
             </R>
-            <R delay={120}>
+            <R delay={120} className="mcenter">
               <blockquote>
                 &ldquo;{markWord(founder.programsQuote, "entirely", true)}&rdquo;
               </blockquote>
@@ -246,7 +246,7 @@ export default function HomePage() {
           footer already carries the fact once. */}
       <section className="sec sec--tight">
         <Wrap>
-          <R as="h2" className="big">
+          <R as="h2" className="big mcenter">
             Ways to help
           </R>
           <R delay={110} className="ways ways--air">

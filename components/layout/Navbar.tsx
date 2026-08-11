@@ -40,6 +40,23 @@ export function Navbar({ auth }: { auth: NavAuth }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, [overlay]);
 
+  // While the panel is open the page behind it must not scroll: on a phone the
+  // panel is most of the screen, and a scroll that lands on the document reads
+  // as the menu refusing to move.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [mobileOpen]);
+
   // The open mobile panel needs a ground under it even at the top of the hero.
   const filled = !overlay || scrolled || mobileOpen;
 
@@ -53,7 +70,7 @@ export function Navbar({ auth }: { auth: NavAuth }) {
         filled ? "border-bone/15 bg-ink" : "border-transparent bg-transparent",
       )}
     >
-      <Container className="flex h-[72px] items-center gap-[14px]">
+      <Container className="flex h-[72px] items-center gap-2 xl:gap-[14px]">
         <Brand tagline={false} />
 
         {/* Desktop nav */}
@@ -79,12 +96,18 @@ export function Navbar({ auth }: { auth: NavAuth }) {
           )}
         </nav>
 
-        <div className="ml-auto flex items-center gap-3">
-          {/* Primary auth button: Log In (signed out) / Dashboard (signed in). */}
+        <div className="ml-auto flex items-center gap-2 sm:gap-3">
+          {/* Primary auth button: Log In (signed out) / Dashboard (signed in).
+              Below 360px the wordmark and the hamburger already fill the bar, so
+              it steps out and the menu carries it instead. */}
           <Button
             href={auth.signedIn ? auth.dashboardHref : links.accountLogin}
             variant="red"
-            className="shrink-0"
+            // `max-[360px]:hidden`, not `hidden min-[360px]:inline-flex`: `cn`
+            // is a plain joiner, so an unprefixed `hidden` just races Button's
+            // own `inline-flex` in the stylesheet and loses. A variant always
+            // sorts after the base utility it overrides.
+            className="shrink-0 max-sm:px-4 max-sm:py-2.5 max-sm:text-[12px] max-[360px]:hidden"
           >
             {auth.signedIn ? "Dashboard" : "Log In"}
           </Button>
@@ -93,7 +116,8 @@ export function Navbar({ auth }: { auth: NavAuth }) {
           <button
             onClick={() => setMobileOpen((o) => !o)}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            className="ml-1 flex flex-col gap-[5px] p-2 xl:hidden"
+            aria-expanded={mobileOpen}
+            className="flex flex-col gap-[5px] p-2 xl:hidden"
           >
             <span
               className={cn(
@@ -117,16 +141,27 @@ export function Navbar({ auth }: { auth: NavAuth }) {
         </div>
       </Container>
 
-      {/* Mobile slide-down menu */}
+      {/* Mobile slide-down menu. Capped at the space left under the header and
+          scrollable inside it, so a short phone in landscape can still reach the
+          last link and the CTA. */}
       {mobileOpen && (
-        <div className="border-t border-bone/12 bg-ink pb-6 xl:hidden">
+        <div className="max-h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain border-t border-bone/12 bg-ink pb-8 xl:hidden">
           <Container>
             <MobileNav items={navLinks} onClose={() => setMobileOpen(false)} />
-            {/* The auth button is always in the header; the menu keeps the primary CTA. */}
+            {/* The primary CTA, plus the account link — which the header drops
+                on the narrowest phones, so the menu has to carry it. */}
             {/* Closing handled on the container so the Link buttons still navigate. */}
-            <div className="mt-4 grid gap-2 px-2" onClick={() => setMobileOpen(false)}>
-              <Button href={links.adoptLetter} variant="red">
+            <div className="mt-5 grid gap-2" onClick={() => setMobileOpen(false)}>
+              <Button href={links.adoptLetter} variant="red" className="justify-center">
                 Adopt a letter
+              </Button>
+              <Button
+                href={auth.signedIn ? auth.dashboardHref : links.accountLogin}
+                variant="bone"
+                className="justify-center min-[360px]:hidden"
+                // Only shown on the phones too narrow to keep it in the header.
+              >
+                {auth.signedIn ? "Dashboard" : "Log In"}
               </Button>
             </div>
           </Container>
@@ -195,55 +230,32 @@ function DropdownItem({
  * Mobile nav
  * ------------------------------------------------------------------ */
 
-function MobileNav({ items, onClose }: { items: NavItem[]; onClose: () => void }) {
-  const [openSection, setOpenSection] = useState<string | null>(null);
+/**
+ * Flattens the desktop nav for the phone.
+ *
+ * On a pointer device a dropdown costs nothing — it opens on hover. On a phone
+ * it costs a tap, a state, and a second decision, and the two menus here hold
+ * two links each. So a parent with children contributes its children directly
+ * and disappears: nine rows, one tap each, nothing to open first.
+ */
+function flatten(items: NavItem[]): { label: string; href: string }[] {
+  return items.flatMap((item) =>
+    item.children ? item.children : [{ label: item.label, href: item.href! }],
+  );
+}
 
+function MobileNav({ items, onClose }: { items: NavItem[]; onClose: () => void }) {
   return (
-    <ul className="mt-4 grid gap-1">
-      {items.map((item) => (
-        <li key={item.label}>
-          {item.children ? (
-            <div>
-              <button
-                onClick={() => setOpenSection((prev) => (prev === item.label ? null : item.label))}
-                className="flex w-full items-center justify-between px-2 py-3 text-left text-[15px] font-semibold text-bone hover:text-amber"
-              >
-                {item.label}
-                <span
-                  className={cn(
-                    "text-[11px] transition-colors duration-200",
-                    openSection === item.label && "rotate-180",
-                  )}
-                  aria-hidden
-                >
-                  ▾
-                </span>
-              </button>
-              {openSection === item.label && (
-                <ul className="ml-2 mt-1 grid gap-0.5 border-l border-bone/15 pl-4">
-                  {item.children.map((child) => (
-                    <li key={child.label}>
-                      <Link
-                        href={child.href}
-                        onClick={onClose}
-                        className="block px-3 py-2.5 text-[14.5px] font-medium text-bone/70 hover:text-amber"
-                      >
-                        {child.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ) : (
-            <Link
-              href={item.href!}
-              onClick={onClose}
-              className="block px-2 py-3 text-[15px] font-semibold text-bone hover:text-amber"
-            >
-              {item.label}
-            </Link>
-          )}
+    <ul className="mt-2 grid">
+      {flatten(items).map((item) => (
+        <li key={item.label} className="border-b border-bone/10 last:border-b-0">
+          <Link
+            href={item.href}
+            onClick={onClose}
+            className="block py-3.5 text-[16px] font-semibold text-bone transition-colors hover:text-amber"
+          >
+            {item.label}
+          </Link>
         </li>
       ))}
     </ul>

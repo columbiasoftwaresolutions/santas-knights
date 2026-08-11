@@ -512,7 +512,14 @@ export const donateCopy = {
  * Footer
  * ------------------------------------------------------------------ */
 
-export const footerColumns: { heading: string; links: { label: string; href: string }[] }[] = [
+export const footerColumns: {
+  heading: string;
+  /** Takes the full width of the footer's two-column phone grid. Set it when a
+   *  label is a sentence rather than a word — a street address in a 160px
+   *  column wraps to seven lines. */
+  wide?: boolean;
+  links: { label: string; href: string }[];
+}[] = [
   {
     heading: "Explore",
     links: [
@@ -536,6 +543,7 @@ export const footerColumns: { heading: string; links: { label: string; href: str
   },
   {
     heading: "Visit",
+    wide: true,
     links: [
       {
         label: `${org.venue}, ${org.address1}, ${org.address2}`,

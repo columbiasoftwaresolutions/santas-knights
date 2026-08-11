@@ -107,7 +107,7 @@ export default function MembershipPage() {
 
       <section className="sec sec--tight" style={{ paddingTop: "clamp(28px,3.4vw,44px)" }}>
         <Wrap>
-          <div className="headrow">
+          <div className="headrow mcenter">
             <R as="h2" className="big">
               Monthly giving
             </R>
@@ -147,7 +147,12 @@ export default function MembershipPage() {
             ))}
           </R>
 
-          <R as="p" delay={140} className="rd-muted" style={{ marginTop: 18, fontSize: 13.5 }}>
+          <R
+            as="p"
+            delay={140}
+            className="rd-muted mcenter"
+            style={{ marginTop: 18, fontSize: 13.5 }}
+          >
             Cancel any time. Questions?{" "}
             <a className="tlink" style={{ fontSize: 13.5 }} href={`mailto:${org.email}`}>
               {org.email}
@@ -175,7 +180,7 @@ export default function MembershipPage() {
       <section className="sec sec--tight">
         <Wrap>
           <div className="split split--top">
-            <div>
+            <div className="mcenter">
               <R as="h2" className="big">
                 Before you sign up
               </R>

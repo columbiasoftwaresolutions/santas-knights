@@ -22,7 +22,7 @@ export default function GalleryPage() {
             <div>
               <R as="h1">Gallery</R>
             </div>
-            <R delay={120} style={{ paddingBottom: 10 }}>
+            <R delay={120} className="mcenter" style={{ paddingBottom: 10 }}>
               <a
                 className="tlink"
                 href={links.instagram}

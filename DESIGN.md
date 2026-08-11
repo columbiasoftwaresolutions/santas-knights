@@ -271,19 +271,50 @@ form labels (`.1em`), the Adopt/Submit tab switch (`.07em`), footer column headi
 - Full bleed is `width:100vw; margin-left:calc(50% - 50vw)`. To bleed one side only, use
   the `--edge` token — **percentage margins on a grid child resolve against the track, not
   the viewport**, so `margin-right:calc(50% - 50vw)` silently does nothing there.
-- Section rhythm: `clamp(58px,7vw,104px)` default, `clamp(40px,5vw,68px)` tight. The page
+- Section rhythm: `clamp(46px,7vw,104px)` default, `clamp(32px,5vw,68px)` tight. The page
   head pads top only. Before a full-bleed band, `clamp(46px,6vw,90px)` of air.
 - Structure is two-column splits — `1fr 1fr`, `.9fr 1.1fr` (`--wide`), `.62fr .38fr`
   (`--rail`) — collapsing to one column at 900–960px. A left column that is only a heading
   can be `.sticky` (`top:126px`).
 - Anchor targets need `scroll-margin-top:126px` to clear the sticky nav.
 
-**Breakpoints:** 960 (nav links hide, rail collapses) · 900 (splits, page-head grid,
-letters hero) · 860 (photo-band fact row, timeline goes vertical) · 820 (footer columns,
-ways list, statement rows, contact panels, steps) · 780 (pair lists) · 760 (stats) ·
-640/560 (tiers, roles, field rows, gallery columns).
+**Breakpoints:** 1280 (desktop nav → hamburger) · 960 (rail and form grid collapse) ·
+**900 — the one that matters** (splits, page-head grid, letters hero, stats, preview deck,
+and the switch to centred head copy) · 860 (photo-band fact row, timeline goes vertical) ·
+820 (ways list, statement rows, contact panels, steps) · 780 (pair lists) · 640 (tiers,
+roles, gallery columns, lightbox controls) · 560 (action rows stack full-width, deck bar,
+field rows) · 360 (the header's auth button moves into the menu).
 
 Everything must read and tap cleanly on a phone — the audience arrives from social.
+
+### Below 900px: one column, centred
+
+Every two-column shape has collapsed by 900, so there is no left/right distinction left to
+hold. **Head copy centres; lists, forms, and long-form body copy keep their left edge.** A
+heading that keeps a left rag inside a single centred column reads as a layout that broke,
+not as a decision.
+
+`mcenter` is the marker, and it does nothing above 900. It recentres the measures inside it
+(`.lede`, `.sub`, `.narrow-*`, `.mission`, `.fineprint` all carry a `max-width` in `ch`,
+which stays pinned left without it) and centres the flex rows (`.linkrow`, `.cta`,
+`.legal`, `.where`, `.press`).
+
+- **Applied structurally**, no markup needed: `<PhotoBand>`'s content, `.closer .in`, a
+  page head's first column, the statement half of a `.say` / `.free-say`, the `.redband`
+  copy, the press band, the contact panels.
+- **Applied by hand** on the intro column of a `.split`, a lone section `h2`, a `.headrow`,
+  a stats grid, a pull-quote.
+- **Never** on: a form's fields (a label belongs over its input's left edge — only the
+  form's own `h3` centres), the founder bio, hairline lists (`.ways`, `.facts`, `.pairs`,
+  `.protect`, `.classlist`), the accordion, the timeline.
+
+Below 560 every action row (`.linkrow`, `.cta`, `.cta-wrap`, `.state .actions`) becomes one
+centred column of full-width buttons — two buttons sharing a phone row either wrap ragged or
+squeeze their labels.
+
+**Two things that only exist on a phone:** boxed `.field` inputs go to 16px under 700px
+(iOS zooms the page in when a focused field is smaller), and the letters preview `.deck`
+becomes a bleed-to-edge scroll-snap carousel rather than three stacked cards.
 
 ---
 
