@@ -49,7 +49,6 @@ export const links = {
   contact: "/contact",
   getInvolved: "/contact#volunteer",
   sponsors: "/santas-knights#sponsors",
-  linkInBio: "/links",
   // Plan v2 §D2 new routes
   gallery: "/gallery",
   membership: "/membership",
@@ -128,51 +127,6 @@ export const stats: { value: string; unit?: string; label: string }[] = [
 ];
 
 /* ------------------------------------------------------------------ *
- * Homepage "what we do" overview cards
- * ------------------------------------------------------------------ */
-
-export const pillars: {
-  variant: "train" | "give";
-  tag: string;
-  title: string;
-  body: string;
-  cta: string;
-  href: string;
-  image?: string;
-  imageAlt?: string;
-  /** object-position for the cover crop; keeps the subject centered when the
-   *  wide photo is cropped into a tall/narrow block (esp. on mobile). */
-  imagePosition?: string;
-  photo: string;
-}[] = [
-  {
-    variant: "give",
-    tag: "Santa's Letters",
-    title: "Answering letters to Santa",
-    body: "Every December, kids write about their wishes to Santa. You can help those wishes come true.",
-    cta: "How it works",
-    href: "/letters",
-    image: "/images/gallery/48424779_10161478137715422_7170425562547093504_o.jpg",
-    imageAlt: "Santa sitting with a smiling child holding a wrapped gift at a Santa's Knights holiday event",
-    // Santa + child sit right-of-centre in the frame — pull the crop right so
-    // they stay centred in the narrow block.
-    imagePosition: "62% center",
-    photo: "PHOTO: kids and volunteers at the holiday gift event",
-  },
-  {
-    variant: "train",
-    tag: "Free training",
-    title: "Martial arts & fitness, year-round",
-    body: "We teach armored combat and fitness in Harlem at no cost, beginners welcome. Browse our programs and reserve a spot now.",
-    cta: "See the classes",
-    href: TRAINING_HREF,
-    image: "/images/hero-community.jpg",
-    imageAlt: "Santa's Knights members and families together at a community event",
-    photo: "PHOTO: armored fighter, steel weapon",
-  },
-];
-
-/* ------------------------------------------------------------------ *
  * Santa's Letters, the program this site is built around
  * ------------------------------------------------------------------ */
 
@@ -180,7 +134,7 @@ export const letters = {
   eyebrow: "Santa's Letters",
   title: "Every kid deserves an answer.",
   intro:
-    "Each December, children around the world write to Santa. We make sure those letters don't go unanswered. You read a wish, pick one, and send the gift, and a kid wakes up to something they asked for.",
+    "Each December, children around the world write to Santa. We make sure those letters don’t go unanswered. You read a wish, pick one, and send the gift, and a kid wakes up to something they asked for.",
   origin:
     "The idea isn't new. The Postal Service has been answering kids' letters to Santa since 1912, and Damion grew up taking part in it, picking a stranger's letter off the pile and mailing a gift. Santa's Letters is him running that same idea out of Harlem, and reaching a few more kids every year.",
 } as const;
@@ -418,10 +372,14 @@ export const membershipTiers: MembershipTier[] = [
  * ------------------------------------------------------------------ */
 
 /**
- * Full partners roster from the live site — the single source of truth for both
- * the homepage "In good company" strip and the sponsor wall folded into
- * /santas-knights. `featured` marks the handful shown on the homepage; `logo`
- * (in /public/images/sponsors) renders the real mark instead of a wordmark.
+ * Full partners roster from the live site — the sponsor wall folded into
+ * /santas-knights renders all of it. `logo` (in /public/images/sponsors) renders
+ * the real mark instead of a wordmark.
+ *
+ * `featured` marked the handful the old homepage's "In good company" strip
+ * showed. The redesigned homepage carries no partner strip — the wall is the one
+ * place they appear — so nothing reads the flag today. Kept in case the strip
+ * comes back; drop it if it doesn't.
  */
 export const sponsors: { name: string; logo?: string; href?: string; featured?: boolean }[] = [
   { name: "Google", logo: "/images/sponsors/google.png", featured: true },
@@ -612,7 +570,7 @@ export const socials: { label: string; glyph: string; href: string }[] = [
  * Used on Home, About, and wherever the canonical mission appears.
  */
 export const missionStatement =
-  "Santa's Knights' mission is to bring free martial arts, fitness, and activities to everyone, equitably, transcending socioeconomic, racial, and location boundaries, positively changing children's and adults' lives through exposure and lifestyle enhancement.";
+  "Santa’s Knights’ mission is to bring free martial arts, fitness, and activities to everyone, equitably, transcending socioeconomic, racial, and location boundaries, positively changing children’s and adults’ lives through exposure and lifestyle enhancement.";
 
 /**
  * The record, on a line — the About page's timeline band. One date, one fact.
@@ -644,6 +602,13 @@ export const founder = {
   quote:
     "I'm ex-military and I got heavily injured while I was in. When I came out I was just a mess. Fitness and sports really saved my life.",
   quoteAttribution: "Damion DiGrazia, to Gothamist",
+  /**
+   * Why there are two programs. This is the homepage pull-quote — the one place
+   * on the page a named human explains the shape of the whole thing. Verbatim;
+   * do not paraphrase. (Carried over from the old GladiatorsTeaser section.)
+   */
+  programsQuote:
+    "One program brings a special type of holiday joy to individuals in need, while the other can help members change their lives entirely by focusing on their health and mental well-being.",
 };
 
 export const values: { title: string; body: string }[] = [

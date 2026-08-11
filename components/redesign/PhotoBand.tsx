@@ -13,6 +13,11 @@ import { cn } from "@/lib/cn";
  * `hero` drops the top tear (nothing above it to tear) and enlarges the H1.
  * Parallax on the background image is added by <RedesignParallax>, mounted once
  * per page by <RedesignShell>.
+ *
+ * `topTearFill` exists for the case where the two edges don't face the same
+ * thing: on the homepage this band runs flush under the red Letters band, so
+ * its top tear is filled `red-deep` while its bottom tear is paper. Filling
+ * both with paper is what puts a strip of paper between two flush bands.
  */
 export function PhotoBand({
   src,
@@ -20,6 +25,7 @@ export function PhotoBand({
   hero = false,
   priority = false,
   tearFill = "var(--color-paper)",
+  topTearFill = tearFill,
   className,
   children,
 }: {
@@ -29,6 +35,8 @@ export function PhotoBand({
   priority?: boolean;
   /** Must match the section color above/below the band. */
   tearFill?: string;
+  /** Override for the top edge alone, when the section above isn't paper. */
+  topTearFill?: string;
   className?: string;
   children: React.ReactNode;
 }) {
@@ -46,7 +54,7 @@ export function PhotoBand({
         style={objectPosition ? { objectPosition } : undefined}
       />
       <div className="veil" />
-      {!hero && <TornEdge edge="top" fill={tearFill} />}
+      {!hero && <TornEdge edge="top" fill={topTearFill} />}
       <TornEdge edge="bottom" fill={tearFill} />
       <div className="rd-wrap content">{children}</div>
     </section>

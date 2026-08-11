@@ -50,8 +50,9 @@ const otherWays = [
   {
     title: "Spread the word",
     body: "Most of our donors found us through somebody they already knew.",
-    action: "Share our links",
-    href: links.linkInBio,
+    action: "Follow us",
+    href: links.instagram,
+    external: true,
   },
 ];
 
@@ -129,10 +130,17 @@ export default function DonatePage() {
           </R>
           <R delay={80} className="ways">
             {otherWays.map((way) => (
-              <a key={way.title} href={way.href}>
+              <a
+                key={way.title}
+                href={way.href}
+                target={way.external ? "_blank" : undefined}
+                rel={way.external ? "noopener noreferrer" : undefined}
+              >
                 <strong>{way.title}</strong>
                 <span>{way.body}</span>
-                <em>{way.action} →</em>
+                <em>
+                  {way.action} {way.external ? "↗" : "→"}
+                </em>
               </a>
             ))}
           </R>

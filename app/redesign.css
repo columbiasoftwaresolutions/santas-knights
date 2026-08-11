@@ -30,7 +30,7 @@
   .rd {
     /* Local tokens. Colors deliberately alias the global @theme tokens so the
        promotion to global is a rename, not a recolor. */
-    --rd-line-strong: #cbbda4;
+    --rd-line-strong: var(--color-line-strong);
     /* Named aliases for two values the old system carried as bare literals:
        the green button's hover state (Button.tsx `hover:bg-[#244c38]`) and the
        ink used on gold notice chips (LettersPortal / SwipeDeck). Promoted to
@@ -421,9 +421,14 @@
         rgba(22, 18, 15, 0.78) 100%
       );
   }
+  /* padding-block longhand, NOT the `padding: <v> 0` shorthand — this div is
+     `.rd-wrap content`, and the shorthand's horizontal 0 outranks `.rd-wrap`'s
+     own gutter, so the copy over the photo runs flush to the viewport edge on a
+     phone. Invisible at 1440 (the column is inset anyway), obvious at 390. */
   .rd .imgsec .content {
     position: relative;
-    padding: clamp(92px, 11vw, 168px) 0 clamp(88px, 10vw, 156px);
+    padding-top: clamp(92px, 11vw, 168px);
+    padding-bottom: clamp(88px, 10vw, 156px);
   }
   .rd .torn {
     position: absolute;
@@ -448,7 +453,8 @@
     color: rgba(247, 240, 227, 0.78);
   }
   .rd .imgsec--hero .content {
-    padding: clamp(72px, 8.5vw, 124px) 0 clamp(84px, 9.5vw, 140px);
+    padding-top: clamp(72px, 8.5vw, 124px);
+    padding-bottom: clamp(84px, 9.5vw, 140px);
   }
   .rd .imgsec--hero h1 {
     font-size: clamp(42px, 5.8vw, 76px);
@@ -642,9 +648,24 @@
   .rd .ways {
     margin-top: 10px;
   }
+  /* The list's first rule is a border-top on row 1. At 10px it sits right under
+     a heading and reads as an underline of it rather than the top of the list —
+     fine when a line of copy sits in the gap, wrong when the heading stands
+     alone (the homepage). */
+  .rd .ways--air {
+    margin-top: clamp(22px, 2.6vw, 36px);
+  }
+  /* ⚠ Every row is its OWN grid, so the tracks are sized per row. With a `.34fr`
+     first column the `auto` action column takes the width of *that row's* label,
+     which changes what is left for the flexible first column, which staggers
+     where each description starts — the copy's left edge goes ragged by ~15px
+     and reads as a rendering fault. Invisible only while every row ends in the
+     same words. Fix: size column 1 as a PERCENTAGE (resolves against each row's
+     own width, which is identical) and give the action a min-width so column 3
+     is stable too. */
   .rd .ways a {
     display: grid;
-    grid-template-columns: minmax(180px, 0.34fr) 1fr auto;
+    grid-template-columns: minmax(180px, 34%) minmax(0, 1fr) auto;
     gap: clamp(14px, 2.6vw, 40px);
     align-items: baseline;
     padding: 24px 0;
@@ -684,6 +705,8 @@
     font-weight: 700;
     font-size: 13.5px;
     white-space: nowrap;
+    min-width: 11em;
+    text-align: right;
     opacity: 0;
     transform: translateX(-6px);
     transition:
@@ -703,6 +726,8 @@
     .rd .ways em {
       opacity: 1;
       transform: none;
+      min-width: 0;
+      text-align: left;
     }
   }
 
@@ -1574,7 +1599,8 @@
      reads like it ended. */
   .rd .imgsec--tl .content {
     /* carries no heading, so it needs less air than a titled band */
-    padding: clamp(70px, 8vw, 116px) 0;
+    padding-top: clamp(70px, 8vw, 116px);
+    padding-bottom: clamp(70px, 8vw, 116px);
   }
   .rd .tl {
     position: relative;
@@ -2158,8 +2184,11 @@
   .rd .form-paper .field {
     margin-bottom: 22px;
   }
+  /* `.lbl` is the label for a field whose control isn't labelable — the DOB
+     month/year pair, which is two comboboxes. It has to match its neighbours. */
   .rd .form-paper .field label,
-  .rd .form-paper .field legend {
+  .rd .form-paper .field legend,
+  .rd .form-paper .field .lbl {
     display: block;
     font-size: 12px;
     font-weight: 700;
@@ -2442,6 +2471,355 @@
   @media (max-width: 640px) {
     .rd .lb-hint {
       display: none;
+    }
+  }
+
+  /* ==========================================================================
+     REDESIGN 3 — Home · Log in / Sign up
+     Ported from design-demos/redesign3.html. Same six rules; these are the
+     shapes the homepage and the two auth pages needed that the earlier demos
+     never did.
+     ========================================================================== */
+
+  /* ---- the mission, in full, as the original wrote it -------------------- *
+     Archivo 800 at statement size would make a 250-character sentence a wall;
+     this is the treatment the founder quote uses (Archivo 600, 1.3 leading),
+     which is what the system has for a long sentence that still carries weight. */
+  .rd .standfirst {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(20px, 2.1vw, 28px);
+    line-height: 1.32;
+    letter-spacing: -0.025em;
+  }
+  /* Text-heavy left, photo right. 1.2fr/.8fr, not 50/50: at half the column
+     that sentence runs to eleven lines. */
+  .rd .missionsplit {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: clamp(30px, 4.4vw, 68px);
+    align-items: center;
+  }
+  .rd .missionsplit .figbox {
+    height: clamp(280px, 34vw, 440px);
+  }
+  @media (max-width: 900px) {
+    .rd .missionsplit {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---- the Santa's Letters band ----------------------------------------- *
+     The live page's flood-red section, kept: same ground, same copy, same two
+     buttons. What changed is the type (Archivo 800 sentence case, no Cormorant
+     italic) and the way it is entered — the paper tears open into it, which is
+     the same argument that lets the Contact panels exist rather than a poster
+     CTA band bolted on.
+
+     Ground is --red-deep, not --red: paper on #9E2536 clears 6:1 where paper on
+     #C2331F is under 5, and a whole band of body copy has to be readable. */
+  .rd .redband {
+    position: relative;
+    background: var(--color-red-deep);
+    color: var(--color-paper);
+  }
+  /* A photo on the left, the copy right-aligned against the content edge on the
+     right. The two ragged edges face each other across the band — the photo's
+     hard edge and the type's rag — which is what makes the asymmetry read as
+     deliberate rather than as a column that failed to fill. */
+  .rd .redband .content {
+    position: relative;
+    padding-top: clamp(60px, 7vw, 104px);
+    padding-bottom: clamp(60px, 7vw, 104px);
+    display: grid;
+    grid-template-columns: 0.92fr 1.08fr;
+    gap: clamp(28px, 4.4vw, 72px);
+    align-items: center;
+  }
+  .rd .redband .figbox {
+    height: clamp(300px, 38vw, 500px);
+  }
+  .rd .redband .copy {
+    text-align: right;
+  }
+  .rd .redband h2 {
+    color: var(--color-paper);
+    font-size: clamp(32px, 4.2vw, 58px);
+    letter-spacing: -0.035em;
+    line-height: 1.06;
+    max-width: 15ch;
+    margin-left: auto;
+  }
+  .rd .redband p {
+    margin: 24px 0 0 auto;
+    font-size: clamp(16.5px, 1.45vw, 19px);
+    line-height: 1.5;
+    color: rgba(247, 240, 227, 0.88);
+    max-width: 46ch;
+  }
+  .rd .redband .cta {
+    margin-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+  /* Right-aligned type needs a wide column to work; stacked on a phone a right
+     rag just reads as broken, so it goes back to the left. */
+  @media (max-width: 900px) {
+    .rd .redband .content {
+      grid-template-columns: 1fr;
+      gap: clamp(26px, 4vw, 38px);
+    }
+    .rd .redband .copy {
+      text-align: left;
+    }
+    .rd .redband h2,
+    .rd .redband p {
+      margin-left: 0;
+      margin-right: auto;
+    }
+    .rd .redband .cta {
+      justify-content: flex-start;
+    }
+  }
+  /* The brush can't be red on red — the stroke goes paper. */
+  .rd .mark--onred > svg {
+    color: var(--color-paper);
+  }
+  /* Red and green are the only fills a button gets on paper; on a red ground
+     neither works, so the primary inverts to paper-on-ink. */
+  .rd .btn--paper {
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+  .rd .btn--paper:hover {
+    background: #fff;
+  }
+
+  /* ---- the founder quote ------------------------------------------------- *
+     The image column is narrow AND tall on purpose: headshot.png is square, and
+     a wide column makes `cover` crop the portrait into a letterbox of face. */
+  .rd .quoteblock {
+    display: grid;
+    grid-template-columns: 0.38fr 0.62fr;
+    gap: clamp(28px, 4.4vw, 64px);
+    align-items: center;
+  }
+  .rd .quoteblock .figbox {
+    height: clamp(360px, 44vw, 580px);
+  }
+  @media (max-width: 900px) {
+    .rd .quoteblock {
+      grid-template-columns: 1fr;
+    }
+    .rd .quoteblock .figbox {
+      height: clamp(300px, 52vw, 420px);
+    }
+  }
+  .rd .quoteblock blockquote {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(23px, 2.7vw, 36px);
+    line-height: 1.28;
+    letter-spacing: -0.025em;
+    font-weight: 600;
+  }
+  .rd .quoteblock .attr {
+    margin-top: 22px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .rd .quoteblock .attr b {
+    display: block;
+    color: var(--color-ink);
+    margin-bottom: 4px;
+    letter-spacing: 0.08em;
+  }
+
+  /* ---- the "Seen in" band ------------------------------------------------ *
+     The live site's press strip, kept: dark ground, label left, marks in white
+     chips beside it, greyscale at rest and full colour on hover. Straight
+     edges, no tears — it is a credential strip, not a section of the argument,
+     and tearing into everything turns the device into wallpaper. The old
+     `border-y` hairlines are gone; rule 5 has no exception. */
+  .rd .pressband {
+    position: relative;
+    background: var(--color-ink2);
+    color: var(--color-bone);
+  }
+  .rd .pressband .content {
+    position: relative;
+    padding-top: clamp(60px, 6.6vw, 88px);
+    padding-bottom: clamp(60px, 6.6vw, 88px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  @media (min-width: 768px) {
+    .rd .pressband .content {
+      flex-direction: row;
+      align-items: center;
+      gap: clamp(28px, 3.4vw, 48px);
+    }
+  }
+  .rd .pressband .lbl {
+    flex: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(232, 226, 212, 0.55);
+  }
+  /* The live chip metrics are 56px tall / 20px sides / 26px marks / 14px gaps,
+     which fit all eight in one row inside the old 1440px Container. The
+     redesign column is 1240px, so these are tightened just enough to keep it
+     one strip. If open decision 2 settles on 1440, put the live numbers back. */
+  .rd .pressband ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .rd .pressband a {
+    display: flex;
+    height: 54px;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    padding: 0 14px;
+  }
+  .rd .pressband img {
+    height: 24px;
+    width: auto;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+    filter: grayscale(1);
+    opacity: 0.9;
+    transition:
+      filter 0.5s ease,
+      opacity 0.5s ease;
+  }
+  .rd .pressband a:hover img {
+    filter: grayscale(0);
+    opacity: 1;
+  }
+  .rd .pressband a:focus-visible {
+    outline: 3px solid var(--color-paper);
+    outline-offset: 3px;
+  }
+
+  /* ============================================================
+     LOG IN / SIGN UP
+     ------------------------------------------------------------
+     Paper ground (rule 1), so the dark `.theme-steel` scene retires. The photo
+     is kept as a full-height panel down the left edge, and the form is written
+     straight on the paper in ruled fields (`.form-paper`).
+     ============================================================ */
+  .rd .auth {
+    display: grid;
+    grid-template-columns: 0.44fr 0.56fr;
+    min-height: 100vh;
+  }
+  /* Stacked, the photo keeps its own height and the form takes the rest — the
+     100vh floor stays. Dropping it here would end the paper wherever the form
+     ends and leave a strip of the ink <body> under it, since these two routes
+     render no footer to close the page off. */
+  @media (max-width: 900px) {
+    .rd .auth {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr;
+    }
+  }
+  .rd .auth-photo {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    color: var(--color-paper);
+    display: flex;
+    flex-direction: column;
+    padding: clamp(26px, 3vw, 46px);
+  }
+  @media (max-width: 900px) {
+    .rd .auth-photo {
+      min-height: 250px;
+    }
+  }
+  .rd .auth-photo img {
+    object-fit: cover;
+    z-index: -2;
+  }
+  /* Two axes, as everywhere else — a vertical-only veil can't hold text over a
+     bright photo. */
+  .rd .auth-photo .veil {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(22, 18, 15, 0.86) 0%,
+        rgba(22, 18, 15, 0.62) 55%,
+        rgba(22, 18, 15, 0.42) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(22, 18, 15, 0.62) 0%,
+        rgba(22, 18, 15, 0.34) 45%,
+        rgba(22, 18, 15, 0.74) 100%
+      );
+  }
+  /* The wordmark is the way back to the site, so a "back to santasknights.org"
+     link underneath it would be the same link twice. */
+  .rd .auth-photo .fbrand {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    color: var(--color-paper);
+  }
+  .rd .auth-form {
+    display: flex;
+    align-items: center;
+    padding: clamp(44px, 5.2vw, 86px) var(--rd-gutter);
+  }
+  .rd .auth-form .in {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .rd .authhead h1 {
+    font-size: clamp(32px, 3.4vw, 46px);
+    line-height: 1.12;
+    letter-spacing: -0.035em;
+  }
+  /* The Log in / Sign up switch is the Adopt/Submit control, unchanged. */
+  .rd .tabs[data-view="signup"] .slide {
+    transform: translateX(100%);
+    background: var(--color-green);
+  }
+  .rd .dob {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  /* Two even columns on the auth forms, where every pair is a true pair
+     (first/last, email/phone, DOB/zip, password/confirm). */
+  .rd .auth-form .fieldrow {
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(18px, 2.4vw, 34px);
+  }
+  @media (max-width: 560px) {
+    .rd .auth-form .fieldrow {
+      grid-template-columns: 1fr;
     }
   }
 

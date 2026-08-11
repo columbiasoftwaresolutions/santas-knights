@@ -10,8 +10,12 @@ export type SelectOption = { value: string; label: string };
  * pattern (focus stays on the trigger; the active option is tracked with
  * `aria-activedescendant`). It opens and closes with a soft scale/fade, supports
  * full keyboard control (arrows, Home/End, type-ahead, Enter/Escape), closes on
- * outside-click, and keeps the highlighted row scrolled into view. Styled to sit
- * flush with the site's square text inputs.
+ * outside-click, and keeps the highlighted row scrolled into view.
+ *
+ * Two trigger treatments, mirroring the two form treatments in the redesign
+ * (see design-demos/REDESIGN-SYSTEM.md): `boxed` sits flush with the site's
+ * square, filled text inputs; `ruled` is the `.form-paper` field — no box, just
+ * the hairline the field is written on. Pick the one the fields beside it use.
  */
 export function SelectMenu({
   options,
@@ -21,6 +25,7 @@ export function SelectMenu({
   ariaLabel,
   id,
   invalid = false,
+  variant = "boxed",
   className,
 }: {
   options: SelectOption[];
@@ -30,6 +35,8 @@ export function SelectMenu({
   ariaLabel?: string;
   id?: string;
   invalid?: boolean;
+  /** `ruled` matches `.form-paper`'s underlined fields; `boxed` the filled ones. */
+  variant?: "boxed" | "ruled";
   className?: string;
 }) {
   const reactId = useId();
@@ -153,9 +160,18 @@ export function SelectMenu({
         onClick={() => (open ? setOpen(false) : openMenu())}
         onKeyDown={onKeyDown}
         className={cn(
-          "flex w-full items-center justify-between gap-2 border-[1.5px] bg-paper px-[18px] py-[13px] text-left text-[15.5px] transition-colors",
+          "flex w-full items-center justify-between gap-2 text-left transition-colors",
           "focus:outline-2 focus:outline-offset-1 focus:outline-red",
-          open ? "border-red" : invalid ? "border-red/70" : "border-line hover:border-muted/60",
+          variant === "ruled"
+            ? "border-0 border-b-[1.5px] bg-transparent px-0 py-[9px] text-[17px]"
+            : "border-[1.5px] bg-paper px-[18px] py-[13px] text-[15.5px]",
+          open
+            ? "border-red"
+            : invalid
+              ? "border-red/70"
+              : variant === "ruled"
+                ? "border-line-strong hover:border-muted/70"
+                : "border-line hover:border-muted/60",
         )}
       >
         <span className={cn("truncate", selected ? "text-ink" : "text-muted/70")}>

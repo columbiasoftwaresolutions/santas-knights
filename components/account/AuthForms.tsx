@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useState, type FormEvent } from "react";
-import { Button } from "@/components/ui/Button";
 import { SelectMenu, type SelectOption } from "@/components/ui/SelectMenu";
 import { cn } from "@/lib/cn";
 import {
@@ -9,10 +8,6 @@ import {
   signInWithPasswordAction,
   type AuthState,
 } from "@/app/account/actions";
-
-const fieldBase =
-  "w-full border-[1.5px] border-line bg-paper px-[18px] py-[13px] text-[15.5px] text-ink placeholder:text-muted/70 focus:border-red focus:outline-2 focus:outline-offset-1 focus:outline-red";
-const labelBase = "mb-1.5 block text-[13px] font-bold uppercase tracking-[0.1em] text-muted";
 
 const initial: AuthState = {};
 
@@ -37,13 +32,10 @@ function isAdult(year: string, month: string): boolean {
   return eligible <= today;
 }
 
+/** Server-side failure: a red rule and a sentence, not a filled panel. */
 function ErrorBox({ message }: { message?: string }) {
   if (!message) return null;
-  return (
-    <p className="border border-red/30 bg-red/5 px-[18px] py-[12px] text-[14.5px] font-semibold text-red">
-      {message}
-    </p>
-  );
+  return <p className="formerr">{message}</p>;
 }
 
 /**
@@ -66,7 +58,7 @@ function InlineNote({ message }: { message?: string }) {
       )}
     >
       <div className="overflow-hidden">
-        <p role={show ? "alert" : undefined} className="pt-1.5 text-[13px] font-semibold text-red">
+        <p role={show ? "alert" : undefined} className="pt-2 text-[13px] font-bold text-red">
           {message || cached}
         </p>
       </div>
@@ -74,7 +66,14 @@ function InlineNote({ message }: { message?: string }) {
   );
 }
 
-/** Email + password sign-in / registration. On success the action redirects. */
+/**
+ * Email + password sign-in / registration. On success the action redirects.
+ *
+ * Written straight on the paper (`.form-paper`): no card, no filled boxes — a
+ * field is a ruled line. There is no explanatory copy here, by design: somebody
+ * who reached a login screen knows what one is, and the 18+ gate is enforced by
+ * the DOB field and the server rather than by a sentence about it.
+ */
 export function AuthForm({ mode, next }: { mode: "login" | "register"; next: string }) {
   const action = mode === "register" ? registerAccount : signInWithPasswordAction;
   const [state, formAction, pending] = useActionState(action, initial);
@@ -119,45 +118,37 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next: str
   }
 
   return (
-    <form action={formAction} onSubmit={handleSubmit} className="grid gap-5">
+    <form action={formAction} onSubmit={handleSubmit} className="form-paper">
       <input type="hidden" name="next" value={next} />
 
-      {/* First name + last name, then email + phone on their own row. */}
-      {isRegister && (
+      {isRegister ? (
         <>
-          <div className="grid grid-cols-2 gap-5">
-            <div>
-              <label htmlFor="first_name" className={labelBase}>
-                First name
-              </label>
+          <div className="fieldrow">
+            <div className="field">
+              <label htmlFor="first_name">First name</label>
               <input
                 id="first_name"
                 name="first_name"
                 required
                 autoComplete="given-name"
                 placeholder="First name"
-                className={fieldBase}
               />
             </div>
-            <div>
-              <label htmlFor="last_name" className={labelBase}>
-                Last name
-              </label>
+            <div className="field">
+              <label htmlFor="last_name">Last name</label>
               <input
                 id="last_name"
                 name="last_name"
                 required
                 autoComplete="family-name"
                 placeholder="Last name"
-                className={fieldBase}
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-5">
-            <div>
-              <label htmlFor="email" className={labelBase}>
-                Email
-              </label>
+
+          <div className="fieldrow">
+            <div className="field">
+              <label htmlFor="email">Email</label>
               <input
                 id="email"
                 name="email"
@@ -165,13 +156,10 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next: str
                 required
                 autoComplete="email"
                 placeholder="you@email.com"
-                className={fieldBase}
               />
             </div>
-            <div>
-              <label htmlFor="phone" className={labelBase}>
-                Phone
-              </label>
+            <div className="field">
+              <label htmlFor="phone">Phone</label>
               <input
                 id="phone"
                 name="phone"
@@ -179,141 +167,130 @@ export function AuthForm({ mode, next }: { mode: "login" | "register"; next: str
                 required
                 autoComplete="tel"
                 placeholder="(555) 555-5555"
-                className={fieldBase}
               />
+            </div>
+          </div>
+
+          <div className="fieldrow">
+            <div className="field">
+              {/* Month + year only; the server stores day 1. */}
+              <span className="lbl">Date of birth</span>
+              <input type="hidden" name="dob" value={dob} />
+              <div className="dob">
+                <SelectMenu
+                  ariaLabel="Birth month"
+                  placeholder="MM"
+                  variant="ruled"
+                  options={MONTHS}
+                  value={month}
+                  onChange={(v) => {
+                    setMonth(v);
+                    setDobTouched(true);
+                  }}
+                  invalid={!!dobError}
+                />
+                <SelectMenu
+                  ariaLabel="Birth year"
+                  placeholder="YYYY"
+                  variant="ruled"
+                  options={YEARS}
+                  value={year}
+                  onChange={(v) => {
+                    setYear(v);
+                    setDobTouched(true);
+                  }}
+                  invalid={!!dobError}
+                />
+              </div>
+              <InlineNote message={dobError} />
+            </div>
+            <div className="field">
+              <label htmlFor="zipcode">Zip code</label>
+              <input
+                id="zipcode"
+                name="zipcode"
+                required
+                inputMode="numeric"
+                autoComplete="postal-code"
+                placeholder="10027"
+              />
+            </div>
+          </div>
+
+          <div className="fieldrow">
+            <div className="field">
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                autoComplete="new-password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="confirm_password">Confirm password</label>
+              <input
+                id="confirm_password"
+                name="confirm_password"
+                type="password"
+                required
+                autoComplete="new-password"
+                placeholder="••••••••"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+              />
+              <InlineNote message={confirmError} />
             </div>
           </div>
         </>
-      )}
-
-      {/* Date of birth — paired with home zip code on registration. */}
-      {isRegister ? (
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div>
-            <span className={labelBase}>Date of birth</span>
-            <input type="hidden" name="dob" value={dob} />
-            <div className="grid grid-cols-2 gap-2.5">
-              <SelectMenu
-                ariaLabel="Birth month"
-                placeholder="MM"
-                options={MONTHS}
-                value={month}
-                onChange={(v) => {
-                  setMonth(v);
-                  setDobTouched(true);
-                }}
-                invalid={!!dobError}
-              />
-              <SelectMenu
-                ariaLabel="Birth year"
-                placeholder="YYYY"
-                options={YEARS}
-                value={year}
-                onChange={(v) => {
-                  setYear(v);
-                  setDobTouched(true);
-                }}
-                invalid={!!dobError}
-              />
-            </div>
-            <InlineNote message={dobError} />
-          </div>
-          <div>
-            <label htmlFor="zipcode" className={labelBase}>
-              Zip code
-            </label>
+      ) : (
+        <>
+          <div className="field">
+            <label htmlFor="email">Email</label>
             <input
-              id="zipcode"
-              name="zipcode"
+              id="email"
+              name="email"
+              type="email"
               required
-              inputMode="numeric"
-              autoComplete="postal-code"
-              placeholder="10027"
-              className={fieldBase}
+              autoComplete="email"
+              placeholder="you@email.com"
             />
           </div>
-        </div>
-      ) : (
-        <div>
-          <label htmlFor="email" className={labelBase}>
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-            placeholder="you@email.com"
-            className={fieldBase}
-          />
-        </div>
-      )}
-
-      {/* Password — paired with confirm on registration. */}
-      {isRegister ? (
-        <div className="grid gap-5 sm:grid-cols-2">
-          <div>
-            <label htmlFor="password" className={labelBase}>
-              Password
-            </label>
+          <div className="field">
+            <label htmlFor="password">Password</label>
             <input
               id="password"
               name="password"
               type="password"
               required
-              autoComplete="new-password"
+              autoComplete="current-password"
               placeholder="••••••••"
-              className={fieldBase}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div>
-            <label htmlFor="confirm_password" className={labelBase}>
-              Confirm password
-            </label>
-            <input
-              id="confirm_password"
-              name="confirm_password"
-              type="password"
-              required
-              autoComplete="new-password"
-              placeholder="••••••••"
-              className={cn(fieldBase, confirmError && "border-red/70")}
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-            />
-            <InlineNote message={confirmError} />
-          </div>
-        </div>
-      ) : (
-        <div>
-          <label htmlFor="password" className={labelBase}>
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            autoComplete="current-password"
-            placeholder="••••••••"
-            className={fieldBase}
-          />
-        </div>
+        </>
       )}
 
       <ErrorBox message={state.error} />
-      <Button type="submit" variant="red" disabled={pending || blocked}>
+
+      <button
+        type="submit"
+        disabled={pending || blocked}
+        className={cn("btn btn--wide", isRegister ? "btn--green" : "btn--red")}
+        style={{ marginTop: 6 }}
+      >
         {pending
           ? isRegister
             ? "Creating account…"
             : "Signing in…"
           : isRegister
             ? "Create account"
-            : "Sign in"}
-      </Button>
+            : "Log in"}
+        {!pending && <span className="arw">→</span>}
+      </button>
     </form>
   );
 }

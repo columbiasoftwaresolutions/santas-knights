@@ -2,6 +2,7 @@
 # DESIGN.md — machine-readable design tokens
 # Source of truth for the look: design-demos/redesign.html (Donate · Membership · Letters)
 #                               design-demos/redesign2.html (About · Contact · Gallery)
+#                               design-demos/redesign3.html (Home · Log in / Sign up)
 # Implementation: app/redesign.css + components/redesign/
 meta:
   name: Santa's Knights
@@ -33,7 +34,7 @@ colors:
     amber:     "#C98A3A"
     greenSoft: "#E7EFE8"
     goldSoft:  "#F0E2C2"
-    steel:     "#16171A"   # .theme-steel auth scene (/login, /signup) — open decision
+    steel:     "#16171A"   # Button's `bone` variant only; the .theme-steel auth scene is gone
 
 typography:
   families:
@@ -177,13 +178,34 @@ italics, tinted panels, and poster bands used to do.
 | Long explainer prose with italic emphasis | An accordion (`<details>`) beside a short lede |
 | Eyebrows / kickers above headings | Nothing |
 
-Three deliberate exceptions, each with a reason:
+Five deliberate exceptions, each with a reason. The three coloured/dark ones are all
+**full-bleed** — a coloured section inset inside the page column is the poster band rule 4
+bans, with no argument available. Whether it is *torn into* depends on what it is: a
+section of the page's argument gets a torn edge, a strip that merely sits there does not.
 
 - **The membership tier grid** stays a 3-across card grid. Comparable prices genuinely
   scan better side by side.
-- **The three colour panels on Contact** (green / red / gold) stay — but they are
-  full-bleed and entered through the same torn edge as a photo band, so they read as the
-  paper tearing open into colour, not as a poster band bolted on.
+- **The three colour panels on Contact** (green / red / gold) stay — full-bleed, entered
+  through the same torn edge as a photo band, so they read as the paper tearing open into
+  colour, not as a poster band bolted on.
+- **The Santa's Letters band on the homepage** keeps the live site's `red-deep` ground and
+  its copy (heading, the whole intro paragraph, two buttons), laid out as a photo on the
+  left with the copy **right-aligned** against the content edge on the right. The photo
+  stops at the page column rather than running off the viewport edge, so the band keeps a
+  margin on both sides. Below 900px the copy reverts to left-aligned — a right rag on a
+  narrow column reads as broken, not deliberate. The paper tears
+  into it at the top, and it runs **flush** into the Gladiators `<PhotoBand>` below — one
+  shared edge, no strip of paper between them, which means that band's `tearFill` is
+  `red-deep`. The brush goes `paper` there (`.mark--onred`) because a red stroke on red is
+  nothing, and the primary button inverts to paper-on-ink, since neither of the two button
+  fills works on a red ground.
+- **The "Seen in" press band on the homepage** keeps the live site's dark ground and white
+  logo chips, and has **straight edges** — no tears. It is a credential strip, not a section
+  of the argument, and tearing into it would make the device wallpaper. Its old `border-y`
+  hairlines are still gone; rule 5 has no exception. The label is reset from Cormorant
+  italic to the 12px tracked uppercase label. The chips are tuned smaller than the live
+  values (54px tall / 14px sides / 24px marks / 10px gaps) so all eight fit one row inside
+  the 1240px column; at 1440 the live numbers fit and should come back.
 - **The letters submit form** keeps its white card (`.formcard`). It is the object of the
   page, not a section of it. Every other form is written straight on the paper.
 
@@ -212,11 +234,12 @@ On a photo, text is `paper` and secondary text is `rgba(247,240,227,.78–.86)`.
 Colour never carries meaning alone — the label says it. Gold is never an action colour;
 red and green are the only fills a button gets, plus ink for closers.
 
-**Token drift to fix at the global flip:** `line-strong`, `green-deep`, `gold-deep`,
-`gold-ink`, `shadow-tint`, and `ease` currently live as `--rd-*` locals in `app/redesign.css`.
-They move into `@theme` in `globals.css` when the `.rd` scope is dropped. `amber`,
-`green-soft`, `gold-soft`, and the `steel` palette belong to the old poster system and are
-kept only for pages not yet ported (and the `.theme-steel` auth scene, an open decision).
+**Token drift to fix at the global flip:** `green-deep`, `gold-deep`, `gold-ink`,
+`shadow-tint`, and `ease` currently live as `--rd-*` locals in `app/redesign.css`. They move
+into `@theme` in `globals.css` when the `.rd` scope is dropped. `line-strong` has already made
+that move — the ruled `<SelectMenu>` needs it as a Tailwind utility, so `--color-line-strong`
+is in `@theme` and `--rd-line-strong` aliases it. `amber`, `green-soft`, `gold-soft`, and the
+`steel` palette belong to the old poster system and are kept only for pages not yet ported.
 
 ---
 
@@ -454,10 +477,64 @@ Learned the hard way; each one cost a debugging session.
 
 - `.mark svg path { fill }` does **not** reach `<use>` shadow content — put
   `fill:currentColor` on the `<svg>`.
+- `.mark` is an **inline-block**, so there is a line-break opportunity right after it. In a
+  heading long enough to wrap, the punctuation following a mark can orphan onto its own line
+  (`… is free` / `. Somebody pays for it.`). Keep the mark away from the end of a multi-line
+  heading, or wrap mark + punctuation in a `white-space:nowrap` span.
+- A marked phrase **longer than the space left on its line wraps anyway** — `nowrap` can't
+  save an inline-block that doesn't fit — and the stroke then draws under the first fragment
+  only. This is the mechanical reason for "mark the word that carries the claim, never a
+  whole clause": long marks don't just read badly, they render wrong.
 - Percentage margins on a **grid child** resolve against the grid track, so
   `margin-right:calc(50% - 50vw)` doesn't bleed. Use `--edge`.
+- **`padding: <v> 0` on a `.rd-wrap content` div silently deletes the page gutter.** The
+  shorthand's horizontal `0` outranks `.rd-wrap`'s own `padding: 0 var(--gutter)`, so band
+  copy runs flush to the viewport edge — invisible at 1440 where the column is inset anyway,
+  obvious at 390. It shipped that way — `.rd .imgsec .content`, `.imgsec--hero .content`, and
+  `.imgsec--tl .content` all used the shorthand, so every `<PhotoBand>` heading on `/donate`,
+  `/membership`, `/letters`, and `/santas-knights` touched the screen edge on a phone. **Fixed
+  with the demo-3 port**: all three are `padding-top` / `padding-bottom` longhand now. Keep
+  them that way.
+- `.bleed-left` is a single class (`0,1,0`). **Any** rule that sets `margin` on the same
+  element and scores higher kills the bleed — not just the inline `margin:0` already noted,
+  but an ordinary descendant rule like `.redband figure { margin: 0 }` (`0,2,0`). The symptom
+  is a photo that sits obediently at the content edge instead of running off the viewport.
+- **`.ways` rows don't share column widths.** Every row is its own grid, so the tracks are
+  sized per row: the `auto` action column takes the width of *that row's* label, which
+  changes what's left for the flexible first column, which staggers where each description
+  starts. Demo 2 hid this because all three of its rows end in the same words ("Email us →").
+  The moment the labels differ the copy's left edge goes ragged by ~15px and reads as a
+  rendering fault. It shipped that way — `.rd .ways a` used `minmax(180px, 0.34fr) 1fr auto`,
+  and `/donate`'s "Other ways to help" has four rows with four different labels. **Fixed with
+  the demo-3 port**: column 1 is now a **percentage** (`minmax(180px, 34%)`, which resolves
+  against each row's own width — identical for every row) and `.ways em` carries a `min-width`
+  so column 3 is stable too. All four `/donate` rows start their copy on the same pixel.
+- The first `.ways` row's `border-top` sits directly under the section heading. At demo 2's
+  `margin-top:10px` it reads as an underline of the h2 rather than the top of the list —
+  demo 2 got away with it only because a second line of copy sat in that gap. A heading
+  standing alone needs `clamp(22px,2.6vw,36px)` above the list: that is `.ways--air`, which
+  the homepage adds and `/donate` (whose heading has a second line under it) does not.
+- **A full-bleed page with no footer has to reach the bottom of the viewport itself.**
+  `<body>` is still ink under the redesign layer, so wherever the `.rd` wrapper stops short,
+  a dark strip shows below it and the page reads as broken. It bit `/login` and `/signup`
+  stacked on a phone, where the demo drops the auth grid's `min-height` to 0. Keep the
+  `100vh` floor and stretch the form row (`grid-template-rows: auto 1fr`) instead. This
+  disappears at the global flip, when `body` goes paper.
+- **The reveal observer's own DOM writes look like a hydration mismatch.** `<Mark>` and
+  `[data-reveal]` get `.is-visible` written onto them by `components/ui/Reveal.tsx`. Inside a
+  `<Suspense>` boundary that hydrates after the root layout — the `(auth)` group, which needs
+  it for `useSearchParams` — the class is on the node before React reaches it, and React
+  reports its own mutation as a mismatch. `<Mark>` carries `suppressHydrationWarning` for
+  this. Any new client-rendered reveal in a Suspense boundary needs the same.
+- `width: 100vw` (i.e. `.bleed`) **counts the scrollbar**. Harmless under a solid band or a
+  cover photo, but on a grid of images it pushes the last column ~15px past the content edge
+  and shaves it. A plain block child of a full-width section is already edge to edge.
 - A vertical-only veil can't hold text over a bright photo — add the horizontal wash.
 - `tearFill` must match the sections above *and* below the band, or the tear shows a seam.
+  It is **not** always paper. Where two full-bleed bands run flush — the homepage's red
+  Letters band into the Gladiators `<PhotoBand>` — the lower band's top tear is filled with
+  the *upper band's* colour (`#9E2536`), and the upper band drops its bottom tear entirely.
+  Giving both bands their own paper-filled tear is what puts a strip of paper between them.
 - Use `grid-template-rows: 0fr → 1fr` for expanding copy, not a guessed `max-height`.
 - `input:not([type="checkbox"])` in the ruled-field rule — a checkbox stripped of its
   border is an invisible control.
@@ -495,11 +572,43 @@ When generating a screen or component for this product:
   italics, dark grounds, flood bands). The two systems invert each other and must never
   meet on one screen. The status table and the flip checklist are in
   [`design-demos/REDESIGN-SYSTEM.md`](./design-demos/REDESIGN-SYSTEM.md).
-- **`/login` and `/signup`** render a deliberately dark `.theme-steel` scene mirroring
-  `gladiators.nyc`. Whether that survives rule 1 is an open decision.
-- **The homepage** is unported; its hero is liked as-is. The founder's Gothamist quote
-  block — photo bleeding off the left viewport edge, the quote in Archivo 600 with a brush
-  underline — is parked at
-  [`design-demos/parked/founder-quote.html`](./design-demos/parked/founder-quote.html) and
-  is intended for it. Quote and attribution come from `founder.quote` /
-  `founder.quoteAttribution` in `content/site.ts`; do not paraphrase.
+- **`/login` and `/signup`** are **built** on the paper ground, per
+  [`design-demos/redesign3.html`](./design-demos/redesign3.html): ruled `.form-paper` fields,
+  the photo kept as a full-height panel down the left edge, and the Log in / Sign up switch
+  as the Adopt/Submit control, unchanged. The dark `.theme-steel` scene that mirrored
+  `gladiators.nyc` is **gone**, and so is the class — nothing else used it. There is no
+  explanatory copy on either page: no "one account, both sites", no 18+ paragraph under the
+  button, no "back to santasknights.org" (the wordmark on the panel is that link). The one
+  thing the demo drew that isn't built is the **"Forgot your password?"** link — there is no
+  password-reset flow in the app, and a link to nowhere is worse than its absence. Add the
+  link when the flow exists.
+- **The homepage** is **built**, to
+  [`design-demos/redesign3.html`](./design-demos/redesign3.html). The hero is a full-bleed
+  torn-edge `<PhotoBand>` (`hero`, so no top tear) carrying the h1, a `.facts--onimg` row,
+  and two buttons — no lede, since the three columns are the substance and a summary
+  sentence above them only said the same thing in worse order. The earlier framed
+  photo-grid variant was cut. **The old page's words
+  are kept verbatim** — the mission statement, the Santa's Letters paragraph, the founder's
+  quote about the two programs, and the eight-outlet press wall are the originals, reset in
+  Archivo/Hanken. Only the shapes changed, and two of them barely: Santa's Letters keeps its
+  red band and the press strip keeps its dark one (see the exceptions above). The two
+  side-by-side pillars are gone — Gladiators NYC takes a second `<PhotoBand>` instead.
+  Section order is hero → mission → red letters band → Gladiators band → founder quote →
+  ways to help → press band → closer. Three of those carry a photo beside their copy —
+  mission, Letters, founder — each stopping at the page column, none bleeding.
+  The two verbatim passages (`missionStatement`, `founder.programsQuote`) are **not** retyped
+  into the page: `app/page.tsx` slices the string around the one word the brush goes under, so
+  the copy cannot drift from `content/site.ts`, and a word that moves costs the emphasis
+  rather than the sentence.
+- The quote block parked at
+  [`design-demos/parked/founder-quote.html`](./design-demos/parked/founder-quote.html) —
+  the quote in Archivo 600 with a brush underline — is the layout the homepage founder quote
+  now uses, carrying the old homepage's two-programs quote rather than the parked Gothamist
+  one. **Two changes from the parked file:** the photo no longer bleeds off the left viewport
+  edge (it stops at the page column, like the Letters band), and the image column is narrower
+  and taller — the parked block was drawn for a wide environmental photo, and with the square
+  `headshot.png` a wide column makes `cover` crop the portrait into a letterbox of face. Do
+  not paraphrase either quote.
+- **`.bleed-left` is no longer used on the homepage.** Both photos that used it now stop at
+  the page column. The rule survives in the parked file only; don't reintroduce it without
+  checking that a photo running off the viewport edge is actually wanted.

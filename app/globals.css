@@ -34,6 +34,10 @@
   --color-gold: #c2912f;
   --color-gold-soft: #f0e2c2;
   --color-line: #e4d8c4;
+  /* The heavier hairline — a ruled form field, a card edge. Promoted out of the
+     redesign layer's local `--rd-line-strong` (which now aliases it) so the
+     ruled <SelectMenu> can reach it as a Tailwind utility. */
+  --color-line-strong: #cbbda4;
 
   /* Gladiators NYC — steel sub-brand (kept for any sub-brand surfaces) */
   --color-steel: #16171a;
@@ -67,19 +71,11 @@
   --text-quote: clamp(26px, 3.4vw, 40px);
 }
 
-/* Gladiators-style dark theme for full-bleed customer surfaces (e.g. the
-   /login and /signup auth scene). Wrapping content in `.theme-steel` remaps
-   the light "paper" tokens to the dark steel palette, so shared paper/card/ink
-   components (like AuthForm) render dark-on-dark instead of their default
-   light-card look. Mirrors gladiators.nyc's identical `.theme-steel` class. */
-.theme-steel {
-  --color-paper: var(--color-steel);
-  --color-paper-raised: #212327;
-  --color-card: var(--color-steel2);
-  --color-ink: var(--color-bone);
-  --color-muted: #b7b1a4;
-  --color-line: rgba(232, 226, 212, 0.14);
-}
+/* `.theme-steel` — the dark token remap that /login and /signup used to render
+   in, mirroring gladiators.nyc — is gone. Both pages are on the paper ground
+   now (design-demos/redesign3.html settled open decision 1), and nothing else
+   ever used it. The `--color-steel*` tokens above stay: Button's `bone` variant
+   still refers to them. */
 
 @layer base {
   html {

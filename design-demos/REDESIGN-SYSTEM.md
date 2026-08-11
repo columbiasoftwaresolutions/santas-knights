@@ -1,8 +1,9 @@
 # The redesign — how it lands, and how to flip it global
 
 **Source of truth for the look:** [`redesign.html`](./redesign.html) — Donate · Membership · Letters —
-and [`redesign2.html`](./redesign2.html) — About (sponsors folded in) · Contact · Gallery.
-Open either in a browser. Same six rules; demo 2 adds the shapes those three pages needed.
+[`redesign2.html`](./redesign2.html) — About (sponsors folded in) · Contact · Gallery — and
+[`redesign3.html`](./redesign3.html) — Home · Log in / Sign up.
+Open any of them in a browser. Same six rules throughout; each demo adds the shapes its pages needed.
 **Implementation:** [`app/redesign.css`](../app/redesign.css) + [`components/redesign/`](../components/redesign/).
 
 This is a full-site redesign being landed **one page at a time**. Until every page is
@@ -24,14 +25,18 @@ system. This file is the instruction manual for the transition, and — most imp
 | Gallery | `/gallery` | ✅ ported (demo 2) |
 | Get involved | `/get-involved` | ➡️ redirects to `/contact#volunteer` |
 | Sponsors | `/sponsors` | ➡️ redirects to `/santas-knights#sponsors` |
-| Home | `/` | ⬜ old system |
-| Links | `/links` | ⬜ old system |
-| Training | `/training`, `/training/[slug]` | ⬜ old system |
+| About | `/about` | ➡️ redirects to `/santas-knights` |
+| Training | `/training`, `/training/[slug]` | ➡️ redirects out to `gladiators.nyc/classes` |
+| Home | `/` | ✅ ported (demo 3) |
+| Login / Signup | `/login`, `/signup` | ✅ ported (demo 3) — `theme-steel` retired, both pages on paper |
 | Account | `/account` | ⬜ old system |
-| Login / Signup | `/login`, `/signup` | ⬜ old system — **see the note on `theme-steel` below** |
 | Admin | `/admin/*` | ⬜ old system — internal, port last or never |
 
 Keep this table current. It is what tells you whether the global flip is safe yet.
+
+**`/links` is gone.** The link-in-bio page was deleted (route, `links.linkInBio`, and the
+one reference to it on `/donate`, which now points at Instagram). There is no way to reach
+it and nothing left to port.
 
 **Two pages became sections.** Volunteering and sponsorship no longer have routes of
 their own — the volunteer application is the second half of `/contact` and the sponsor
@@ -61,11 +66,17 @@ convention the old system used, which is why the two can't be mixed on one scree
    photo — by a full-bleed band the paper appears to tear open into (`<PhotoBand>`).
 6. **Copy is the shortest true version.** Nothing is said twice on one screen.
 
-**The one sanctioned exception** (kept by request): the three green / red / gold panels on
-`/contact` (`.panels`). They survive rules 1 and 4 because they are full-bleed and entered
-through the same torn paper edge as a photo band, so they read as the paper tearing open
-into colour rather than a poster CTA band bolted onto the page. This is the only place
-colour is allowed to be the ground. Don't take it as licence for a second one.
+**The sanctioned exceptions** (all kept by request): the three green / red / gold panels on
+`/contact` (`.panels`), and on the homepage the `red-deep` Santa's Letters band and the dark
+"Seen in" press band. What they have in common — and the non-negotiable part — is that they
+are **full-bleed**. A coloured section inset inside the page column is exactly the poster CTA
+band rule 4 bans, and there is no argument that saves it.
+
+Torn edges are the second half, and they depend on what the band *is*. A band that carries a
+section of the page's argument is torn into, so it reads as the paper opening up: the Contact
+panels, the Letters band. A band that merely sits there — the press strip — is squared off,
+because tearing into everything turns the device into wallpaper. Read the exceptions list in
+DESIGN.md before adding a fourth.
 
 ---
 
@@ -110,7 +121,7 @@ the pages consistent.
 | --- | --- | --- |
 | `<RedesignShell>` | `components/redesign/RedesignShell.tsx` | The opt-in wrapper. Also exports `<Wrap>`, the 1240px page column. |
 | `<Mark>` | `components/redesign/Mark.tsx` | The brush underline. `alt` swaps to the second stroke — alternate them when two marks are near each other. `thin` for marks inside body copy. |
-| `<PhotoBand>` | `components/redesign/PhotoBand.tsx` | Full-bleed photo with torn edges. `hero` drops the top tear. `tearFill` **must match the section color above and below** — it is only correct against paper. |
+| `<PhotoBand>` | `components/redesign/PhotoBand.tsx` | Full-bleed photo with torn edges. `hero` drops the top tear. `tearFill` **must match the section color above and below**. `topTearFill` overrides the top edge alone, for a band running flush under a coloured one — the homepage's Letters → Gladiators seam. |
 | `<TornEdge>` | `components/redesign/PhotoBand.tsx` | One torn edge on its own, for a full-bleed band that isn't a `<PhotoBand>` — the About timeline strip and the Contact colour panels. |
 | `<R>` | `components/redesign/Reveal.tsx` | Rise-in on scroll. `delay` staggers a group; keep a group under ~250ms total. |
 | `<HandArrow>` | `components/redesign/HandArrow.tsx` | The hand-drawn arrow that points at a closing CTA. Goes inside a `.cta-wrap`; steps out below 900px, where there's no gutter left to park in. |
@@ -122,8 +133,12 @@ the pages consistent.
 `.formcard` is the boxed one — white card, filled inputs — and it is what `/letters/submit`
 and `<GiveCard>` use, because those forms sit on top of other content and need an edge.
 `.form-paper` is the other one, from demo 2: no card, no filled boxes, a field is a ruled
-line. Contact and the volunteer application use it. Don't mix them on one screen, and
-don't "unify" them by changing `.rd .field` globally — that restyles the submit form.
+line. Contact, the volunteer application, and both auth forms use it. Don't mix them on one
+screen, and don't "unify" them by changing `.rd .field` globally — that restyles the submit
+form.
+
+`<SelectMenu>` has a `variant` matching the two: `boxed` (default) and `ruled`. Pick the one
+the fields beside it use — the signup DOB pair is `ruled`, the admin letter filters `boxed`.
 
 ### Motion
 
@@ -154,10 +169,12 @@ Work on one branch, top to bottom:
      force paper onto inner pages under the old dark default, and becomes a no-op.
    - Delete the `h1, h2, h3` base rule; the redesign's type rules take over.
 
-3. **Promote the local tokens.** `--rd-line-strong`, `--rd-green-deep`, `--rd-gold-ink`,
+3. **Promote the local tokens.** `--rd-green-deep`, `--rd-gold-ink`, `--rd-gold-deep`,
    `--rd-shadow-tint`, and `--rd-ease` move into `@theme` in `globals.css` as
-   `--color-line-strong`, `--color-green-deep`, `--color-gold-ink`, etc. Record them in
-   `DESIGN.md` at the same time so the palette doc doesn't drift.
+   `--color-green-deep`, `--color-gold-ink`, etc. Record them in `DESIGN.md` at the same time
+   so the palette doc doesn't drift. `--rd-line-strong` has already made the move — it is
+   `--color-line-strong` in `@theme`, aliased locally — because the ruled `<SelectMenu>`
+   needs it as a Tailwind utility.
 
 4. **Decide `--rd-maxw` vs `Container`.** The redesign column is **1240px**; the old
    `Container` is **1440px**. Pick one and make `Wrap`/`Container` the same component.
@@ -176,11 +193,10 @@ Work on one branch, top to bottom:
    `app/system.css`); `components/redesign/*` → `components/ui/*`. At this point the old
    site should be unrecoverable and unremembered, which is the goal.
 
-8. **`theme-steel`.** `/login` and `/signup` render a deliberately dark auth scene
-   (`components/account/AuthScene.tsx`) that mirrors `gladiators.nyc`. Rule 1 says one
-   paper ground; the shared-identity story says these two pages should match the other
-   site. **This is an open decision — settle it before step 1**, because it determines
-   whether `.theme-steel` survives the flip.
+8. ~~**`theme-steel`.**~~ **Settled and done.** `/login` and `/signup` are on the paper
+   ground (demo 3), and the `.theme-steel` class is deleted from `globals.css` — nothing
+   else used it. The `--color-steel*` tokens stay only because `Button`'s `bone` variant
+   still refers to them; they go when the old poster system does.
 
 9. **Verify:** `npm run lint`, `npx tsc --noEmit`, `npm run build`, then walk every route
    at 1440px and 390px. Check `document.documentElement.scrollWidth > window.innerWidth`
@@ -256,13 +272,29 @@ through `checkoutUrl(price, "monthly")`.
 
 `components/donate/DonateForm.tsx` — imported nowhere, superseded by `<GiveCard>`.
 
+## What came with the homepage + auth port (demo 3)
+
+- **Nine section components deleted**, all of them imported only by the old `app/page.tsx`:
+  `Hero`, `ImpactStrip`, `Mission`, `Pillars`, `LettersToSanta`, `GladiatorsTeaser`, `Press`,
+  `Partners`, `DonateBand` — plus `components/ui/Photo.tsx`, whose only three consumers were
+  among them. The redesign layer uses `next/image` directly inside `.figbox` / `<PhotoBand>`.
+- **`pillars` deleted from `content/site.ts`** (only `Pillars.tsx` read it). **`founder.programsQuote`
+  added** — the two-programs pull-quote was hardcoded inside `GladiatorsTeaser`, and it is
+  the one bit of copy that would have been lost with the component.
+- **The homepage no longer carries a partners strip.** The sponsor wall lives at
+  `/santas-knights#sponsors`, and demo 3 doesn't repeat it. `sponsors[].featured` is now
+  unread — leave it or drop it when someone touches that list next.
+- **`.theme-steel` deleted** from `globals.css`; see flip step 8.
+- **`--color-line-strong` promoted** into `@theme` ahead of the flip (flip step 3).
+
 ---
 
 ## Open decisions
 
 | # | Question | Blocks |
 | --- | --- | --- |
-| 1 | Do `/login` + `/signup` keep the dark `theme-steel` scene, or go paper like everything else? | Global flip step 8 |
-| 2 | Page column: 1240px (redesign) or 1440px (old `Container`)? | Global flip step 4 |
+| ~~1~~ | ~~Do `/login` + `/signup` keep the dark `theme-steel` scene?~~ **Settled: paper.** Both pages are ported and `.theme-steel` is deleted. | ~~Global flip step 8~~ |
+| 2 | Page column: 1240px (redesign) or 1440px (old `Container`)? | Global flip step 4, and the homepage press strip's chip metrics (`CHIP_SCALE` in `app/page.tsx` exists only to squeeze eight logos into 1240) |
 | 3 | Is `/admin` in scope for the redesign at all, or does it keep the old system as an internal tool? | The Status table |
 | 4 | Real recurring-billing links — which processor? | `content/billing.ts`, and whether the tier CTAs are honest |
+| 5 | Is there a password-reset flow? Demo 3 draws a "Forgot your password?" link on `/login`; the app has no reset action, so the link is **not built**. | Whether `/login` can offer recovery at all |

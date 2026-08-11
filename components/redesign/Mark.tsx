@@ -29,7 +29,17 @@ export function Mark({
   className?: string;
 }) {
   return (
-    <span data-reveal className={cn("mark", thin && "mark--thin", className)}>
+    // suppressHydrationWarning: the reveal observer writes `.is-visible` onto
+    // this node as soon as it scrolls in. Inside a <Suspense> boundary that
+    // hydrates later than the root layout — /login and /signup — the class is
+    // already on the DOM node by the time React reaches it, and React reports
+    // the mutation it caused itself as a mismatch. Same reason <html> carries
+    // the flag for the pre-paint `reveal-on` script.
+    <span
+      data-reveal
+      suppressHydrationWarning
+      className={cn("mark", thin && "mark--thin", className)}
+    >
       {children}
       <svg viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden focusable="false">
         <use href={alt ? "#sk-brush2" : "#sk-brush"} />
