@@ -7,7 +7,7 @@ import {
   registerAccount,
   signInWithPasswordAction,
   type AuthState,
-} from "@/app/account/actions";
+} from "@/app/members/actions";
 
 const initial: AuthState = {};
 

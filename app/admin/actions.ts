@@ -44,7 +44,7 @@ export async function updateLetterStatus(formData: FormData): Promise<void> {
 
   revalidatePath("/admin");
   revalidatePath("/letters-to-santa");
-  revalidatePath("/account");
+  revalidatePath("/members");
 }
 
 export async function signOut(): Promise<void> {

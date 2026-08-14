@@ -61,7 +61,7 @@ function prefersReducedMotion() {
  *   · Claiming a letter needs an account (donor ↔ gift link, acknowledgment,
  *     self-dealing guard). Handled inside SwipeDeck.
  *   · Submitting a letter needs an account, because the row carries
- *     `guardian_user_id` — that's what powers "My letters" on /account and how
+ *     `guardian_user_id` — that's what powers "My letters" on /members and how
  *     we reach a guardian about their submission.
  */
 export function LettersPortal({

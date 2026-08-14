@@ -55,7 +55,7 @@ async function run() {
   console.log("Full-stack account-gated submission\n");
 
   // Register, expecting a redirect back to the submit side of the Letters page.
-  await page.goto(`${BASE}/account/register?next=${encodeURIComponent("/letters-to-santa?do=submit")}`);
+  await page.goto(`${BASE}/members/register?next=${encodeURIComponent("/letters-to-santa?do=submit")}`);
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);
   await Promise.all([
@@ -98,7 +98,7 @@ async function run() {
   check("letter status live", letter?.status === "live");
 
   // My Letters shows it.
-  await page.goto(`${BASE}/account`);
+  await page.goto(`${BASE}/members`);
   await page.waitForSelector("text=My letters", { timeout: 10000 });
   const body = await page.textContent("body");
   check("My Letters lists the child", body.includes("Uitest"));

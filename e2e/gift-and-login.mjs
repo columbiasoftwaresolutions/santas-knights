@@ -1,6 +1,6 @@
 /**
  * E2E for unified login + gift claim/track against the local app + real Supabase.
- *   - register → lands on /account ; promoted account → login lands on /admin
+ *   - register → lands on /members ; promoted account → login lands on /admin
  *   - claim a pooled letter → drops from public pool → My gifts → mark gifted
  *   - self-dealing guard: can't claim your own child's letter
  * Each actor gets an isolated browser context. Test data is cleaned up after.
@@ -62,12 +62,12 @@ async function fresh() {
 
 /** Submit the unified login; throws with the on-page error if it doesn't navigate away. */
 async function login(page, email, pw, nextParam) {
-  const url = nextParam ? `${BASE}/account/login?next=${encodeURIComponent(nextParam)}` : `${BASE}/account/login`;
+  const url = nextParam ? `${BASE}/members/login?next=${encodeURIComponent(nextParam)}` : `${BASE}/members/login`;
   await page.goto(url);
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', pw);
   await Promise.all([
-    page.waitForURL((u) => !u.toString().includes("/account/login"), { timeout: 20000 }).catch(() => {}),
+    page.waitForURL((u) => !u.toString().includes("/members/login"), { timeout: 20000 }).catch(() => {}),
     page.click('button[type="submit"]'),
   ]);
   await page.waitForLoadState("networkidle").catch(() => {});
@@ -103,14 +103,14 @@ async function run() {
     await ctx.close();
   }
 
-  // Register a regular user → /account
+  // Register a regular user → /members
   {
     const { ctx, page } = await fresh();
-    await page.goto(`${BASE}/account/register`);
+    await page.goto(`${BASE}/members/register`);
     await page.fill('input[name="email"]', donorEmail);
     await page.fill('input[name="password"]', password);
-    await Promise.all([page.waitForURL(/\/account(?:[?#]|$)/, { timeout: 20000 }).catch(() => {}), page.click('button[type="submit"]')]);
-    check("register lands a regular user on /account", /\/account(?:[?#]|$)/.test(page.url()));
+    await Promise.all([page.waitForURL(/\/members(?:[?#]|$)/, { timeout: 20000 }).catch(() => {}), page.click('button[type="submit"]')]);
+    check("register lands a regular user on /members", /\/members(?:[?#]|$)/.test(page.url()));
     await ctx.close();
   }
   const { data: donor } = await admin.from("profiles").select("id").eq("email", donorEmail).maybeSingle();
@@ -142,7 +142,7 @@ async function run() {
     const { data: pool } = await admin.from("public_letters").select("id").eq("id", letterA);
     check("claimed letter drops out of the public pool", (pool ?? []).length === 0);
 
-    await page.goto(`${BASE}/account`);
+    await page.goto(`${BASE}/members`);
     check("My gifts lists the adopted letter", (await page.textContent("body")).includes("Testkid"));
     await page.getByRole("button", { name: "I sent it" }).first().click();
     const gifted = await pollLetter(letterA, "fulfilled");

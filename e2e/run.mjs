@@ -62,7 +62,7 @@ const run = async () => {
   // before creating the sample submissions, then sign out before the admin step
   // below so the login screenshot still exercises the unified auth flow.
   log("Signing in for account-gated submission…");
-  await page.goto(`${BASE}/account/login?next=${encodeURIComponent("/letters-to-santa?do=submit")}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/members/login?next=${encodeURIComponent("/letters-to-santa?do=submit")}`, { waitUntil: "networkidle" });
   await page.fill("#email", ADMIN_EMAIL);
   await page.fill("#password", ADMIN_PASSWORD);
   await page.getByRole("button", { name: /Sign in/i }).click();
@@ -90,7 +90,7 @@ const run = async () => {
     first = false;
   }
 
-  await page.goto(`${BASE}/account`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/members`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: /Sign out/i }).click();
   await page.getByRole("link", { name: /Create an account/i }).waitFor({ timeout: 20000 });
 

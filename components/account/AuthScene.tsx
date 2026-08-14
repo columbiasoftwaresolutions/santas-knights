@@ -41,7 +41,7 @@ export function AuthScene() {
   const searchParams = useSearchParams();
 
   const rawNext = searchParams.get("next") ?? "";
-  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/account";
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/members";
   const nextQuery = rawNext ? `?next=${encodeURIComponent(rawNext)}` : "";
 
   const [mode, setMode] = useState<Mode>(() => modeFromPathname(pathname));

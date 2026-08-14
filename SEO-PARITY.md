@@ -78,7 +78,7 @@ Host canonicalisation today: `http://*` → `https://*` → **`https://www.…` 
 | `/classes` | ??? | ❌ 404 | 301 to wherever `/in-person` lands |
 | `/service-page/*` (6) | ??? | ❌ 404 | needs a decision (§4) |
 | `/online` | ??? | ❌ 404 | needs a decision (§4) |
-| `/members` | `/account` | ❌ 404 | 301 |
+| `/members` | `/members` | ✅ **exists** — route renamed 2026-08-14 to keep the path | — |
 | `/groups`, `/amazon-wishlists` | ??? | ❌ 404 | 301 to `/letters-to-santa`, or 410 if the feature is dropped |
 | `/group/*/discussion` (2) | ??? | ❌ 404 | 301 to `/letters-to-santa` |
 | `/group/*/discussion/<uuid>` (~10k) | ??? | ❌ 404 | **bulk rule** — see §3 |
@@ -112,13 +112,13 @@ Verified against the repo and against the beta deploy (`santas-knights.vercel.ap
 | **No `robots.txt`** | no `app/robots.ts`; beta `/robots.txt` → 404 | Wix serves one today with the sitemap reference. Needed to keep beta out of search *and* to open the door at cutover. |
 | **No `sitemap.xml`** | no `app/sitemap.ts`; beta `/sitemap.xml` → 404 | Search Console has the Wix sitemap submitted. At cutover that URL must keep resolving or coverage reporting goes dark. |
 | **No `metadataBase`** | absent from `app/layout.tsx` | The canonical on `/` renders literally as `<link rel="canonical" href="/">`. Without `metadataBase`, Next resolves it against `VERCEL_URL` — so canonicals and OG URLs can point at a preview host. |
-| **Canonicals on 3 of ~11 pages** | only `app/page.tsx`, `app/santas-knights/page.tsx`, `app/letters-to-santa/page.tsx` set `alternates.canonical` | Every live Wix page has a self-canonical. Losing them invites duplicate-content splits (`/home`, `?` params, www vs apex). |
+| **Canonicals on 4 of ~11 pages** | only `app/page.tsx`, `app/santas-knights/page.tsx`, `app/letters-to-santa/page.tsx`, `app/members/page.tsx` set `alternates.canonical` | Every live Wix page has a self-canonical. Losing them invites duplicate-content splits (`/home`, `?` params, www vs apex). |
 | **No `openGraph` anywhere** | grep for `openGraph` across `app/`, `components/`, `content/` → nothing | Every old page had an `og:image`. Shares from Facebook/Instagram are a real traffic source for this org; blank cards cost clicks. |
 | **`google-site-verification` not carried over** | live tag is `WJCLm659hAv8-tVndWB0d2cJgaa0smJCFVIIj_RY1W8`; not in this repo | If it disappears at cutover, **Search Console verification breaks at exactly the moment you need it**. Better: verify by DNS TXT ahead of time, which survives any platform change. |
 | **No analytics of any kind** | no `gtag`, GTM, GA4 ID, or `@vercel/analytics` in the repo | GA4/Ads/conversion tags need to ship *with* the cutover, not after. Wix injects its tags via its own loader, so the IDs have to come from Nicolas / the Wix dashboard — they aren't recoverable from the page source. |
 | **`SITE_URL` is the apex, live canonical is www** | `content/site.ts:15` → `https://santasknights.org`; live canonical → `https://www.santasknights.org` | Pick one and 301 the other. The incumbent is **www** — changing it at cutover means re-earning every canonical on top of everything else. Don't. |
 | **`courseSchema` defined but never rendered** | `content/site.ts` exports it; only `organizationSchema` is used, in `app/layout.tsx:87` | ROLLOUT.md's plan is per-class URLs + `Course`/`Event` schema on this domain. Neither the pages nor the schema exist. |
-| **Redirects are 307, not 308** | `/sponsors`, `/get-involved`, `/training`, `/letters` all use `redirect()` | Correct *for now* — nothing should cache a permanent redirect while Wix is live. But it has to flip at cutover, so it belongs on the checklist. |
+| **Redirects are 307, not 308** | `/sponsors`, `/get-involved`, `/training`, `/letters`, `/account` all use `redirect()` | Correct *for now* — nothing should cache a permanent redirect while Wix is live. But it has to flip at cutover, so it belongs on the checklist. |
 
 ---
 

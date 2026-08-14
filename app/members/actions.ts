@@ -13,7 +13,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** Only allow internal redirects; never an open redirect to another site. */
 function safeNext(next: unknown): string {
   const n = typeof next === "string" ? next : "";
-  return n.startsWith("/") && !n.startsWith("//") ? n : "/account";
+  return n.startsWith("/") && !n.startsWith("//") ? n : "/members";
 }
 
 /**
@@ -108,7 +108,7 @@ export async function signInWithPasswordAction(
 
   // One login for everyone. Honor an explicit destination; otherwise admins land
   // in the admin area and regular members on their account.
-  if (next !== "/account") redirect(next);
+  if (next !== "/members") redirect(next);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -120,12 +120,12 @@ export async function signInWithPasswordAction(
       .maybeSingle();
     if (profile?.role === "admin") redirect("/admin");
   }
-  redirect("/account");
+  redirect("/members");
 }
 
 export async function signOutAction(): Promise<void> {
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
-  revalidatePath("/account");
-  redirect("/account");
+  revalidatePath("/members");
+  redirect("/members");
 }

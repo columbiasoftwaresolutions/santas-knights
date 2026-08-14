@@ -62,7 +62,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const user = await getCurrentUser();
   const auth = {
     signedIn: user !== null,
-    dashboardHref: user?.role === "admin" ? "/admin" : "/account",
+    dashboardHref: user?.role === "admin" ? "/admin" : "/members",
   };
 
   return (

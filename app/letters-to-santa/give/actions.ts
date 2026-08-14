@@ -50,7 +50,7 @@ export async function claimLetter(letterId: string): Promise<ClaimResult> {
   if (!updated || updated.length === 0) return { ok: false, reason: "taken" };
 
   revalidatePath("/letters-to-santa");
-  revalidatePath("/account");
+  revalidatePath("/members");
   revalidatePath("/admin");
   return { ok: true };
 }
@@ -67,7 +67,7 @@ export async function markGifted(formData: FormData): Promise<void> {
     .eq("id", String(formData.get("letter_id")))
     .eq("fulfilled_by_user_id", user.id)
     .eq("status", "live");
-  revalidatePath("/account");
+  revalidatePath("/members");
   revalidatePath("/admin");
 }
 
@@ -83,7 +83,7 @@ export async function releaseClaim(formData: FormData): Promise<void> {
     .eq("id", String(formData.get("letter_id")))
     .eq("fulfilled_by_user_id", user.id)
     .eq("status", "live");
-  revalidatePath("/account");
+  revalidatePath("/members");
   revalidatePath("/letters-to-santa");
   revalidatePath("/admin");
 }
