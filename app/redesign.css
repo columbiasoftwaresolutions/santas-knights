@@ -465,6 +465,57 @@
     letter-spacing: -0.035em;
   }
 
+  /* `centered` — the same treatment `mcenter` gives every band below 900px, held
+     at every width. Every max-width in this system is a measure (15ch, 34ch,
+     840px…), so each one has to recentre with the text; left-pinned measures
+     inside a centred column are the "nearly centred" fault that reads as a bug.
+     Only the homepage hero opts in: the Gladiators band keeps its left rag, so
+     the two photo bands don't become the same shape twice. */
+  .rd .imgsec--mid .content {
+    text-align: center;
+  }
+  /* The default veil is dark on the left and opens up to the right — built for
+     copy with a left rag and a photo subject to its right. Centred copy needs a
+     symmetric field, or the outer columns sit on visibly different grounds. */
+  .rd .imgsec--mid .veil {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(22, 18, 15, 0.84) 0%,
+        rgba(22, 18, 15, 0.62) 32%,
+        rgba(22, 18, 15, 0.62) 68%,
+        rgba(22, 18, 15, 0.84) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(22, 18, 15, 0.72) 0%,
+        rgba(22, 18, 15, 0.42) 40%,
+        rgba(22, 18, 15, 0.78) 100%
+      );
+  }
+  .rd .imgsec--mid .content
+    :is(h1, h2, h3, p, ul, ol, figure, .lede, .sub, [class*="narrow-"]) {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .rd .imgsec--mid .content :is(.linkrow, .cta, .actions) {
+    justify-content: center;
+  }
+
+  /* The footer strip keeps the band's full bleed, so it sits outside `.rd-wrap`
+     and carries its own gutter. `padding-bottom` clears the torn bottom edge —
+     without it the tear bites into the marks. */
+  .rd .imgsec-foot {
+    position: relative;
+    padding-bottom: calc(clamp(30px, 4vw, 58px) + clamp(22px, 2.6vw, 38px));
+  }
+  /* With a footer under it the copy stops well short of the band's bottom, so
+     the hero's own closing air comes off — otherwise the two stack into a hole
+     between the buttons and the press line. */
+  .rd .imgsec--hero.imgsec--hasfoot .content {
+    padding-bottom: clamp(44px, 5vw, 74px);
+  }
+
   /* facts — hairlines only, between items */
   .rd .facts {
     margin: 0;
@@ -2762,90 +2813,140 @@
     letter-spacing: 0.08em;
   }
 
-  /* ---- the "Seen in" band ------------------------------------------------ *
-     The live site's press strip, kept: dark ground, label left, marks in white
-     chips beside it, greyscale at rest and full colour on hover. Straight
-     edges, no tears — it is a credential strip, not a section of the argument,
-     and tearing into everything turns the device into wallpaper. The old
-     `border-y` hairlines are gone; rule 5 has no exception. */
-  .rd .pressband {
-    position: relative;
-    background: var(--color-ink2);
-    color: var(--color-bone);
+  /* ---- "As seen in" — the press line under the hero ----------------------- *
+     Was a dark band of its own between "Ways to help" and the closer. It is a
+     credential on the claim, so it now runs at the foot of the hero instead,
+     drifting slowly across the band's full width and fading out at both edges —
+     a line that continues past the screen rather than a widget that starts and
+     stops. Straight edges, no tears: tearing into everything turns the device
+     into wallpaper.
+
+     The marks are drawn straight onto the photo — no plates. That needs a white
+     cut of each logo, which is a build step, not a filter: ABC's disc and NPR's
+     blocks carry their letters as knockouts, and any filter that whitens the
+     ink fills those in. The `white` files in content/site.ts are rebuilt from
+     luminance so the knockouts survive. */
+  .rd .pressmarq {
+    /* Wide on purpose. One pass of the eight marks measures about 1030px of
+       artwork, so at this gap a pass is roughly a desktop viewport across and
+       the loop rarely shows the same masthead twice on one screen. Tighten it
+       and the repeat reads as a duplicate rather than as a loop. */
+    --marq-gap: clamp(20px, 3.6vw, 58px);
   }
-  .rd .pressband .content {
-    position: relative;
-    padding-top: clamp(60px, 6.6vw, 88px);
-    padding-bottom: clamp(60px, 6.6vw, 88px);
-    display: flex;
-    flex-direction: column;
-    /* Stacked, eight chips wrap into rows that end short. Centred, the ragged
-       last row reads as a strip; left-aligned it reads as a missing chip. */
-    align-items: center;
-    text-align: center;
-    gap: 20px;
-  }
-  @media (min-width: 768px) {
-    .rd .pressband .content {
-      flex-direction: row;
-      align-items: center;
-      text-align: left;
-      gap: clamp(28px, 3.4vw, 48px);
+  /* Held at desktop size, the Los Angeles Times masthead alone is 234px — sixty
+     per cent of a 390px screen, so the line reads as one logo passing rather
+     than as a run of them. One multiplier scales the whole set. */
+  @media (max-width: 700px) {
+    .rd .pressmarq {
+      --mark-scale: 0.76;
+      --marq-gap: 22px;
     }
   }
-  .rd .pressband .lbl {
-    flex: none;
-    font-size: 12px;
+  .rd .pressmarq .lbl {
+    text-align: center;
+    font-size: 11.5px;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(232, 226, 212, 0.55);
+    color: rgba(247, 240, 227, 0.62);
+    margin-bottom: clamp(15px, 1.8vw, 23px);
   }
-  /* The live chip metrics are 56px tall / 20px sides / 26px marks / 14px gaps,
-     which fit all eight in one row inside the old 1440px Container. The
-     redesign column is 1240px, so these are tightened just enough to keep it
-     one strip. If open decision 2 settles on 1440, put the live numbers back. */
-  .rd .pressband ul {
+  .rd .marq {
+    position: relative;
+    overflow: hidden;
+    /* Room for a focus ring to sit outside a mark without the strip clipping
+       it. Horizontally it can still be cut, but only at the two edges the mask
+       is already fading out. */
+    padding: 9px 0;
+    /* A mask reads alpha only, so the opaque stop just has to be *some* opaque
+       colour — `currentColor` keeps a value that is never painted out of the
+       palette. */
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      currentColor 10%,
+      currentColor 90%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      currentColor 10%,
+      currentColor 90%,
+      transparent
+    );
+  }
+  .rd .marq-track {
     display: flex;
-    flex-wrap: wrap;
+    width: max-content;
+    will-change: transform;
+    animation: rd-marq 40s linear infinite;
+  }
+  /* Every mark is a link to the actual article, and a moving target can't be
+     clicked — so the line stops for a pointer or a Tab key. */
+  .rd .marq:hover .marq-track,
+  .rd .marq:focus-within .marq-track {
+    animation-play-state: paused;
+  }
+  .rd .marq ul {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
-  @media (min-width: 768px) {
-    .rd .pressband ul {
-      justify-content: flex-start;
-    }
+  /* The space between marks is padding on the item, not `gap` on the row. The
+     loop turns over at exactly translateX(-50%) — one full pass — and a `gap`
+     between the two passes would leave half of one gap unaccounted for, which
+     shows up as a stutter every time round. */
+  .rd .marq li {
+    padding-right: var(--marq-gap);
   }
-  .rd .pressband a {
+  /* The marks are 23–42px tall, so `min-height` is what gives every link the
+     same 44px touch target — without it Gizmodo's single line of caps is a
+     23px-tall tap target on a phone. */
+  .rd .marq a {
     display: flex;
-    height: 54px;
+    min-height: 44px;
     align-items: center;
     justify-content: center;
-    background: #fff;
-    padding: 0 14px;
   }
-  .rd .pressband img {
-    height: 24px;
+  .rd .marq img {
+    display: block;
     width: auto;
-    object-fit: contain;
-    mix-blend-mode: multiply;
-    filter: grayscale(1);
-    opacity: 0.9;
-    transition:
-      filter 0.5s ease,
-      opacity 0.5s ease;
+    height: calc(var(--mark-h) * var(--mark-scale, 1));
+    /* Held just off full white: at 100% the marks out-shout the h1 they are
+       meant to support. Hover brings the one you're pointing at up to full. */
+    opacity: 0.82;
+    transition: opacity 0.4s ease;
   }
-  .rd .pressband a:hover img {
-    filter: grayscale(0);
+  .rd .marq a:hover img {
     opacity: 1;
   }
-  .rd .pressband a:focus-visible {
+  .rd .marq a:focus-visible {
     outline: 3px solid var(--color-paper);
-    outline-offset: 3px;
+    outline-offset: 4px;
+  }
+  @keyframes rd-marq {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  /* Nothing drifts on its own. The line becomes a plain horizontal scroller,
+     and the second pass goes with the motion that needed it. */
+  @media (prefers-reduced-motion: reduce) {
+    .rd .marq {
+      overflow-x: auto;
+    }
+    .rd .marq-track {
+      animation: none;
+    }
+    .rd .marq ul[aria-hidden] {
+      display: none;
+    }
   }
 
   /* ============================================================

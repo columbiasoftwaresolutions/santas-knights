@@ -3,9 +3,10 @@ import Image from "next/image";
 import { HandArrow } from "@/components/redesign/HandArrow";
 import { Mark } from "@/components/redesign/Mark";
 import { PhotoBand, TornEdge } from "@/components/redesign/PhotoBand";
+import { PressMarquee } from "@/components/redesign/PressMarquee";
 import { R } from "@/components/redesign/Reveal";
 import { RedesignShell, Wrap } from "@/components/redesign/RedesignShell";
-import { founder, letters, links, missionStatement, org, pressLogos } from "@/content/site";
+import { founder, letters, links, missionStatement, org } from "@/content/site";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -50,29 +51,28 @@ const waysToHelp = [
   },
 ];
 
-/* `.pressband` tightens the live 26px marks to 24px so all eight outlets fit
-   one row inside the 1240px column. The per-logo overrides in content/site.ts
-   are tuned for 26 — scale them so the whole strip stays in proportion. If open
-   decision 2 settles on a 1440px column, drop this and the CSS with it. */
-const CHIP_SCALE = 24 / 26;
-const px = (value: number | undefined) =>
-  value ? `${Math.round(value * CHIP_SCALE)}px` : undefined;
-
 export default function HomePage() {
   return (
     <RedesignShell>
       {/* The hero is the torn-edge photo band: the paper tears open beneath it.
           Deliberately not hero-community.jpg — that frame already carries the
           /login panel and the About timeline band. No lede either; the three
-          columns are the substance, so the h1 hands straight to them. */}
+          columns are the substance, so the h1 hands straight to them.
+
+          The press strip is the hero's footer rather than a band of its own
+          further down: coverage is a credential on the claim, and it does its
+          work next to the claim. It appears once on this page — the dark
+          `.pressband` section that used to sit above the closer is gone. */}
       <PhotoBand
         src="/images/gallery/IMG_4212.jpg"
         objectPosition="50% 42%"
         hero
+        centered
         priority
+        footer={<PressMarquee />}
       >
         <R as="h1" className="narrow-15">
-          Strengthening kids and lifting <Mark>communities</Mark>.
+          Strengthening kids and lifting <Mark>communities</Mark>
         </R>
         <R
           as="ul"
@@ -259,40 +259,6 @@ export default function HomePage() {
             ))}
           </R>
         </Wrap>
-      </section>
-
-      {/* SEEN IN — the live site's press strip. Straight edges, no tears: this
-          is a credential strip, not a section of the argument. */}
-      <section className="bleed pressband band-gap" aria-label="Press coverage">
-        <div className="rd-wrap content">
-          <R as="p" className="lbl">
-            Seen in
-          </R>
-          <R as="ul" delay={80}>
-            {pressLogos.map((logo) => (
-              <li key={logo.name}>
-                <a
-                  href={logo.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title={`${logo.name} — read the story`}
-                  aria-label={`${logo.name}: read the article (opens in a new tab)`}
-                >
-                  {/* Plain <img> so every mark keeps its true aspect ratio;
-                      these are small static files. */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={logo.src}
-                    alt={logo.name}
-                    loading="lazy"
-                    decoding="async"
-                    style={{ height: px(logo.displayHeight), maxWidth: px(logo.maxWidth) }}
-                  />
-                </a>
-              </li>
-            ))}
-          </R>
-        </div>
       </section>
 
       <section className="closer">

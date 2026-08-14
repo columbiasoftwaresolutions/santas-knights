@@ -449,31 +449,83 @@ export const pressLogos: {
   height?: number;
   displayHeight?: number;
   maxWidth?: number;
+  /**
+   * White-on-transparent cut of the mark, for the hero strip's dark ground.
+   * Generated from the file above by rebuilding alpha from luminance, so ABC's
+   * disc and NPR's blocks keep their letters knocked out rather than filling in
+   * — a CSS filter can only push the whole opaque area one way. Each file is
+   * cropped to its ink and written at 3x `displayHeight`.
+   *
+   * `displayHeight` here is set for optical parity, not equal boxes: a two-line
+   * lockup and a disc both stand taller than one line of caps to carry the same
+   * weight. It is measured on the cropped file, so it does not match the
+   * `displayHeight` above, which belongs to the uncropped original.
+   */
+  white?: { src: string; width: number; height: number; displayHeight: number };
 }[] = [
   {
     name: "Gothamist",
     src: "/images/press/gothamist.png",
     href: "https://gothamist.com/arts-entertainment/nycs-knights-get-medieval-on-each-other-in-central-park",
+    white: {
+      src: "/images/press/white/gothamist.png",
+      width: 477,
+      height: 99,
+      displayHeight: 33,
+    },
   },
   {
     name: "ABC News",
     src: "/images/press/abc-news.png",
     href: "https://abcnews.go.com/Travel/competing-axe-wielding-bone-crushing-sport-medieval-combat/story?id=24865343",
+    white: {
+      src: "/images/press/white/abc-news.png",
+      width: 125,
+      height: 126,
+      displayHeight: 42,
+    },
+    // The only disc in a set of wordmarks. Set to the shared 26px cap height it
+    // measures 26px corner to corner and reads as a dot beside them — a circle
+    // needs roughly a third more height to carry the same weight as a line of
+    // caps. Both press strips scale off these numbers, so the correction holds
+    // in the hero marquee and in the About list.
+    width: 2400,
+    height: 2400,
+    displayHeight: 34,
+    maxWidth: 34,
   },
   {
     name: "Business Insider",
     src: "/images/press/business-insider.png",
     href: "https://www.businessinsider.com/armored-combat-league-warriors-management-consultant-hobby-2017-3",
+    white: {
+      src: "/images/press/white/business-insider.png",
+      width: 367,
+      height: 114,
+      displayHeight: 38,
+    },
   },
   {
     name: "Men's Journal",
     src: "/images/press/mens-journal.jpg",
     href: "https://www.mensjournal.com/features/the-wild-violent-world-of-armored-combat-league-20140922/",
+    white: {
+      src: "/images/press/white/mens-journal.png",
+      width: 292,
+      height: 62,
+      displayHeight: 25,
+    },
   },
   {
     name: "Yahoo",
     src: "/images/press/yahoo-news.webp",
     href: "https://sports.yahoo.com/knights-shining-armor-them-doing-162058863.html",
+    white: {
+      src: "/images/press/white/yahoo-news.png",
+      width: 344,
+      height: 126,
+      displayHeight: 42,
+    },
     width: 1500,
     height: 550,
     displayHeight: 34,
@@ -483,11 +535,23 @@ export const pressLogos: {
     name: "Gizmodo",
     src: "/images/press/gizmodo.jpg",
     href: "https://gizmodo.com/harlem-knight-fight-shows-off-the-appeal-of-the-armored-1774117164",
+    white: {
+      src: "/images/press/white/gizmodo.png",
+      width: 304,
+      height: 45,
+      displayHeight: 23,
+    },
   },
   {
     name: "Los Angeles Times",
     src: "/images/press/los-angeles-times.webp",
     href: "https://www.latimes.com/entertainment-arts/movies/story/2020-12-05/dear-santa-documentary-usps-operation-santa",
+    white: {
+      src: "/images/press/white/los-angeles-times.png",
+      width: 703,
+      height: 84,
+      displayHeight: 28,
+    },
     width: 960,
     height: 121,
     displayHeight: 26,
@@ -497,6 +561,12 @@ export const pressLogos: {
     name: "NPR",
     src: "/images/press/npr.png",
     href: "https://www.npr.org/2020/12/20/947119957/could-you-help-santa-in-christmas-wishlists-children-write-of-pandemic-hardships",
+    white: {
+      src: "/images/press/white/npr.png",
+      width: 248,
+      height: 81,
+      displayHeight: 27,
+    },
     width: 612,
     height: 204,
     displayHeight: 28,

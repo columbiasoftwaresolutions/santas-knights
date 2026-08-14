@@ -18,30 +18,49 @@ import { cn } from "@/lib/cn";
  * thing: on the homepage this band runs flush under the red Letters band, so
  * its top tear is filled `red-deep` while its bottom tear is paper. Filling
  * both with paper is what puts a strip of paper between two flush bands.
+ *
+ * `centered` centres the copy at every width rather than only below 900px, and
+ * `footer` hangs a strip under it that keeps the section's full bleed instead of
+ * the 1240px column — together they are what the homepage hero is: centred copy
+ * with the press line running edge to edge beneath it.
  */
 export function PhotoBand({
   src,
   objectPosition,
   hero = false,
   priority = false,
+  centered = false,
   tearFill = "var(--color-paper)",
   topTearFill = tearFill,
   className,
+  footer,
   children,
 }: {
   src: string;
   objectPosition?: string;
   hero?: boolean;
   priority?: boolean;
+  /** Centre the copy at every width, not just on phones. */
+  centered?: boolean;
   /** Must match the section color above/below the band. */
   tearFill?: string;
   /** Override for the top edge alone, when the section above isn't paper. */
   topTearFill?: string;
   className?: string;
+  /** Full-bleed strip under the copy, inside the band. Clears the bottom tear. */
+  footer?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <section className={cn("bleed imgsec", hero && "imgsec--hero", className)}>
+    <section
+      className={cn(
+        "bleed imgsec",
+        hero && "imgsec--hero",
+        centered && "imgsec--mid",
+        footer ? "imgsec--hasfoot" : null,
+        className,
+      )}
+    >
       {/* Decorative: the copy on top carries the meaning, so no alt text. */}
       <Image
         src={src}
@@ -60,6 +79,9 @@ export function PhotoBand({
           left or right, so the copy centres over the photo rather than keeping a
           left rag that reads as a column that failed to fill. */}
       <div className="rd-wrap content mcenter">{children}</div>
+      {/* Outside `.rd-wrap` on purpose — the footer strip is meant to run the
+          band's full width, past the column the copy sits in. */}
+      {footer ? <div className="imgsec-foot">{footer}</div> : null}
     </section>
   );
 }
