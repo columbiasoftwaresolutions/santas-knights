@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { claimLetter } from "@/app/letters/give/actions";
+import { claimLetter } from "@/app/letters-to-santa/give/actions";
 import { links } from "@/content/site";
 
 export type SwipeLetter = {
@@ -79,7 +79,7 @@ export function SwipeDeck({
   }, []);
 
   const goSignIn = useCallback(() => {
-    window.location.href = `${links.accountLogin}?next=${encodeURIComponent("/letters")}`;
+    window.location.href = `${links.accountLogin}?next=${encodeURIComponent("/letters-to-santa")}`;
   }, []);
 
   /** Record a claim for the current letter (no-op for demo letters). */

@@ -9,7 +9,7 @@ import { giftGuidance, privacyInstruction, links } from "@/content/site";
 
 type View = "adopt" | "submit";
 
-const SUBMIT_NEXT = "/letters?do=submit";
+const SUBMIT_NEXT = "/letters-to-santa?do=submit";
 const FADE_MS = 190;
 
 const TITLES: Record<View, React.ReactNode> = {
@@ -95,7 +95,7 @@ export function LettersPortal({
     (next: View) => {
       if (next === view) return;
       setView(next);
-      // The URL stays a constant `/letters` while toggling — one canonical link
+      // The URL stays a constant `/letters-to-santa` while toggling — one canonical link
       // for the page. `?do=submit` only sets the initial side on first load.
 
       const commit = () => {

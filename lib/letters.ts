@@ -56,7 +56,7 @@ type LetterRow = {
  * a stranger may see — a first name, an age, the wish, the gift links, and the
  * letter image path. Guardian contact and claim state never leave the base
  * table. The pile is PUBLIC: anonymous visitors read it, and only the *claim*
- * requires an account (see app/letters/give/actions.ts).
+ * requires an account (see app/letters-to-santa/give/actions.ts).
  *
  * Returns null when Supabase isn't configured — the caller shows the
  * "drive isn't open yet" state rather than an error.

@@ -43,7 +43,7 @@ export async function updateLetterStatus(formData: FormData): Promise<void> {
   if (error) console.error("Letter status update failed:", error.message);
 
   revalidatePath("/admin");
-  revalidatePath("/letters");
+  revalidatePath("/letters-to-santa");
   revalidatePath("/account");
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { submitLetter, type SubmitLetterState } from "@/app/letters/submit/actions";
+import { submitLetter, type SubmitLetterState } from "@/app/letters-to-santa/submit/actions";
 import { GUARDIAN_CONSENT_TEXT } from "@/content/consent";
 import { giftGuidance, org } from "@/content/site";
 

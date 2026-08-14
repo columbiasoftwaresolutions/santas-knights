@@ -17,7 +17,7 @@ export type NavAuth = { signedIn: boolean; dashboardHref: string };
  * in with ink once you've scrolled past it. Every other page starts on paper,
  * where bone text on cream is unreadable, so the nav stays solid from the top.
  */
-const OVERLAY_ROUTES = ["/", "/letters"];
+const OVERLAY_ROUTES = ["/", "/letters-to-santa"];
 
 /** Scrolled far enough that the nav has left the top of the hero (its own height). */
 const FILL_AFTER = 72;

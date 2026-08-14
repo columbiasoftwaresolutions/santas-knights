@@ -42,8 +42,8 @@ export const links = {
   // volunteer application is a section of /contact and the sponsor wall is a
   // section of /santas-knights. /get-involved and /sponsors stay as redirects.
   volunteer: "/contact#volunteer",
-  adoptLetter: "/letters",
-  submitLetter: "/letters?do=submit",
+  adoptLetter: "/letters-to-santa",
+  submitLetter: "/letters-to-santa?do=submit",
   findClass: TRAINING_HREF,
   about: "/santas-knights",
   contact: "/contact",
@@ -105,7 +105,7 @@ export const navLinks: NavItem[] = [
     external: true,
     gladiators: true,
   },
-  { label: "Letters to Santa", href: "/letters" },
+  { label: "Letters to Santa", href: "/letters-to-santa" },
   { label: "Membership", href: "/membership" },
   { label: "Donate", href: "/donate" },
   { label: "Gallery", href: "/gallery" },
@@ -524,7 +524,7 @@ export const footerColumns: {
     heading: "Explore",
     links: [
       { label: "About", href: "/santas-knights" },
-      { label: "Santa's Letters", href: "/letters" },
+      { label: "Santa's Letters", href: "/letters-to-santa" },
       { label: "Training", href: TRAINING_HREF },
       { label: "Membership", href: "/membership" },
       { label: "Gallery", href: "/gallery" },
@@ -535,8 +535,8 @@ export const footerColumns: {
   {
     heading: "Get Involved",
     links: [
-      { label: "Adopt a Letter", href: "/letters" },
-      { label: "Submit a Letter", href: "/letters?do=submit" },
+      { label: "Adopt a Letter", href: "/letters-to-santa" },
+      { label: "Submit a Letter", href: "/letters-to-santa?do=submit" },
       { label: "Volunteer", href: "/contact#volunteer" },
       { label: "Become a Sponsor", href: "/santas-knights#sponsors" },
     ],

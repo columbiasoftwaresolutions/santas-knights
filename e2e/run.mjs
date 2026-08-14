@@ -62,17 +62,17 @@ const run = async () => {
   // before creating the sample submissions, then sign out before the admin step
   // below so the login screenshot still exercises the unified auth flow.
   log("Signing in for account-gated submission…");
-  await page.goto(`${BASE}/account/login?next=${encodeURIComponent("/letters?do=submit")}`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/account/login?next=${encodeURIComponent("/letters-to-santa?do=submit")}`, { waitUntil: "networkidle" });
   await page.fill("#email", ADMIN_EMAIL);
   await page.fill("#password", ADMIN_PASSWORD);
   await page.getByRole("button", { name: /Sign in/i }).click();
-  await page.waitForURL("**/letters?do=submit", { timeout: 20000 });
+  await page.waitForURL("**/letters-to-santa?do=submit", { timeout: 20000 });
 
   // ---- 1. Submit letters as three different families ------------------------
   let first = true;
   for (const kid of KIDS) {
     log(`Submitting ${kid.name}'s letter…`);
-    await page.goto(`${BASE}/letters?do=submit`, { waitUntil: "networkidle" });
+    await page.goto(`${BASE}/letters-to-santa?do=submit`, { waitUntil: "networkidle" });
     if (first) { await shot(page, "01-submit-form-empty.png"); }
     await page.fill("#child_first_name", kid.name);
     await page.fill("#child_age", kid.age);
@@ -117,7 +117,7 @@ const run = async () => {
 
   // ---- 4. Donor side: the swipe deck shows the two live letters --------------
   log("Loading donor swipe deck…");
-  await page.goto(`${BASE}/letters`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/letters-to-santa`, { waitUntil: "networkidle" });
   await page.getByText(/Letter 1 of/).waitFor({ timeout: 20000 });
   await shot(page, "11-give-deck-front.png");
   await page.getByRole("button", { name: /See the wish/i }).click();
@@ -132,7 +132,7 @@ const run = async () => {
   await shot(page, "13-admin-fulfilled.png");
 
   log("Reloading donor deck (should be one fewer)…");
-  await page.goto(`${BASE}/letters`, { waitUntil: "networkidle" });
+  await page.goto(`${BASE}/letters-to-santa`, { waitUntil: "networkidle" });
   await page.getByText(/Letter 1 of/).waitFor({ timeout: 20000 });
   await shot(page, "14-give-deck-after-fulfill.png");
 

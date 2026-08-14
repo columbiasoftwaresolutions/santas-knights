@@ -1,9 +1,9 @@
 import { permanentRedirect } from "next/navigation";
 
 /**
- * Submitting a letter now lives on the combined `/letters` page as its "submit"
+ * Submitting a letter now lives on the combined `/letters-to-santa` page as its "submit"
  * side. This route is kept so old links and bookmarks land on that side.
  */
 export default function SubmitLetterRedirect() {
-  permanentRedirect("/letters?do=submit");
+  permanentRedirect("/letters-to-santa?do=submit");
 }

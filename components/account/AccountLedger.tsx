@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { markGifted, releaseClaim } from "@/app/letters/give/actions";
+import { markGifted, releaseClaim } from "@/app/letters-to-santa/give/actions";
 import { links } from "@/content/site";
 
 /** One row of either ledger, formatted on the server so dates never depend on
@@ -64,7 +64,7 @@ function tally(rows: LedgerRow[]): Record<FilterKey, number> {
  * WHY A SWITCH. Almost nobody is both a donor and a guardian, so two stacked
  * sections meant every member scrolled past a heading and an empty state
  * belonging to a role they will never have. The control is the one from
- * /letters, colours included — adopting is red and submitting is green
+ * /letters-to-santa, colours included — adopting is red and submitting is green
  * everywhere else on the site, and these two lists are those same two acts seen
  * afterwards. Which side opens is a data question (see `initialView`).
  *

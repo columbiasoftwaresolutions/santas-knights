@@ -1,0 +1,168 @@
+[
+  {
+    "path": "/",
+    "http": "200",
+    "title": "HOME | Santa's Knights",
+    "description": "Santa's Knights' mission is to bring free martial arts, fitness, and activities to everyone, equitably, transcending socioeconomic, racial, and location boundaries, positively changing children's and adults' lives through exposure and lifestyle enhancement.",
+    "robots": null,
+    "canonical": "https://www.santasknights.org",
+    "og_title": "HOME | Santa's Knights",
+    "og_image": "https://static.wixstatic.com/media/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png/v1/fill/w_750,h_751,al_c/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png",
+    "h1": [
+      "SANTA'S KNIGHTS"
+    ]
+  },
+  {
+    "path": "/santas-knights",
+    "http": "200",
+    "title": "SANTA'S KNIGHTS | Santa's Knights",
+    "description": "Every year Santa's Knights has hundreds of underprivileged children write letters to Santa. Most of the children are from Harlem, NYC, in one of the many (low-income) housing communities that we serve.",
+    "robots": null,
+    "canonical": "https://www.santasknights.org/santas-knights",
+    "og_title": "SANTA'S KNIGHTS | Santa's Knights",
+    "og_image": "https://static.wixstatic.com/media/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png/v1/fill/w_750,h_751,al_c/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png",
+    "h1": [
+      "SANTA'S KNIGHTS"
+    ]
+  },
+  {
+    "path": "/donate",
+    "http": "200",
+    "title": "DONATE | Santa's Knights",
+    "description": null,
+    "robots": null,
+    "canonical": "https://www.santasknights.org/donate",
+    "og_title": "DONATE | Santa's Knights",
+    "og_image": "https://static.wixstatic.com/media/4621a9_1610bd97e11144759f028068e0649141%7Emv2.png/v1/fit/w_2500,h_1330,al_c/4621a9_1610bd97e11144759f028068e0649141%7Emv2.png",
+    "h1": [
+      "Join Santa's Knights mission: Empowering Lives Through Martial Arts and Fitness!"
+    ]
+  },
+  {
+    "path": "/contact",
+    "http": "200",
+    "title": "CONTACT | Santa's Knights",
+    "description": "We welcome you in any way that you would like to be involved!",
+    "robots": null,
+    "canonical": "https://www.santasknights.org/contact",
+    "og_title": "CONTACT | Santa's Knights",
+    "og_image": "https://static.wixstatic.com/media/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png/v1/fill/w_750,h_751,al_c/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png",
+    "h1": [
+      "CONTACT US"
+    ]
+  },
+  {
+    "path": "/gallery",
+    "http": "200",
+    "title": "GALLERY | Santa's Knights",
+    "description": "Please help us in our mission, as we'll need all the help we can get every step of the way! One of the surest ways to a happy life is to have a healthy and fit one.",
+    "robots": null,
+    "canonical": "https://www.santasknights.org/gallery",
+    "og_title": "GALLERY | Santa's Knights",
+    "og_image": "https://static.wixstatic.com/media/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png/v1/fill/w_750,h_751,al_c/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png",
+    "h1": [
+      "GALLERY"
+    ]
+  },
+  {
+    "path": "/membership",
+    "http": "200",
+    "title": "MEMBERSHIP | Santa's Knights",
+    "description": "One of the surest ways to a happy life is to have a healthy and fit one. There is no reason why we can't uplift everyone to reach their best potential and healthiest self with our free programs, that don't lose any quality just because they're free!",
+    "robots": null,
+    "canonical": "https://www.santasknights.org/membership",
+    "og_title": "MEMBERSHIP | Santa's Knights",
+    "og_image": "https://static.wixstatic.com/media/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png/v1/fill/w_750,h_751,al_c/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png",
+    "h1": [
+      "MEMBERSHIP",
+      "Choose your pricing plan"
+    ]
+  },
+  {
+    "path": "/letters-to-santa",
+    "http": "200",
+    "title": "LETTERS TO SANTA | Santa's Knights 2024 Program",
+    "description": "Santa's Knights is receiving an unprecedented number of letters online this year and so we have to try and automate the Santa's letters process as much as possible!",
+    "robots": null,
+    "canonical": "https://www.santasknights.org/letters-to-santa",
+    "og_title": "LETTERS TO SANTA | Santa's Knights 2024 Program",
+    "og_image": "https://static.wixstatic.com/media/4621a9_9276fa4870dd486c99b9610d8237403a~mv2.jpg/v1/fill/w_558,h_500,al_c/4621a9_9276fa4870dd486c99b9610d8237403a~mv2.jpg",
+    "h1": [
+      "LETTERS TO SANTA"
+    ]
+  },
+  {
+    "path": "/online",
+    "http": "200",
+    "title": "Online | Santa's Knights",
+    "description": null,
+    "robots": null,
+    "canonical": "https://www.santasknights.org/online",
+    "og_title": "Online | Santa's Knights",
+    "og_image": "https://static.wixstatic.com/media/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png/v1/fill/w_750,h_751,al_c/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png",
+    "h1": []
+  },
+  {
+    "path": "/in-person",
+    "http": "200",
+    "title": "CLASSES | Santa's Knights",
+    "description": "Below are the current classes being offered with Santa's Knights! We're continually adding more offerings - please bookmark this page, keep coming back, and book all the classes that you'd like online or through the app!",
+    "robots": null,
+    "canonical": "https://www.santasknights.org/in-person",
+    "og_title": "CLASSES | Santa's Knights",
+    "og_image": "https://static.wixstatic.com/media/6b7494_2adf09079c2e41e6b4256871f8f32283~mv2.jpg/v1/fill/w_1170,h_1024,al_c/6b7494_2adf09079c2e41e6b4256871f8f32283~mv2.jpg",
+    "h1": [
+      "CLASSES WITH SANTA'S KNIGHTS!"
+    ]
+  },
+  {
+    "path": "/members",
+    "http": "200",
+    "title": "MEMBERS | Santa's Knights",
+    "description": "Please help us in our mission, as we'll need all the help we can get every step of the way!",
+    "robots": null,
+    "canonical": "https://www.santasknights.org/members",
+    "og_title": "MEMBERS | Santa's Knights",
+    "og_image": "https://static.wixstatic.com/media/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png/v1/fill/w_750,h_751,al_c/6b7494_c2ded44f27d1486f8199515b07fbf866~mv2.png",
+    "h1": []
+  },
+  {
+    "path": "/groups",
+    "http": "200",
+    "title": "Groupes | Santa's Knights",
+    "description": null,
+    "robots": null,
+    "canonical": "https://www.santasknights.org/groups",
+    "og_title": "Groupes | Santa's Knights",
+    "og_image": "https://static.wixstatic.com/media/4621a9_1610bd97e11144759f028068e0649141%7Emv2.png/v1/fit/w_2500,h_1330,al_c/4621a9_1610bd97e11144759f028068e0649141%7Emv2.png",
+    "h1": [
+      "Groups Feed"
+    ]
+  },
+  {
+    "path": "/amazon-wishlists",
+    "http": "200",
+    "title": "Discussion - Letters with Amazon Wishlists | Santa's Knights",
+    "description": "These letters to Santa have Amazon Wishlists included to make it easier for shipping, tracking, item requests, etc.!",
+    "robots": "index",
+    "canonical": "https://www.santasknights.org/group/letters-with-amazon-wishlists/discussion",
+    "og_title": "Discussion - Letters with Amazon Wishlists | Santa's Knights",
+    "og_image": null,
+    "h1": [
+      "Letters with Amazon Wishlists"
+    ]
+  },
+  {
+    "path": "/landing-page-2",
+    "http": "200",
+    "title": "Landing Page | Santa's Knights",
+    "description": null,
+    "robots": null,
+    "canonical": "https://www.santasknights.org/landing-page-2",
+    "og_title": "Landing Page | Santa's Knights",
+    "og_image": "https://static.wixstatic.com/media/4621a9_1610bd97e11144759f028068e0649141%7Emv2.png/v1/fit/w_2500,h_1330,al_c/4621a9_1610bd97e11144759f028068e0649141%7Emv2.png",
+    "h1": [
+      "LANDING PAGE"
+    ]
+  }
+]
