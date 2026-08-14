@@ -1,0 +1,12 @@
+User-Agent: *
+Allow: /
+Disallow: /admin
+
+User-Agent: PetalBot
+Disallow: /
+
+User-Agent: dotbot
+User-Agent: AhrefsBot
+Crawl-delay: 10
+
+Sitemap: https://santasknights.org/sitemap.xml

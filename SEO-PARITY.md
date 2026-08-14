@@ -109,7 +109,7 @@ Verified against the repo and against the beta deploy (`santas-knights.vercel.ap
 
 | Gap | Evidence | Why it matters |
 | --- | --- | --- |
-| **No `robots.txt`** | no `app/robots.ts`; beta `/robots.txt` → 404 | Wix serves one today with the sitemap reference. Needed to keep beta out of search *and* to open the door at cutover. |
+| ~~No `robots.txt`~~ | **built 2026-08-14** — `app/robots.ts`, modelled on the Wix file; both states snapshotted in `seo-baseline/` | Driven by the single `INDEXABLE` switch in `content/site.ts`, which also drives the sitewide meta tag, so the file and the tag cannot disagree. |
 | ~~No `sitemap.xml`~~ | **built 2026-08-14** — `app/sitemap.ts`, 7 canonical URLs, snapshot in `seo-baseline/new-site-sitemap.xml` | Still needs submitting in Search Console at cutover, and it resolves against `SITE_URL` (see the www/apex row). |
 | **No `metadataBase`** | absent from `app/layout.tsx` | The canonical on `/` renders literally as `<link rel="canonical" href="/">`. Without `metadataBase`, Next resolves it against `VERCEL_URL` — so canonicals and OG URLs can point at a preview host. |
 | **Canonicals on 4 of ~11 pages** | only `app/page.tsx`, `app/santas-knights/page.tsx`, `app/letters-to-santa/page.tsx`, `app/members/page.tsx` set `alternates.canonical` | Every live Wix page has a self-canonical. Losing them invites duplicate-content splits (`/home`, `?` params, www vs apex). |
@@ -146,9 +146,8 @@ Untitled, thin, and not linked from the site's own navigation — the classic sh
 
 Everything here is currently in the "keeps beta out of search" state and must be flipped **together**, in one deploy:
 
-- [ ] `robots: { index: false, follow: false }` in `app/layout.tsx:41` → indexable
-- [ ] `app/robots.ts` → `allow: /`, with `sitemap:` pointing at the new sitemap
-- [ ] `app/sitemap.ts` live and submitted in Search Console
+- [ ] **`INDEXABLE = true` in `content/site.ts`** — the one switch. Flips the sitewide `robots` meta tag *and* `robots.txt` together; preview of what ships is `seo-baseline/new-site-robots.cutover.txt`
+- [ ] `sitemap.xml` submitted in Search Console (the route already exists)
 - [ ] `metadataBase` set to `https://www.santasknights.org`
 - [ ] `SITE_URL` in `content/site.ts` aligned to the same host (www)
 - [ ] `redirect()` → `permanentRedirect()` on every old→new mapping in §2

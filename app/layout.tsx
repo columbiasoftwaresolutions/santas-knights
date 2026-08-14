@@ -6,7 +6,7 @@ import { SiteChrome } from "@/components/layout/SiteChrome";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Reveal } from "@/components/ui/Reveal";
 import { getCurrentUser } from "@/lib/auth";
-import { organizationSchema } from "@/content/site";
+import { INDEXABLE, organizationSchema } from "@/content/site";
 import "./globals.css";
 
 const hanken = Hanken_Grotesk({
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
   title: "Santa's Knights · A Harlem nonprofit & the Santa's Letters program",
   description:
     "Santa's Knights is a Harlem 501(c)(3) nonprofit. We answer kids' letters to Santa every December and teach free martial arts and fitness all year. Founded by Damion DiGrazia.",
-  // Beta stays out of search until the coordinated public cutover (ROLLOUT.md).
-  // Flip to index/follow only as part of the cutover checklist.
-  robots: { index: false, follow: false },
+  // Driven by the one cutover switch in content/site.ts, which also drives
+  // robots.txt — so the meta tag and the file can never disagree.
+  robots: { index: INDEXABLE, follow: INDEXABLE },
 };
 
 /**

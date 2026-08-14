@@ -21,6 +21,10 @@ Frozen so we can prove at cutover that nothing was dropped.
 | File | Contents |
 | --- | --- |
 | `new-site-sitemap.xml` | output of `app/sitemap.ts`, captured from a production build |
+| `new-site-robots.txt` | output of `app/robots.ts` **as it serves today** — `Disallow: /`, the beta lockdown |
+| `new-site-robots.cutover.txt` | the same route with `INDEXABLE = true` — **what actually ships on cutover day** |
+
+`INDEXABLE` in `content/site.ts` drives both `robots.txt` and the sitewide `robots` meta tag, so the two can never disagree. The `.cutover.txt` file exists so the launch ruleset can be reviewed — by Nicolas, or by anyone — before it is live rather than after.
 
 **7 URLs vs the old site's ~10,021.** That gap is expected, not a bug — the 10k are Wix Groups forum posts and the rest are pages we either haven't built or have deliberately folded into others. What the sitemap must never do is list a URL that redirects, so these are all canonical 200s.
 

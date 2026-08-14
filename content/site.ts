@@ -14,6 +14,19 @@
 // Canonical home of the public domain (used for absolute URLs in JSON-LD).
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://santasknights.org";
 
+/**
+ * ⭐ THE CUTOVER SWITCH. `false` keeps the whole site out of search; `true`
+ * opens it. Flipping this one constant changes both the sitewide `robots` meta
+ * tag (`app/layout.tsx`) and `robots.txt` (`app/robots.ts`) together, so the
+ * two can never disagree — which is the failure mode that lets a beta compete
+ * with the live Wix site, or lets a launched site stay invisible.
+ *
+ * Stays `false` until the coordinated public cutover (ROLLOUT.md). Flip it in a
+ * commit, with a CHANGELOG entry and a heads-up to Nicolas — never quietly via
+ * an env var. The rest of the cutover checklist is in SEO-PARITY.md §6.
+ */
+export const INDEXABLE = false;
+
 // The OPERATIONAL + commercial companion site on gladiators.nyc: booking,
 // waivers, dashboards, training videos, and the Shop + Armory, all kept off
 // the 501(c)(3) domain. Same Supabase backend — one login works on both.
