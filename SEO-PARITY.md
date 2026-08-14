@@ -110,7 +110,7 @@ Verified against the repo and against the beta deploy (`santas-knights.vercel.ap
 | Gap | Evidence | Why it matters |
 | --- | --- | --- |
 | **No `robots.txt`** | no `app/robots.ts`; beta `/robots.txt` → 404 | Wix serves one today with the sitemap reference. Needed to keep beta out of search *and* to open the door at cutover. |
-| **No `sitemap.xml`** | no `app/sitemap.ts`; beta `/sitemap.xml` → 404 | Search Console has the Wix sitemap submitted. At cutover that URL must keep resolving or coverage reporting goes dark. |
+| ~~No `sitemap.xml`~~ | **built 2026-08-14** — `app/sitemap.ts`, 7 canonical URLs, snapshot in `seo-baseline/new-site-sitemap.xml` | Still needs submitting in Search Console at cutover, and it resolves against `SITE_URL` (see the www/apex row). |
 | **No `metadataBase`** | absent from `app/layout.tsx` | The canonical on `/` renders literally as `<link rel="canonical" href="/">`. Without `metadataBase`, Next resolves it against `VERCEL_URL` — so canonicals and OG URLs can point at a preview host. |
 | **Canonicals on 4 of ~11 pages** | only `app/page.tsx`, `app/santas-knights/page.tsx`, `app/letters-to-santa/page.tsx`, `app/members/page.tsx` set `alternates.canonical` | Every live Wix page has a self-canonical. Losing them invites duplicate-content splits (`/home`, `?` params, www vs apex). |
 | **No `openGraph` anywhere** | grep for `openGraph` across `app/`, `components/`, `content/` → nothing | Every old page had an `og:image`. Shares from Facebook/Instagram are a real traffic source for this org; blank cards cost clicks. |
