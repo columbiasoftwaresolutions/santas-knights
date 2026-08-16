@@ -19,7 +19,7 @@ import {
 } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: "About · Santa's Knights",
+  title: "About",
   description:
     "Santa's Knights is a Harlem 501(c)(3) nonprofit. We answer kids' letters to Santa every December and teach free martial arts and fitness all year.",
   alternates: { canonical: "/santas-knights" },

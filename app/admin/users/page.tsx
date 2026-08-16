@@ -4,7 +4,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { UsersTable, type UserRow } from "@/components/admin/UsersTable";
 
 export const metadata: Metadata = {
-  title: "Users · Admin",
+  title: "Users",
   robots: { index: false, follow: false },
 };
 export const dynamic = "force-dynamic";

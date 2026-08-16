@@ -27,7 +27,7 @@ import {
 import { LETTERS_BUCKET } from "@/lib/supabase/config";
 
 export const metadata: Metadata = {
-  title: "Letters · Santa's Knights Admin",
+  title: "Admin",
   robots: { index: false, follow: false },
 };
 export const dynamic = "force-dynamic";

@@ -30,7 +30,7 @@ Frozen so we can prove at cutover that nothing was dropped.
 
 Deliberately excluded from the new sitemap: every redirect (`/letters`, `/account`, `/about`, `/sponsors`, `/get-involved`, `/training`), the auth-gated `/members`, and `/login` / `/signup` / `/admin/*`.
 
-> ⚠️ `new-site-sitemap.xml` resolves against `SITE_URL`, currently the **apex** (`santasknights.org`) while the live canonical host is **www**. Settle that before cutover — SEO-PARITY.md §4.
+All of these resolve against `SITE_URL`, which is **`https://www.santasknights.org`** — the same host the live Wix site self-canonicalises to (decided 2026-08-16; the apex 308s to it via `next.config.mjs`). So the `<loc>` values here and the `Sitemap:` line in the cutover robots should read `www`, and if they ever don't, `SITE_URL` moved.
 
 ## Refreshing
 

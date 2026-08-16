@@ -8,7 +8,7 @@ import { galleryPhotos } from "@/content/galleryPhotos";
 import { links } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: "Gallery · Santa's Knights",
+  title: "Gallery",
   description:
     "Photos from Santa's Knights events, classes, and community programs in Harlem.",
 };

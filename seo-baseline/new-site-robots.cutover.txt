@@ -9,4 +9,4 @@ User-Agent: dotbot
 User-Agent: AhrefsBot
 Crawl-delay: 10
 
-Sitemap: https://santasknights.org/sitemap.xml
+Sitemap: https://www.santasknights.org/sitemap.xml

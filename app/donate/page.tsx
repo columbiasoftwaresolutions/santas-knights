@@ -7,7 +7,7 @@ import { RedesignShell, Wrap } from "@/components/redesign/RedesignShell";
 import { links } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: "Donate · Santa's Knights",
+  title: "Donate",
   description:
     "Donations are the only reason the training and the gifts are free. Santa's Knights is a Harlem 501(c)(3) — your gift is tax-deductible.",
 };

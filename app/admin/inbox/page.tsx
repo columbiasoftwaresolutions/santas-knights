@@ -5,7 +5,7 @@ import { InboxPanel, type MessageRow, type SubscriberRow } from "@/components/ad
 import { contactReasons } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: "Inbox · Admin",
+  title: "Inbox",
   robots: { index: false, follow: false },
 };
 export const dynamic = "force-dynamic";

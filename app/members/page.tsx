@@ -14,7 +14,7 @@ import { links, DASHBOARD_HREF } from "@/content/site";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Members · Santa's Knights",
+  title: "Members",
   description: "Sign in to submit and track letters and manage your Santa's Knights membership.",
   // The live Wix site has an indexed /members page, so the ledger answers that
   // path rather than /account (SEO-PARITY.md §2).

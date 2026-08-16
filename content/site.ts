@@ -11,8 +11,20 @@
  * "Buy now" membership URLs must be added manually in code. See Plan v2 §D5.
  */
 
-// Canonical home of the public domain (used for absolute URLs in JSON-LD).
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://santasknights.org";
+/**
+ * Canonical home of the public domain. Every absolute URL the site emits —
+ * JSON-LD, `sitemap.xml`, the `Sitemap:` line in `robots.txt`, and (via
+ * `metadataBase` in `app/layout.tsx`) every canonical tag and OG URL — is built
+ * from this one constant, so they cannot name different hosts.
+ *
+ * **`www` is the canonical host, decided 2026-08-16.** `santasknights.org` and
+ * `www.santasknights.org` are distinct hostnames to a search engine; serving
+ * both is a duplicate site. The live Wix site self-canonicalises to `www` and
+ * has years of rankings and backlinks on it, so `www` is the incumbent and
+ * moving to the apex would mean re-earning all of it during the riskiest week
+ * of the project. The apex 308s here — see `next.config.mjs`.
+ */
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.santasknights.org";
 
 /**
  * ⭐ THE CUTOVER SWITCH. `false` keeps the whole site out of search; `true`

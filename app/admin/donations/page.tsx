@@ -5,7 +5,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { formatSiteDate } from "@/lib/dates";
 
 export const metadata: Metadata = {
-  title: "Donations · Admin",
+  title: "Donations",
   robots: { index: false, follow: false },
 };
 export const dynamic = "force-dynamic";

@@ -11,7 +11,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { giftGuidance, links, org } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: "Santa's Letters · Santa's Knights",
+  title: "Letters",
   description:
     "Read kids' letters to Santa and adopt a wish, or submit your child's letter. We protect every child's identity, and here's exactly how.",
   // The live Wix site has ranked on /letters-to-santa for years, so the route

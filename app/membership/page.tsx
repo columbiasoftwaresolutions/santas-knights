@@ -8,7 +8,7 @@ import { checkoutUrl } from "@/content/billing";
 import { freeMembership, links, membershipTiers, org, TRAINING_HREF } from "@/content/site";
 
 export const metadata: Metadata = {
-  title: "Membership · Santa's Knights",
+  title: "Membership",
   description:
     "Training is free and always will be. Paid membership is monthly giving — it's what buys the gifts and the gear.",
 };

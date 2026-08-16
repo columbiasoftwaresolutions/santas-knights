@@ -9,6 +9,12 @@ import { RedesignShell, Wrap } from "@/components/redesign/RedesignShell";
 import { founder, letters, links, missionStatement, org } from "@/content/site";
 
 export const metadata: Metadata = {
+  // No `title` here on purpose. `title.template` in the root layout only applies
+  // to *child* segments, and this page shares the root segment with that layout —
+  // so setting a title here would replace the template rather than fill it, and
+  // the homepage would render a bare `<title>Home</title>`. The layout's
+  // `title.default` ("Home | Santa's Knights") is what covers this segment, and
+  // it matches the live Wix title.
   alternates: { canonical: "/" },
 };
 

@@ -110,13 +110,13 @@ Verified against the repo and against the beta deploy (`santas-knights.vercel.ap
 | Gap | Evidence | Why it matters |
 | --- | --- | --- |
 | ~~No `robots.txt`~~ | **built 2026-08-14** — `app/robots.ts`, modelled on the Wix file; both states snapshotted in `seo-baseline/` | Driven by the single `INDEXABLE` switch in `content/site.ts`, which also drives the sitewide meta tag, so the file and the tag cannot disagree. |
-| ~~No `sitemap.xml`~~ | **built 2026-08-14** — `app/sitemap.ts`, 7 canonical URLs, snapshot in `seo-baseline/new-site-sitemap.xml` | Still needs submitting in Search Console at cutover, and it resolves against `SITE_URL` (see the www/apex row). |
-| **No `metadataBase`** | absent from `app/layout.tsx` | The canonical on `/` renders literally as `<link rel="canonical" href="/">`. Without `metadataBase`, Next resolves it against `VERCEL_URL` — so canonicals and OG URLs can point at a preview host. |
+| ~~No `sitemap.xml`~~ | **built 2026-08-14** — `app/sitemap.ts`, 7 canonical URLs, snapshot in `seo-baseline/new-site-sitemap.xml` | Still needs submitting in Search Console at cutover. Resolves against `SITE_URL`, now `www` (see the host row). |
+| ~~No `metadataBase`~~ | **set 2026-08-16** — `app/layout.tsx`, pinned to `SITE_URL` | The canonical on `/` used to render literally as `<link rel="canonical" href="/">`, leaving Next to resolve it against `VERCEL_URL` — canonicals and OG URLs could point at a preview host. Now absolute: verified `<link rel="canonical" href="https://www.santasknights.org"/>` against a production build. |
 | **Canonicals on 4 of ~11 pages** | only `app/page.tsx`, `app/santas-knights/page.tsx`, `app/letters-to-santa/page.tsx`, `app/members/page.tsx` set `alternates.canonical` | Every live Wix page has a self-canonical. Losing them invites duplicate-content splits (`/home`, `?` params, www vs apex). |
 | **No `openGraph` anywhere** | grep for `openGraph` across `app/`, `components/`, `content/` → nothing | Every old page had an `og:image`. Shares from Facebook/Instagram are a real traffic source for this org; blank cards cost clicks. |
 | **`google-site-verification` not carried over** | live tag is `WJCLm659hAv8-tVndWB0d2cJgaa0smJCFVIIj_RY1W8`; not in this repo | If it disappears at cutover, **Search Console verification breaks at exactly the moment you need it**. Better: verify by DNS TXT ahead of time, which survives any platform change. |
 | **No analytics of any kind** | no `gtag`, GTM, GA4 ID, or `@vercel/analytics` in the repo | GA4/Ads/conversion tags need to ship *with* the cutover, not after. Wix injects its tags via its own loader, so the IDs have to come from Nicolas / the Wix dashboard — they aren't recoverable from the page source. |
-| **`SITE_URL` is the apex, live canonical is www** | `content/site.ts:15` → `https://santasknights.org`; live canonical → `https://www.santasknights.org` | Pick one and 301 the other. The incumbent is **www** — changing it at cutover means re-earning every canonical on top of everything else. Don't. |
+| ~~`SITE_URL` is the apex, live canonical is www~~ | **decided 2026-08-16: `www` wins.** `SITE_URL` → `https://www.santasknights.org`; apex 308s to it via `next.config.mjs` | The incumbent host keeps its rankings and backlinks; nothing has to be re-earned at cutover. One constant now feeds the sitemap, the `Sitemap:` line in `robots.txt`, JSON-LD, and `metadataBase`, so they cannot drift apart. **Still needs the DNS/host half** — see §6. |
 | **`courseSchema` defined but never rendered** | `content/site.ts` exports it; only `organizationSchema` is used, in `app/layout.tsx:87` | ROLLOUT.md's plan is per-class URLs + `Course`/`Event` schema on this domain. Neither the pages nor the schema exist. |
 | **Redirects are 307, not 308** | `/sponsors`, `/get-involved`, `/training`, `/letters`, `/account` all use `redirect()` | Correct *for now* — nothing should cache a permanent redirect while Wix is live. But it has to flip at cutover, so it belongs on the checklist. |
 
@@ -147,9 +147,10 @@ Untitled, thin, and not linked from the site's own navigation — the classic sh
 Everything here is currently in the "keeps beta out of search" state and must be flipped **together**, in one deploy:
 
 - [ ] **`INDEXABLE = true` in `content/site.ts`** — the one switch. Flips the sitewide `robots` meta tag *and* `robots.txt` together; preview of what ships is `seo-baseline/new-site-robots.cutover.txt`
-- [ ] `sitemap.xml` submitted in Search Console (the route already exists)
-- [ ] `metadataBase` set to `https://www.santasknights.org`
-- [ ] `SITE_URL` in `content/site.ts` aligned to the same host (www)
+- [ ] `sitemap.xml` submitted in Search Console (the route already exists) — submit it for the **`www` property**, and make sure that property, not the apex, is the one being watched
+- [x] ~~`metadataBase` set to `https://www.santasknights.org`~~ — done 2026-08-16, pinned to `SITE_URL`
+- [x] ~~`SITE_URL` in `content/site.ts` aligned to the same host (www)~~ — done 2026-08-16
+- [ ] **Both domains added in Vercel with `www` set as primary**, so the apex is answered at the edge. The in-app `next.config.mjs` rule is the belt-and-braces copy — it can only fire once the apex's DNS points here, and it does nothing if the edge redirects first
 - [ ] `redirect()` → `permanentRedirect()` on every old→new mapping in §2
 - [ ] The §3 bulk rule for `/group/*` in place
 - [ ] `google-site-verification` present (or DNS TXT verified in advance)

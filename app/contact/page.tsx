@@ -12,7 +12,7 @@ import { faqs, org, waysToHelp } from "@/content/site";
 import { getCurrentUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "Contact · Santa's Knights",
+  title: "Contact",
   description:
     "Get in touch with Santa's Knights in Harlem, or apply to volunteer. Visit us at the Manhattanville Community Center or call (212) 873-5818.",
 };

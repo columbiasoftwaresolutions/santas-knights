@@ -6,7 +6,7 @@ import { SiteChrome } from "@/components/layout/SiteChrome";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Reveal } from "@/components/ui/Reveal";
 import { getCurrentUser } from "@/lib/auth";
-import { INDEXABLE, organizationSchema } from "@/content/site";
+import { INDEXABLE, SITE_URL, organizationSchema } from "@/content/site";
 import "./globals.css";
 
 const hanken = Hanken_Grotesk({
@@ -33,7 +33,16 @@ const archivo = Archivo({
 });
 
 export const metadata: Metadata = {
-  title: "Santa's Knights · A Harlem nonprofit & the Santa's Letters program",
+  // Without this, Next resolves relative metadata URLs against VERCEL_URL, so
+  // the canonical on `/` renders as href="/" and OG URLs can point at whatever
+  // preview host built them. Pinned to SITE_URL — the same constant sitemap.xml
+  // and robots.txt use — so a page's canonical tag and its sitemap entry can
+  // never name different hosts.
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Home | Santa's Knights",
+    template: "%s | Santa's Knights",
+  },
   description:
     "Santa's Knights is a Harlem 501(c)(3) nonprofit. We answer kids' letters to Santa every December and teach free martial arts and fitness all year. Founded by Damion DiGrazia.",
   // Driven by the one cutover switch in content/site.ts, which also drives
