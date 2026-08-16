@@ -413,14 +413,20 @@ export const sponsors: { name: string; logo?: string; href?: string; featured?: 
   { name: "NYU", logo: "/images/sponsors/nyu.png", featured: true },
   { name: "Kohl's", logo: "/images/sponsors/kohls.png", featured: true },
   { name: "Wounded Warrior Project", logo: "/images/sponsors/wounded-warrior-project.png", featured: true },
-  { name: "Combat Wounded Veterans of America" },
-  { name: "Futurelabs" },
-  { name: "ClassPass" },
+  {
+    name: "Combat Wounded Veterans of America",
+    logo: "/images/sponsors/combat-wounded-veterans-of-america.png",
+  },
+  { name: "Futurelabs", logo: "/images/sponsors/futurelabs.png" },
+  { name: "ClassPass", logo: "/images/sponsors/classpass.png" },
   { name: "NYPD Community Affairs", logo: "/images/sponsors/nypd-community-affairs.png" },
-  { name: "New York Adventure Club" },
-  { name: "Armored Combat Worldwide" },
-  { name: "Bohemian Hall" },
-  { name: "Draft Barn Beach" },
+  { name: "New York Adventure Club", logo: "/images/sponsors/new-york-adventure-club.png" },
+  { name: "Armored Combat Worldwide", logo: "/images/sponsors/armored-combat-worldwide.png" },
+  { name: "Bohemian Hall", logo: "/images/sponsors/bohemian-hall.png" },
+  { name: "Draft Barn Beach", logo: "/images/sponsors/draft-barn-beach.png" },
+  // No official logo exists — santasknights.org itself lists this only as a
+  // venue address (the NYCHA center where free classes are hosted), not as a
+  // sponsor with a brand mark. Renders as a text card, same as before.
   { name: "Manhattanville Community Center" },
 ];
 

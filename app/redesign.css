@@ -1988,64 +1988,89 @@
     line-height: 1.55;
   }
 
-  /* ---- sponsor wall ------------------------------------------------------ *
-     Marks sitting straight on the paper — no tiles (rule 4). mix-blend-mode
-     drops each logo's own white background into the paper. */
-  .rd .logos {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: clamp(30px, 3.6vw, 52px) clamp(24px, 3vw, 44px);
-    margin-top: 34px;
+  /* ---- sponsor wall — a red flood band, drifting marks -------------------- *
+     Was a static grid of marks on paper; became a full-bleed red band (the one
+     other flood ground on the page, see `.redband`) with the marks running in
+     a slow right-to-left drift, same mechanism as `.pressmarq` below. Unlike
+     the press strip's knockout marks on a photo, each sponsor mark sits on its
+     own white card — most of these are full-colour marks, and a colour mark
+     has no clean way to knock out onto red the way a one-colour press mast
+     does onto a photo. Entered/left through the paper tear (rule 5): it sits
+     between two paper sections, so it tears open at both edges, not just one. */
+  .rd .sponsorband {
+    position: relative;
+    background: var(--color-red-deep);
+    color: var(--color-paper);
+    padding-top: clamp(56px, 7vw, 100px);
+    padding-bottom: clamp(56px, 7vw, 100px);
+  }
+  .rd .sponsorband .lbl {
+    margin: 0 0 clamp(30px, 4vw, 50px);
+    padding: 0 var(--rd-gutter);
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    font-size: clamp(26px, 3.2vw, 42px);
+    color: var(--color-paper);
+  }
+  .rd .sponsormarq {
+    --marq-gap: clamp(16px, 2.4vw, 28px);
+  }
+  .rd .sponsormarq li {
+    display: flex;
     align-items: center;
   }
-  @media (max-width: 900px) {
-    .rd .logos {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-  @media (max-width: 560px) {
-    .rd .logos {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  .rd .logos a,
-  .rd .logos div {
+  .rd .sponsormarq .scard {
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    min-height: 56px;
+    min-width: 148px;
+    max-width: 230px;
+    min-height: clamp(88px, 8vw, 116px);
+    padding: 16px 22px;
+    background: var(--color-paper);
+    border-radius: 14px;
     text-decoration: none;
+    transition: transform 0.2s var(--rd-ease);
   }
-  .rd .logos img {
-    height: 42px;
-    width: auto;
-    max-width: 100%;
-    object-fit: contain;
-    mix-blend-mode: multiply;
-    filter: grayscale(1) contrast(1.15);
-    opacity: 0.9;
-    transition:
-      filter 0.35s ease,
-      opacity 0.35s ease,
-      transform 0.25s var(--rd-ease);
-  }
-  .rd .logos a:hover img {
-    filter: grayscale(0);
-    opacity: 1;
+  .rd .sponsormarq a.scard:hover {
     transform: translateY(-2px);
   }
-  .rd .logos .name {
-    font-family: var(--font-display);
-    font-size: 15px;
-    font-weight: 800;
-    letter-spacing: -0.015em;
-    line-height: 1.25;
-    color: var(--color-muted);
-    transition: color 0.2s ease;
+  .rd .sponsormarq img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: clamp(48px, 4.4vw, 62px);
+    object-fit: contain;
+    opacity: 1;
   }
-  .rd .logos div:hover .name {
+  .rd .sponsormarq .name {
+    font-family: var(--font-display);
+    font-size: 14.5px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    text-align: center;
     color: var(--color-ink);
+  }
+  .rd .sponsorband-cta {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(32px, 4.4vw, 54px);
+    padding: 0 var(--rd-gutter);
+  }
+  /* Red and green tlinks both assume paper underneath (rule 1: one ground);
+     on the sponsor band's own red ground the underline has to invert to paper,
+     the same swap `.mark--onred` and `.btn--paper` make for this one section. */
+  .rd .tlink--paper {
+    color: var(--color-paper);
+    border-color: rgba(247, 240, 227, 0.5);
+  }
+  .rd .tlink--paper:hover {
+    color: #fff;
+    border-color: var(--color-paper);
   }
 
   /* ---- press wall — same treatment, smaller ------------------------------ */

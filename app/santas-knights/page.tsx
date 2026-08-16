@@ -28,6 +28,46 @@ export const metadata: Metadata = {
 const sponsorMailto = (subject: string) =>
   `mailto:${org.email}?subject=${encodeURIComponent(subject)}`;
 
+/**
+ * One pass of the sponsor wall, run twice inside the marquee track — the
+ * second copy is what the first scrolls into, so the loop never shows a gap.
+ * It's `aria-hidden` and leaves the tab order, same technique as
+ * `PressMarquee`'s `Pass`. A sponsor is only a link when we actually have a
+ * URL for it; most don't, so most cards render as a plain (non-focusable) span.
+ */
+function SponsorPass({ clone = false }: { clone?: boolean }) {
+  return (
+    <ul aria-hidden={clone || undefined}>
+      {sponsors.map((sponsor) => {
+        const mark = sponsor.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={sponsor.logo} alt={clone ? "" : sponsor.name} loading="lazy" decoding="async" />
+        ) : (
+          <span className="name">{sponsor.name}</span>
+        );
+        return (
+          <li key={sponsor.name}>
+            {sponsor.href ? (
+              <a
+                className="scard"
+                href={sponsor.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                tabIndex={clone ? -1 : undefined}
+                aria-label={clone ? undefined : sponsor.name}
+              >
+                {mark}
+              </a>
+            ) : (
+              <span className="scard">{mark}</span>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 /** Class list rows. `programs` carries the short names; the hrefs are the
  *  canonical per-class pages on gladiators.nyc, matched by position. */
 const classHrefs = [
@@ -285,49 +325,28 @@ export default function AboutPage() {
         </Wrap>
       </section>
 
-      {/* ---- Sponsors, folded in ---- */}
-      <section
-        className="sec sec--tight anchored"
-        id="sponsors"
-        style={{ paddingTop: "clamp(48px, 6vw, 86px)" }}
-      >
-        <Wrap>
-          <div className="say">
-            <R>
-              <h2>
-                The people who <Mark alt>make it free</Mark>
-              </h2>
-              <p>Sponsors pay for the gifts, the classes, the gear, and the events.</p>
-            </R>
-            <R as="span" delay={100}>
-              <a className="tlink" href={sponsorMailto("Sponsoring Santa's Knights")}>
-                Become a sponsor <span className="arw">→</span>
-              </a>
-            </R>
+      {/* ---- Sponsors, folded in — a red flood band (the one other flood
+          ground on the page, see `.redband` on the homepage), marks drifting
+          right to left. Same drifting-marquee mechanism as the homepage press
+          strip; tears open on both edges since paper sits on either side of
+          it here (rule 5), not just one. ---- */}
+      <section className="bleed sponsorband anchored band-gap" id="sponsors" aria-label="Sponsors">
+        <TornEdge edge="top" />
+        <R as="p" className="lbl">
+          Proudly sponsored by
+        </R>
+        <div className="marq sponsormarq" role="group" aria-label="Sponsor logos">
+          <div className="marq-track">
+            <SponsorPass />
+            <SponsorPass clone />
           </div>
-
-          {/* Marks sitting straight on the paper — mix-blend-mode drops each
-              logo's own white background into it. Plain <img> so every mark
-              keeps its true aspect ratio; these are small static files.
-              A sponsor is only a link when we actually have a URL for it. */}
-          <R delay={120} className="logos">
-            {sponsors.map((sponsor) => {
-              const mark = sponsor.logo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={sponsor.logo} alt={sponsor.name} loading="lazy" decoding="async" />
-              ) : (
-                <span className="name">{sponsor.name}</span>
-              );
-              return sponsor.href ? (
-                <a key={sponsor.name} href={sponsor.href} target="_blank" rel="noopener noreferrer">
-                  {mark}
-                </a>
-              ) : (
-                <div key={sponsor.name}>{mark}</div>
-              );
-            })}
-          </R>
-        </Wrap>
+        </div>
+        <R delay={140} className="sponsorband-cta">
+          <a className="tlink tlink--paper" href={sponsorMailto("Sponsoring Santa's Knights")}>
+            Become a sponsor <span className="arw">→</span>
+          </a>
+        </R>
+        <TornEdge edge="bottom" />
       </section>
 
       <section className="sec sec--tight" style={{ paddingTop: "clamp(28px, 3.4vw, 44px)" }}>
