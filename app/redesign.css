@@ -2025,11 +2025,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 148px;
-    max-width: 230px;
-    min-height: clamp(88px, 8vw, 116px);
-    padding: 16px 22px;
-    background: var(--color-paper);
+    min-width: 160px;
+    max-width: 240px;
+    min-height: clamp(96px, 9vw, 128px);
+    padding: 10px 16px;
+    /* White, not the paper token — on the red band these are a plate for the
+       mark, not the ground, and paper's warm tint read as a dingy cream next
+       to full-colour logos rather than as a lit card. */
+    background: #fff;
     border-radius: 14px;
     text-decoration: none;
     transition: transform 0.2s var(--rd-ease);
@@ -2042,7 +2045,7 @@
     width: auto;
     height: auto;
     max-width: 100%;
-    max-height: clamp(48px, 4.4vw, 62px);
+    max-height: clamp(66px, 6.6vw, 92px);
     object-fit: contain;
     opacity: 1;
   }
