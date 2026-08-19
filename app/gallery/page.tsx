@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "Gallery",
   description:
     "Photos from Santa's Knights events, classes, and community programs in Harlem.",
+  alternates: { canonical: "/gallery" },
 };
 
 export default function GalleryPage() {

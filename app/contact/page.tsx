@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   title: "Contact",
   description:
     "Get in touch with Santa's Knights in Harlem, or apply to volunteer. Visit us at the Manhattanville Community Center or call (212) 873-5818.",
+  alternates: { canonical: "/contact" },
 };
 
 const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(org.mapsQuery)}`;

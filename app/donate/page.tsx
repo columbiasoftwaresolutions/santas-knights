@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Donate",
   description:
     "Donations are the only reason the training and the gifts are free. Santa's Knights is a Harlem 501(c)(3) — your gift is tax-deductible.",
+  alternates: { canonical: "/donate" },
 };
 
 /** Where the money goes. Three claims over the photo — no boxes, no numbering. */

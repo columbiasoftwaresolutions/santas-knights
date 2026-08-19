@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { Reveal } from "@/components/ui/Reveal";
+import { Analytics } from "@/components/analytics/Analytics";
 import { getCurrentUser } from "@/lib/auth";
 import { INDEXABLE, SITE_URL, organizationSchema } from "@/content/site";
 import "./globals.css";
@@ -102,6 +103,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Footer />
         </SiteChrome>
         <Reveal />
+        {/* Renders nothing until NEXT_PUBLIC_GTM_ID is set and INDEXABLE flips. */}
+        <Analytics />
       </body>
     </html>
   );

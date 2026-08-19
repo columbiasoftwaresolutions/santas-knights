@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "Membership",
   description:
     "Training is free and always will be. Paid membership is monthly giving — it's what buys the gifts and the gear.",
+  alternates: { canonical: "/membership" },
 };
 
 /** What a membership pays for. Three claims over the photo. */
