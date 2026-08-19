@@ -615,9 +615,8 @@ When generating a screen or component for this product:
   link when the flow exists.
 - **The homepage** is **built**, to
   [`design-demos/redesign3.html`](./design-demos/redesign3.html). The hero is a full-bleed
-  torn-edge `<PhotoBand>` (`hero`, so no top tear) carrying the h1, a `.facts--onimg` row,
-  and two buttons — no lede, since the three columns are the substance and a summary
-  sentence above them only said the same thing in worse order. The earlier framed
+  torn-edge `<PhotoBand>` (`hero`, so no top tear) carrying the one-line “The gift of martial
+  arts” h1 and two buttons. The mission directly below explains the work. The earlier framed
   photo-grid variant was cut. **The old page's words
   are kept verbatim** — the mission statement, the Santa's Letters paragraph, the founder's
   quote about the two programs, and the eight-outlet press wall are the originals, reset in

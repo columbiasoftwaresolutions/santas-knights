@@ -62,8 +62,8 @@ export default function HomePage() {
     <RedesignShell>
       {/* The hero is the torn-edge photo band: the paper tears open beneath it.
           Deliberately not hero-community.jpg — that frame already carries the
-          /login panel and the About timeline band. No lede either; the three
-          columns are the substance, so the h1 hands straight to them.
+          /login panel and the About timeline band. The hero stays to one line;
+          the mission directly below carries the explanation.
 
           The press strip is the hero's footer rather than a band of its own
           further down: coverage is a credential on the claim, and it does its
@@ -78,32 +78,9 @@ export default function HomePage() {
         footer={<PressMarquee />}
       >
         <R as="h1" className="narrow-15">
-          Strengthening kids and lifting <Mark>communities</Mark>
+          The gift of <Mark>martial arts</Mark>
         </R>
-        <R
-          as="ul"
-          delay={100}
-          className="facts facts--onimg"
-          style={{ marginTop: "clamp(38px, 4.4vw, 58px)", maxWidth: 840 }}
-        >
-          <li>
-            <h3>Free training, all year</h3>
-            <p>
-              Six classes a week out of the {org.venue}. No experience, no fee.
-            </p>
-          </li>
-          <li>
-            <h3>Letters answered every December</h3>
-            <p>You read a kid&rsquo;s wish, pick one, and send the gift they asked for.</p>
-          </li>
-          <li>
-            <h3>Paid for by people, not fees</h3>
-            <p>
-              A 501(c)(3). Donations and grants cover everything the people we serve use.
-            </p>
-          </li>
-        </R>
-        <R delay={160} className="linkrow" style={{ marginTop: 36, gap: 12 }}>
+        <R delay={100} className="linkrow" style={{ marginTop: 36, gap: 12 }}>
           <a className="btn btn--red" href={links.adoptLetter}>
             Adopt a letter <span className="arw">→</span>
           </a>
@@ -114,9 +91,8 @@ export default function HomePage() {
       </PhotoBand>
 
       {/* The mission, verbatim — the sentence the old homepage set in Cormorant
-          beside a giant "01". Same words, no numeral, no italic. No stats row
-          under it: the hero columns already made those claims, and rule 6 says
-          once. */}
+          beside a giant "01". Same words, no numeral, no italic. It explains
+          the work after the hero earns attention. */}
       <section className="sec sec--tight" style={{ paddingTop: "clamp(46px, 5.6vw, 84px)" }}>
         <Wrap className="missionsplit">
           <div className="mcenter">
