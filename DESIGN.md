@@ -615,8 +615,9 @@ When generating a screen or component for this product:
   link when the flow exists.
 - **The homepage** is **built**, to
   [`design-demos/redesign3.html`](./design-demos/redesign3.html). The hero is a full-bleed
-  torn-edge `<PhotoBand>` (`hero`, so no top tear) carrying the one-line “The gift of martial
-  arts” h1 and two buttons. The mission directly below explains the work. The earlier framed
+  torn-edge `<PhotoBand>` (`hero`, so no top tear) carrying the nonprofit identity line,
+  “Strengthening kids and lifting communities” h1, and two buttons. The identity line uses
+  the same plain 15px treatment as the Gladiators NYC stage kicker. The earlier framed
   photo-grid variant was cut. **The old page's words
   are kept verbatim** — the mission statement, the Santa's Letters paragraph, the founder's
   quote about the two programs, and the eight-outlet press wall are the originals, reset in

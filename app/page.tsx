@@ -62,8 +62,8 @@ export default function HomePage() {
     <RedesignShell>
       {/* The hero is the torn-edge photo band: the paper tears open beneath it.
           Deliberately not hero-community.jpg — that frame already carries the
-          /login panel and the About timeline band. The hero stays to one line;
-          the mission directly below carries the explanation.
+          /login panel and the About timeline band. The nonprofit identity line
+          follows the Gladiators NYC stage treatment; the h1 stays the hook.
 
           The press strip is the hero's footer rather than a band of its own
           further down: coverage is a credential on the claim, and it does its
@@ -77,10 +77,13 @@ export default function HomePage() {
         priority
         footer={<PressMarquee />}
       >
-        <R as="h1" className="narrow-15">
-          The gift of <Mark>martial arts</Mark>
+        <R as="p" className="hero-kicker">
+          Santa&rsquo;s Knights — a registered 501(c)(3) nonprofit
         </R>
-        <R delay={100} className="linkrow" style={{ marginTop: 36, gap: 12 }}>
+        <R as="h1" delay={60} className="narrow-15">
+          Strengthening kids and lifting <Mark>communities</Mark>
+        </R>
+        <R delay={130} className="linkrow" style={{ marginTop: 36, gap: 12 }}>
           <a className="btn btn--red" href={links.adoptLetter}>
             Adopt a letter <span className="arw">→</span>
           </a>
@@ -91,8 +94,7 @@ export default function HomePage() {
       </PhotoBand>
 
       {/* The mission, verbatim — the sentence the old homepage set in Cormorant
-          beside a giant "01". Same words, no numeral, no italic. It explains
-          the work after the hero earns attention. */}
+          beside a giant "01". Same words, no numeral, no italic. */}
       <section className="sec sec--tight" style={{ paddingTop: "clamp(46px, 5.6vw, 84px)" }}>
         <Wrap className="missionsplit">
           <div className="mcenter">

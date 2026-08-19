@@ -464,6 +464,15 @@
     line-height: 1.12;
     letter-spacing: -0.035em;
   }
+  /* Matches the plain identity line above the Gladiators NYC stage title. This
+     is legal context, not an ornamental eyebrow: sentence case, no tracking. */
+  .rd .imgsec--hero .hero-kicker {
+    margin: 0 0 clamp(18px, 2vw, 26px);
+    color: var(--color-paper);
+    font-size: 15px;
+    font-weight: 600;
+    text-shadow: 0 1px 18px var(--rd-shadow-tint);
+  }
 
   /* `centered` — the same treatment `mcenter` gives every band below 900px, held
      at every width. Every max-width in this system is a measure (15ch, 34ch,

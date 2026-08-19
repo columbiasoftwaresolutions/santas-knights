@@ -249,6 +249,7 @@ h2.big{font-size:clamp(30px,3.6vw,46px);letter-spacing:-.03em;}
 /* hero: no top tear (nothing above it to tear) and the larger h1 */
 .imgsec--hero .content{padding-top:clamp(72px,8.5vw,124px);padding-bottom:clamp(84px,9.5vw,140px);}
 .imgsec--hero h1{color:var(--paper);font-size:clamp(42px,5.8vw,76px);line-height:1.12;letter-spacing:-.035em;}
+.imgsec--hero .hero-kicker{margin:0 0 clamp(18px,2vw,26px);color:var(--paper);font-size:15px;font-weight:600;text-shadow:0 1px 18px var(--shadow-tint);}
 .torn{position:absolute;left:0;width:100%;height:clamp(30px,4vw,58px);display:block;pointer-events:none;z-index:2;}
 .torn--top{top:-1px;}
 .torn--bot{bottom:-1px;}
@@ -554,9 +555,9 @@ h2.big{font-size:clamp(30px,3.6vw,46px);letter-spacing:-.03em;}
     <div class="veil"></div>
     <svg class="torn torn--bot" viewBox="0 0 1440 44" preserveAspectRatio="none" aria-hidden="true"><use href="#tear-bot" fill="#F7F0E3"/></svg>
     <div class="wrap content">
-      <!-- One line only; the mission section directly below explains the work. -->
-      <h1 data-r style="max-width:15ch">The gift of <span class="mark">martial arts</span></h1>
-      <div data-r style="--d:100ms;margin-top:36px;display:flex;flex-wrap:wrap;gap:12px">
+      <p class="hero-kicker" data-r>Santa&rsquo;s Knights &mdash; a registered 501(c)(3) nonprofit</p>
+      <h1 data-r style="--d:60ms;max-width:15ch">Strengthening kids and lifting <span class="mark">communities</span>.</h1>
+      <div data-r style="--d:130ms;margin-top:36px;display:flex;flex-wrap:wrap;gap:12px">
         <a class="btn btn--red" href="#">Adopt a letter <span class="arw">&#8594;</span></a>
         <a class="btn btn--onimg" href="#">Donate</a>
       </div>
@@ -567,8 +568,7 @@ h2.big{font-size:clamp(30px,3.6vw,46px);letter-spacing:-.03em;}
        This is `missionStatement` in content/site.ts, the sentence the old
        homepage set in Cormorant next to a giant "01". Same words, no numeral,
        no italic: Archivo 600 with the brush under `free`, and the gold rule
-       carrying the legal line. It explains the work after the hero earns
-       attention. -->
+       carrying the legal line. -->
   <section class="sec sec--tight" style="padding-top:clamp(46px,5.6vw,84px)">
     <div class="wrap missionsplit">
       <div>
