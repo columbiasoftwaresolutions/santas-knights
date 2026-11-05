@@ -43,3 +43,13 @@ next-env.d.ts
 /e2e-assets/
 
 dogfood-output/
+/dist/
+.vinext/
+.cloudflare/
+.wrangler/
+
+# Local Cloudflare secrets
+.dev.vars*
+
+# Generated isolated test deployment configuration
+/wrangler.migration-test.json
