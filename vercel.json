@@ -1,7 +1,5 @@
 {
   "git": {
-    "deploymentEnabled": {
-      "codex/cloudflare-private-staging": false
-    }
+    "deploymentEnabled": false
   }
 }
