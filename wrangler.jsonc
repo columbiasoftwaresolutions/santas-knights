@@ -27,5 +27,9 @@
   "routes": [],
   "triggers": {
     "crons": []
+  },
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://ibqnpbczgcdedakdwqec.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_MTWF4CBq9JqcqxSzWZIK2Q_CsBdnfU1"
   }
 }
